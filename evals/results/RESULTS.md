@@ -7,6 +7,9 @@ Latest run per (dataset, split, mode, model, subset). Raw runs: `evals/results/r
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | clean-v1 | dev | agent (anthropic/claude-haiku-5.5) | 44 | - | - | - | 0.45 | $0.0043 | 95s | 0 | a0524a6 |
 | clean-v1 | dev | agent (anthropic/claude-opus-4.6) [sample7] | 7 | - | - | - | 1.43 | $0.2292 | 116s | 0 | ada4599 |
+| clean-v1 | dev | agent (google/gemini-3.7-flash) +overseer(always) | 44 | - | - | - | 0.41 | $0.1065 | 240s | 0 | 6b374d7 |
+| clean-v1 | dev | agent (google/gemini-3.7-flash) [sample14] | 14 | - | - | - | 0.21 | $0.0476 | 237s | 0 | 6b374d7 |
+| clean-v1 | dev | agent (google/gemini-3.8-flash) [sample14] | 14 | - | - | - | 0.36 | $0.0734 | 338s | 0 | 6b374d7 |
 | clean-v1 | dev | agent (openai/gpt-5) [sample14] | 14 | - | - | - | 1.50 | $0.2657 | 353s | 0 | ada4599 |
 | clean-v1 | dev | agent_no_l1 (anthropic/claude-haiku-5.5) | 44 | - | - | - | 0.32 | $0.0041 | 63s | 0 | a0524a6 |
 | clean-v1 | dev | baseline (anthropic/claude-haiku-5.5) | 44 | - | - | - | 0.43 | $0.0014 | 0s | 0 | a0524a6 |
@@ -18,6 +21,9 @@ Latest run per (dataset, split, mode, model, subset). Raw runs: `evals/results/r
 | clean-v1 | test | deterministic | 16 | - | - | - | 0.06 | $0.0000 | 59s | 0 | 9fa5a9e |
 | reverted-v1 | dev | agent (anthropic/claude-haiku-5.5) | 22 | 91% (20/22) [72-97] | 27% (6/22) [13-48] | 100% (20/20) [84-100] | - | $0.0035 | 105s | 0 | a0524a6 |
 | reverted-v1 | dev | agent (anthropic/claude-opus-4.6) [sample5] | 5 | 100% (5/5) [57-100] | 60% (3/5) [23-88] | 100% (5/5) [57-100] | - | $0.1804 | 116s | 0 | ada4599 |
+| reverted-v1 | dev | agent (google/gemini-3.7-flash) +overseer(always) | 22 | 95% (21/22) [78-99] | 45% (10/22) [27-65] | 100% (21/21) [85-100] | - | $0.1043 | 291s | 0 | 6b374d7 |
+| reverted-v1 | dev | agent (google/gemini-3.7-flash) [sample10] | 10 | 80% (8/10) [49-94] | 50% (5/10) [24-76] | 100% (8/8) [68-100] | - | $0.0402 | 235s | 0 | 6b374d7 |
+| reverted-v1 | dev | agent (google/gemini-3.8-flash) [sample10] | 10 | 90% (9/10) [60-98] | 50% (5/10) [24-76] | 100% (9/9) [70-100] | - | $0.0644 | 393s | 0 | 6b374d7 |
 | reverted-v1 | dev | agent (openai/gpt-5) [sample10] | 7 | 100% (7/7) [65-100] | 14% (1/7) [3-51] | 100% (7/7) [65-100] | - | $0.1193 | 136s | 3 | ada4599 |
 | reverted-v1 | dev | agent_no_l1 (anthropic/claude-haiku-5.5) | 22 | 100% (22/22) [85-100] | 27% (6/22) [13-48] | 100% (22/22) [85-100] | - | $0.0032 | 58s | 0 | a0524a6 |
 | reverted-v1 | dev | baseline (anthropic/claude-haiku-5.5) | 22 | 82% (18/22) [61-93] | 23% (5/22) [10-43] | 100% (18/18) [82-100] | - | $0.0006 | 0s | 0 | a0524a6 |
@@ -29,6 +35,9 @@ Latest run per (dataset, split, mode, model, subset). Raw runs: `evals/results/r
 | reverted-v1 | test | deterministic | 8 | 0% (0/9) [0-30] | 0% (0/9) [0-30] | - | - | $0.0000 | 59s | 0 | 9fa5a9e |
 | seeded-v1 | dev | agent (anthropic/claude-haiku-5.5) | 41 | 78% (32/41) [63-88] | 68% (28/41) [53-80] | 56% (32/57) [43-68] | - | $0.0038 | 94s | 0 | a0524a6 |
 | seeded-v1 | dev | agent (anthropic/claude-opus-4.6) [sample8] | 8 | 88% (7/8) [53-98] | 62% (5/8) [31-86] | 50% (7/14) [27-73] | - | $0.1942 | 109s | 0 | ada4599 |
+| seeded-v1 | dev | agent (google/gemini-3.7-flash) +overseer(always) | 41 | 88% (36/41) [74-95] | 78% (32/41) [63-88] | 52% (36/69) [41-64] | - | $0.1151 | 277s | 0 | 6b374d7 |
+| seeded-v1 | dev | agent (google/gemini-3.7-flash) [sample16] | 16 | 69% (11/16) [44-86] | 62% (10/16) [39-82] | 55% (11/20) [34-74] | - | $0.0458 | 239s | 0 | 6b374d7 |
+| seeded-v1 | dev | agent (google/gemini-3.8-flash) [sample16] | 16 | 75% (12/16) [51-90] | 75% (12/16) [51-90] | 50% (12/24) [31-69] | - | $0.0684 | 403s | 0 | 6b374d7 |
 | seeded-v1 | dev | agent (openai/gpt-5) [sample16] | 16 | 81% (13/16) [57-93] | 75% (12/16) [51-90] | 48% (13/27) [31-66] | - | $0.2527 | 318s | 0 | ada4599 |
 | seeded-v1 | dev | agent_no_l1 (anthropic/claude-haiku-5.5) | 41 | 56% (23/41) [41-70] | 44% (18/41) [30-59] | 62% (23/37) [46-76] | - | $0.0032 | 61s | 0 | a0524a6 |
 | seeded-v1 | dev | baseline (anthropic/claude-haiku-5.5) | 41 | 59% (24/41) [43-72] | 44% (18/41) [30-59] | 51% (24/47) [37-65] | - | $0.0012 | 0s | 0 | a0524a6 |
@@ -45,9 +54,9 @@ recall: defects matched by file and overlapping lines (±3), as rate (found/tota
 
 ## Recall by category: reverted-v1 (dev)
 
-| category | agent (anthropic/claude-haiku-5.5) | agent (anthropic/claude-opus-4.6) [sample5] | agent (openai/gpt-5) [sample10] | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | baseline (openai/gpt-5) [sample10] | deterministic |
-|---|---|---|---|---|---|---|---|
-| correctness | 20/22 | 5/5 | 7/7 | 22/22 | 18/22 | 9/10 | 0/22 |
+| category | agent (anthropic/claude-haiku-5.5) | agent (anthropic/claude-opus-4.6) [sample5] | agent (google/gemini-3.7-flash) +overseer(always) | agent (google/gemini-3.7-flash) [sample10] | agent (google/gemini-3.8-flash) [sample10] | agent (openai/gpt-5) [sample10] | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | baseline (openai/gpt-5) [sample10] | deterministic |
+|---|---|---|---|---|---|---|---|---|---|---|
+| correctness | 20/22 | 5/5 | 21/22 | 8/10 | 9/10 | 7/7 | 22/22 | 18/22 | 9/10 | 0/22 |
 
 ## Recall by category: reverted-v1 (test)
 
@@ -57,17 +66,17 @@ recall: defects matched by file and overlapping lines (±3), as rate (found/tota
 
 ## Recall by category: seeded-v1 (dev)
 
-| category | agent (anthropic/claude-haiku-5.5) | agent (anthropic/claude-opus-4.6) [sample8] | agent (openai/gpt-5) [sample16] | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | baseline (openai/gpt-5) [sample16] | deterministic |
-|---|---|---|---|---|---|---|---|
-| comment_noise | 1/3 | 1/1 | 2/2 | 0/3 | 0/3 | 1/2 | 0/3 |
-| correctness | 3/6 | 1/2 | 1/2 | 3/6 | 3/6 | 2/2 | 0/6 |
-| duplication | 4/4 | 1/1 | 1/1 | 4/4 | 3/4 | 1/1 | 0/4 |
-| hallucinated_dependency | 5/5 | 2/2 | 2/2 | 4/5 | 4/5 | 2/2 | 4/5 |
-| scope_creep | 3/3 | - | 1/1 | 0/3 | 2/3 | 1/1 | 0/3 |
-| security | 1/2 | - | 1/1 | 1/2 | 1/2 | 1/1 | 0/2 |
-| silent_behavior_change | 5/6 | 1/1 | 2/3 | 5/6 | 5/6 | 3/3 | 0/6 |
-| swallowed_error | 6/7 | 1/1 | 2/3 | 3/7 | 3/7 | 3/3 | 6/7 |
-| weak_test | 4/5 | - | 1/1 | 3/5 | 3/5 | 1/1 | 1/5 |
+| category | agent (anthropic/claude-haiku-5.5) | agent (anthropic/claude-opus-4.6) [sample8] | agent (google/gemini-3.7-flash) +overseer(always) | agent (google/gemini-3.7-flash) [sample16] | agent (google/gemini-3.8-flash) [sample16] | agent (openai/gpt-5) [sample16] | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | baseline (openai/gpt-5) [sample16] | deterministic |
+|---|---|---|---|---|---|---|---|---|---|---|
+| comment_noise | 1/3 | 1/1 | 3/3 | 0/2 | 1/2 | 2/2 | 0/3 | 0/3 | 1/2 | 0/3 |
+| correctness | 3/6 | 1/2 | 4/6 | 1/2 | 1/2 | 1/2 | 3/6 | 3/6 | 2/2 | 0/6 |
+| duplication | 4/4 | 1/1 | 4/4 | 1/1 | 1/1 | 1/1 | 4/4 | 3/4 | 1/1 | 0/4 |
+| hallucinated_dependency | 5/5 | 2/2 | 5/5 | 2/2 | 2/2 | 2/2 | 4/5 | 4/5 | 2/2 | 4/5 |
+| scope_creep | 3/3 | - | 2/3 | 1/1 | 1/1 | 1/1 | 0/3 | 2/3 | 1/1 | 0/3 |
+| security | 1/2 | - | 2/2 | 1/1 | 1/1 | 1/1 | 1/2 | 1/2 | 1/1 | 0/2 |
+| silent_behavior_change | 5/6 | 1/1 | 5/6 | 2/3 | 2/3 | 2/3 | 5/6 | 5/6 | 3/3 | 0/6 |
+| swallowed_error | 6/7 | 1/1 | 6/7 | 2/3 | 2/3 | 2/3 | 3/7 | 3/7 | 3/3 | 6/7 |
+| weak_test | 4/5 | - | 5/5 | 1/1 | 1/1 | 1/1 | 3/5 | 3/5 | 1/1 | 1/5 |
 
 ## Recall by category: seeded-v1 (test)
 
@@ -102,6 +111,9 @@ Precision per confidence bucket (matched/total). Severity rank: blocker=3, major
 |---|---|---|---|
 | reverted-v1 (dev) | agent (anthropic/claude-haiku-5.5) | 0.6-0.8: 4/4 0.8-0.9: 12/12 0.9-1.0: 4/4 | - |
 | reverted-v1 (dev) | agent (anthropic/claude-opus-4.6) [sample5] | 0.9-1.0: 5/5 | - |
+| reverted-v1 (dev) | agent (google/gemini-3.7-flash) +overseer(always) | 0.6-0.8: 2/2 0.8-0.9: 6/6 0.9-1.0: 13/13 | - |
+| reverted-v1 (dev) | agent (google/gemini-3.7-flash) [sample10] | 0.9-1.0: 8/8 | - |
+| reverted-v1 (dev) | agent (google/gemini-3.8-flash) [sample10] | 0.9-1.0: 9/9 | - |
 | reverted-v1 (dev) | agent (openai/gpt-5) [sample10] | 0.8-0.9: 3/3 0.9-1.0: 4/4 | - |
 | reverted-v1 (dev) | agent_no_l1 (anthropic/claude-haiku-5.5) | 0.6-0.8: 9/9 0.8-0.9: 8/8 0.9-1.0: 5/5 | - |
 | reverted-v1 (dev) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 6/6 0.8-0.9: 10/10 0.9-1.0: 2/2 | - |
@@ -111,6 +123,9 @@ Precision per confidence bucket (matched/total). Severity rank: blocker=3, major
 | reverted-v1 (test) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 1/2 0.8-0.9: 6/6 0.9-1.0: 1/1 | 2.12 vs 2.00 |
 | seeded-v1 (dev) | agent (anthropic/claude-haiku-5.5) | 0.6-0.8: 8/21 0.8-0.9: 7/10 0.9-1.0: 17/26 | 1.94 vs 1.56 |
 | seeded-v1 (dev) | agent (anthropic/claude-opus-4.6) [sample8] | 0.6-0.8: 0/1 0.8-0.9: 0/2 0.9-1.0: 7/11 | 2.29 vs 2.00 |
+| seeded-v1 (dev) | agent (google/gemini-3.7-flash) +overseer(always) | 0.6-0.8: 2/17 0.8-0.9: 1/2 0.9-1.0: 33/50 | 1.86 vs 1.45 |
+| seeded-v1 (dev) | agent (google/gemini-3.7-flash) [sample16] | 0.9-1.0: 11/20 | 2.18 vs 2.00 |
+| seeded-v1 (dev) | agent (google/gemini-3.8-flash) [sample16] | 0.9-1.0: 12/24 | 2.08 vs 1.83 |
 | seeded-v1 (dev) | agent (openai/gpt-5) [sample16] | 0.6-0.8: 1/3 0.8-0.9: 3/5 0.9-1.0: 9/19 | 1.92 vs 1.36 |
 | seeded-v1 (dev) | agent_no_l1 (anthropic/claude-haiku-5.5) | 0.6-0.8: 6/19 0.8-0.9: 5/6 0.9-1.0: 12/12 | 2.22 vs 1.64 |
 | seeded-v1 (dev) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 7/21 0.8-0.9: 6/9 0.9-1.0: 11/17 | 2.12 vs 1.91 |

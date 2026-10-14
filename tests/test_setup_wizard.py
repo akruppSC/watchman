@@ -17,6 +17,8 @@ class ScriptedIO:
     def prompt(self, text: str, default: str | None = None, *, hide: bool = False) -> str:
         if hide:
             self.hidden_prompts.append(text)
+        if not self.answers:  # out of scripted answers: the user just pressed Enter
+            return default or ""
         ans = self.answers.pop(0)
         return default or "" if ans == "" else ans
 
@@ -134,21 +136,23 @@ def test_choose_reprompts_on_invalid(bad: str) -> None:
     assert cfg.llm.provider is Provider.OLLAMA
 
 
-def test_wizard_can_enable_the_overseer_with_catalog_pricing() -> None:
-    catalog = [*CATALOG, ModelInfo(id="anthropic/claude-opus-5.5", input_cost_per_mtok=4.0,
-                                   output_cost_per_mtok=20.0)]  # fmt: skip
+def test_wizard_sets_up_the_overseer_for_deep_reviews_with_catalog_pricing() -> None:
+    catalog = [*CATALOG, ModelInfo(id="openai/gpt-6-astra", input_cost_per_mtok=10.0,
+                                   output_cost_per_mtok=50.0)]  # fmt: skip
     answers = ["openrouter", "", "", "vendor/good-model", "", "", "auto"]
-    io = ScriptedIO([*answers, "anthropic/claude-opus-5.5", "0.2"], confirms=[True])
+    io = ScriptedIO([*answers, "", "0.4"])  # keep the default model; cap $0.40; no auto-run
     deps = SetupDeps(catalog=lambda c, k: catalog, keyring_setter=None,
                      environ={"OPENROUTER_API_KEY": "k"})  # fmt: skip
     cfg = run_setup(io, Config(), deps)
-    assert cfg.overseer.enabled and cfg.overseer.model == "anthropic/claude-opus-5.5"
-    assert (cfg.overseer.input_cost_per_mtok, cfg.overseer.output_cost_per_mtok) == (4.0, 20.0)
-    assert cfg.overseer.max_cost_usd == 0.2
+    assert cfg.overseer.model == "openai/gpt-6-astra"
+    assert (cfg.overseer.input_cost_per_mtok, cfg.overseer.output_cost_per_mtok) == (10.0, 50.0)
+    assert cfg.overseer.max_cost_usd == 0.4
+    assert cfg.overseer.auto is False
 
 
-def test_wizard_leaves_the_overseer_off_by_default() -> None:
-    io = ScriptedIO(["openrouter", "", "", "vendor/good-model", "", "", "auto"])
+def test_wizard_can_turn_on_automatic_overseer() -> None:
+    answers = ["openrouter", "", "", "vendor/good-model", "", "", "auto"]
+    io = ScriptedIO([*answers, "", ""], confirms=[True])
     deps = SetupDeps(catalog=lambda c, k: CATALOG, keyring_setter=None,
                      environ={"OPENROUTER_API_KEY": "k"})  # fmt: skip
-    assert run_setup(io, Config(), deps).overseer.enabled is False
+    assert run_setup(io, Config(), deps).overseer.auto is True

@@ -141,19 +141,32 @@ class OverseerTrigger(StrEnum):
 
 
 class OverseerConfig(BaseModel):
-    """The larger model that spot-checks the primary reviewer. User config only: a reviewed
-    repo must not be able to switch on (and bill you for) a more expensive model."""
+    """The larger model that double-checks a review, used mainly as an opt-in `--deep` tool.
+
+    User config only: a reviewed repo must not be able to switch on (and bill you for) a
+    more expensive model.
+
+    On the v1 dev split, running it automatically did not pay for itself: triggered by
+    risk it added no recall for +80% cost, and always-on it added 7 points of recall for
+    2.4x the cost while flagging more on clean diffs. So it is off by default and used
+    deliberately, where a rare, expensive second opinion is worth it.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    enabled: bool = False
-    model: str = "anthropic/claude-opus-5.5"
+    auto: bool = Field(
+        default=False,
+        description="Also run automatically on every review, following `trigger`. Off by "
+        "default; `watchman review --deep` runs it for one review regardless.",
+    )
+    model: str = "openai/gpt-6-astra"
     trigger: OverseerTrigger = OverseerTrigger.RISKY
     input_cost_per_mtok: float | None = None
     output_cost_per_mtok: float | None = None
-    max_cost_usd: float = Field(default=0.15, ge=0)
-    max_tool_calls: int = Field(default=8, ge=0)
-    max_spot_checks: int = Field(default=8, ge=1)
+    # Rarely used, so each run can afford to look hard.
+    max_cost_usd: float = Field(default=0.50, ge=0)
+    max_tool_calls: int = Field(default=15, ge=0)
+    max_spot_checks: int = Field(default=12, ge=1)
     # Risk triggers (any one fires the overseer when trigger = "risky").
     large_diff_lines: int = Field(default=300, ge=1)
     large_diff_files: int = Field(default=8, ge=1)

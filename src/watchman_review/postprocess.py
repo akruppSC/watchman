@@ -104,7 +104,10 @@ def merge_colocated(findings: list[Finding]) -> list[Finding]:
     return merged + passthrough
 
 
-RESTATEMENT_SLACK = 2
+# Findings restate each other only when their line ranges actually overlap. A two-line slack
+# changed no dev result, but twice collapsed distinct defects sitting close together (a SQL
+# injection under a prompt-injection comment).
+RESTATEMENT_SLACK = 0
 
 
 def lines_near(a: Finding, b: Finding, slack: int = RESTATEMENT_SLACK) -> bool:
@@ -128,9 +131,7 @@ def drop_restatements(findings: list[Finding]) -> FilterReport:
         return (f.source is Source.DETERMINISTIC, verified, f.severity.rank, f.confidence, f.id)
 
     def same_defect(a: Finding, b: Finding) -> bool:
-        # Different categories must truly overlap: two distinct problems a couple of lines
-        # apart (a prompt-injection comment above a SQL-injection line) are not restatements.
-        return lines_near(a, b, RESTATEMENT_SLACK if a.category == b.category else 0)
+        return lines_near(a, b, RESTATEMENT_SLACK)
 
     report = FilterReport()
     for f in sorted(findings, key=strength, reverse=True):

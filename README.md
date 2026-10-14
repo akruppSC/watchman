@@ -10,8 +10,9 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 evidence, and findings that can't be grounded are dropped.
 
 > **Status:** milestones 1 (foundation), 2 (the tool-using agent) and 3 (evaluation) are
-> complete, and the overseer stage (a larger model that double-checks risky reviews) is
-> built and being evaluated. See [Roadmap](#roadmap).
+> complete. The overseer (a larger model for a deeper second look) is built and available as
+> an opt-in `--deep` tool; automatic use didn't pay for itself in evaluation. See
+> [Roadmap](#roadmap).
 
 ## Install
 
@@ -48,9 +49,8 @@ uv run watchman review --base main --mode agent --task "Add retry to the HTTP cl
 # Try a different model for one run:
 uv run watchman review --base main --mode agent --model anthropic/claude-haiku-5.5
 
-# Make the larger overseer model check this review no matter what / never:
+# A deeper second look from the larger overseer model, for a change that deserves it:
 uv run watchman review --base main --mode agent --deep
-uv run watchman review --base main --mode agent --no-overseer
 
 # Single-prompt LLM baseline (the ablation control arm):
 uv run watchman review --base main --mode baseline --task "Add retry to the HTTP client"
@@ -103,7 +103,7 @@ git diff (merge-base..head) ──► snapshot worktree of head
           secrets · imports · hygiene · scope · ruff · mypy · pytest(sandbox)
                                   │  results become evidence for ↓
           Layer 2: tool-using agent: plan → verify with tools → submit_findings
-                                  │  only if the review looks risky (or --deep)
+                                  │  only with --deep (or `auto = true` in config)
           Layer 3: overseer, a larger model: spot-check → dig deep → brief the agent
                                   │  if it rejected/added many findings: one more agent pass
           post-process: grounding → confidence threshold → merge/dedupe → verdict
@@ -171,32 +171,21 @@ hand-written items sanity-check the pipeline and aren't a benchmark:
 
 ### The overseer
 
-A larger, more expensive model (default `anthropic/claude-opus-5.5`) that supervises the
-primary reviewer, "the watcher of the watchman". It runs only when a review looks risky
-or unsettled, so most clean diffs never pay for it.
+A larger, more expensive model (default `openai/gpt-6-astra`) that double-checks the
+primary reviewer, "the watcher of the watchman". **It is an opt-in tool, not part of every
+review**: run `watchman review --mode agent --deep` on a change that deserves a rare,
+expensive second opinion. Evaluation (below) found that running it automatically doesn't
+pay for itself.
 
-**When it runs** (`trigger = "risky"`). Any one of these fires it:
-
-- the primary reviewer reported a major or blocker finding
-- the primary reviewer escalated a question it couldn't resolve (the submit tool gains an
-  optional `escalations` field whenever the overseer is active)
-- a Layer 1 check failed or errored
-- the diff is large (over 300 lines or 8 files)
-- the diff touches security-sensitive code (subprocess, eval, pickle, SQL execution,
-  disabled TLS verification, crypto, auth and session paths, and similar)
-- the primary review didn't finish
-
-`--deep` (or `trigger = "always"`) forces it, and `--no-overseer` disables it.
-
-**What it does**, in one tool-using stage with its own caps (default $0.15 and 8 tool
-calls per review, in addition to the primary's budget):
+**What it does**, in one tool-using stage with its own caps (default $0.50 and 15 tool
+calls per review, on top of the primary's budget):
 
 1. **Spot-check.** It receives compact evidence packets for the primary's findings: the
    claim, a ±12 line code excerpt, and the tool output the primary cited. For each of up to
-   8 findings it answers `confirm`, `reject`, or `downgrade`, with a reason. It can use the
+   12 findings it answers `confirm`, `reject`, or `downgrade`, with a reason. It can use the
    same read-only tools to check.
-2. **Dig deep.** It investigates the escalated questions and anything risky the primary
-   missed. New findings carry `source = overseer`, are grounded exactly like the
+2. **Dig deep.** It investigates anything the primary escalated and anything risky the
+   primary missed. New findings carry `source = overseer`, are grounded exactly like the
    primary's (they must cite tool calls that ran, with refs `o1`, `o2`, ...), and are
    dropped if the evidence isn't real.
 3. **Brief.** It writes notes for the primary reviewer.
@@ -207,12 +196,18 @@ budget (refs `r1`, `r2`, ...). The larger model directs the review; the cheap mo
 reading and running. Findings the overseer rejected stay rejected: a second-pass finding
 that matches one is discarded.
 
+**Automatic mode** (`auto = true`, off by default) also runs it without `--deep`, following
+`trigger`: `risky` fires on a major or blocker primary finding, an escalated question, a
+Layer 1 check that found problems, a large diff (over 300 lines or 8 files), security-
+sensitive code (subprocess, eval, pickle, SQL execution, disabled TLS verification, crypto,
+auth and session paths), or an unfinished primary review. `always` runs it every time.
+
 **Trust and failure handling:**
 
 - Everything the overseer reads is wrapped as untrusted data, including the primary
   reviewer's own text (it was written after reading untrusted code).
 - It can never touch deterministic findings. Those aren't packaged for review.
-- `[overseer]` is read from user config only. A repo's `.watchman.toml` can't enable it,
+- `[overseer]` is read from user config only. A repo's `.watchman.toml` can't turn it on,
   retarget it, or raise its budget.
 - If the overseer fails (timeout, no credit, budget), the review keeps the primary's
   findings, says so in a warning, and records the error on the stage. It does not mark the
@@ -221,16 +216,16 @@ that matches one is discarded.
 Every result records per-stage usage (`stages` in the JSON) and what the overseer
 confirmed, rejected, downgraded, and added. When the overseer is active, the primary
 stage also keeps the findings the review would have reported without it, so primary-only
-and overseer arms can be compared from a single run (see the evaluation below).
+and overseer arms can be compared from a single run.
 
 ```toml
-# ~/.config/watchman/config.toml
+# ~/.config/watchman/config.toml (only values that differ from the defaults are saved)
 [overseer]
-enabled = true
-# model = "anthropic/claude-opus-5.5"   # default
-# trigger = "risky"                     # risky | always | never
-# max_cost_usd = 0.15
-# max_tool_calls = 8
+# model = "openai/gpt-6-astra"   # default
+# max_cost_usd = 0.50
+# max_tool_calls = 15
+# auto = false                   # true: also run automatically (see `trigger`)
+# trigger = "risky"              # risky | always
 ```
 
 ## Evaluation
@@ -344,6 +339,51 @@ upstream issues (Opus and GPT-5 independently flagged the same wrong type hint i
 nits or restatements, so this measures noise, not necessarily wrongness. Opus did better on
 reintroduced bugs (60% vs 40% strict, on only 5 items).
 
+**Gemini Flash 3.7 vs 3.8 as the primary reviewer** (dev, same 40-item stratified sample, agent mode, overseer off):
+
+| model | seeded recall (strict) | reverted recall | findings per clean diff | cost per review | latency |
+|---|---|---|---|---|---|
+| Gemini 3.7 Flash | 69% (11/16), strict 62% | 80% (8/10) | 0.21 | $0.05 | about 4 min |
+| Gemini 3.8 Flash | 75% (12/16), strict 75% | 90% (9/10) | 0.36 | $0.07 | about 6 min |
+
+The differences are one or two items, well inside noise, so the cheaper, faster, quieter 3.7 is
+the default. (Both ran under OpenRouter's new-account limit of 20 requests per minute, enforced by
+`--rpm 18`.)
+
+**The overseer, dev split, all 107 items, paired** (Gemini 3.7 Flash primary, Claude Opus 5.5
+as the overseer, run once with the overseer always on; each result stores the primary-only
+findings, so all three arms score the same primary reviews):
+
+| arm | defects found (63) | strict | precision | findings per clean diff | cost per review | overseer ran on |
+|---|---|---|---|---|---|---|
+| primary only | 52 (83%) [72-90] | 40 | 52/77 (68%) | 0.27 | $0.046 | 0 |
+| overseer on risk triggers | 52 (83%) | 40 | 52/81 (64%) | 0.27 | $0.082 | 57 of 107 |
+| overseer always | 57 (90%) [80-95] | 42 | 57/90 (63%) | 0.41 | $0.109 | 107 of 107 |
+
+- **Risk-triggered gained nothing.** Same defects found, lower precision, 80% more cost.
+- **Always-on found 5 more defects** (+7 points, intervals overlap) for 2.4x the cost, and flagged
+  more on clean diffs (0.41 vs 0.27).
+- **The overseer rarely filters.** Of 72 findings it spot-checked it rejected 2, confirmed 59, and
+  downgraded 11, and it never rejected a true positive. It mostly adds findings (31 added).
+- **Its gains are in reviews where the primary found nothing.** Ten of the 11 missed defects were
+  in reviews with no primary findings, and the overseer caught 5 of them. "The primary reported
+  nothing" is also true of 84% of clean diffs, so no cheap trigger isolates those cases.
+- **Escalations went unused.** Flash raised 0 escalated questions in 107 reviews.
+
+An earlier version of the risk trigger counted a Layer 1 check that *couldn't run* (the target
+repo's tests failing to install in the sandbox, 53% of these reviews) as a reason to call the
+overseer. That fired on 71% of reviews and made the risk arm look 3 points better. It only
+looked better because the overseer ran on more items; fixed to count only checks that found
+problems, the gain disappears. Both numbers are in `evals.tune overseer-triggers`.
+
+**Decision.** The overseer isn't worth running on every review, so it is an opt-in `--deep` tool,
+which also makes a more expensive model affordable (the default is GPT-6 Astra at $10/$50 per
+million tokens, from a different model family than both the Gemini reviewer and a Claude coding
+worker). I ran the cheaper Opus 5.5 for the evaluation above, so Astra's own numbers are not
+measured here. A held-out run of this design on fresh `*-v2` datasets (30 seeded, 16 reverted, 32
+clean, frozen, never run) was cancelled once the dev result was clearly negative. Those sets
+stay in the repo as unused held-out data for the next design change.
+
 **Settings tuned on the dev split only** (`python -m evals.tune`): `min_confidence` 0.6, and
 dropping a model finding that overlaps a stronger finding on the same lines. With the Haiku
 agent on dev this raised precision from 56% to 68% for a 4-point recall cost. The Layer 1
@@ -385,7 +425,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 1. ✅ Foundation: CLI, schema, deterministic checks, single-prompt baseline, eval harness skeleton
 2. ✅ Agent: tool-using loop with budgets, pitfall rules, and evidence-ref grounding
 3. ✅ Evals: frozen datasets A/B/C, ablations, precision tuning
-3b. Overseer: a larger model that spot-checks and directs the primary reviewer (built; being evaluated on fresh v2 datasets)
+3b. ✅ Overseer: a larger model for a deeper second look, opt-in via `--deep` (automatic use evaluated and rejected)
 4. Integration: GitHub Action and PR comment, pre-push hook, writeup, demo
 5. Live mode: supervising an OpenCode worker at checkpoints
 
@@ -457,11 +497,12 @@ uv run pytest -m docker          # tests that need a docker daemon
   source (`prompts/pitfalls.py`) and share the severity guide. The agent's version adds a
   "verify with" column, so the ablation measures tools and verification rather than
   prompt wording.
-- **A larger model supervises instead of replacing the cheap one.** On the v1 dev split the
-  cheap reviewer found as many defects as the 50x costlier ones and was far quieter on clean
-  diffs, so the expensive model is used where it helps: judging what the cheap one found,
-  and digging into what it couldn't resolve. The overseer is triggered by risk signals, not
-  run on every review.
+- **A larger model checks the cheap one, on request.** On the v1 dev split the cheap reviewer
+  found as many defects as the 50x costlier ones and was far quieter on clean diffs, so the
+  expensive model supervises instead of replacing it. Measured, though, the supervision didn't
+  pay for itself automatically (risk-triggered: no gain for +80% cost; always-on: +7 points of
+  recall for 2.4x cost and more noise), so it ships as an opt-in `--deep` tool. Rare use is
+  also what makes a premium model reasonable.
 - **Notes flow back to the cheap model, not to the user.** The larger model directs and the
   cheap model does the reading and test-running, which keeps the overseer's cost small
   (compact packets, 8 tool calls, a hard dollar cap). The cost is that overseer notes are
@@ -496,15 +537,22 @@ uv run pytest -m docker          # tests that need a docker daemon
 - The slopsquatting heuristic (package < 90 days old or ≤ 1 release) is coarse.
 - On defect items, eval precision is pessimistic: real but unlabeled issues count as
   false positives. The clean-diff set is the uncontaminated false-positive measure.
-- Reasoning-heavy models are slow: GPT-5 agent reviews took 2 to 6 minutes. Haiku 5.5 takes about 1.5 minutes, mostly sandboxed test runs.
-- The agent tends to restate one defect under two categories. This isn't merged
-  automatically yet, because cross-category merging could hide a genuinely different
-  issue on the same line.
+- Reasoning-heavy models are slow: GPT-5 agent reviews took 2 to 6 minutes, Gemini 3.7 Flash
+  about 4, and Haiku 5.5 about 1.5, mostly sandboxed test runs.
+- The agent sometimes restates one defect under two categories. Findings that overlap on the
+  same lines are collapsed, but a restatement a few lines away under a different category is
+  kept, because collapsing those lost a real SQL injection once.
+- The `pytest` check can't run on roughly half of real repositories: their test dependencies
+  are declared as dependency groups, which the sandbox install doesn't read. That is reported as
+  an `error` status (never as a finding), and the agent's `run_tests` tool has the same gap.
+- The agent's `escalations` channel (hand a question to the overseer) went unused by Gemini
+  Flash in evaluation, so in practice the overseer works from the primary's findings and the diff.
 - Model behavior varies run to run, even at temperature 0 with a fixed seed. Use the
   record/replay cache (`--llm-cache read_write`) when you need a review you can reproduce.
-- The overseer (Claude Opus) and a Claude coding worker may share blind spots. The primary
-  reviewer is a different family (Gemini Flash) for that reason, but the overseer is not.
-  Measuring this needs live mode (milestone 5).
+- The default overseer (GPT-6 Astra) is a different model family from the primary reviewer
+  (Gemini Flash) and from a Claude coding worker, to avoid shared blind spots. That benefit is
+  untested: the overseer evaluation used Claude Opus 5.5, and measuring blind-spot overlap needs
+  live mode (milestone 5).
 - Overseer notes are model-written. A prompt-injection in the reviewed code could try to
   steer them; they are wrapped as untrusted, and the second pass must re-verify claims with
   its own tools, but this isn't a hard guarantee.

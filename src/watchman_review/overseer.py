@@ -326,8 +326,15 @@ def apply_verdicts(raw: Any, packets: dict[str, Finding]) -> Applied:
     return out
 
 
+# A rejected finding re-raised a couple of lines off (same category) is still the same claim.
+REJECTED_MATCH_SLACK = 2
+
+
 def matches_rejected(f: Finding, rejected: list[Finding]) -> bool:
-    return any(f.id == r.id or (f.category == r.category and lines_near(f, r)) for r in rejected)
+    return any(
+        f.id == r.id or (f.category == r.category and lines_near(f, r, REJECTED_MATCH_SLACK))
+        for r in rejected
+    )
 
 
 def feedback_needed(oc: OverseerConfig, *, rejected: int, added: int, spot_checked: int) -> bool:

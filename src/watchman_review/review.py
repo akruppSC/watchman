@@ -127,7 +127,7 @@ def effective_trigger(cfg: Config, opts: ReviewOptions, mode: ReviewMode) -> Ove
         return OverseerTrigger.NEVER
     if opts.overseer is not None:
         return opts.overseer
-    return cfg.overseer.trigger if cfg.overseer.enabled else OverseerTrigger.NEVER
+    return cfg.overseer.trigger if cfg.overseer.auto else OverseerTrigger.NEVER
 
 
 def _stage_budget(

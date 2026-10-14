@@ -213,14 +213,10 @@ def run_setup(io: SetupIO, existing: Config, deps: SetupDeps | None = None) -> C
 
 def _setup_overseer(io: SetupIO, cfg: Config, models: list[ModelInfo]) -> None:
     io.echo(
-        "\nOptional: the overseer is a larger model that double-checks risky reviews "
-        "(spot-checks findings, digs into hard questions, sends notes back to the primary "
-        "reviewer). It runs on a minority of reviews and has its own per-review cost cap."
+        "\nThe overseer is a larger, pricier model that double-checks a review "
+        "(spot-checks findings, digs into hard questions, briefs the primary reviewer). "
+        "`watchman review --deep` runs it on demand."
     )
-    if not io.confirm("Enable the overseer?", default=cfg.overseer.enabled):
-        cfg.overseer.enabled = False
-        return
-    cfg.overseer.enabled = True
     cfg.overseer.model = io.prompt("Overseer model id", cfg.overseer.model).strip()
     info = next((m for m in models if m.id == cfg.overseer.model), None)
     if info and info.input_cost_per_mtok is not None:
@@ -233,6 +229,11 @@ def _setup_overseer(io: SetupIO, cfg: Config, models: list[ModelInfo]) -> None:
     )
     if cap is not None:
         cfg.overseer.max_cost_usd = cap
+    cfg.overseer.auto = io.confirm(
+        "Also run it automatically on reviews that look risky? (costs more; dev data "
+        "showed little benefit)",
+        default=cfg.overseer.auto,
+    )
 
 
 def _fmt(v: float | None) -> str | None:

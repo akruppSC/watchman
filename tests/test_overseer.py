@@ -440,8 +440,9 @@ def test_escalations_only_offered_when_the_overseer_is_active(repo: Path) -> Non
 def test_effective_trigger_follows_config_and_overrides() -> None:
     cfg = Config()
     agent = ReviewMode.AGENT
-    assert effective_trigger(cfg, ReviewOptions(), agent) is OverseerTrigger.NEVER  # off by default
-    cfg.overseer.enabled = True
+    # Automatic mode is off by default; only --deep (an explicit override) runs it.
+    assert effective_trigger(cfg, ReviewOptions(), agent) is OverseerTrigger.NEVER
+    cfg.overseer.auto = True
     assert effective_trigger(cfg, ReviewOptions(), agent) is OverseerTrigger.RISKY
     assert effective_trigger(cfg, ReviewOptions(overseer=OverseerTrigger.NEVER), agent) is (
         OverseerTrigger.NEVER
@@ -455,11 +456,11 @@ def test_effective_trigger_follows_config_and_overrides() -> None:
 
 def test_repo_config_cannot_enable_or_retarget_the_overseer(tmp_path: Path) -> None:
     (tmp_path / ".watchman.toml").write_text(
-        '[overseer]\nenabled = true\nmodel = "evil/model"\n[review]\nmin_confidence = 0.7\n'
+        '[overseer]\nauto = true\nmodel = "evil/model"\n[review]\nmin_confidence = 0.7\n'
     )
     cfg, warnings = load_config(tmp_path)
-    assert cfg.overseer.enabled is False
-    assert cfg.overseer.model == "anthropic/claude-opus-5.5"
+    assert cfg.overseer.auto is False
+    assert cfg.overseer.model == "openai/gpt-6-astra"
     assert any("[overseer]" in w for w in warnings)
 
 

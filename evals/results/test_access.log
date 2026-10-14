@@ -16,3 +16,5 @@
 # 2026-10-14: the three anthropic/claude-opus-4.6 agent test runs above were discarded (OpenRouter 200-with-error responses were silently counted as empty reviews; Opus 4.6 is superseded by 5.5). Not reported.
 2026-10-14T20:27:35.618621+00:00 dataset=seeded-v1 mode=agent watchman=ada4599 retry-errors infrastructure-failure items=5
 2026-10-14T20:43:10.479456+00:00 rescore pre-registered min_confidence=0.6 (policy committed in a0524a6)
+2026-10-14T23:47:49.732330+00:00 dataset=seeded-v2 mode=deterministic watchman=28e9636
+# 2026-10-14: the seeded-v2 deterministic access above belongs to a v2 test run that the owner cancelled before any result was saved. v2 datasets stay frozen and have never been run.

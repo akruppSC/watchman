@@ -324,24 +324,27 @@ def test_cli_schema_command() -> None:
     assert "findings" in json.loads(result.stdout)["properties"]
 
 
-def test_restatements_dropped_but_distinct_defects_and_deterministic_kept() -> None:
+def test_restatements_need_overlap_and_deterministic_findings_are_kept() -> None:
     from watchman_review.postprocess import drop_restatements
     from watchman_review.schema import Category, Finding, Severity
 
-    def f(src: Source, cat: Category, line: int, sev: Severity = Severity.MAJOR) -> Finding:
-        return Finding(category=cat, severity=sev, confidence=0.9, file="a.py", line_start=line,
-                       line_end=line, summary=f"{cat}{line}", evidence="e", source=src)  # fmt: skip
+    def f(
+        src: Source, cat: Category, line: int, sev: Severity = Severity.MAJOR, end: int = 0
+    ) -> Finding:
+        return Finding(
+            category=cat, severity=sev, confidence=0.9, file="a.py", line_start=line,
+            line_end=end or line, summary=f"{cat}{line}", evidence="e", source=src,
+        )  # fmt: skip
 
-    det = f(Source.DETERMINISTIC, Category.SWALLOWED_ERROR, 10)
-    same_lines = f(Source.AGENT, Category.CORRECTNESS, 10)  # other category, same lines
-    same_cat_near = f(Source.AGENT, Category.SWALLOWED_ERROR, 12)  # same category, 2 lines off
-    other_issue_near = f(Source.AGENT, Category.OVER_ABSTRACTION, 11)  # different problem nearby
+    det = f(Source.DETERMINISTIC, Category.SWALLOWED_ERROR, 10, end=11)
+    same_lines = f(Source.AGENT, Category.CORRECTNESS, 11)  # other category, overlapping lines
+    next_door_same_cat = f(Source.AGENT, Category.SWALLOWED_ERROR, 12)  # a distinct problem
+    next_door_other_cat = f(Source.AGENT, Category.SECURITY, 13)
     far = f(Source.AGENT, Category.CORRECTNESS, 40)
     det2 = f(Source.DETERMINISTIC, Category.SECURITY, 10, Severity.MINOR)
-    r = drop_restatements([same_lines, same_cat_near, other_issue_near, far, det, det2])
+    r = drop_restatements([same_lines, next_door_same_cat, next_door_other_cat, far, det, det2])
     assert {x.summary for x in r.kept} == {
-        det.summary, det2.summary, far.summary, other_issue_near.summary,
+        det.summary, det2.summary, far.summary, next_door_same_cat.summary,
+        next_door_other_cat.summary,
     }  # fmt: skip
-    assert sorted(d[0].summary for d in r.dropped) == sorted(
-        [same_lines.summary, same_cat_near.summary]
-    )
+    assert [d[0].summary for d in r.dropped] == [same_lines.summary]
