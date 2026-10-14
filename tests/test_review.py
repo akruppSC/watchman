@@ -192,6 +192,28 @@ def test_baseline_review_grounds_and_thresholds(defect_repo: Path) -> None:
     assert "Add a JSON loader" in user
 
 
+def test_default_mode_comes_from_config(defect_repo: Path) -> None:
+    cfg = Config()
+    cfg.review.default_mode = ReviewMode.BASELINE
+    fake = FakeClient([LLMResponse(content='{"findings": []}')])
+    res = run_review(defect_repo, det_opts(mode=None, llm_client=fake), cfg)
+    assert res.mode is ReviewMode.BASELINE
+    assert len(fake.requests) == 1
+
+
+def test_model_override_clears_pricing_for_cost(defect_repo: Path) -> None:
+    cfg = Config()
+    cfg.llm.model = "configured/model"
+    cfg.llm.input_cost_per_mtok = cfg.llm.output_cost_per_mtok = 100.0
+    fake = FakeClient([LLMResponse(content='{"findings": []}', input_tokens=1000)])
+    res = run_review(
+        defect_repo, det_opts(mode=ReviewMode.BASELINE, llm_client=fake, model="other/m"), cfg
+    )
+    # The configured price must not be applied to a different model.
+    assert res.usage.cost_usd == 0.0
+    assert cfg.llm.model == "configured/model"  # caller's config is not mutated
+
+
 def test_grounding_rejects_path_escape(defect_repo: Path) -> None:
     payload = {
         "findings": [

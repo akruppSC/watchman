@@ -47,6 +47,13 @@ def test_repo_config_cannot_override_llm(tmp_path: Path) -> None:
     assert any("[llm]" in w for w in warnings)
 
 
+def test_repo_config_cannot_select_paid_mode(tmp_path: Path) -> None:
+    (tmp_path / ".watchman.toml").write_text('[review]\ndefault_mode = "agent"\n')
+    cfg, warnings = load_config(tmp_path)
+    assert cfg.review.default_mode == "deterministic"
+    assert any("default_mode" in w for w in warnings)
+
+
 def test_repo_config_can_only_lower_budget(tmp_path: Path) -> None:
     (tmp_path / ".watchman.toml").write_text(
         "[budget]\nmax_tool_calls = 10\nmonthly_cap_usd = 9999\n"

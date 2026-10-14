@@ -20,6 +20,8 @@ from typing import Any
 import tomli_w
 from pydantic import BaseModel, ConfigDict, Field
 
+from watchman_review.schema import ReviewMode
+
 KEYRING_SERVICE = "watchman-review"
 REPO_CONFIG_NAME = ".watchman.toml"
 
@@ -123,6 +125,11 @@ class ReviewConfig(BaseModel):
     conventions_file: str = "CONVENTIONS.md"
     max_diff_files_warn: int = 15
     max_diff_lines_warn: int = 600
+    # User-config only: a reviewed repo must not be able to opt you into paid LLM modes.
+    default_mode: ReviewMode = ReviewMode.DETERMINISTIC
+
+
+USER_ONLY_REVIEW_KEYS = {"default_mode"}
 
 
 class Config(BaseModel):
@@ -166,6 +173,9 @@ def _merge_repo_config(cfg: Config, repo_data: dict[str, Any], source: Path) -> 
 
     review = repo_data.get("review")
     if isinstance(review, dict):
+        for key in USER_ONLY_REVIEW_KEYS & review.keys():
+            warnings.append(f"{source}: review.{key} may only be set in user config; ignored")
+        review = {k: v for k, v in review.items() if k not in USER_ONLY_REVIEW_KEYS}
         merged = cfg.review.model_dump() | review
         cfg.review = ReviewConfig.model_validate(merged)
 

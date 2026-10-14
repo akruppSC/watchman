@@ -14,6 +14,7 @@ from watchman_review.config import (
     REPO_CONFIG_NAME,
     Config,
     ConfigError,
+    Provider,
     data_dir,
     load_config,
 )
@@ -53,8 +54,9 @@ class ReviewError(Exception):
 class ReviewOptions:
     base: str = "main"
     head: str = "HEAD"
-    mode: ReviewMode = ReviewMode.DETERMINISTIC
+    mode: ReviewMode | None = None  # None -> config review.default_mode
     task: str | None = None
+    model: str | None = None  # override the configured LLM model (evals, one-off runs)
     checks: list[str] | None = None
     offline: bool = False
     llm_cache: CacheMode = CacheMode.OFF
@@ -97,6 +99,19 @@ def _client(cfg: Config, opts: ReviewOptions, budget: ReviewBudget) -> LLMClient
     return MeteredClient(inner, llm_cfg=cfg.llm, budget=budget, ledger=opts.ledger)
 
 
+def _apply_overrides(cfg: Config, opts: ReviewOptions, warnings: list[str]) -> Config:
+    if not opts.model or opts.model == cfg.llm.model:
+        return cfg
+    cfg = cfg.model_copy(deep=True)
+    cfg.llm.model = opts.model
+    # Configured prices belong to the configured model. OpenRouter reports real per-call
+    # cost, so tracking still works there; elsewhere, dollar budgets can't be enforced.
+    cfg.llm.input_cost_per_mtok = cfg.llm.output_cost_per_mtok = None
+    if cfg.llm.provider is not Provider.OPENROUTER:
+        warnings.append(f"model override {opts.model!r}: pricing unknown, cost not tracked")
+    return cfg
+
+
 def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> ReviewResult:
     start = time.monotonic()
     warnings: list[str] = []
@@ -106,6 +121,8 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
         except ConfigError as e:
             raise ReviewError(str(e)) from e
         warnings += cfg_warnings
+    cfg = _apply_overrides(cfg, opts, warnings)
+    mode = opts.mode or cfg.review.default_mode
 
     try:
         diff = get_diff(repo, opts.base, opts.head)
@@ -114,7 +131,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
 
     if not diff.files:
         return ReviewResult(
-            mode=opts.mode, base=opts.base, head=opts.head, verdict=Verdict.PASS, findings=[],
+            mode=mode, base=opts.base, head=opts.head, verdict=Verdict.PASS, findings=[],
             warnings=[*warnings, "empty diff: nothing to review"],
             latency_s=round(time.monotonic() - start, 3),
         )  # fmt: skip
@@ -123,8 +140,8 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
     findings: list[Finding] = []
     checks: list[CheckResult] = []
     trace: list[ToolTraceStep] = []
-    runs_layer1 = opts.mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT)
-    uses_agent = opts.mode in (ReviewMode.AGENT, ReviewMode.AGENT_NO_L1)
+    runs_layer1 = mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT)
+    uses_agent = mode in (ReviewMode.AGENT, ReviewMode.AGENT_NO_L1)
 
     with snapshot(repo, opts.head) as tree:
         if opts.head == WORKTREE:
@@ -138,7 +155,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
             checks = _run_layer1(ctx, names, warnings)
             findings += [f for c in checks for f in c.findings]
 
-        if opts.mode is not ReviewMode.DETERMINISTIC:
+        if mode is not ReviewMode.DETERMINISTIC:
             conventions, conv_warning = load_conventions(
                 repo, opts.base, tree, cfg.review.conventions_file
             )
@@ -146,7 +163,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                 warnings.append(conv_warning)
             try:
                 client = _client(cfg, opts, budget)
-                if opts.mode is ReviewMode.BASELINE:
+                if mode is ReviewMode.BASELINE:
                     llm_findings, llm_warnings = run_baseline(
                         client, diff, task=opts.task, conventions=conventions,
                         max_tokens=cfg.llm.max_output_tokens, temperature=cfg.llm.temperature,
@@ -155,7 +172,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                 else:
                     outcome = _run_agent(
                         client, ctx, conventions, budget, cfg,
-                        checks if opts.mode is ReviewMode.AGENT else None,
+                        checks if mode is ReviewMode.AGENT else None,
                     )  # fmt: skip
                     llm_findings, llm_warnings, trace = (
                         outcome.findings, outcome.warnings, outcome.trace
@@ -169,7 +186,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
 
     usage: Usage = budget.usage
     return ReviewResult(
-        mode=opts.mode,
+        mode=mode,
         base=opts.base,
         head=opts.head,
         verdict=compute_verdict(

@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from evals.dataset import Dataset, DatasetError, Split, materialize
 from evals.metrics import ItemScore, Summary, error_score, score_item, summarize
+from watchman_review.budget import Ledger
 from watchman_review.config import Config
 from watchman_review.llm.cache import CacheMode
 from watchman_review.llm.types import LLMClient
@@ -81,6 +82,8 @@ def run_dataset(
     llm_cache: CacheMode = CacheMode.READ_WRITE,
     limit: int | None = None,
     cache_dir: Path = CACHE_DIR,
+    model: str | None = None,
+    ledger: Ledger | None = None,
 ) -> RunRecord:
     ds.verify()
     items = ds.items(split)[:limit]
@@ -90,8 +93,9 @@ def run_dataset(
             repo = Path(tmp) / item.id
             base, head = materialize(ds, item, repo)
             opts = ReviewOptions(
-                base=base, head=head, mode=mode, task=item.task, offline=offline,
-                llm_cache=llm_cache, llm_client=llm_client, ledger=None, cache_dir=cache_dir,
+                base=base, head=head, mode=mode, model=model, task=item.task,
+                offline=offline, llm_cache=llm_cache, llm_client=llm_client, ledger=ledger,
+                cache_dir=cache_dir,
             )  # fmt: skip
             try:
                 result = run_review(repo, opts, cfg)
@@ -103,16 +107,17 @@ def run_dataset(
                 ItemRecord(item_id=item.id, score=score_item(item, result), result=result)
             )
     now = datetime.now(UTC)
-    model = cfg.llm.model if mode is not ReviewMode.DETERMINISTIC else None
+    used_model = (model or cfg.llm.model) if mode is not ReviewMode.DETERMINISTIC else None
+    model_slug = f"-{used_model.replace('/', '_')}" if used_model else ""
     return RunRecord(
-        run_id=f"{now:%Y%m%dT%H%M%S}-{ds.manifest.name}-{split}-{mode}",
+        run_id=f"{now:%Y%m%dT%H%M%S}-{ds.manifest.name}-{split}-{mode}{model_slug}",
         started_at=now.isoformat(),
         dataset=ds.manifest.name,
         dataset_sha256=ds.manifest.content_sha256,
         dataset_frozen=ds.manifest.frozen,
         split=split,
         mode=mode,
-        model=model,
+        model=used_model,
         watchman_commit=_watchman_commit(),
         review_config=cfg.review.model_dump(mode="json"),
         items=records,
@@ -184,8 +189,12 @@ def run(
     final: Annotated[bool, typer.Option(help="Required to touch the held-out test split.")] = False,
     offline: Annotated[bool, typer.Option()] = False,
     limit: Annotated[int | None, typer.Option()] = None,
+    model: Annotated[str | None, typer.Option(help="Override the configured model.")] = None,
 ) -> None:
-    """Run one reviewer mode over a dataset split and save the run."""
+    """Run one reviewer mode over a dataset split and save the run.
+
+    Real LLM spend is recorded in the user ledger and counts toward the monthly cap.
+    """
     if split is Split.TEST and not final:
         typer.echo("refusing to run on the held-out test split without --final", err=True)
         raise typer.Exit(2)
@@ -199,7 +208,16 @@ def run(
             with TEST_ACCESS_LOG.open("a") as fh:
                 fh.write(f"{datetime.now(UTC).isoformat()} dataset={dataset} mode={mode} "
                          f"watchman={_watchman_commit()}\n")  # fmt: skip
-        record = run_dataset(ds, split=split, mode=mode, cfg=cfg, offline=offline, limit=limit)
+        record = run_dataset(
+            ds,
+            split=split,
+            mode=mode,
+            cfg=cfg,
+            offline=offline,
+            limit=limit,
+            model=model,
+            ledger=Ledger(),
+        )
     except DatasetError as e:
         typer.echo(f"error: {e}", err=True)
         raise typer.Exit(2) from e

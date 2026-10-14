@@ -45,6 +45,18 @@ def render(result: ReviewResult, console: Console) -> None:
         console.print(t)
         console.print()
 
+    if result.tool_trace:
+        t = Table(title="Agent tool calls", show_edge=False, title_justify="left")
+        t.add_column("ref")
+        t.add_column("tool")
+        t.add_column("arguments", overflow="fold")
+        t.add_column("ok")
+        for s in result.tool_trace:
+            args = ", ".join(f"{k}={v!r}" for k, v in s.arguments.items())
+            t.add_row(s.ref, s.tool, args[:120], "yes" if s.ok else Text("no", style="red"))
+        console.print(t)
+        console.print()
+
     if not result.findings:
         console.print("[green]No findings.[/green]")
     for f in result.findings:
@@ -59,7 +71,8 @@ def render(result: ReviewResult, console: Console) -> None:
             (loc, "bold"),
             (f"  conf {f.confidence:.2f}  [{f.source.value}]", "dim"),
         )
-        body = [Text(f.summary), Text("evidence: " + f.evidence, style="dim")]
+        refs = f"  [refs: {', '.join(f.evidence_refs)}]" if f.evidence_refs else ""
+        body = [Text(f.summary), Text("evidence: " + f.evidence + refs, style="dim")]
         if f.suggested_fix:
             body.append(Text("fix: " + f.suggested_fix, style="green"))
         console.print(Panel(Group(*body), title=header, title_align="left", expand=True))

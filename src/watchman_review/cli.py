@@ -77,8 +77,12 @@ def review(
         bool, typer.Option("--worktree", help="Review uncommitted working-tree changes.")
     ] = False,
     mode: Annotated[
-        ReviewMode, typer.Option(help="Which reviewer to run.")
-    ] = ReviewMode.DETERMINISTIC,
+        ReviewMode | None,
+        typer.Option(help="Which reviewer to run. Default: review.default_mode in user config."),
+    ] = None,
+    model: Annotated[
+        str | None, typer.Option(help="Override the configured LLM model for this run.")
+    ] = None,
     task: Annotated[str | None, typer.Option(help="What the change was supposed to do.")] = None,
     task_file: Annotated[
         Path | None, typer.Option(help="Read the task description from a file.")
@@ -110,6 +114,7 @@ def review(
         base=base,
         head=WORKTREE if worktree else head,
         mode=mode,
+        model=model,
         task=task,
         checks=[c.strip() for c in checks.split(",") if c.strip()] if checks else None,
         offline=offline,
