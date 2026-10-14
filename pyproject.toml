@@ -46,6 +46,10 @@ extend-exclude = ["tests/fixtures", "evals/datasets"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "BLE", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+# Embedded unified-diff fixtures contain meaningful trailing whitespace.
+"tests/**" = ["W291", "W293"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = true
