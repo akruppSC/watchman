@@ -1,11 +1,14 @@
 {
   "name": "toy",
-  "version": 1,
+  "version": 2,
   "split_seed": "watchman-toy-v1",
   "frozen": false,
   "content_sha256": null,
   "splits": {
     "seeded-001": "dev",
-    "clean-001": "dev"
+    "seeded-002": "dev",
+    "seeded-003": "dev",
+    "clean-001": "dev",
+    "clean-002": "dev"
   }
 }

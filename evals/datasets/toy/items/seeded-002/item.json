@@ -1,0 +1,22 @@
+{
+  "id": "seeded-002",
+  "kind": "seeded",
+  "task": "Give Article a url_slug property derived from its title, with a test.",
+  "source": {"type": "inline", "license": "CC0-1.0", "origin": "hand-written toy example"},
+  "defects": [
+    {
+      "file": "textkit/articles.py",
+      "line_start": 15,
+      "line_end": 18,
+      "category": "duplication",
+      "description": "make_url_slug re-implements textkit.slugs.slugify (and drops its accent handling and length limit)."
+    },
+    {
+      "file": "tests/test_articles.py",
+      "line_start": 6,
+      "line_end": 6,
+      "category": "weak_test",
+      "description": "Asserting `is not None` on a str property can never fail; it doesn't check the slug ('hllo-world' is wrong)."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "clean-002",
+  "kind": "clean",
+  "task": "Give Article a url_slug property derived from its title, with a test.",
+  "source": {"type": "inline", "license": "CC0-1.0", "origin": "hand-written toy example; correct counterpart of seeded-002"},
+  "defects": []
+}
