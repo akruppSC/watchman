@@ -5,6 +5,6 @@ Latest run per (dataset, split, mode, model). Raw runs: `evals/results/runs/`.
 
 | dataset | split | mode | model | items | recall | recall (strict) | precision | findings/clean diff | cost/review | latency | errors | watchman |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| toy | dev | deterministic | - | 2 | 100% | 100% | 75% | 0.00 | $0.0000 | 1.4s | 0 | a8eb513-dirty |
+| toy | dev | deterministic | - | 2 | 100% | 100% | 75% | 0.00 | $0.0000 | 1.2s | 0 | 8b67aab |
 
 recall: defects matched by file and overlapping lines (±3). strict: category must also match. precision: matched / all findings on defect items (pessimistic). findings/clean diff: false-positive rate on known-good changes.
