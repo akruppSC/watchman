@@ -44,11 +44,14 @@ class ItemScore(BaseModel):
 
 
 def overlaps(f: Finding, d: Defect, tol: int = LINE_TOLERANCE) -> bool:
-    if f.file != d.file:
-        return False
-    if f.line_start == 0:  # file-level finding: matches any defect in that file
-        return True
-    return f.line_start <= d.line_end + tol and f.line_end >= d.line_start - tol
+    for r in d.ranges():
+        if f.file != r.file:
+            continue
+        if f.line_start == 0:  # file-level finding: matches any defect in that file
+            return True
+        if f.line_start <= r.line_end + tol and f.line_end >= r.line_start - tol:
+            return True
+    return False
 
 
 def score_item(item: Item, result: ReviewResult) -> ItemScore:
