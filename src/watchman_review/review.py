@@ -36,6 +36,7 @@ from watchman_review.sandbox import Sandbox, SandboxError, choose_sandbox
 from watchman_review.schema import (
     CheckResult,
     CheckStatus,
+    DroppedFinding,
     Finding,
     ReviewMode,
     ReviewResult,
@@ -140,6 +141,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
     findings: list[Finding] = []
     checks: list[CheckResult] = []
     trace: list[ToolTraceStep] = []
+    grading: dict[str, str] = {}
     runs_layer1 = mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT)
     uses_agent = mode in (ReviewMode.AGENT, ReviewMode.AGENT_NO_L1)
 
@@ -177,6 +179,11 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                     llm_findings, llm_warnings, trace = (
                         outcome.findings, outcome.warnings, outcome.trace
                     )  # fmt: skip
+                    grading = {
+                        g.finding_id: f"grounding={g.grade.value}"
+                        + (f", invalid refs {g.invalid_refs}" if g.invalid_refs else "")
+                        for g in outcome.grounding
+                    }
             except (LLMError, BudgetExceeded, ConfigError) as e:
                 raise ReviewError(f"LLM review failed: {e}") from e
             findings += llm_findings
@@ -197,6 +204,10 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
         usage=usage,
         latency_s=round(time.monotonic() - start, 3),
         dropped_findings=len(final.dropped),
+        dropped=[
+            DroppedFinding(finding=f, reason=f"{r}; {grading[f.id]}" if f.id in grading else r)
+            for f, r in final.dropped
+        ],
         warnings=warnings,
         tool_trace=trace,
     )

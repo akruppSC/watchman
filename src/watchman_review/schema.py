@@ -167,6 +167,15 @@ class ToolTraceStep(BaseModel):
     duration_s: float = 0.0
 
 
+class DroppedFinding(BaseModel):
+    """A finding removed by post-processing, kept for transparency and eval analysis."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    finding: Finding
+    reason: str
+
+
 class ReviewResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -184,6 +193,7 @@ class ReviewResult(BaseModel):
     )
     warnings: list[str] = Field(default_factory=list)
     tool_trace: list[ToolTraceStep] = Field(default_factory=list)
+    dropped: list[DroppedFinding] = Field(default_factory=list)
 
 
 def compute_verdict(findings: list[Finding], *, block_min_confidence: float = 0.7) -> Verdict:

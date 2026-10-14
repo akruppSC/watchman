@@ -16,6 +16,7 @@ A finding is graded by its valid references:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -48,6 +49,19 @@ def _mentions(step: ToolTraceStep, output: str, path: str) -> bool:
     return path in output
 
 
+_REF_RE = re.compile(r"(check:[\w\-]+|\bt\d+\b|\bdiff\b)", re.IGNORECASE)
+
+
+def normalize_ref(raw: str) -> str:
+    """Accept the forms models actually write: 't3', '[ref:t3]', 'ref:t3', ' T3 ',
+    't3 (read_file a.py)'. Unrecognized strings are returned unchanged (and won't match)."""
+    m = _REF_RE.search(raw)
+    if not m:
+        return raw.strip()
+    ref = m.group(1)
+    return ref if ref.lower().startswith("check:") else ref.lower()
+
+
 def grade_finding(
     f: Finding,
     steps: dict[str, ToolTraceStep],
@@ -57,7 +71,7 @@ def grade_finding(
     """Returns (grade, valid_refs, invalid_refs)."""
     valid: list[str] = []
     invalid: list[str] = []
-    for ref in dict.fromkeys(f.evidence_refs):  # dedupe, keep order
+    for ref in dict.fromkeys(normalize_ref(r) for r in f.evidence_refs):  # dedupe, keep order
         step = steps.get(ref)
         if ref == DIFF_REF or ref in check_ids or (step is not None and step.ok):
             valid.append(ref)

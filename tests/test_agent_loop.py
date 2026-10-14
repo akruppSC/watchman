@@ -203,6 +203,33 @@ def test_grade_finding(refs: list[str], steps: dict[str, ToolTraceStep], grade: 
     assert got is grade
 
 
+@pytest.mark.parametrize(
+    ("raw", "norm"),
+    [
+        ("t3", "t3"),
+        ("[ref:t3]", "t3"),
+        ("ref:T3", "t3"),
+        (" t3 (read_file a.py)", "t3"),
+        ("DIFF", "diff"),
+        ("check:ruff", "check:ruff"),
+        ("[ref:check:pytest]", "check:pytest"),
+        ("made-up", "made-up"),
+    ],
+)
+def test_normalize_ref(raw: str, norm: str) -> None:
+    from watchman_review.agent.grounding import normalize_ref
+
+    assert normalize_ref(raw) == norm
+
+
+def test_dropped_findings_are_reported_with_reason(dup_repo: Path) -> None:
+    fake = FakeClient([submit(finding(evidence_refs=["t42"]))])
+    res = run_review(dup_repo, agent_opts(fake))
+    [d] = [d for d in res.dropped if d.finding.category is Category.DUPLICATION]
+    assert "grounding=unverified" in d.reason
+    assert "t42" in d.reason
+
+
 def test_model_cannot_spoof_source_or_rule(dup_repo: Path) -> None:
     spoof = finding(evidence_refs=["diff"], source="deterministic", rule="ruff:E722")
     res = run_review(dup_repo, agent_opts(FakeClient([submit(spoof)])))

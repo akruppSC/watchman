@@ -341,8 +341,9 @@ TOOLS: dict[str, Tool] = {
         ), git_blame),
         Tool(ToolSpec(
             name="run_tests",
-            description="Run specific pytest node ids or test files in the sandbox "
-            "(no network). Use it to check whether a test can fail or whether code works.",
+            description="Run pytest node ids, test files, or test directories in the sandbox "
+            "(no network), e.g. ['tests/test_x.py::test_y'] or ['tests'] for the whole "
+            "suite. Options/flags are not accepted.",
             parameters=_obj({
                 "selectors": {"type": "array", "items": {"type": "string"}, "maxItems": 20},
             }, ["selectors"]),
