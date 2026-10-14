@@ -282,6 +282,24 @@ def test_pytest_custom_command_python_placeholder(git_repo: Path) -> None:
     assert res.status is CheckStatus.PASSED, res.output_excerpt
 
 
+@pytest.mark.docker
+def test_pytest_in_docker_attributes_only_new_failures(git_repo: Path) -> None:
+    from watchman_review.sandbox import DockerSandbox, docker_available
+
+    if not docker_available():
+        pytest.skip("docker unavailable")
+    branch_change(
+        git_repo,
+        {"test_old.py": "def test_old():\n    assert False\n", "a.py": ""},
+        {"a.py": "x = 1\n", "test_new.py": "def test_new():\n    assert 1 == 2\n"},
+    )
+    ctx = make_ctx(git_repo, sandbox=DockerSandbox("python:3.12-slim"))
+    res = run_check(TestsCheck(), ctx)
+    assert [f.summary for f in res.findings] == ["Test fails: test_new.py::test_new"]
+    assert "1 also fail at merge-base" in res.summary
+    assert "docker sandbox" in res.findings[0].evidence
+
+
 def test_pytest_skipped_without_sandbox(git_repo: Path) -> None:
     branch_change(git_repo, {"a.py": ""}, {"a.py": "x = 1\n"})
     assert run_check(TestsCheck(), make_ctx(git_repo)).status is CheckStatus.SKIPPED
