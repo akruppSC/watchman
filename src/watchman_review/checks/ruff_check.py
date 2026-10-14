@@ -1,4 +1,4 @@
-"""Ruff lint check: a fixed AI-pitfall rule set plus the repo's own lint config.
+"""Ruff lint check: a fixed AI-pitfall rule set.
 
 Only violations on lines added by the diff are reported, so pre-existing debt in touched
 files never becomes noise.
@@ -83,8 +83,10 @@ class RuffCheck(Check):
             ["--isolated", "--select", ",".join(PITFALL_RULES), "--target-version=py312"],
         )
         violations += [(v, True) for v in pitfall]
-        if repo_has_ruff_config(ctx.tree):
-            violations += [(v, False) for v in self._invoke(ctx, files, [])]
+        # The repo's own ruff config is deliberately not run here: Watchman's bundled ruff
+        # is usually newer than the repo's pin, so it enables rules the project never
+        # adopted (dev split: every repo-config hit on clean diffs was such a rule). The
+        # agent can still run it via run_linter.
 
         findings: list[Finding] = []
         seen: set[tuple[str, int, str]] = set()

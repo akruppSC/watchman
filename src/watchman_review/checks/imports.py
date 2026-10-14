@@ -71,9 +71,19 @@ def local_module_names(tree: Path) -> set[str]:
     return names
 
 
+_CONDITIONAL_HINTS = ("version_info", "TYPE_CHECKING", "sys.platform", "PY3", "PY_3")
+
+# Stdlib modules newer than the interpreter Watchman may run on (sys.stdlib_module_names
+# only lists the running version's modules).
+NEWER_STDLIB = {"annotationlib", "compression", "_interpreters", "_interpqueues", "tomllib"}
+
+
 def _import_guarded(node: ast.AST, parents: dict[ast.AST, ast.AST]) -> bool:
+    """Inside try/except ImportError, or under a version/platform/TYPE_CHECKING branch."""
     cur = parents.get(node)
     while cur is not None:
+        if isinstance(cur, ast.If) and any(h in ast.unparse(cur.test) for h in _CONDITIONAL_HINTS):
+            return True
         if isinstance(cur, ast.Try):
             for h in cur.handlers:
                 names = []
@@ -175,7 +185,7 @@ class ImportsCheck(Check):
 
         declared_head = declared(manifests, read_head)
         venv = venv_packages(ctx.repo_root)
-        stdlib = set(sys.stdlib_module_names) | {"__future__"}
+        stdlib = set(sys.stdlib_module_names) | {"__future__"} | NEWER_STDLIB
         local = local_module_names(ctx.tree)
         findings: list[Finding] = []
         unknown: set[str] = set()
@@ -196,7 +206,7 @@ class ImportsCheck(Check):
                 if (set(cands) | provided) & declared_head:
                     continue
                 if provided:
-                    if report_undeclared:
+                    if report_undeclared and not imp.guarded:
                         findings.append(_finding(
                             Category.CORRECTNESS, Severity.MINOR, 0.75, f.path, imp.line,
                             f"Import '{mod}' is installed but not declared as a dependency",
@@ -231,7 +241,7 @@ class ImportsCheck(Check):
                         "hallucinated name.",
                         "imports:suspicious-package",
                     ))  # fmt: skip
-                if report_undeclared:
+                if report_undeclared and not imp.guarded:
                     findings.append(_finding(
                         Category.CORRECTNESS, Severity.MAJOR, 0.8, f.path, imp.line,
                         f"Third-party import '{mod}' is not declared as a dependency",

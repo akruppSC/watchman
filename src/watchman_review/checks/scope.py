@@ -6,7 +6,7 @@ from collections import Counter
 from pathlib import PurePosixPath
 
 from watchman_review.checks.base import Check, CheckContext
-from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
+from watchman_review.schema import CheckResult, CheckStatus
 
 SENSITIVE_PREFIXES = (".github/workflows/", ".gitlab-ci", ".circleci/", "Dockerfile", ".pre-commit")
 
@@ -41,34 +41,13 @@ class ScopeCheck(Check):
             f"{len(src)} source / {len(tests)} test file(s), "
             f"areas: {', '.join(f'{k}({v})' for k, v in top_dirs.most_common(6))}"
         )
-        findings: list[Finding] = []
+        # Metrics only. Size and CI-touching are context for the agent's scope judgment,
+        # not defects: on the dev split's clean diffs, every scope finding was a false alarm.
+        notes: list[str] = []
         if n_files > cfg.max_diff_files_warn or added + removed > cfg.max_diff_lines_warn:
-            findings.append(
-                Finding(
-                    category=Category.SCOPE_CREEP,
-                    severity=Severity.MINOR,
-                    confidence=0.6,
-                    summary="Large change; consider splitting it for review",
-                    evidence=f"Diff metrics: {metrics}. Thresholds: {cfg.max_diff_files_warn} "
-                    f"files / {cfg.max_diff_lines_warn} lines.",
-                    source=Source.DETERMINISTIC,
-                    rule="scope:large-diff",
-                )
-            )
-        for f in d.files:
-            if f.path.startswith(SENSITIVE_PREFIXES):
-                findings.append(
-                    Finding(
-                        category=Category.SCOPE_CREEP,
-                        severity=Severity.MINOR,
-                        confidence=0.7,
-                        file=f.path,
-                        summary="Change touches CI/build configuration",
-                        evidence=f"{f.path} ({f.status}) is CI/build config; "
-                        "confirm it is in scope.",
-                        source=Source.DETERMINISTIC,
-                        rule="scope:ci-config",
-                    )
-                )
-        status = CheckStatus.FAILED if findings else CheckStatus.PASSED
-        return self.result(status, metrics, findings)
+            notes.append("large change")
+        ci = [f.path for f in d.files if f.path.startswith(SENSITIVE_PREFIXES)]
+        if ci:
+            notes.append(f"touches CI/build config: {', '.join(ci[:5])}")
+        summary = metrics + (f"; {'; '.join(notes)}" if notes else "")
+        return self.result(CheckStatus.PASSED, summary)

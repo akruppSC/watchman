@@ -23,7 +23,7 @@ _SKIP = re.compile(
 )
 _ASSERT = re.compile(r"^\s*(assert\b|self\.assert\w*\(|pytest\.raises\()")
 _SUPPRESS = re.compile(
-    r"#\s*(?P<kind>noqa|type:\s*ignore|pyright:\s*ignore|pragma:\s*no\s*cover)"
+    r"#\s*(?P<kind>noqa|type:\s*ignore|pyright:\s*ignore)"
     r"(?P<codes>(?::\s*[A-Z]+[0-9]+(?:\s*,\s*[A-Z]+[0-9]+)*)|\[[\w\-, ]+\])?"
     r"(?P<rest>.*)$"
 )
@@ -49,8 +49,6 @@ def classify_suppression(text: str) -> tuple[str, Severity] | None:
         return None
     kind = re.sub(r"\s+", " ", m.group("kind"))
     justified = len(re.findall(r"[A-Za-z]{3,}", m.group("rest"))) >= 2
-    if kind.startswith("pragma"):
-        return None if justified else (kind, Severity.NIT)
     if not m.group("codes"):
         return kind, Severity.MINOR  # blanket suppression
     return None if justified else (kind, Severity.NIT)

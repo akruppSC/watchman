@@ -416,18 +416,49 @@ def test_private_key_header_without_body_is_ignored(git_repo: Path) -> None:
     assert [(f.file, f.rule) for f in res.findings] == [("key.pem", "secrets:private-key")]
 
 
-def test_generic_secret_in_tests_downgraded(git_repo: Path) -> None:
+def test_pattern_only_secrets_ignored_in_tests(git_repo: Path) -> None:
     line = 'db_password = "Zx9!qL2#vR7$mK4@"\n'
-    branch_change(git_repo, {"a.py": ""}, {"tests/test_db.py": line, "app.py": line})
+    branch_change(
+        git_repo, {"a.py": ""},
+        {"tests/test_db.py": line, "app.py": line, "tests/test_k.py": f'K = "{FAKE_GH}"\n'},
+    )  # fmt: skip
     res = run_check(SecretsCheck(), make_ctx(git_repo))
-    sev = {f.file: f.severity for f in res.findings}
-    assert sev == {"app.py": Severity.MAJOR, "tests/test_db.py": Severity.MINOR}
+    # Provider-format keys are still reported in tests; pattern-only matches are not.
+    assert sorted((f.file, f.rule) for f in res.findings) == [
+        ("app.py", "secrets:generic-secret"),
+        ("tests/test_k.py", "secrets:github-token"),
+    ]
+
+
+def test_guarded_and_newer_stdlib_imports(git_repo: Path) -> None:
+    branch_change(
+        git_repo,
+        {"pyproject.toml": '[project]\nname="x"\ndependencies=[]\n', "m.py": ""},
+        {"m.py": (
+            "import sys\nfrom typing import TYPE_CHECKING\n\n"
+            "if sys.version_info >= (3, 14):\n    import annotationlib\n"
+            "if TYPE_CHECKING:\n    import typing_extensions\n"
+            "import annotationlib as al2\n"
+        )},
+    )  # fmt: skip
+    index = fake_pypi({"typing-extensions": MATURE})
+    res = run_check(ImportsCheck(index), make_ctx(git_repo))
+    assert res.findings == []
+
+
+def test_mypy_ignores_test_files(git_repo: Path) -> None:
+    branch_change(
+        git_repo,
+        {"tests/test_m.py": "import json\n"},
+        {"tests/test_m.py": "import json\n\n\ndef test_x():\n    json.parse_string('1')\n"},
+    )
+    assert run_check(MypyCheck(), make_ctx(git_repo)).status is CheckStatus.SKIPPED
 
 
 # --- scope -----------------------------------------------------------------
 
 
-def test_scope_flags_large_diff_and_ci(git_repo: Path) -> None:
+def test_scope_reports_metrics_without_findings(git_repo: Path) -> None:
     cfg = Config()
     cfg.review.max_diff_files_warn = 2
     branch_change(
@@ -436,8 +467,10 @@ def test_scope_flags_large_diff_and_ci(git_repo: Path) -> None:
         {"a.py": "x=1\n", "b.py": "y=1\n", ".github/workflows/ci.yml": "on: push\n"},
     )
     res = run_check(ScopeCheck(), make_ctx(git_repo, config=cfg))
-    assert rules(res) == ["scope:ci-config", "scope:large-diff"]
+    assert res.findings == []
     assert "3 file(s)" in res.summary
+    assert "large change" in res.summary
+    assert ".github/workflows/ci.yml" in res.summary
 
 
 # --- runner ----------------------------------------------------------------

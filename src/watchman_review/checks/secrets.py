@@ -134,7 +134,7 @@ def scan_line(line: str) -> list[tuple[Rule, str]]:
 
 
 _SKIP_SUFFIXES = (".lock", ".min.js", ".svg", ".map")
-# Pattern-only rules that commonly match synthetic fixtures; downgraded inside tests.
+# Pattern-only rules that commonly match synthetic fixtures; ignored inside tests.
 # Provider-specific key formats are never downgraded.
 _LOW_TRUST_IN_TESTS = {"generic-secret", "url-credentials", "jwt"}
 _KEY_BODY = re.compile(r"[A-Za-z0-9+/=]{40,}")
@@ -160,9 +160,9 @@ class SecretsCheck(Check):
                 for rule, value in scan_line(text):
                     if rule.id == "private-key" and not _has_key_body(text, f.added, lineno):
                         continue  # header alone (docs, parsers, test fixtures) is not a leak
-                    severity, confidence = rule.severity, rule.confidence
                     if in_tests and rule.id in _LOW_TRUST_IN_TESTS:
-                        severity, confidence = Severity.MINOR, round(confidence - 0.2, 2)
+                        continue  # synthetic fixtures (dev split: 9 of 9 were false alarms)
+                    severity, confidence = rule.severity, rule.confidence
                     findings.append(
                         Finding(
                             category=Category.SECURITY,

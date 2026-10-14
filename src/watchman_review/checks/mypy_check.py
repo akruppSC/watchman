@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 from watchman_review.checks.base import Check, CheckContext
+from watchman_review.checks.scope import is_test_path
 from watchman_review.sandbox import find_repo_python, run_static_tool
 from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
 
@@ -41,9 +42,11 @@ class MypyCheck(Check):
         all_files = [f.path for f in ctx.changed_python_files()]
         # A module with a sibling .pyi stub is typed by the stub; passing the .py makes
         # mypy abort with "Duplicate module". Its implementation is left to the agent.
+        # Tests deliberately exercise invalid attributes and calls, so they're excluded.
         files = [
             p for p in all_files
-            if p.endswith(".pyi") or not (ctx.tree / p).with_suffix(".pyi").exists()
+            if (p.endswith(".pyi") or not (ctx.tree / p).with_suffix(".pyi").exists())
+            and not is_test_path(p)
         ]  # fmt: skip
         if not files:
             return self.result(CheckStatus.SKIPPED, "no changed Python files mypy can check")

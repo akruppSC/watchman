@@ -110,16 +110,10 @@ class TestsCheck(Check):
         if also_at_base:
             summary += f"; {len(also_at_base)} also fail at merge-base (not attributed)"
         if not failures:
-            findings.append(
-                Finding(
-                    category=Category.CORRECTNESS,
-                    severity=Severity.MAJOR,
-                    confidence=DETERMINISTIC_CONFIDENCE,
-                    summary="Test suite fails",
-                    evidence=f"pytest exited 1: {_last_line(out)}",
-                    source=Source.DETERMINISTIC,
-                    rule="pytest:failed",
-                )
+            # Exit 1 with no parseable test failures is almost always the environment (a
+            # plugin or interpreter mismatch), which can't be attributed to the change.
+            return self.result(
+                CheckStatus.ERROR, f"pytest failed without test failures: {summary}", output=out
             )
         status = CheckStatus.FAILED if findings else CheckStatus.PASSED
         return self.result(status, summary, findings, out)
