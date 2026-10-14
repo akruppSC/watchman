@@ -90,6 +90,7 @@ class Diff:
     head: str
     files: list[FileDiff]
     raw: str
+    merge_base: str = ""  # resolved commit the diff starts from
 
     @property
     def lines_added(self) -> int:
@@ -200,8 +201,8 @@ def parse_diff(raw: str, base: str = "", head: str = "") -> Diff:
 def get_diff(repo: Path, base: str, head: str, *, context: int = 3) -> Diff:
     """Diff from merge-base(base, head) to head, like a PR. head=WORKTREE includes edits."""
     common = ["diff", "--no-color", "--no-ext-diff", "-M", f"--unified={context}"]
+    merge_base = run_git(repo, "merge-base", base, "HEAD" if head == WORKTREE else head).strip()
     if head == WORKTREE:
-        merge_base = run_git(repo, "merge-base", base, "HEAD").strip()
         raw = run_git(repo, *common, merge_base)
         # Include untracked files so brand-new modules are reviewed too.
         untracked = run_git(repo, "ls-files", "--others", "--exclude-standard", "-z")
@@ -210,8 +211,10 @@ def get_diff(repo: Path, base: str, head: str, *, context: int = 3) -> Diff:
                 repo, "diff", "--no-color", "--no-index", "--", "/dev/null", path, check=False
             )
     else:
-        raw = run_git(repo, *common, f"{base}...{head}")
-    return parse_diff(raw, base=base, head=head)
+        raw = run_git(repo, *common, merge_base, head)
+    d = parse_diff(raw, base=base, head=head)
+    d.merge_base = merge_base
+    return d
 
 
 def changed_paths_since(repo: Path, base: str, head: str) -> list[str]:

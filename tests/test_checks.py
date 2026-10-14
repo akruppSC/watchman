@@ -243,6 +243,30 @@ def test_pytest_passing(git_repo: Path) -> None:
     assert res.status is CheckStatus.PASSED, res.output_excerpt
 
 
+def test_pytest_preexisting_failure_not_attributed(git_repo: Path) -> None:
+    broken = "def test_old():\n    assert False\n"
+    branch_change(
+        git_repo,
+        {"test_old.py": broken, "a.py": ""},
+        {"a.py": "x = 1\n", "test_new.py": "def test_new():\n    assert 1 == 2\n"},
+    )
+    res = run_check(TestsCheck(), make_ctx(git_repo, sandbox=SubprocessSandbox()))
+    assert [f.summary for f in res.findings] == ["Test fails: test_new.py::test_new"]
+    assert "1 also fail at merge-base" in res.summary
+
+
+def test_pytest_custom_command_python_placeholder(git_repo: Path) -> None:
+    cfg = Config()
+    cfg.review.test_command = ["{python}", "-m", "pytest", "-q", "-k", "not slow"]
+    branch_change(
+        git_repo,
+        {"test_x.py": "def test_fast():\n    pass\n"},
+        {"test_x.py": "def test_fast():\n    pass\n\n\ndef test_slow():\n    assert 0\n"},
+    )
+    res = run_check(TestsCheck(), make_ctx(git_repo, sandbox=SubprocessSandbox(), config=cfg))
+    assert res.status is CheckStatus.PASSED, res.output_excerpt
+
+
 def test_pytest_skipped_without_sandbox(git_repo: Path) -> None:
     branch_change(git_repo, {"a.py": ""}, {"a.py": "x = 1\n"})
     assert run_check(TestsCheck(), make_ctx(git_repo)).status is CheckStatus.SKIPPED
