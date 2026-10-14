@@ -40,13 +40,19 @@ def parse_findings(text: str, source: Source) -> tuple[list[Finding], list[str]]
     raw = obj.get("findings")
     if not isinstance(raw, list):
         raise FindingsParseError("JSON object has no 'findings' list")
+    return validate_items(raw, source)
+
+
+def validate_items(raw: list[Any], source: Source) -> tuple[list[Finding], list[str]]:
+    """Validate model-supplied finding objects. Source and id are always set by Watchman."""
     findings: list[Finding] = []
     errors: list[str] = []
     for i, item in enumerate(raw):
         if not isinstance(item, dict):
             errors.append(f"finding[{i}]: not an object")
             continue
-        item = {k: v for k, v in item.items() if k not in ("id", "source")}
+        # id, source, and rule identify *how* a finding was produced; never trust the model.
+        item = {k: v for k, v in item.items() if k not in ("id", "source", "rule")}
         item["source"] = source
         for key in ("line_start", "line_end"):
             if item.get(key) is None:

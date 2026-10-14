@@ -6,6 +6,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from watchman_review.agent import AgentOutcome, ToolContext, run_agent
 from watchman_review.baseline import run_baseline
 from watchman_review.budget import BudgetExceeded, Ledger, MeteredClient, ReviewBudget
 from watchman_review.checks import CheckContext, run_checks
@@ -16,11 +17,20 @@ from watchman_review.config import (
     data_dir,
     load_config,
 )
-from watchman_review.gitutil import WORKTREE, Diff, GitError, get_diff, run_git, snapshot
+from watchman_review.gitutil import (
+    WORKTREE,
+    Diff,
+    GitError,
+    get_diff,
+    rev_parse,
+    run_git,
+    snapshot,
+)
 from watchman_review.llm import build_client
 from watchman_review.llm.cache import CacheMode, CachingClient
 from watchman_review.llm.types import LLMClient, LLMError
 from watchman_review.postprocess import finalize
+from watchman_review.pypi import PackageIndex
 from watchman_review.sandbox import Sandbox, SandboxError, choose_sandbox
 from watchman_review.schema import (
     CheckResult,
@@ -28,6 +38,7 @@ from watchman_review.schema import (
     Finding,
     ReviewMode,
     ReviewResult,
+    ToolTraceStep,
     Usage,
     Verdict,
     compute_verdict,
@@ -111,16 +122,23 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
     budget = ReviewBudget(cfg.budget)
     findings: list[Finding] = []
     checks: list[CheckResult] = []
+    trace: list[ToolTraceStep] = []
+    runs_layer1 = opts.mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT)
+    uses_agent = opts.mode in (ReviewMode.AGENT, ReviewMode.AGENT_NO_L1)
 
     with snapshot(repo, opts.head) as tree:
         if opts.head == WORKTREE:
             warnings.append("reviewing the live working tree, not a commit snapshot")
 
-        if opts.mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT):
-            checks = _run_layer1(repo, tree, diff, cfg, opts, warnings)
+        names = opts.checks if opts.checks is not None else cfg.review.checks
+        needs_sandbox = (runs_layer1 and "pytest" in names) or uses_agent
+        ctx = _check_context(repo, tree, diff, cfg, opts, warnings, needs_sandbox)
+
+        if runs_layer1:
+            checks = _run_layer1(ctx, names, warnings)
             findings += [f for c in checks for f in c.findings]
 
-        if opts.mode is ReviewMode.BASELINE:
+        if opts.mode is not ReviewMode.DETERMINISTIC:
             conventions, conv_warning = load_conventions(
                 repo, opts.base, tree, cfg.review.conventions_file
             )
@@ -128,17 +146,24 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                 warnings.append(conv_warning)
             try:
                 client = _client(cfg, opts, budget)
-                llm_findings, llm_warnings = run_baseline(
-                    client, diff, task=opts.task, conventions=conventions,
-                    max_tokens=cfg.llm.max_output_tokens, temperature=cfg.llm.temperature,
-                    seed=cfg.llm.seed,
-                )  # fmt: skip
+                if opts.mode is ReviewMode.BASELINE:
+                    llm_findings, llm_warnings = run_baseline(
+                        client, diff, task=opts.task, conventions=conventions,
+                        max_tokens=cfg.llm.max_output_tokens, temperature=cfg.llm.temperature,
+                        seed=cfg.llm.seed,
+                    )  # fmt: skip
+                else:
+                    outcome = _run_agent(
+                        client, ctx, conventions, budget, cfg,
+                        checks if opts.mode is ReviewMode.AGENT else None,
+                    )  # fmt: skip
+                    llm_findings, llm_warnings, trace = (
+                        outcome.findings, outcome.warnings, outcome.trace
+                    )  # fmt: skip
             except (LLMError, BudgetExceeded, ConfigError) as e:
                 raise ReviewError(f"LLM review failed: {e}") from e
             findings += llm_findings
             warnings += llm_warnings
-        elif opts.mode is ReviewMode.AGENT:
-            raise ReviewError("agent mode is not implemented yet (milestone 2)")
 
         final = finalize(findings, diff, tree, min_confidence=cfg.review.min_confidence)
 
@@ -156,24 +181,28 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
         latency_s=round(time.monotonic() - start, 3),
         dropped_findings=len(final.dropped),
         warnings=warnings,
+        tool_trace=trace,
     )
 
 
-def _run_layer1(
-    repo: Path, tree: Path, diff: Diff, cfg: Config, opts: ReviewOptions, warnings: list[str]
-) -> list[CheckResult]:
-    names = opts.checks if opts.checks is not None else cfg.review.checks
+def _check_context(
+    repo: Path, tree: Path, diff: Diff, cfg: Config, opts: ReviewOptions, warnings: list[str],
+    needs_sandbox: bool,
+) -> CheckContext:  # fmt: skip
     sandbox = opts.sandbox
-    if sandbox is None and "pytest" in names:
+    if sandbox is None and needs_sandbox:
         try:
             sandbox, sb_warnings = choose_sandbox(cfg.review.sandbox, cfg.review.docker_image)
             warnings += sb_warnings
         except SandboxError as e:
-            warnings.append(f"tests skipped: {e}")
-    ctx = CheckContext(
+            warnings.append(f"tests unavailable: {e}")
+    return CheckContext(
         repo_root=repo, tree=tree, diff=diff, config=cfg, sandbox=sandbox, task=opts.task,
         offline=opts.offline, cache_dir=opts.cache_dir or data_dir(),
     )  # fmt: skip
+
+
+def _run_layer1(ctx: CheckContext, names: list[str], warnings: list[str]) -> list[CheckResult]:
     try:
         results = run_checks(ctx, names)
     except ValueError as e:
@@ -182,3 +211,25 @@ def _run_layer1(
         if r.status is CheckStatus.ERROR:
             warnings.append(f"check {r.name} errored: {r.summary}")
     return results
+
+
+def _run_agent(
+    client: LLMClient, ctx: CheckContext, conventions: str | None, budget: ReviewBudget,
+    cfg: Config, checks: list[CheckResult] | None,
+) -> AgentOutcome:  # fmt: skip
+    tctx = ToolContext(
+        repo_root=ctx.repo_root,
+        tree=ctx.tree,
+        diff=ctx.diff,
+        config=cfg,
+        head_rev=None if ctx.diff.head == WORKTREE else rev_parse(ctx.repo_root, ctx.diff.head),
+        sandbox=ctx.sandbox,
+        index=PackageIndex(http=ctx.http, cache_dir=ctx.cache_dir, offline=ctx.offline),
+        conventions=conventions,
+        task=ctx.task,
+        check_ctx=ctx,
+    )
+    return run_agent(
+        client, tctx, checks=checks, budget=budget, max_tokens=cfg.llm.max_output_tokens,
+        temperature=cfg.llm.temperature, seed=cfg.llm.seed,
+    )  # fmt: skip

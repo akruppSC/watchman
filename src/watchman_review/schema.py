@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from enum import StrEnum
-from typing import Self
+from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -55,9 +55,10 @@ class Verdict(StrEnum):
 
 
 class ReviewMode(StrEnum):
-    DETERMINISTIC = "deterministic"
-    BASELINE = "baseline"
-    AGENT = "agent"
+    DETERMINISTIC = "deterministic"  # Layer 1 only
+    BASELINE = "baseline"  # single prompt, no tools, no Layer 1
+    AGENT = "agent"  # Layer 1 + tool-using agent that sees Layer 1 results
+    AGENT_NO_L1 = "agent_no_l1"  # tool-using agent alone (ablation 2)
 
 
 class Finding(BaseModel):
@@ -153,6 +154,19 @@ class Usage(BaseModel):
             self.model = other.model
 
 
+class ToolTraceStep(BaseModel):
+    """One executed agent tool call. `ref` is what findings cite in evidence_refs."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    ref: str
+    tool: str
+    arguments: dict[str, Any] = Field(default_factory=dict)
+    ok: bool
+    output_excerpt: str = ""
+    duration_s: float = 0.0
+
+
 class ReviewResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -169,6 +183,7 @@ class ReviewResult(BaseModel):
         default=0, description="Findings removed by grounding/threshold filters."
     )
     warnings: list[str] = Field(default_factory=list)
+    tool_trace: list[ToolTraceStep] = Field(default_factory=list)
 
 
 def compute_verdict(findings: list[Finding], *, block_min_confidence: float = 0.7) -> Verdict:

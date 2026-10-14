@@ -10,13 +10,21 @@ from watchman_review import prompts
 from watchman_review.gitutil import Diff
 from watchman_review.llm.types import CompletionRequest, LLMClient, Message
 from watchman_review.parsing import FindingsParseError, parse_findings
+from watchman_review.prompts import pitfalls
 from watchman_review.schema import Finding, Source
 
 MAX_DIFF_CHARS = 120_000
 
 
 def build_messages(diff: Diff, task: str | None, conventions: str | None) -> list[Message]:
-    system = prompts.load("baseline_system") + "\n\n" + prompts.load("findings_format")
+    system = "\n\n".join(
+        [
+            prompts.load("baseline_system"),
+            pitfalls.render(include_verification=False),
+            prompts.load("severity_guide"),
+            prompts.load("findings_format"),
+        ]
+    )
     raw = diff.raw
     truncated = len(raw) > MAX_DIFF_CHARS
     if truncated:

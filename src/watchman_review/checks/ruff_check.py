@@ -49,7 +49,7 @@ def ruff_bin() -> str:
     return str(find_ruff_bin())
 
 
-def _repo_has_ruff_config(tree: Path) -> bool:
+def repo_has_ruff_config(tree: Path) -> bool:
     if (tree / "ruff.toml").exists() or (tree / ".ruff.toml").exists():
         return True
     pyproject = tree / "pyproject.toml"
@@ -83,7 +83,7 @@ class RuffCheck(Check):
             ["--isolated", "--select", ",".join(PITFALL_RULES), "--target-version=py312"],
         )
         violations += [(v, True) for v in pitfall]
-        if _repo_has_ruff_config(ctx.tree):
+        if repo_has_ruff_config(ctx.tree):
             violations += [(v, False) for v in self._invoke(ctx, files, [])]
 
         findings: list[Finding] = []

@@ -65,8 +65,10 @@ class LLMConfig(BaseModel):
     api_key_source: KeySource = KeySource.ENV
     temperature: float = 0.0
     seed: int | None = 7
-    max_output_tokens: int = 4096
-    timeout_s: float = 120.0
+    # Reasoning models (e.g. GPT-5) spend hidden reasoning tokens from this allowance;
+    # too low a value truncates the final answer.
+    max_output_tokens: int = 16000
+    timeout_s: float = 300.0
     input_cost_per_mtok: float | None = Field(
         default=None, description="USD per 1M input tokens; enables cost tracking."
     )
