@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -111,12 +112,14 @@ def evaluate(runs: list[RunRecord], policy: Policy) -> Row:
     return Row(s.recall, s.precision, s.fp_per_clean_diff)
 
 
-def latest_dev_runs(mode: str | None, model: str | None) -> dict[tuple[str, str], list[RunRecord]]:
+def latest_dev_runs(
+    mode: str | None, model: str | None, split: Split = Split.DEV
+) -> dict[tuple[str, str], list[RunRecord]]:
     latest: dict[tuple[str, str, str, str], RunRecord] = {}
     for p in sorted(Path(RUNS_DIR).glob("*.json")):
         r = RunRecord.model_validate_json(p.read_text())
-        if r.split is not Split.DEV:
-            continue  # never tune on held-out data
+        if r.split is not split:
+            continue
         if not r.dataset.endswith("-v1") or r.model is None:
             continue
         if (mode and r.mode.value != mode) or (model and r.model != model):
@@ -155,31 +158,51 @@ def main(
 def rescore(
     mode: Annotated[str | None, typer.Option()] = None,
     model: Annotated[str | None, typer.Option()] = None,
+    split: Annotated[Split, typer.Option()] = Split.DEV,
+    pre_registered: Annotated[
+        bool,
+        typer.Option(
+            help="Required for --split test: confirms the policy was committed before the "
+            "test run and nothing is being tuned. The access is logged."
+        ),
+    ] = False,
 ) -> None:
-    """Re-apply the *current* post-processing to saved dev runs and save them as new runs.
+    """Re-apply the *current* post-processing to saved runs and save them as new runs.
+
+    Test-split runs may only be re-scored with the policy that was committed before the
+    test run (--pre-registered), never with anything tuned afterwards.
 
     Equivalent to re-running with the LLM cache (same model responses, deterministic
     post-processing) without repeating hours of sandboxed test runs. The source run id is
     recorded in review_config["rescored_from"].
     """
-    from datetime import UTC, datetime
-
     from evals.harness import ItemRecord, _watchman_commit, save_run
     from watchman_review.config import ReviewConfig
     from watchman_review.postprocess import drop_restatements, merge_colocated
     from watchman_review.postprocess import threshold as apply_threshold
     from watchman_review.schema import DroppedFinding, compute_verdict, dedupe
 
+    if split is Split.TEST:
+        if not pre_registered:
+            typer.echo("re-scoring the test split requires --pre-registered", err=True)
+            raise typer.Exit(2)
+        from evals.harness import TEST_ACCESS_LOG
+
+        with TEST_ACCESS_LOG.open("a") as fh:
+            fh.write(
+                f"{datetime.now(UTC).isoformat()} rescore pre-registered "
+                f"min_confidence={ReviewConfig().min_confidence} (policy committed in a0524a6)\n"
+            )
     cfg = ReviewConfig()
-    for (label, _), runs in latest_dev_runs(mode, model).items():
+    for (label, _), runs in latest_dev_runs(mode, model, split).items():
         for run in runs:
             if run.review_config.get("rescored_from"):
                 continue
             ds = {i.id: i for i in Dataset.load(run.dataset).items()}
             new_items: list[ItemRecord] = []
             for rec in run.items:
-                if rec.result is None:
-                    new_items.append(rec)
+                if rec.result is None or rec.score.error:
+                    new_items.append(rec)  # failed/incomplete items stay errors
                     continue
                 res = rec.result
                 kept_earlier = [d for d in res.dropped if not d.reason.startswith("confidence")]
@@ -286,6 +309,52 @@ def compare() -> None:
                 f"{fmt(clean_major / clean_n if clean_n else None, pct=False):>9} "
                 f"${cost / n:>6.3f}"
             )
+
+
+_LEGACY_INCOMPLETE = (
+    "agent LLM error", "agent stopped", "agent ended without submitting",
+    "agent hit the turn limit", "unparseable",
+)  # fmt: skip
+
+
+@app.command()
+def audit() -> None:
+    """Flag items in saved runs whose model stage failed, from before `incomplete` existed.
+
+    Rewrites the run files in place: affected items get `incomplete=True` and an error
+    score, so they leave the rate calculations and `--retry-errors` can find them.
+    """
+    from evals.harness import ItemRecord, save_run
+    from evals.metrics import error_score
+
+    for p in sorted(Path(RUNS_DIR).glob("*.json")):
+        run = RunRecord.model_validate_json(p.read_text())
+        if not run.dataset.endswith("-v1") or run.review_config.get("audited"):
+            continue
+        ds = {i.id: i for i in Dataset.load(run.dataset).items()}
+        flagged = 0
+        items: list[ItemRecord] = []
+        for rec in run.items:
+            res = rec.result
+            hit = [w for w in (res.warnings if res else []) if w.startswith(_LEGACY_INCOMPLETE)]
+            if res is not None and not res.incomplete and not rec.score.error and hit:
+                res = res.model_copy(
+                    update={
+                        "incomplete": True,
+                        "incomplete_reasons": ["model stage did not finish"],
+                    }
+                )
+                score = error_score(ds[rec.item_id], f"incomplete review: {hit[0]}"[:300],
+                                    res.usage.cost_usd)  # fmt: skip
+                rec = ItemRecord(item_id=rec.item_id, score=score, result=res)
+                flagged += 1
+            items.append(rec)
+        run = run.model_copy(
+            update={"items": items, "review_config": {**run.review_config, "audited": True}}
+        )
+        save_run(run)
+        if flagged:
+            typer.echo(f"{p.name}: flagged {flagged} incomplete item(s)")
 
 
 if __name__ == "__main__":

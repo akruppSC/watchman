@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": "sample8",
   "items": [
@@ -227,7 +228,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -627,7 +630,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1013,7 +1018,9 @@
             },
             "reason": "restates 601b1804ff21 (correctness); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1400,7 +1407,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1738,7 +1747,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2040,7 +2051,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2248,7 +2261,9 @@
             "duration_s": 0.495
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2498,7 +2513,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

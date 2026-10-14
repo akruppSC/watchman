@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": "sample10",
   "items": [
@@ -88,7 +89,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -165,7 +168,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -242,7 +247,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -302,7 +309,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -381,7 +390,9 @@
             },
             "reason": "restates fd89445ae23f (correctness)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -477,7 +488,9 @@
             },
             "reason": "restates 06a83d9e49c0 (correctness)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -556,7 +569,9 @@
             },
             "reason": "restates 9374dadf1be8 (correctness)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -612,7 +627,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -691,7 +708,9 @@
             },
             "reason": "restates 47b6f2da30b7 (correctness)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -751,7 +770,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

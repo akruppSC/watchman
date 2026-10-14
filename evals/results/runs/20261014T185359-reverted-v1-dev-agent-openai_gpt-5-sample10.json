@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": "sample10",
   "items": [
@@ -295,7 +296,9 @@
             "duration_s": 0.099
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -502,7 +505,9 @@
             "duration_s": 0.096
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -880,7 +885,9 @@
             },
             "reason": "restates beb6c90961dd (silent_behavior_change); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1169,7 +1176,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1379,7 +1388,9 @@
             },
             "reason": "restates 19414d2988a1 (silent_behavior_change); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1392,9 +1403,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.047468,
-        "latency_s": 187.981,
-        "tool_calls": 6,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent LLM error: no choices in response: {'id': 'gen-1792003595-xVZdGu6y6wjUWlMjsYgU', 'error': {'message': 'Network connection lost.', 'code': 502, 'metadata': {'error_type': 'provider_unavailable'}}}"
       },
       "result": {
         "schema_version": 1,
@@ -1552,7 +1563,11 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -1565,9 +1580,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.308685,
-        "latency_s": 369.64,
-        "tool_calls": 19,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent stopped: token budget exhausted (308728/300000)"
       },
       "result": {
         "schema_version": 1,
@@ -1890,7 +1905,11 @@
             "duration_s": 0.757
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -2084,7 +2103,9 @@
             "duration_s": 0.095
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2097,9 +2118,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.14973599999999998,
-        "latency_s": 350.216,
-        "tool_calls": 10,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent LLM error: no choices in response: {'id': 'gen-1792004007-rbMPlsL7QI2mqFRYIhBh', 'error': {'message': 'Network connection lost.', 'code': 502, 'metadata': {'error_type': 'provider_unavailable'}}}"
       },
       "result": {
         "schema_version": 1,
@@ -2313,7 +2334,11 @@
             "duration_s": 0.42
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -2465,7 +2490,9 @@
             "duration_s": 0.087
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

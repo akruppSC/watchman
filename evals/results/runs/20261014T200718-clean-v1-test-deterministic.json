@@ -1,0 +1,1750 @@
+{
+  "run_id": "20261014T200718-clean-v1-test-deterministic",
+  "started_at": "2026-10-14T20:07:18.857639+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "9fa5a9e",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "audited": true
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-clean-7804a68e",
+      "score": {
+        "item_id": "attrs-clean-7804a68e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 17.154,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.006,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +122/-0 lines, 2 source / 1 test file(s), areas: src(2), changelog.d(1), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.024,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 0.791,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 16.11,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:5: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 17.154,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-e1b2c949",
+      "score": {
+        "item_id": "attrs-clean-e1b2c949",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 38.869,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.065,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.016,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +5/-11 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.027,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.029,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/attr/_make.py\", \"line\": 48, \"column\": 28, \"end_line\": 48, \"end_column\": 54, \"message\": \"Need type annotation for \\\"_EMPTY_METADATA_SINGLETON\\\"\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 453, \"column\": 4, \"end_line\": 453, \"end_column\": 12, \"message\": \"Need type annotation for \\\"filtered\\\" (hint: \\\"filtered: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2512, \"column\": 11, \"end_line\": 2512, \"end_column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2729, \"column\": 64, \"end_line\": 2729, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2772, \"column\": 0, \"end_line\": 2772, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2775, \"column\": 32, \"end_line\": 2775, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2777, \"column\": 28, \"end_line\": 2777, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2777, \"column\": 39, \"end_line\": 2777, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2928, \"column\": 0, \"end_line\": 2928, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2982, \"column\": 0, \"end_line\": 2982, \"end_column\": 7, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3090, \"column\": 4, \"end_line\": 3090, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3098, \"column\": 11, \"end_line\": 3098, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 37.523,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:7: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 38.869,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-e21793e9",
+      "score": {
+        "item_id": "attrs-clean-e21793e9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 31.883,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.097,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +68/-5 lines, 1 source / 1 test file(s), areas: changelog.d(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.053,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 31.519,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:7: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 31.883,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-fd7538f0",
+      "score": {
+        "item_id": "attrs-clean-fd7538f0",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 31.868,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.103,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.012,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +38/-6 lines, 1 source / 1 test file(s), areas: changelog.d(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.074,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 31.449,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:7: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 31.868,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-144f3701",
+      "score": {
+        "item_id": "click-clean-144f3701",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 60.956,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.175,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.014,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +56/-16 lines, 1 source / 1 test file(s), areas: .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.281,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/click/core.py\", \"line\": 1567, \"column\": 19, \"end_line\": 1567, \"end_column\": 21, \"message\": \"Incompatible return value type (got \\\"_Wrapped[[VarArg(Any), KwArg(Any)], Any, [VarArg(Any), KwArg(Any)], Any]\\\", expected \\\"F\\\")\", \"hint\": null, \"code\": \"return-value\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "557 passed, 21 skipped, 1 xfailed in 1.97s",
+            "duration_s": 58.911,
+            "findings": [],
+            "output_excerpt": "........................................................................ [ 12%]\n..................................x..................................... [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n........................................................................ [ 62%]\n...............................sssssssssssssssssssss.................... [ 74%]\n........................................................................ [ 87%]\n........................................................................ [ 99%]\n...                                                                      [100%]\n557 passed, 21 skipped, 1 xfailed in 1.97s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 60.956,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-3a3e0350",
+      "score": {
+        "item_id": "click-clean-3a3e0350",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 28.255,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.101,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +75/-0 lines, 2 source / 1 test file(s), areas: docs(2), .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.173,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "1441 passed, 23 skipped, 30000 deselected, 1 xfailed in 6.77s",
+            "duration_s": 26.829,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  4%]\n........................................................................ [  9%]\n..................................................x..................... [ 14%]\n........................................................................ [ 19%]\n........................................................................ [ 24%]\n........................................................................ [ 29%]\n........................................................................ [ 34%]\n........................................................................ [ 39%]\n........................................................................ [ 44%]\n........................................................................ [ 49%]\n........................................................................ [ 54%]\n........................................................................ [ 58%]\n........................................................................ [ 63%]\n........................................................................ [ 68%]\n........................................................................ [ 73%]\n........sssssssssssssssssssss................ss......................... [ 78%]\n........................................................................ [ 83%]\n........................................................................ [ 88%]\n........................................................................ [ 93%]\n........................................................................ [ 98%]\n.........................                                                [100%]\n1441 passed, 23 skipped, 30000 deselected, 1 xfailed in 6.77s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 28.255,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-4e4c7a69",
+      "score": {
+        "item_id": "click-clean-4e4c7a69",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 28.363,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.221,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.036,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +92/-19 lines, 1 source / 1 test file(s), areas: .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.045,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.15,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "1437 passed, 23 skipped, 30000 deselected, 1 xfailed in 6.52s",
+            "duration_s": 26.782,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  4%]\n........................................................................ [  9%]\n..................................................x..................... [ 14%]\n........................................................................ [ 19%]\n........................................................................ [ 24%]\n........................................................................ [ 29%]\n........................................................................ [ 34%]\n........................................................................ [ 39%]\n........................................................................ [ 44%]\n........................................................................ [ 49%]\n........................................................................ [ 54%]\n........................................................................ [ 59%]\n........................................................................ [ 64%]\n........................................................................ [ 68%]\n........................................................................ [ 73%]\n....sssssssssssssssssssss................ss............................. [ 78%]\n........................................................................ [ 83%]\n........................................................................ [ 88%]\n........................................................................ [ 93%]\n........................................................................ [ 98%]\n.....................                                                    [100%]\n1437 passed, 23 skipped, 30000 deselected, 1 xfailed in 6.52s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 28.363,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-5fc3423a",
+      "score": {
+        "item_id": "click-clean-5fc3423a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 24.164,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.313,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.025,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +50/-12 lines, 1 source / 1 test file(s), areas: .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.024,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.082,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "1301 passed, 21 skipped, 1 xfailed in 4.16s",
+            "duration_s": 22.551,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  5%]\n........................................................................ [ 10%]\n............................................x........................... [ 16%]\n........................................................................ [ 21%]\n........................................................................ [ 27%]\n........................................................................ [ 32%]\n........................................................................ [ 38%]\n........................................................................ [ 43%]\n........................................................................ [ 48%]\n........................................................................ [ 54%]\n........................................................................ [ 59%]\n........................................................................ [ 65%]\n........................................................................ [ 70%]\n......................................................ssssssssssssssssss [ 76%]\nsss..................................................................... [ 81%]\n........................................................................ [ 87%]\n........................................................................ [ 92%]\n........................................................................ [ 97%]\n...........................                                              [100%]\n1301 passed, 21 skipped, 1 xfailed in 4.16s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 24.164,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-a11fc384",
+      "score": {
+        "item_id": "httpx-clean-a11fc384",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "8780f649fd2b"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 154.497,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "8780f649fd2b",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "tests/models/test_url.py",
+            "line_start": 73,
+            "line_end": 73,
+            "summary": "Assertions removed from tests",
+            "evidence": "tests/models/test_url.py: 16 assertion line(s) removed, 5 added.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "hygiene:assertions-removed",
+            "evidence_refs": [
+              "check:hygiene"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.031,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "failed",
+            "summary": "1 hygiene issue(s)",
+            "duration_s": 0.005,
+            "findings": [
+              {
+                "id": "8780f649fd2b",
+                "category": "weak_test",
+                "severity": "major",
+                "confidence": 0.7,
+                "file": "tests/models/test_url.py",
+                "line_start": 73,
+                "line_end": 73,
+                "summary": "Assertions removed from tests",
+                "evidence": "tests/models/test_url.py: 16 assertion line(s) removed, 5 added.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "hygiene:assertions-removed",
+                "evidence_refs": [
+                  "check:hygiene"
+                ]
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +113/-42 lines, 1 source / 1 test file(s), areas: httpx(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.024,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 3.093,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 846 passed, 1 skipped in 4.71s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 150.289,
+            "findings": [],
+            "output_excerpt": "nnection_pool.py:256: in handle_request\n    raise exc from None\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py:236: in handle_request\n    response = connection.handle_request(\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:101: in handle_request\n    raise exc\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:78: in handle_request\n    stream = self._connect(request)\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:124: in _connect\n    stream = self._network_backend.connect_tcp(**kwargs)\n.wm-venv/lib/python3.12/site-packages/httpcore/_backends/sync.py:207: in connect_tcp\n    with map_exceptions(exc_map):\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            with pytest.warns(DeprecationWarning):\n                client = httpx.Client(proxies={\"https://\": PROXY_URL})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:173: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1055: in get\n    return self.request(\nhttpx/_client.py:828: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:915: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:943: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:980: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:1016: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:230: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:84: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 846 passed, 1 skipped in 4.71s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 154.497,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-c927f3e9",
+      "score": {
+        "item_id": "httpx-clean-c927f3e9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 97.668,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.044,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +63/-10 lines, 1 source / 0 test file(s), areas: httpx(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.607,
+            "findings": [],
+            "output_excerpt": "}\n{\"file\": \"httpx/_models.py\", \"line\": 1591, \"column\": 48, \"end_line\": 1591, \"end_column\": 52, \"message\": \"Incompatible default for parameter \\\"chunk_size\\\" (default has type \\\"None\\\", parameter has type \\\"int\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1606, \"column\": 37, \"end_line\": 1606, \"end_column\": 50, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1627, \"column\": 41, \"end_line\": 1627, \"end_column\": 54, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1636, \"column\": 46, \"end_line\": 1636, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1696, \"column\": 40, \"end_line\": 1696, \"end_column\": 44, \"message\": \"Incompatible default for parameter \\\"default\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1696, \"column\": 60, \"end_line\": 1696, \"end_column\": 64, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1696, \"column\": 78, \"end_line\": 1696, \"end_column\": 82, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1716, \"column\": 46, \"end_line\": 1716, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1716, \"column\": 64, \"end_line\": 1716, \"end_column\": 68, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1734, \"column\": 34, \"end_line\": 1734, \"end_column\": 38, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1734, \"column\": 52, \"end_line\": 1734, \"end_column\": 56, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 94.872,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 97.668,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-d293374b",
+      "score": {
+        "item_id": "httpx-clean-d293374b",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 158.408,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.045,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +71/-27 lines, 1 source / 1 test file(s), areas: httpx(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.022,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 3.382,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 1412 passed, 1 skipped in 6.31s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 154.504,
+            "findings": [],
+            "output_excerpt": "ion_pool.py:256: in handle_request\n    raise exc from None\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py:236: in handle_request\n    response = connection.handle_request(\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:101: in handle_request\n    raise exc\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:78: in handle_request\n    stream = self._connect(request)\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:124: in _connect\n    stream = self._network_backend.connect_tcp(**kwargs)\n.wm-venv/lib/python3.12/site-packages/httpcore/_backends/sync.py:207: in connect_tcp\n    with map_exceptions(exc_map):\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            transport = httpx.HTTPTransport(proxy=PROXY_URL)\n            client = httpx.Client(mounts={\"https://\": transport})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:117: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1033: in get\n    return self.request(\nhttpx/_client.py:805: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:894: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:922: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:959: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:994: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:241: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:90: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 1412 passed, 1 skipped in 6.31s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 158.408,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e67b0dd1",
+      "score": {
+        "item_id": "httpx-clean-e67b0dd1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 97.265,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.039,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +83/-18 lines, 1 source / 1 test file(s), areas: httpx(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.605,
+            "findings": [],
+            "output_excerpt": "}\n{\"file\": \"httpx/_models.py\", \"line\": 1538, \"column\": 48, \"end_line\": 1538, \"end_column\": 52, \"message\": \"Incompatible default for parameter \\\"chunk_size\\\" (default has type \\\"None\\\", parameter has type \\\"int\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1553, \"column\": 37, \"end_line\": 1553, \"end_column\": 50, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1574, \"column\": 41, \"end_line\": 1574, \"end_column\": 54, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1583, \"column\": 46, \"end_line\": 1583, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1643, \"column\": 40, \"end_line\": 1643, \"end_column\": 44, \"message\": \"Incompatible default for parameter \\\"default\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1643, \"column\": 60, \"end_line\": 1643, \"end_column\": 64, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1643, \"column\": 78, \"end_line\": 1643, \"end_column\": 82, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1663, \"column\": 46, \"end_line\": 1663, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1663, \"column\": 64, \"end_line\": 1663, \"end_column\": 68, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1681, \"column\": 34, \"end_line\": 1681, \"end_column\": 38, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1681, \"column\": 52, \"end_line\": 1681, \"end_column\": 56, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 94.453,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 97.265,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-39e3a2d5",
+      "score": {
+        "item_id": "more-itertools-clean-39e3a2d5",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 18.267,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.033,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.008,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +44/-0 lines, 2 source / 1 test file(s), areas: more_itertools(2), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.02,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.068,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "536 passed, 2163 subtests passed in 1.75s",
+            "duration_s": 17.02,
+            "findings": [],
+            "output_excerpt": ".......................................................................................................... [ 19%]\n......................................................... [ 30%]\n........................................................................................................................................................ [ 58%]\n.................................. [ 65%]\n.............................. [ 70%]\n................................................................................................ [ 88%]\n.............................................. [ 97%]\n...............                                      [100%]\n536 passed, 2163 subtests passed in 1.75s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 18.267,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4539302e",
+      "score": {
+        "item_id": "more-itertools-clean-4539302e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 79.633,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.059,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.014,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +6/-13 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.02,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "679 passed, 1 skipped, 12078 subtests passed in 18.77s",
+            "duration_s": 79.008,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 12%]\n......................................................... [ 20%]\n........................................................................ [ 31%]\n.................................................. [ 38%]\n..................................................................... [ 48%]\n..................................... [ 53%]\n.................................... [ 59%]\n.............................................................................................. [ 73%]\n............................................................ [ 81%]\n............................................ [ 88%]\n..............................................................s................                                                           [100%]\n679 passed, 1 skipped, 12078 subtests passed in 18.77s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 79.633,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-ba5240aa",
+      "score": {
+        "item_id": "more-itertools-clean-ba5240aa",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 22.937,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.272,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.057,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +97/-22 lines, 2 source / 1 test file(s), areas: more_itertools(2), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 0.883,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "507 passed, 2058 subtests passed in 1.49s",
+            "duration_s": 21.575,
+            "findings": [],
+            "output_excerpt": "................................................................................................................. [ 22%]\n......................................................... [ 33%]\n................................................................................ [ 49%]\n..................................................................... [ 62%]\n..................................................................................... [ 79%]\n.......................................................... [ 91%]\n.............................................                            [100%]\n507 passed, 2058 subtests passed in 1.49s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 22.937,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa05e903",
+      "score": {
+        "item_id": "more-itertools-clean-fa05e903",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 48.423,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.005,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +5/-7 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.027,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "662 passed, 1 skipped, 2332 subtests passed in 2.18s",
+            "duration_s": 47.964,
+            "findings": [],
+            "output_excerpt": "..................................................................................... [ 12%]\n......................................................... [ 21%]\n........................................................................ [ 32%]\n................................................................................ [ 44%]\n....................................................................................................................................... [ 64%]\n........................................................................................ [ 77%]\n.................................................................................................................... [ 95%]\n..................s...........                              [100%]\n662 passed, 1 skipped, 2332 subtests passed in 2.18s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 48.423,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

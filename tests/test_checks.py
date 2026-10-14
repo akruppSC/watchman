@@ -270,6 +270,21 @@ def test_pytest_preexisting_failure_not_attributed(git_repo: Path) -> None:
     assert "1 also fail at merge-base" in res.summary
 
 
+def test_many_failing_tests_in_a_file_become_one_finding(git_repo: Path) -> None:
+    many = "".join(f"def test_{i}():\n    assert {i} == -1\n\n\n" for i in range(7))
+    branch_change(
+        git_repo,
+        {"a.py": ""},
+        {"test_many.py": many, "test_one.py": "def test_x():\n    assert False\n"},
+    )
+    res = run_check(TestsCheck(), make_ctx(git_repo, sandbox=SubprocessSandbox()))
+    by_file = {f.file: f for f in res.findings}
+    assert set(by_file) == {"test_many.py", "test_one.py"}
+    assert by_file["test_many.py"].summary.startswith("7 tests fail in test_many.py: ")
+    assert "(+4 more)" in by_file["test_many.py"].summary
+    assert by_file["test_one.py"].summary == "Test fails: test_one.py::test_x"
+
+
 def test_pytest_custom_command_python_placeholder(git_repo: Path) -> None:
     cfg = Config()
     cfg.review.test_command = ["{python}", "-m", "pytest", "-q", "-k", "not slow"]

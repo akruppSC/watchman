@@ -1,0 +1,1351 @@
+{
+  "run_id": "20261014T204310-clean-v1-test-baseline-anthropic_claude-haiku-5.5-rescored",
+  "started_at": "2026-10-14T20:43:10.676082+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "ada4599",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "audited": true,
+    "rescored_from": "20261014T200749-clean-v1-test-baseline-anthropic_claude-haiku-5.5"
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-clean-7804a68e",
+      "score": {
+        "item_id": "attrs-clean-7804a68e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "30eef2a0865d"
+        ],
+        "cost_usd": 0.000802525,
+        "latency_s": 4.01,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "30eef2a0865d",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/attr/validators.py",
+            "line_start": 586,
+            "line_end": 586,
+            "summary": "The error message uses the malformed operator '=>' instead of '>=', and the docs example repeats the typo.",
+            "evidence": "src/attr/validators.py: the format string \"Length of '{name}' must be => {min}: {len}\" writes '=>' where '>=' is meant. docs/api.rst adds the doctest expectation \"ValueError: (\\\"Length of 'x' must be => 1: 0\\\")\", so the typo is baked into the documented output. The sibling max_len message uses '<=' correctly.",
+            "suggested_fix": "Change the message to \"Length of '{name}' must be >= {min}: {len}\" in validators.py and update the matching doctest expectation in docs/api.rst.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3277,
+          "output_tokens": 786,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.000802525
+        },
+        "latency_s": 4.01,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-e1b2c949",
+      "score": {
+        "item_id": "attrs-clean-e1b2c949",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000308275,
+        "latency_s": 1.893,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1571,
+          "output_tokens": 224,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.000308275
+        },
+        "latency_s": 1.893,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-e21793e9",
+      "score": {
+        "item_id": "attrs-clean-e21793e9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00141915,
+        "latency_s": 10.07,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2438,
+          "output_tokens": 2229,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00141915
+        },
+        "latency_s": 10.07,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "d83d6e8d86cd",
+              "category": "over_abstraction",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/attr/converters.py",
+              "line_start": 36,
+              "line_end": 52,
+              "summary": "The two near-identical `optional_converter` closures could be collapsed into one, with the Converter-vs-plain choice made only at the return.",
+              "evidence": "The `if isinstance(converter, Converter):` branch at lines 36-49 duplicates the None check and annotation logic of the `else` branch. A second `isinstance` check at lines 60-61 then re-wraps the result.",
+              "suggested_fix": "Define one wrapper that always takes (val, inst, field) when the converter is a Converter, then wrap once at the end, or pass a flag into a single helper.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "fd331fd7e71c",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "tests/test_converters.py",
+              "line_start": 283,
+              "line_end": 311,
+              "summary": "The new TestOptionalPipe tests call `c.converter(...)` directly, while the neighbouring TestOptional test calls `c(...)`, so the public call path for the returned Converter is only exercised in one place.",
+              "evidence": "`test_optional` and `test_pipe` use `c.converter(None, None, None)` and `c.converter(\"True\", None, None)`, bypassing `Converter.__call__`. The `test_instance` test does exercise the attrib path, but the test_converter_instance test at line 146 uses `c(\"yes\", None, None)`.",
+              "suggested_fix": "Use the same calling convention (`c(...)`) across the new tests so the public Converter call behaviour is covered consistently.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-fd7538f0",
+      "score": {
+        "item_id": "attrs-clean-fd7538f0",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00110215,
+        "latency_s": 7.84,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2554,
+          "output_tokens": 1566,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00110215
+        },
+        "latency_s": 7.84,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "5ac6a5773e89",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "tests/test_validators.py",
+              "line_start": 437,
+              "line_end": 450,
+              "summary": "test_is_hashable makes two filter calls with no assertions, so it only fails if an exception is raised and does not check what the filter returns.",
+              "evidence": "test_is_hashable calls attr.asdict(i, filter=attr.filters.include(...)) and attr.asdict(i, filter=attr.filters.exclude(...)) without asserting on the results. A regression that returned the wrong dict would still pass.",
+              "suggested_fix": "Assert the expected dicts, e.g. assert attr.asdict(i, filter=attr.filters.include(lambda v: True)) == {'x': 2}, and check that the exclude result is {}, or assert that the validator hash is stable and equal for in_([1,2]) and in_({1,2}).",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "9b7b09a31615",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.2,
+              "file": "tests/test_validators.py",
+              "line_start": 393,
+              "line_end": 394,
+              "summary": "An unrelated blank line was added inside test_success.",
+              "evidence": "The hunk at @@ -391 adds an empty line before 'v(1, a, 3)' with no functional purpose.",
+              "suggested_fix": "Drop the stray whitespace change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.20 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-144f3701",
+      "score": {
+        "item_id": "click-clean-144f3701",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001307275,
+        "latency_s": 7.96,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3287,
+          "output_tokens": 1793,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001307275
+        },
+        "latency_s": 7.96,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "4dde927d693e",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "CHANGES.rst",
+              "line_start": 25,
+              "line_end": 26,
+              "summary": "The changelog entry names Command.show_default, but the change actually concerns Option.show_default.",
+              "evidence": "CHANGES.rst adds '-   ``Command.show_default`` overrides ``Context.show_default``', while the code and docstrings in src/click/core.py change Option.__init__ and Option.get_help_record, and the Context docstring says Command.show_default in one place. The class named in the changelog does not match the code.",
+              "suggested_fix": "Change the changelog entry to ``Option.show_default`` (and align the Context docstring wording with the same terminology).",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0eccd63f1877",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "src/click/core.py",
+              "line_start": 2435,
+              "line_end": 2435,
+              "summary": "Option.show_default now defaults to None instead of False, so any code reading the attribute as a bool sees None when unset.",
+              "evidence": "The signature changes from `show_default: t.Union[bool, str] = False` to `t.Union[bool, str, None] = None`. The stored self.show_default is therefore None for options that don't set it. Any consumer that checks `is False` or serializes the attribute as a bool will see a different value. The diff does not show such consumers, so the impact is unverified.",
+              "suggested_fix": "Confirm no code or tests compare Option.show_default to False or serialize it. If needed, keep the attribute bool-typed and track 'unset' separately.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "41115d115631",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_options.py",
+              "line_start": 646,
+              "line_end": 646,
+              "summary": "Unrelated whitespace edit and typo fix ride along with the behavior change.",
+              "evidence": "The diff removes a blank line in test_option_custom_class_reusable and fixes 'ariables' in the show_envvar docstring. Neither relates to show_default precedence.",
+              "suggested_fix": "Drop these unrelated edits from this change or move them into a separate commit.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-3a3e0350",
+      "score": {
+        "item_id": "click-clean-3a3e0350",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001457025,
+        "latency_s": 9.994,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3053,
+          "output_tokens": 2151,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001457025
+        },
+        "latency_s": 9.994,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "4460d1bddb72",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "src/click/core.py",
+              "line_start": 2359,
+              "line_end": 2362,
+              "summary": "The split is gated on `self.nargs != 1`, so a `multiple=True` option with a string default is not split, even though the comment says this matches `value_from_envvar`, which also splits for `multiple`.",
+              "evidence": "core.py:2359-2362 checks only `isinstance(value, str) and self.nargs != 1`. For `multiple=True` with nargs=1, a string default from default_map is passed through unsplit, while the environment-variable path splits such values. The new docs and CHANGES entry say the behavior matches environment variables, so this gap contradicts that claim.",
+              "suggested_fix": "Mirror the env-var condition (e.g. `if isinstance(value, str) and (self.nargs != 1 or self.multiple):`) or narrow the claim in the docs and comment, and add a test for multiple=True.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "cbc94c18f9b3",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "docs/conf.py",
+              "line_start": 34,
+              "line_end": 34,
+              "summary": "Adding `myst_heading_anchors = 3` is a Sphinx configuration change unrelated to splitting default_map strings.",
+              "evidence": "docs/conf.py gains `myst_heading_anchors = 3`. It changes how heading anchors are generated across all docs, which is not part of the stated task. It may be needed only for the new cross-reference anchor, and that is not explained.",
+              "suggested_fix": "Remove the config change, or justify it in the PR and confirm it does not alter existing anchors.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "2066845f7d98",
+              "category": "other",
+              "severity": "nit",
+              "confidence": 0.2,
+              "file": "CHANGES.rst",
+              "line_start": 43,
+              "line_end": 44,
+              "summary": "The changelog cites `:pr:3364`, which is not verifiable from the diff and may be a fabricated reference.",
+              "evidence": "The new entry references `:issue:`2745` :pr:`3364``. The PR number is not mentioned anywhere else in the change, and the test docstring only links issue 2745.",
+              "suggested_fix": "Confirm the PR number or drop the `:pr:` reference.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.20 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-4e4c7a69",
+      "score": {
+        "item_id": "click-clean-4e4c7a69",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001509495,
+        "latency_s": 9.628,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5123,
+          "output_tokens": 1985,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001509495
+        },
+        "latency_s": 9.628,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "0b6c81e179cd",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "src/click/core.py",
+              "line_start": 2840,
+              "line_end": 2853,
+              "summary": "Options with non-basic flag_value types and no explicit type now return the raw Python object instead of its string form, which silently changes the value seen by existing callers.",
+              "evidence": "The new branch sets self.type = types.UNPROCESSED for any flag_value that isn't str/int/float/bool/None. Before this change the same option produced a STRING type and a str value such as \"EngineType.OSS\" or \"<class 'test_options.Class1'>\". Existing tests that asserted the stringified output (for example the issue 3121 cases in tests/test_options.py) were rewritten to expect the raw object, so the old output is no longer produced. Code that does string operations on the parameter value, formats it into output, or compares it to a string will change behavior without any error.",
+              "suggested_fix": "Keep the change if it is intended, but make the break explicit: confirm the CHANGES entry is flagged as a backward-incompatible change, not only as an auto-detection improvement, and consider a deprecation path or an opt-out for users who relied on str() output.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-5fc3423a",
+      "score": {
+        "item_id": "click-clean-5fc3423a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000882995,
+        "latency_s": 6.293,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2847,
+          "output_tokens": 1301,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000882995
+        },
+        "latency_s": 6.293,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "2f25997bcebb",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_commands.py",
+              "line_start": 252,
+              "line_end": 253,
+              "summary": "The comment says 'Required option without value should use SENTINEL behavior' but the case sets required=False.",
+              "evidence": "tests/test_commands.py: '# Required option without value should use SENTINEL behavior.' is followed by '({\"required\": False}, None),'. The comment describes a required option, but the parameter is explicitly not required.",
+              "suggested_fix": "Reword the comment to describe the non-required, no-default case, or remove it.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-a11fc384",
+      "score": {
+        "item_id": "httpx-clean-a11fc384",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001862495,
+        "latency_s": 12.351,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4919,
+          "output_tokens": 2742,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001862495
+        },
+        "latency_s": 12.351,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "37d5bb0bbd10",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "tests/models/test_url.py",
+              "line_start": 1,
+              "line_end": 1,
+              "summary": "A parametrized case locks in a mixed escaped/unescaped path result that the test itself flags as incorrect.",
+              "evidence": "The case for \"https://example.com/ %61%62%63\" carries the comment \"WARNING: This has the incorrect behaviour, adding the test as an interim step.\" and asserts raw_path == b\"/%20%61%62%63\" and path == \"/ abc\". This enshrines current behaviour the author considers wrong, so the test will fail when the behaviour is fixed and provides no regression value for the correct behaviour.",
+              "suggested_fix": "Drop the case or mark it with pytest.mark.xfail(strict=True) referencing the known issue, so the intended behaviour is recorded without asserting the bug.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0c92c21d2192",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "httpx/_urlparse.py",
+              "line_start": 263,
+              "line_end": 263,
+              "summary": "Query strings built from a raw URL no longer percent-encode '/', which changes the serialized URL for existing callers, and the rationale comment was removed.",
+              "evidence": "The safe set for the query changed from SUB_DELIMS + \":?[]@\" to SUB_DELIMS + \":/?[]@\", and the comment explaining why '/' is encoded was deleted. test_url_query_encoding now expects \"a=b c&d=e/f\" to produce \"d=e/f\" instead of \"d=e%2Ff\". Only the params= path still encodes '/'. The change is plausibly intentional, but it is user-visible and is not called out in the task.",
+              "suggested_fix": "Confirm the behaviour change is intended and mention it in the changelog. Keep a short comment on why '/' is safe in the query.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "511a903cf4f2",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "tests/models/test_url.py",
+              "line_start": 1,
+              "line_end": 1,
+              "summary": "test_url_with_url_encoded_path was deleted outright rather than being kept or folded into the new parametrized test.",
+              "evidence": "The removed test asserted path decoding, query == b\"\", and raw_path == b\"/path%20to%20somewhere\". The new parametrized cases cover similar ground, but the specific case of a bare percent-encoded path with no other characters is no longer asserted directly.",
+              "suggested_fix": "Add the original case as a row in the new parametrized test so no coverage is lost.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-c927f3e9",
+      "score": {
+        "item_id": "httpx-clean-c927f3e9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "2c333db463e0",
+          "2a700ad9e0f9"
+        ],
+        "cost_usd": 0.001441775,
+        "latency_s": 8.85,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2c333db463e0",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_models.py",
+            "line_start": 339,
+            "line_end": 342,
+            "summary": "The task is comment-only, but the diff changes the public `URL.fragment` return value to unquoted text.",
+            "evidence": "httpx/_models.py:342 changes `return self._uri_reference.fragment or \"\"` to `return unquote(...)`. Callers that read `.fragment` will now see decoded characters (e.g. a space instead of %20), which is a silent behavior change unrelated to documentation.",
+            "suggested_fix": "Revert the unquote change, or split it into a separate reviewed change with tests and a changelog entry.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "2a700ad9e0f9",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "httpx/_models.py",
+            "line_start": 452,
+            "line_end": 458,
+            "summary": "copy_with() now percent-quotes the fragment, which was not previously done and can double-encode fragments already containing escapes.",
+            "evidence": "New Step 4 adds `kwargs[\"fragment\"] = quote(kwargs[\"fragment\"])`. A fragment that already contains '%XX' sequences will have '%' turned into '%25'. Previously fragments passed through unchanged.",
+            "suggested_fix": "Remove the new quoting, or ensure the value is in a known raw/decoded state and cover it with tests before shipping.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3675,
+          "output_tokens": 1965,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001441775
+        },
+        "latency_s": 8.85,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "0458de171eb0",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "httpx/_models.py",
+              "line_start": 428,
+              "line_end": 428,
+              "summary": "Typo 'sqaure' in the new comment.",
+              "evidence": "httpx/_models.py:428 `# IPv6 addresses need to be escaped within sqaure brackets.`",
+              "suggested_fix": "Change 'sqaure' to 'square'.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d9368f9a30e3",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "httpx/_models.py",
+              "line_start": 275,
+              "line_end": 275,
+              "summary": "Replacing `str(port)` with `port.encode(...)` assumes the port is always a str, which is an unverified assumption.",
+              "evidence": "httpx/_models.py:275 `netloc = netloc + b\":\" + port.encode(\"ascii\")`. The original code deliberately converted with str(port), so if any caller or the rfc3986 layer supplies an int, this raises AttributeError.",
+              "suggested_fix": "Keep `str(port).encode(\"ascii\")` unless the str-typing of port is confirmed for all paths.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "c04dac690e49",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_models.py",
+              "line_start": 265,
+              "line_end": 266,
+              "summary": "The new docstring claims the default port is omitted, which the code does not enforce.",
+              "evidence": "The added text says 'The port component is not included if it is the default...', but `netloc` only skips the port when `port` is falsy. An explicit `:80` on an http URL would still be included, so the comment describes behavior that does not hold.",
+              "suggested_fix": "Reword the docstring to match what the code actually does, or implement the default-port stripping.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-d293374b",
+      "score": {
+        "item_id": "httpx-clean-d293374b",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "8c4c086fb38c",
+          "924d1ffbf5fc"
+        ],
+        "cost_usd": 0.00214812,
+        "latency_s": 15.448,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "8c4c086fb38c",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_urlparse.py",
+            "line_start": 74,
+            "line_end": 90,
+            "summary": "USERINFO_SAFE and the username/password safe sets do not exclude '%', so a literal '%' in userinfo is passed through unencoded and yields malformed URLs.",
+            "evidence": "The safe sets are built from range(0x20, 0x7F) minus an exclusion tuple that never contains 0x25 ('%'). quote() therefore treats '%' as safe. In urlparse, parsed_userinfo = quote(userinfo, safe=USERINFO_SAFE), so the old behavior (quote with safe=SUB_DELIMS+':', which encoded '%') is lost. Result: a password 'abc123@ %' now serializes as '...abc123%40%20%@...' (see the test change at tests/models/test_url.py:617).",
+            "suggested_fix": "Exclude 0x25 from the userinfo/username/password sets (per WHATWG, '%' is not in the userinfo set, so it must be encoded as %25 in userinfo), and keep the original test expectation of %25.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "924d1ffbf5fc",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "tests/models/test_url.py",
+            "line_start": 617,
+            "line_end": 619,
+            "summary": "The existing test expectation was changed from %25 to a bare % to match the regression instead of catching it.",
+            "evidence": "Both the str(new) assertion and the userinfo bytes assertion were edited from 'abc123%40%20%25' to 'abc123%40%20%'. A password containing '%' now round-trips into an invalid percent-escape, and the test was edited to accept it.",
+            "suggested_fix": "Revert the test expectations to %25 and fix the USERINFO_SAFE construction so '%' is excluded.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4440,
+          "output_tokens": 3433,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00214812
+        },
+        "latency_s": 15.448,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "94eeacaae410",
+              "category": "duplication",
+              "severity": "minor",
+              "confidence": 0.6,
+              "file": "httpx/_urlparse.py",
+              "line_start": 74,
+              "line_end": 100,
+              "summary": "PASSWORD_SAFE is identical to USERNAME_SAFE, and each set repeats the same long exclusion expression.",
+              "evidence": "PASSWORD_SAFE and USERNAME_SAFE have identical definitions. The four sets each repeat the same tuple literals instead of composing from shared base sets.",
+              "suggested_fix": "Define one shared set (or a helper that builds sets from the spec's exclusion lists) and reuse it for username and password.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 8c4c086fb38c (correctness)"
+          },
+          {
+            "finding": {
+              "id": "669d8a3643ad",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "httpx/_urlparse.py",
+              "line_start": 95,
+              "line_end": 98,
+              "summary": "The comment about USERINFO_SAFE is confusing and does not match what the code does.",
+              "evidence": "The comment says 'we remove U+003A (:) from the safe set', but ':' is simply absent from the exclusion tuple, so it is safe. The comment also begins with a stray 'Note...' and a mid-sentence explanation of terminology.",
+              "suggested_fix": "Rewrite the comment to state that ':' is left unencoded as the username/password separator.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "4d85d84fc674",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.4,
+              "file": "httpx/_urlparse.py",
+              "line_start": 301,
+              "line_end": 345,
+              "summary": "Unrelated renames (fragment -> frag, parsed_fragment -> parsed_frag) and a test rename are included in a change scoped to percent-encode sets.",
+              "evidence": "The diff renames local variables 'fragment'/'parsed_fragment' to 'frag'/'parsed_frag', and renames test_param_does_not_require_encoding to test_param_requires_encoding without changing its assertions.",
+              "suggested_fix": "Drop the unrelated renames to keep the diff focused on the encode sets.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e67b0dd1",
+      "score": {
+        "item_id": "httpx-clean-e67b0dd1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "a14e635cc641"
+        ],
+        "cost_usd": 0.001777995,
+        "latency_s": 12.139,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a14e635cc641",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_models.py",
+            "line_start": 147,
+            "line_end": 148,
+            "summary": "URL(url, params=...) now replaces the URL's existing query string instead of merging with it, and the existing test was edited to lock in the new behavior.",
+            "evidence": "The old __init__ merged params into an existing query via QueryParams(...).merge(params). The new code routes through self.copy_with(**kwargs), which sets query=str(QueryParams(params)) and drops the existing query. tests/models/test_url.py changes the expected value from '?b=456&a=123' to '?a=123'. Request still merges through copy_merge_params, so URL and Request now behave differently for the same input.",
+            "suggested_fix": "Keep URL(url, params=...) merging semantics, e.g. by calling copy_merge_params in __init__. Do not change the existing test expectation unless the behavior change is intentional and documented.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4359,
+          "output_tokens": 2713,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001777995
+        },
+        "latency_s": 12.139,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "0b847b4ea55d",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "httpx/_models.py",
+              "line_start": 292,
+              "line_end": 292,
+              "summary": "The new docstring has a spelling error ('neccessarily') and the example is not in doctest form.",
+              "evidence": "The query docstring reads 'This is neccessarily a bytewise interface' and shows an `assert` example without `>>>` prompts.",
+              "suggested_fix": "Fix the spelling to 'necessarily' and format the example as a doctest or a code block.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0922dbfdea63",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_models.py",
+              "line_start": 115,
+              "line_end": 115,
+              "summary": "The explicit `params` keyword in URL.__init__ is replaced by **kwargs, so the public signature and positional use change.",
+              "evidence": "Signature changed from `(self, url=\"\", params: QueryParamTypes = None)` to `(self, url=\"\", **kwargs: typing.Any)`. Callers that pass params positionally, or that rely on the signature for type checking and IDE hints, lose that support, and unknown keywords now surface only at copy_with time.",
+              "suggested_fix": "Keep an explicit `params: QueryParamTypes = None` parameter in __init__ rather than **kwargs.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "7fd68e86e8bf",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "httpx/_models.py",
+              "line_start": 624,
+              "line_end": 710,
+              "summary": "QueryParams method key annotations are narrowed from typing.Any to str, and a __bool__ method is added, which are unrelated to the URL expansion.",
+              "evidence": "get_list, set, add, and remove now take `key: str` instead of `key: typing.Any`. The implementations still call str(key), so the narrowing can cause type-checker failures for existing callers that pass non-str keys.",
+              "suggested_fix": "Revert the annotation narrowing unless it is required by the new API.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "eff26de85d19",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "tests/models/test_url.py",
+              "line_start": 127,
+              "line_end": 157,
+              "summary": "The new copy_* param tests cover only the happy path and do not exercise the new copy_with(params=...) branch directly or the empty-params case.",
+              "evidence": "Four tests with identical docstrings check set/add/remove/merge on a single key. None test copy_with(params=...), an empty params value (which sets query to None), or a URL with no existing query.",
+              "suggested_fix": "Add tests for copy_with(params=...), for params={} removing the query, and for merging when the URL has no query.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-39e3a2d5",
+      "score": {
+        "item_id": "more-itertools-clean-39e3a2d5",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00062512,
+        "latency_s": 4.335,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2316,
+          "output_tokens": 918,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00062512
+        },
+        "latency_s": 4.335,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4539302e",
+      "score": {
+        "item_id": "more-itertools-clean-4539302e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00075012,
+        "latency_s": 6.609,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1432,
+          "output_tokens": 1389,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00075012
+        },
+        "latency_s": 6.609,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "d4121e603cff",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 2447,
+              "line_end": 2453,
+              "summary": "The outer `for a in it` loop never runs a second time, so it only adds a redundant extra `next()` call on an exhausted iterator and makes the control flow harder to follow.",
+              "evidence": "The inner `for b in it` consumes the iterator to exhaustion before the outer loop can advance. The outer loop then calls next(it) once more, which is the only extra call. The old code stopped calling next() after StopIteration. Output is correct for empty, one-, two- and three-element inputs, but a non-fused custom iterator that yields again after exhaustion would now produce extra output.",
+              "suggested_fix": "Use an explicit `try: a = next(it) except StopIteration: return` for the first element, then a single inner loop over `it`, with no outer loop.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-ba5240aa",
+      "score": {
+        "item_id": "more-itertools-clean-ba5240aa",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00209312,
+        "latency_s": 15.015,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3932,
+          "output_tokens": 3450,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00209312
+        },
+        "latency_s": 15.015,
+        "dropped_findings": 5,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f57726bc5438",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "more_itertools/more.pyi",
+              "line_start": 88,
+              "line_end": 93,
+              "summary": "The type stub types `too_short` and `too_long` as `Optional[_Raisable]`, but the implementation expects callables that receive a list of items and return a value.",
+              "evidence": "`too_short: Optional[_Raisable] = ...` and `too_long: Optional[_Raisable] = ...` in more.pyi, while more.py calls `too_short(items)` and `too_long(items)` and returns their result, and the new tests pass lambdas taking `items`. Type checkers will reject the documented custom-callback usage, and the `List[_T]` return type ignores that custom callbacks can return other types.",
+              "suggested_fix": "Type the callbacks as `Callable[[List[_T]], Any]` (or a Union with `_Raisable`) and make the return type reflect the callback result.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d09ccc63ee2b",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 595,
+              "line_end": 606,
+              "summary": "The public-looking `nth_exactly` function is deleted and replaced by `strictly_n` with a different signature, return value, and error-message format, with no compatibility alias or deprecation note.",
+              "evidence": "`def nth_exactly(iterable, n=1, default=None, too_short=..., too_long=...)` is removed. Its replacement drops `default`, takes `too_short`/`too_long` callbacks with a different arity (`items` instead of `expected, given` / `expected, nth_value, after_value`), and returns a list instead of one item. Any caller of `nth_exactly` breaks silently at call time.",
+              "suggested_fix": "Confirm `nth_exactly` was never exported or used externally. If it was, keep it as a deprecated wrapper or call out the removal in the changelog.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "9d0246683484",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 598,
+              "line_end": 603,
+              "summary": "f-strings are used in default error messages, which may break Python versions the project still supports.",
+              "evidence": "`f'Too few items in iterable (got {len(items)}).'` and `f'Too many items in iterable (got at least {len(items)})'` are evaluated inside the default lambdas. f-strings are a syntax error before Python 3.6, so this breaks import on older interpreters if the project still supports them.",
+              "suggested_fix": "Check the project's supported Python versions; if older versions are supported, use `.format()` or `%` formatting.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "b385ce01b1d7",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.25,
+              "file": "tests/test_more.py",
+              "line_start": 4727,
+              "line_end": 4737,
+              "summary": "The default-behavior tests only check that a ValueError is raised, not that the message reports the item count the new defaults promise.",
+              "evidence": "`test_too_short_default` and `test_too_long_default` use `assertRaises(ValueError)` with no message check, so changes to the `got N` / `got at least N` messages would go unnoticed.",
+              "suggested_fix": "Use `assertRaisesRegex` (or check `str(context.exception)`) to verify the message includes the item count.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "f2b85991acd0",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "docs/api.rst",
+              "line_start": 177,
+              "line_end": 177,
+              "summary": "The autofunction signature in the docs omits the required `n` parameter.",
+              "evidence": "`.. autofunction:: strictly_n(iterable, too_short=func, too_long=func)` while the function is `strictly_n(iterable, n, too_short=..., too_long=...)`.",
+              "suggested_fix": "Change to `strictly_n(iterable, n, too_short=func, too_long=func)`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa05e903",
+      "score": {
+        "item_id": "more-itertools-clean-fa05e903",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00031612,
+        "latency_s": 3.235,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1384,
+          "output_tokens": 533,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00031612
+        },
+        "latency_s": 3.235,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

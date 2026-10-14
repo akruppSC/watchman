@@ -9,8 +9,9 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 *verifies* its suspicions with tools before reporting them. Every finding must cite
 evidence, and findings that can't be grounded are dropped.
 
-> **Status:** milestones 1 (foundation) and 2 (the tool-using agent) are complete.
-> Milestone 3 builds the real eval datasets and runs the ablation. See [Roadmap](#roadmap).
+> **Status:** milestones 1 (foundation), 2 (the tool-using agent) and 3 (evaluation) are
+> complete. Next: an overseer stage (a larger model that double-checks risky reviews). See
+> [Roadmap](#roadmap).
 
 ## Install
 
@@ -199,8 +200,8 @@ How the datasets are built:
   reverted-fix items hide the fix's message, so a reviewer can't find the answer in
   `git log`. The fix's regression test is not included.
 - **Splits are stratified** by template (A) or repo (B, C). Datasets were frozen after
-  owner review of `REVIEW.md`. The test split was run exactly once
-  (`evals/results/test_access.log`).
+  owner review of `REVIEW.md`. The test split was run once, then touched only by a logged
+  infrastructure retry and a pre-registered re-score (`evals/results/test_access.log`).
 
 Known biases:
 
@@ -219,7 +220,87 @@ uv run python -m evals.tune policies   # replay post-processing policies on dev 
 make results                 # regenerates evals/results/RESULTS.md
 ```
 
-RESULTS_PLACEHOLDER
+### Results
+
+All numbers below come from `evals/results/RESULTS.md` (regenerate with `make results`; per-run
+JSON in `evals/results/runs/`). Rates are *found/total* with a 95% Wilson interval. With 8 to 19
+test items per dataset the intervals are wide, so read differences of less than about 20
+points as "same direction, not proven".
+
+**Held-out test split, Haiku 5.5 as the reviewer** (`min_confidence` 0.6):
+
+| arm | seeded recall | seeded strict recall | seeded precision | findings per clean diff | cost per review |
+|---|---|---|---|---|---|
+| deterministic (Layer 1 only) | 21% (4/19) [9-43] | 21% | 15% (4/26) | 0.06 | $0 |
+| baseline (one prompt) | 74% (14/19) [51-88] | 58% | 50% (14/28) | 0.38 | $0.002 |
+| agent without Layer 1 | 68% (13/19) [46-85] | 47% | 72% (13/18) | 0.50 | $0.004 |
+| **agent (full Watchman)** | **84% (16/19) [62-94]** | **79%** | 32% (16/50) | 0.50 | $0.005 |
+
+The same arms on the 41 dev seeded items: 27%, 59%, 56%, and 78% recall (11, 24, 23 and 32 found), at $0 to $0.004 per review.
+
+What the ablations show:
+
+1. **Layer 1 evidence helps the agent, on both splits.** The agent that sees Layer 1 results
+   finds more than the same agent without them: 78% vs 56% on dev (32/41 vs 23/41) and 84% vs
+   68% on test (16/19 vs 13/19). Strict recall differs more: 79% vs 47% on test. The biggest
+   category gaps on dev are scope creep (3/3 vs 0/3) and swallowed errors (6/7 vs 3/7).
+2. **The agent beats the single-prompt baseline in direction, not provably on test.** Dev: 78%
+   vs 59%. Test: 84% vs 74%, which is 16/19 vs 14/19, well inside noise.
+3. **Layer 1 alone is quiet but misses most defects.** About 0.06 findings per clean diff, and
+   21-27% recall. It's best at hallucinated dependencies and swallowed errors.
+4. **Precision on test is much worse for the agent (32%) than on dev (56%).** One test item
+   explains most of it. A seeded off-by-one in click broke the project's own test suite, and
+   Layer 1 correctly reported 21 failing tests. Those findings have no line number, so
+   line-overlap scoring counts every one as a false positive. Excluding that item the agent's
+   precision is 16/29 = 55%. That number is a post-hoc observation and is not used for any
+   claim. The underlying product problem, 21 near-identical findings for one cause, is
+   fixed after the test run (failures are grouped per test file).
+5. **Reverted-fix items (B) can't tell the arms apart.** Lenient recall is 89-91% for every LLM
+   arm, but every B item is labeled `correctness` and models usually pick a different category,
+   so strict recall is 11-27%. These diffs are small, so lenient recall is inflated. Treat B as
+   a smoke test.
+
+**Model tiers, dev split, identical items** (agent mode; 20 items shared by all three, 40 for GPT-5):
+
+| reviewer | seeded recall | findings per clean diff | major+ findings per clean diff | cost per review |
+|---|---|---|---|---|
+| Haiku 5.5 | 88% | 0.43 | 0.00 | $0.004 |
+| Opus 4.6 | 88% | 1.43 | 0.43 | $0.20 |
+| GPT-5 | 88% | 1.71 | 0.57 | $0.22 |
+
+The larger models found the same defects but produced three to four times as many findings on
+known-good commits, at about 50 times the cost. Some of those extra findings look like real
+upstream issues (Opus and GPT-5 independently flagged the same wrong type hint in attrs), and many are
+nits or restatements, so this measures noise, not necessarily wrongness. Opus did better on
+reintroduced bugs (60% vs 40% strict, on only 5 items).
+
+**Settings tuned on the dev split only** (`python -m evals.tune`): `min_confidence` 0.6, and
+dropping a model finding that overlaps a stronger finding on the same lines. With the Haiku
+agent on dev this raised precision from 56% to 68% for a 4-point recall cost. The Layer 1
+precision fixes (coverage pragmas, test fixtures, mypy on tests, rules from a newer ruff, and
+so on) took findings per clean diff from 1.18 to 0.07.
+
+**Problems found in the evaluation itself** (kept here because they change how far to trust
+the numbers):
+
+- **Provider errors were counted as empty reviews.** OpenRouter can answer HTTP 200 with an
+  error body ("A Timeout Occurred") and no choices. That was neither retried nor treated as a
+  failure, so some reviews silently returned zero findings. Fixed: it is retried, a review that
+  can't finish is marked `incomplete` (never PASS, CLI exit 2), and the harness excludes
+  incomplete items from rates and reports them under `errors`. Affected runs were audited and
+  the failed items re-run: GPT-5 dev (6 items), Haiku test seeded agent (5 items). Three GPT-5
+  reverted-set items are still errors and are excluded.
+- **The tuned threshold was not applied to most runs.** Saving the user config pinned the old
+  default `min_confidence = 0.5`. Fixed (`save_user_config` writes only non-default values), and
+  every run was re-scored at the committed 0.6 from its saved model output, with no new model
+  calls. That re-score of the test split was logged as pre-registered: the policy was committed
+  (`a0524a6`) before the test run started.
+- **Opus 4.6 test results were discarded.** About half its test items had hit the provider-timeout
+  bug, and the model has since been superseded. Its dev results stay, because they ran
+  before any failures in that stage.
+- **The test split was accessed more than once.** Every access is in
+  `evals/results/test_access.log`: the single full run, one infrastructure retry of 5 failed
+  items, and the pre-registered re-score. Nothing was tuned on test results.
 
 ## Development
 
@@ -233,7 +314,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 
 1. ✅ Foundation: CLI, schema, deterministic checks, single-prompt baseline, eval harness skeleton
 2. ✅ Agent: tool-using loop with budgets, pitfall rules, and evidence-ref grounding
-3. Evals: frozen datasets A/B/C, ablations, precision tuning
+3. ✅ Evals: frozen datasets A/B/C, ablations, precision tuning
 4. Integration: GitHub Action and PR comment, pre-push hook, writeup, demo
 5. Live mode: supervising an OpenCode worker at checkpoints
 
@@ -320,7 +401,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 - The slopsquatting heuristic (package < 90 days old or ≤ 1 release) is coarse.
 - On defect items, eval precision is pessimistic: real but unlabeled issues count as
   false positives. The clean-diff set is the uncontaminated false-positive measure.
-- Agent reviews with GPT-5 take about 2–4 minutes, almost all of it model reasoning time.
+- Reasoning-heavy models are slow: GPT-5 agent reviews took 2 to 6 minutes. Haiku 5.5 takes about 1.5 minutes, mostly sandboxed test runs.
 - The agent tends to restate one defect under two categories. This isn't merged
   automatically yet, because cross-category merging could hide a genuinely different
   issue on the same line.

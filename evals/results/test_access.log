@@ -1,0 +1,18 @@
+2026-10-14T19:28:17.525260+00:00 dataset=seeded-v1 mode=deterministic watchman=9fa5a9e
+2026-10-14T19:33:57.866566+00:00 dataset=seeded-v1 mode=baseline watchman=9fa5a9e
+2026-10-14T19:34:35.695901+00:00 dataset=seeded-v1 mode=agent watchman=9fa5a9e
+2026-10-14T19:40:40.462717+00:00 dataset=seeded-v1 mode=agent_no_l1 watchman=9fa5a9e
+2026-10-14T19:45:59.746669+00:00 dataset=seeded-v1 mode=agent watchman=9fa5a9e
+2026-10-14T19:53:43.404844+00:00 dataset=reverted-v1 mode=deterministic watchman=9fa5a9e
+2026-10-14T19:55:56.797749+00:00 dataset=reverted-v1 mode=baseline watchman=9fa5a9e
+2026-10-14T19:56:07.113880+00:00 dataset=reverted-v1 mode=agent watchman=9fa5a9e
+2026-10-14T19:58:53.317993+00:00 dataset=reverted-v1 mode=agent_no_l1 watchman=9fa5a9e
+2026-10-14T20:00:16.562565+00:00 dataset=reverted-v1 mode=agent watchman=9fa5a9e
+2026-10-14T20:03:39.394416+00:00 dataset=clean-v1 mode=deterministic watchman=9fa5a9e
+2026-10-14T20:07:19.069039+00:00 dataset=clean-v1 mode=baseline watchman=9fa5a9e
+2026-10-14T20:07:49.975169+00:00 dataset=clean-v1 mode=agent watchman=9fa5a9e
+2026-10-14T20:12:36.614959+00:00 dataset=clean-v1 mode=agent_no_l1 watchman=9fa5a9e
+2026-10-14T20:16:06.117998+00:00 dataset=clean-v1 mode=agent watchman=9fa5a9e
+# 2026-10-14: the three anthropic/claude-opus-4.6 agent test runs above were discarded (OpenRouter 200-with-error responses were silently counted as empty reviews; Opus 4.6 is superseded by 5.5). Not reported.
+2026-10-14T20:27:35.618621+00:00 dataset=seeded-v1 mode=agent watchman=ada4599 retry-errors infrastructure-failure items=5
+2026-10-14T20:43:10.479456+00:00 rescore pre-registered min_confidence=0.6 (policy committed in a0524a6)

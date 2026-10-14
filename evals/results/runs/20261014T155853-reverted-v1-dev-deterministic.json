@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": null,
   "items": [
@@ -132,7 +133,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -236,7 +239,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -340,7 +345,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -444,7 +451,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -548,7 +557,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -652,7 +663,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -756,7 +769,9 @@
           "check pytest errored: pytest failed without test failures: AttributeError: __spec__"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -860,7 +875,9 @@
           "check pytest errored: pytest failed without test failures: AttributeError: __spec__"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -962,7 +979,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1064,7 +1083,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1168,7 +1189,9 @@
           "check pytest errored: pytest could not run (exit 2): 1 error in 1.10s"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1270,7 +1293,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1372,7 +1397,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1474,7 +1501,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1578,7 +1607,9 @@
           "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
         ],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1680,7 +1711,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1782,7 +1815,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1884,7 +1919,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1986,7 +2023,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2088,7 +2127,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2190,7 +2231,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2292,7 +2335,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

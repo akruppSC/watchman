@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": null,
   "items": [
@@ -218,7 +219,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -420,7 +423,9 @@
             "duration_s": 0.182
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -654,7 +659,9 @@
             "duration_s": 0.232
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -898,7 +905,9 @@
             "duration_s": 0.322
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1161,7 +1170,9 @@
             "duration_s": 0.146
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1339,7 +1350,9 @@
             "duration_s": 0.178
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1553,7 +1566,9 @@
             "duration_s": 1.926
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1695,7 +1710,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1979,7 +1996,9 @@
             "duration_s": 0.212
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2182,7 +2201,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2491,7 +2512,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2891,7 +2914,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3077,7 +3102,9 @@
             "duration_s": 0.079
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3403,7 +3430,9 @@
             "duration_s": 1.156
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3821,7 +3850,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4031,7 +4062,9 @@
             "duration_s": 1.358
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4285,7 +4318,9 @@
             "duration_s": 1.527
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4467,7 +4502,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4629,7 +4666,9 @@
             "duration_s": 0.452
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4816,7 +4855,9 @@
             "duration_s": 0.445
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5003,7 +5044,9 @@
             "duration_s": 0.13
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5166,7 +5209,9 @@
             "duration_s": 0.003
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

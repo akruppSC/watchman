@@ -28,7 +28,8 @@
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
     "default_mode": "deterministic",
-    "rescored_from": "20261014T162149-seeded-v1-dev-agent-anthropic_claude-haiku-5.5"
+    "rescored_from": "20261014T162149-seeded-v1-dev-agent-anthropic_claude-haiku-5.5",
+    "audited": true
   },
   "subset": null,
   "items": [
@@ -200,7 +201,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -426,7 +429,9 @@
             "duration_s": 1.734
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -614,7 +619,9 @@
             "duration_s": 1.086
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -923,7 +930,9 @@
             "duration_s": 0.161
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1182,7 +1191,9 @@
             },
             "reason": "confidence 0.40 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1330,7 +1341,9 @@
             "duration_s": 0.098
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1485,7 +1498,9 @@
             "duration_s": 1.478
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1692,7 +1707,9 @@
             },
             "reason": "restates f9373f2384b4 (swallowed_error)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1910,7 +1927,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2231,7 +2250,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2404,7 +2425,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2686,7 +2709,9 @@
             "duration_s": 1.571
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2975,7 +3000,9 @@
             },
             "reason": "restates 70790ba26c5e (over_abstraction)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3209,7 +3236,9 @@
             },
             "reason": "restates 2ef1d4b1d68b (swallowed_error)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3450,7 +3479,9 @@
             "duration_s": 1.915
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3928,7 +3959,9 @@
             },
             "reason": "confidence 0.20 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4162,7 +4195,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4380,7 +4415,9 @@
             "duration_s": 0.639
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4572,7 +4609,9 @@
             "duration_s": 0.111
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4733,7 +4772,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4967,7 +5008,9 @@
             },
             "reason": "restates bbd97b422e2a (correctness)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5259,7 +5302,9 @@
             },
             "reason": "restates 476ce45cb19b (swallowed_error)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5516,7 +5561,9 @@
             },
             "reason": "restates 2117bc6c51bf (swallowed_error)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5782,7 +5829,9 @@
             },
             "reason": "restates f816bbf89863 (swallowed_error)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -5972,7 +6021,9 @@
             },
             "reason": "confidence 0.45 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -6225,7 +6276,9 @@
             },
             "reason": "confidence 0.30 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -6594,7 +6647,9 @@
             },
             "reason": "restates 42e3da05fc6e (scope_creep)"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -6863,7 +6918,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -7098,7 +7155,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -7298,7 +7357,9 @@
             "duration_s": 0.04
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -7473,7 +7534,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -7635,7 +7698,9 @@
             "duration_s": 0.011
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -7809,7 +7874,9 @@
             },
             "reason": "confidence 0.50 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -8038,7 +8105,9 @@
             "duration_s": 0.133
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -8436,7 +8505,9 @@
             },
             "reason": "confidence 0.30 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -8638,7 +8709,9 @@
             "duration_s": 0.485
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -8740,7 +8813,9 @@
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -8934,7 +9009,9 @@
             },
             "reason": "confidence 0.30 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -9101,7 +9178,9 @@
             "duration_s": 5.622
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -9315,7 +9394,9 @@
             },
             "reason": "confidence 0.50 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -9536,7 +9617,9 @@
             },
             "reason": "confidence 0.50 < 0.60"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

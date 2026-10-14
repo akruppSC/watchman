@@ -27,7 +27,8 @@
     "conventions_file": "CONVENTIONS.md",
     "max_diff_files_warn": 15,
     "max_diff_lines_warn": 600,
-    "default_mode": "deterministic"
+    "default_mode": "deterministic",
+    "audited": true
   },
   "subset": "sample16",
   "items": [
@@ -169,7 +170,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -498,7 +501,9 @@
             "duration_s": 0.0
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -862,7 +867,9 @@
             },
             "reason": "restates 2ef1d4b1d68b (swallowed_error); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1144,7 +1151,9 @@
             "duration_s": 0.017
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1586,7 +1595,9 @@
             "duration_s": 0.158
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -1599,9 +1610,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.08086475,
-        "latency_s": 448.564,
-        "tool_calls": 10,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent LLM error: no choices in response: {'id': 'gen-1792002622-b4N3Mi5vxZmSeItIiaAW', 'error': {'message': 'A Timeout Occurred', 'code': 504, 'metadata': {'error_type': 'timeout'}}}"
       },
       "result": {
         "schema_version": 1,
@@ -1816,7 +1827,11 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -2068,7 +2083,9 @@
             },
             "reason": "restates f816bbf89863 (swallowed_error); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -2081,9 +2098,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.16780100000000003,
-        "latency_s": 534.465,
-        "tool_calls": 9,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent LLM error: no choices in response: {'id': 'gen-1792002841-h7JbuL3MGDQla7qQ1E6T', 'error': {'message': 'A Timeout Occurred', 'code': 504, 'metadata': {'error_type': 'timeout'}}}"
       },
       "result": {
         "schema_version": 1,
@@ -2286,7 +2303,11 @@
             "duration_s": 0.109
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -2735,7 +2756,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3119,7 +3142,9 @@
             "duration_s": 0.783
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3401,7 +3426,9 @@
             },
             "reason": "restates 7b074ecea970 (over_abstraction); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3654,7 +3681,9 @@
             },
             "reason": "restates 40dafc2e2931 (silent_behavior_change); grounding=verified"
           }
-        ]
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -3667,9 +3696,9 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.10696049999999999,
-        "latency_s": 477.839,
-        "tool_calls": 12,
-        "error": null
+        "latency_s": 0.0,
+        "tool_calls": 0,
+        "error": "incomplete review: agent LLM error: no choices in response: {'id': 'gen-1792003171-WUQx1fCrYQycDB6xB6pp', 'error': {'message': 'A Timeout Occurred', 'code': 504, 'metadata': {'error_type': 'timeout'}}}"
       },
       "result": {
         "schema_version": 1,
@@ -3910,7 +3939,11 @@
             "duration_s": 0.624
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": true,
+        "incomplete_reasons": [
+          "model stage did not finish"
+        ]
       }
     },
     {
@@ -4187,7 +4220,9 @@
             "duration_s": 0.001
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4510,7 +4545,9 @@
             "duration_s": 0.076
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     },
     {
@@ -4782,7 +4819,9 @@
             "duration_s": 0.002
           }
         ],
-        "dropped": []
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
       }
     }
   ]

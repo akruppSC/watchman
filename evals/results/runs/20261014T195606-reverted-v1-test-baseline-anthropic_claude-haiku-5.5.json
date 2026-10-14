@@ -1,0 +1,642 @@
+{
+  "run_id": "20261014T195606-reverted-v1-test-baseline-anthropic_claude-haiku-5.5",
+  "started_at": "2026-10-14T19:56:06.864103+00:00",
+  "dataset": "reverted-v1",
+  "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "9fa5a9e",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "audited": true
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-revert-947bfb54",
+      "score": {
+        "item_id": "attrs-revert-947bfb54",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "a92f75d864dc",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.0005499,
+        "latency_s": 3.784,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a92f75d864dc",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "src/attr/_make.py",
+            "line_start": 1716,
+            "line_end": 1717,
+            "summary": "Removing the eq_key handling from _make_hash makes __hash__ use raw attribute values even when the attribute defines a custom eq key, which can break the hash/eq contract.",
+            "evidence": "The diff deletes the branch that wrapped attributes with `a.eq_key` in `_%s_key(self.%s)` and the `globs` entries that supplied those callables. Hash now always emits `self.%s,`. For an attribute declared with `eq=key_fn`, two instances that compare equal under `key_fn` but have different raw values will now hash differently, violating the invariant that equal objects have equal hashes.",
+            "suggested_fix": "Restore the eq_key branch in _make_hash (and keep passing its globs to _make_method), since this is behavior the task of simplifying should not change. Simplify other parts of the function instead.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1944,
+          "output_tokens": 614,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0005499
+        },
+        "latency_s": 3.784,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-a71fbbad",
+      "score": {
+        "item_id": "attrs-revert-a71fbbad",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "b5f8f9d1f8b6",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00075015,
+        "latency_s": 4.809,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b5f8f9d1f8b6",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "src/attr/_make.py",
+            "line_start": 585,
+            "line_end": 610,
+            "summary": "The diff does not touch `_transform_attrs`; it rewrites `_frozen_setattrs` and adds a PyPy/CPython split, which is unrelated to the stated task.",
+            "evidence": "The only hunks are the `PYPY` import on line 15 and the `_frozen_setattrs` rewrite around lines 585-610. No line inside `_transform_attrs` changes.",
+            "suggested_fix": "Revert the `_frozen_setattrs` and import changes. Limit the change to simplifying `_transform_attrs`, or submit the frozen-exception fix separately with its own justification.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1834,
+          "output_tokens": 1042,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00075015
+        },
+        "latency_s": 4.809,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b461d51c85d5",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.85,
+              "file": "src/attr/_make.py",
+              "line_start": 597,
+              "line_end": 606,
+              "summary": "On CPython, `__traceback__` is no longer allowed to be set on frozen exception classes, so assignments that used to work now raise FrozenInstanceError.",
+              "evidence": "The original condition allowed `(\"__cause__\", \"__context__\", \"__traceback__\")`. The new PYPY-gated version allows only `__cause__` and `__context__`, and the non-PyPy branch raises unconditionally. A frozen exception subclass on CPython that assigns `__traceback__` now fails where it previously succeeded.",
+              "suggested_fix": "Keep `__traceback__` in the allowed set for the CPython path, or do not change this behavior in a refactor of `_transform_attrs`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates b5f8f9d1f8b6 (scope_creep)"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-0d01686f",
+      "score": {
+        "item_id": "click-revert-0d01686f",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "d78800f0273d",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "79aa14ab869f"
+        ],
+        "cost_usd": 0.001171275,
+        "latency_s": 8.254,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "d78800f0273d",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.85,
+            "file": "src/click/testing.py",
+            "line_start": 228,
+            "line_end": 247,
+            "summary": "With echo_stdin=True, hidden prompts (passwords) are now echoed to output because the `paused` guard was removed from EchoingStdin, so `hidden_input` no longer suppresses echo.",
+            "evidence": "hidden_input (new lines ~236-240) no longer sets echo_input.paused, and EchoingStdin._echo (line ~22) now always writes to _output. Input read via input.readline() in hidden_input therefore gets written to bytes_output, leaking what should be hidden input into captured output.",
+            "suggested_fix": "Restore a suppression mechanism for hidden input when echo_stdin is enabled, or do not wrap stdin with echoing for hidden reads.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "79aa14ab869f",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "src/click/testing.py",
+            "line_start": 206,
+            "line_end": 209,
+            "summary": "Removing `input._CHUNK_SIZE = 1` reintroduces the known problem where the first read echoes a large chunk of input.",
+            "evidence": "The removed comment states: 'Force unbuffered reads, otherwise the underlying EchoingStdin stream will echo a big chunk of input on the first read.' The diff deletes this setting without any replacement.",
+            "suggested_fix": "Keep the `_CHUNK_SIZE = 1` assignment when echo_stdin is enabled.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2171,
+          "output_tokens": 1800,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001171275
+        },
+        "latency_s": 8.254,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "7f73845a831a",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/click/testing.py",
+              "line_start": 26,
+              "line_end": 29,
+              "summary": "Removing `read1` from EchoingStdin is a behavioral change unrelated to the simplification and can break callers that rely on read1 echoing.",
+              "evidence": "The `read1` method was deleted from EchoingStdin. Without it, `__getattr__` falls through to the underlying stream's read1, which bypasses echoing entirely.",
+              "suggested_fix": "Keep read1 so its echo behavior stays consistent with read.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          },
+          {
+            "finding": {
+              "id": "a61035f3054e",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.8,
+              "file": "src/click/testing.py",
+              "line_start": 230,
+              "line_end": 233,
+              "summary": "visible_input now always writes the entered value after reading, so with echo_stdin=True the input is echoed twice: once by EchoingStdin and once by visible_input.",
+              "evidence": "Previously `if not self.echo_stdin: sys.stdout.write(f\"{val}\\n\")`. The guard was removed, but EchoingStdin.readline still echoes the line via _echo (line ~27), so the output contains the value duplicated.",
+              "suggested_fix": "Keep the `if not self.echo_stdin` guard around the explicit write in visible_input.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates d78800f0273d (correctness)"
+          },
+          {
+            "finding": {
+              "id": "5df3025d05dc",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.75,
+              "file": "src/click/testing.py",
+              "line_start": 242,
+              "line_end": 247,
+              "summary": "_getchar now echoes characters twice in echo_stdin mode and echoes non-echo (hidden) reads when echo_stdin is enabled.",
+              "evidence": "New code: `char = sys.stdin.read(1)` (echoed by EchoingStdin) followed by `if echo: sys.stdout.write(char)`. With echo_stdin=True and echo=True, the char is written twice. With echo=False, the char is still echoed by EchoingStdin since paused handling was removed.",
+              "suggested_fix": "Restore the echo_stdin-aware branches for _getchar and the pause logic.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates d78800f0273d (correctness)"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-ac6a2acf",
+      "score": {
+        "item_id": "click-revert-ac6a2acf",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "5561fe943e94",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00074865,
+        "latency_s": 5.515,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5561fe943e94",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/click/shell_completion.py",
+            "line_start": 570,
+            "line_end": 571,
+            "summary": "Swapping the assignments changes which context supplies the remaining args, so completion now reads leftover args from the parent context instead of the sub-context.",
+            "evidence": "Before: `ctx = sub_ctx` then `args = ctx._protected_args + ctx.args`, so args came from sub_ctx. After: `args = ctx._protected_args + ctx.args` runs first while ctx is still the parent, then `ctx = sub_ctx`. The same reordering occurs in the nested hunk (around lines 589-590), where `args = sub_ctx.args` now reads the old sub_ctx instead of sub_sub_ctx. This alters the parsing state passed to subsequent resolution steps.",
+            "suggested_fix": "Revert the reordering. If the goal is simplification, make a change that keeps the original assignment order and only removes redundant code, then verify with the existing shell completion tests.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1538,
+          "output_tokens": 1113,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00074865
+        },
+        "latency_s": 5.515,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "44c77f96aae6",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/click/shell_completion.py",
+              "line_start": 570,
+              "line_end": 590,
+              "summary": "The diff reorders statements and does not simplify anything, so it does not fulfil the stated task.",
+              "evidence": "Both hunks only move two lines relative to each other; no code is removed, no branch is collapsed, and no helper is introduced. The line count and complexity are unchanged.",
+              "suggested_fix": "Rework the change so it actually reduces complexity in `_resolve_context`, such as removing the redundant `args` assignment that is overwritten on the next line of the nested block.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-1e110964",
+      "score": {
+        "item_id": "httpx-revert-1e110964",
+        "kind": "reverted",
+        "n_defects": 2,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "e3d043f623ab",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000808025,
+        "latency_s": 6.172,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e3d043f623ab",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "httpx/_decoders.py",
+            "line_start": 214,
+            "line_end": 214,
+            "summary": "TextChunker.decode with no chunk size now yields an empty string for empty input, so iter_text()/aiter_text() can emit a spurious '' at the end of every response.",
+            "evidence": "_decoders.py:214 changed `return [content] if content else []` to `return [content]`. In _models.py (both iter_text and aiter_text, around lines 853 and 957), after the decoder loop the code calls `text_content = decoder.flush()` and then `for chunk in chunker.decode(text_content): yield chunk`. When chunk_size is None, text_content is typically '' from flush(), so decode('') now returns [''] and the user receives an extra empty chunk. For an empty body, iter_text() previously yielded nothing and now yields ['']. The removed `# pragma: no cover` markers on those yield lines show the new path is hit, which confirms the behavior change rather than a dead edge case.",
+            "suggested_fix": "Keep the emptiness check: `return [content] if content else []`, or skip calling chunker.decode on empty flush output in Response.iter_text/aiter_text. Restore the pragma comments if the branch is not meant to be exercised.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1785,
+          "output_tokens": 1170,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.000808025
+        },
+        "latency_s": 6.172,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-c75ddc26",
+      "score": {
+        "item_id": "httpx-revert-c75ddc26",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "bf7e4512ed76",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.0006064,
+        "latency_s": 4.328,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "bf7e4512ed76",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_multipart.py",
+            "line_start": 91,
+            "line_end": 91,
+            "summary": "get_length now returns the character count of a str file instead of its UTF-8 byte count, which gives a wrong Content-Length for non-ASCII content.",
+            "evidence": "The diff replaces `len(to_bytes(self.file))` with `len(self.file)`. When `self.file` is a str, `len()` counts code points, but the rendered body encodes that str as UTF-8, so multi-byte characters (e.g. 'é' or emoji) make the rendered length larger than the computed one.",
+            "suggested_fix": "Keep the byte semantics, e.g. `len(headers) + len(self.file if isinstance(self.file, bytes) else self.file.encode('utf-8'))`, or continue to use `to_bytes(self.file)` here.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1480,
+          "output_tokens": 843,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0006064
+        },
+        "latency_s": 4.328,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-2e81a562",
+      "score": {
+        "item_id": "more-itertools-revert-2e81a562",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "76ed1d21e578",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00054165,
+        "latency_s": 3.937,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "76ed1d21e578",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 1237,
+            "line_end": 1237,
+            "summary": "Removing the `if buf:` guard makes split_before yield an empty list for empty input, where it previously yielded nothing.",
+            "evidence": "The final statement is now an unconditional `yield buf` at more.py:1237. For `split_before([], pred)`, the loop never runs, so `buf` is `[]` and the generator yields one `[]`. The original `if buf: yield buf` yielded nothing. Callers and tests that expect `list(split_before([], pred)) == []` will now get `[[]]`.",
+            "suggested_fix": "Restore the guard: `if buf: yield buf`. The 'simplification' is not worth changing the output contract. If the goal is a simpler form, express it another way without altering empty-input behavior.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1334,
+          "output_tokens": 750,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00054165
+        },
+        "latency_s": 3.937,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-be5793a5",
+      "score": {
+        "item_id": "more-itertools-revert-be5793a5",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "e599fd1bc1b5",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000631495,
+        "latency_s": 5.548,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e599fd1bc1b5",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "more_itertools/more.py",
+            "line_start": 4900,
+            "line_end": 4900,
+            "summary": "Repeating the raw iterables before materializing them breaks one-shot iterators (generators) when repeat > 1, because the same iterator object is consumed by its first copy and later copies see it empty.",
+            "evidence": "gray_product: `all_iterables = tuple(map(tuple, iterables * repeat))`. The original code materialized each input once via `tuple(map(tuple, iterables))` and then repeated the resulting tuples. With the new code, `gray_product(iter('ab'), repeat=2)` maps `tuple` over two references to the same iterator. The first `tuple()` drains it, and the second yields `()`, so the product becomes empty (or the ring/length checks misbehave). The same aliasing applies in partial_product (line ~4943): `iter(gen)` on the same generator twice returns the same iterator, so the 'independent' copies share position and the product is wrong, where the original gave independent iterators over one materialized tuple.",
+            "suggested_fix": "Materialize once, then repeat: `all_iterables = tuple(map(tuple, iterables)) * repeat` (as originally written) in both functions. The simplification is not safe for non-reiterable inputs.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1595,
+          "output_tokens": 1111,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000631495
+        },
+        "latency_s": 5.548,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

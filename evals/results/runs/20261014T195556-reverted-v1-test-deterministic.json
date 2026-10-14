@@ -1,0 +1,876 @@
+{
+  "run_id": "20261014T195556-reverted-v1-test-deterministic",
+  "started_at": "2026-10-14T19:55:56.570524+00:00",
+  "dataset": "reverted-v1",
+  "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "9fa5a9e",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "audited": true
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-revert-947bfb54",
+      "score": {
+        "item_id": "attrs-revert-947bfb54",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 20.465,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.076,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.011,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +5/-12 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.034,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.217,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/attr/_make.py\", \"line\": 80, \"column\": 34, \"end_line\": 80, \"end_column\": 67, \"message\": \"Incompatible types in assignment (expression has type \\\"_Nothing\\\", variable has type \\\"None\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 332, \"column\": 4, \"end_line\": 332, \"end_column\": 8, \"message\": \"Need type annotation for \\\"locs\\\" (hint: \\\"locs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 473, \"column\": 4, \"end_line\": 473, \"end_column\": 12, \"message\": \"Need type annotation for \\\"filtered\\\" (hint: \\\"filtered: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2552, \"column\": 11, \"end_line\": 2552, \"end_column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2724, \"column\": 15, \"end_line\": 2724, \"end_column\": 22, \"message\": \"\\\"Attribute\\\" has no attribute \\\"eq\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2724, \"column\": 27, \"end_line\": 2724, \"end_column\": 37, \"message\": \"\\\"Attribute\\\" has no attribute \\\"order\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2750, \"column\": 64, \"end_line\": 2750, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2790, \"column\": 0, \"end_line\": 2790, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2793, \"column\": 32, \"end_line\": 2793, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2795, \"column\": 28, \"end_line\": 2795, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2795, \"column\": 39, \"end_line\": 2795, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2939, \"column\": 0, \"end_line\": 2939, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2997, \"column\": 0, \"end_line\": 2997, \"end_column\": 7, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3099, \"column\": 4, \"end_line\": 3099, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3107, \"column\": 11, \"end_line\": 3107, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 18.905,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:5: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 20.465,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-a71fbbad",
+      "score": {
+        "item_id": "attrs-revert-a71fbbad",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 20.167,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.066,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.014,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +22/-13 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.043,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.22,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/attr/_make.py\", \"line\": 39, \"column\": 28, \"end_line\": 39, \"end_column\": 54, \"message\": \"Need type annotation for \\\"_empty_metadata_singleton\\\"\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 302, \"column\": 4, \"end_line\": 302, \"end_column\": 8, \"message\": \"Need type annotation for \\\"locs\\\" (hint: \\\"locs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 432, \"column\": 4, \"end_line\": 432, \"end_column\": 12, \"message\": \"Need type annotation for \\\"filtered\\\" (hint: \\\"filtered: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2360, \"column\": 11, \"end_line\": 2360, \"end_column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2563, \"column\": 64, \"end_line\": 2563, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2604, \"column\": 0, \"end_line\": 2604, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2607, \"column\": 32, \"end_line\": 2607, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2609, \"column\": 28, \"end_line\": 2609, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2609, \"column\": 39, \"end_line\": 2609, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2759, \"column\": 0, \"end_line\": 2759, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2817, \"column\": 0, \"end_line\": 2817, \"end_column\": 7, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2918, \"column\": 4, \"end_line\": 2918, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2926, \"column\": 11, \"end_line\": 2926, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 18.6,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:5: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 20.167,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-0d01686f",
+      "score": {
+        "item_id": "click-revert-0d01686f",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 71.928,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.114,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +4/-25 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.026,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.409,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/click/testing.py\", \"line\": 355, \"column\": 28, \"end_line\": 355, \"end_column\": 34, \"message\": \"Incompatible types in assignment (expression has type \\\"str | int | None\\\", variable has type \\\"int\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/click/testing.py\", \"line\": 370, \"column\": 28, \"end_line\": 370, \"end_column\": 29, \"message\": \"Incompatible types in assignment (expression has type \\\"Exception\\\", variable has type \\\"SystemExit | None\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest failed without test failures: AttributeError: __spec__",
+            "duration_s": 69.985,
+            "findings": [],
+            "output_excerpt": "Traceback (most recent call last):\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 145, in __makeattr\n    modpath, attrname = self.__map__[name]\n                        ~~~~~~~~~~~~^^^^^^\nKeyError: '__spec__'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 189, in _run_module_as_main\n  File \"<frozen runpy>\", line 148, in _get_module_details\n  File \"<frozen runpy>\", line 112, in _get_module_details\n  File \"/work/.wm-venv/lib/python3.12/site-packages/pytest/__init__.py\", line 5, in <module>\n    from _pytest.assertion import register_assert_rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/__init__.py\", line 9, in <module>\n    from _pytest.assertion import rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py\", line 34, in <module>\n    from _pytest.assertion import util\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/util.py\", line 13, in <module>\n    import _pytest._code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/__init__.py\", line 2, in <module>\n    from .code import Code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 54, in <module>\n    class Code:\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 81, in Code\n    def path(self) -> Union[py.path.local, str]:\n                            ^^^^^^^^^^^^^\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 152, in __makeattr\n    result = importobj(modpath, attrname)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 72, in importobj\n    module = __import__(modpath, None, None, ['__doc__'])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1320, in _find_and_load_unlocked\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 150, in __makeattr\n    raise AttributeError(name)\nAttributeError: __spec__"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 71.928,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest failed without test failures: AttributeError: __spec__"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-ac6a2acf",
+      "score": {
+        "item_id": "click-revert-ac6a2acf",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 20.148,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.15,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.004,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +2/-2 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.389,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "731 passed, 21 skipped, 1 xfailed in 2.59s",
+            "duration_s": 18.353,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  9%]\n............................................x........................... [ 19%]\n........................................................................ [ 28%]\n........................................................................ [ 38%]\n........................................................................ [ 47%]\n........................................................................ [ 57%]\n........................................................................ [ 66%]\n...sssssssssssssssssssss................................................ [ 76%]\n........................................................................ [ 86%]\n........................................................................ [ 95%]\n.................................                                        [100%]\n731 passed, 21 skipped, 1 xfailed in 2.59s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 20.148,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-1e110964",
+      "score": {
+        "item_id": "httpx-revert-1e110964",
+        "kind": "reverted",
+        "n_defects": 2,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 128.382,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.06,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.012,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +4/-6 lines, 2 source / 0 test file(s), areas: httpx(2)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.018,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 3.138,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 841 passed, 1 skipped in 4.51s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 124.474,
+            "findings": [],
+            "output_excerpt": "nnection_pool.py:256: in handle_request\n    raise exc from None\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py:236: in handle_request\n    response = connection.handle_request(\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:101: in handle_request\n    raise exc\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:78: in handle_request\n    stream = self._connect(request)\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:124: in _connect\n    stream = self._network_backend.connect_tcp(**kwargs)\n.wm-venv/lib/python3.12/site-packages/httpcore/_backends/sync.py:207: in connect_tcp\n    with map_exceptions(exc_map):\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            with pytest.warns(DeprecationWarning):\n                client = httpx.Client(proxies={\"https://\": PROXY_URL})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:173: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1055: in get\n    return self.request(\nhttpx/_client.py:828: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:915: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:943: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:980: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:1016: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:230: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:84: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 841 passed, 1 skipped in 4.51s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 128.382,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-c75ddc26",
+      "score": {
+        "item_id": "httpx-revert-c75ddc26",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 79.867,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +6/-2 lines, 1 source / 0 test file(s), areas: httpx(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 3.022,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"httpx/_multipart.py\", \"line\": 148, \"column\": 74, \"end_line\": 148, \"end_column\": 78, \"message\": \"Incompatible default for parameter \\\"boundary\\\" (default has type \\\"None\\\", parameter has type \\\"bytes\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 76.693,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 79.867,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-2e81a562",
+      "score": {
+        "item_id": "more-itertools-revert-2e81a562",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 20.707,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.008,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +1/-2 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.012,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "463 passed, 2046 subtests passed in 1.45s",
+            "duration_s": 20.543,
+            "findings": [],
+            "output_excerpt": "........................................... [  9%]\n............................................................... [ 22%]\n................................................................ [ 36%]\n................................................................................ [ 53%]\n.....................................................................................................................................................................................................................            [100%]\n463 passed, 2046 subtests passed in 1.45s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 20.707,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-be5793a5",
+      "score": {
+        "item_id": "more-itertools-revert-be5793a5",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 109.923,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.078,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +2/-3 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.027,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "702 passed, 19866 subtests passed in 53.95s",
+            "duration_s": 109.549,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 11%]\n......................................................... [ 19%]\n........................................................................ [ 30%]\n....................................................................................................................... [ 47%]\n..................................... [ 52%]\n.................................... [ 57%]\n.............................................................................................. [ 70%]\n............................................................ [ 79%]\n................................................... [ 86%]\n..............................................................................................                         [100%]\n702 passed, 19866 subtests passed in 53.95s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 109.923,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

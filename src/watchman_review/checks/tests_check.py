@@ -105,7 +105,7 @@ class TestsCheck(Check):
         failures = parse_failures(out)
         also_at_base = self._fails_at_base(ctx, failures)
         new = [f for f in failures if f.node_id not in also_at_base]
-        findings = [self._finding(ctx, f) for f in new]
+        findings = self._findings(ctx, new)
         summary = _last_line(out)
         if also_at_base:
             summary += f"; {len(also_at_base)} also fail at merge-base (not attributed)"
@@ -135,17 +135,36 @@ class TestsCheck(Check):
             return set()
         return {f.node_id for f in present if f.node_id in base_failed}
 
-    def _finding(self, ctx: CheckContext, f: Failure) -> Finding:
-        changed = ctx.diff.file(f.path) is not None
+    def _findings(self, ctx: CheckContext, failures: list[Failure]) -> list[Finding]:
+        """One finding per failing test file, not one per test.
+
+        A single bug often breaks dozens of tests (one injected off-by-one in the eval
+        set failed 21). Reporting each separately buries the real defect in repeats.
+        """
+        by_file: dict[str, list[Failure]] = {}
+        for f in failures:
+            by_file.setdefault(f.path, []).append(f)
+        return [self._file_finding(ctx, path, group) for path, group in by_file.items()]
+
+    def _file_finding(self, ctx: CheckContext, path: str, group: list[Failure]) -> Finding:
         assert ctx.sandbox is not None
+        first = group[0]
+        names = [g.node_id for g in group]
+        if len(group) == 1:
+            summary = f"Test fails: {first.node_id}"
+        else:
+            shown = ", ".join(n.split("::", 1)[-1] for n in names[:3])
+            more = f" (+{len(names) - 3} more)" if len(names) > 3 else ""
+            summary = f"{len(group)} tests fail in {path}: {shown}{more}"
         return Finding(
             category=Category.CORRECTNESS,
-            severity=Severity.BLOCKER if changed else Severity.MAJOR,
+            severity=Severity.BLOCKER if ctx.diff.file(path) is not None else Severity.MAJOR,
             confidence=DETERMINISTIC_CONFIDENCE,
-            file=f.path,
-            summary=f"Test fails: {f.node_id}"[:300],
-            evidence=f"pytest in {ctx.sandbox.name} sandbox: FAILED {f.node_id}"
-            + (f" - {f.reason[:300]}" if f.reason else "")
+            file=path,
+            summary=summary[:300],
+            evidence=f"pytest in {ctx.sandbox.name} sandbox: FAILED {', '.join(names[:5])}"
+            + (f" (+{len(names) - 5} more)" if len(names) > 5 else "")
+            + (f" - {first.reason[:300]}" if first.reason else "")
             + ". Not failing at merge-base (or new test).",
             source=Source.DETERMINISTIC,
             rule="pytest:failed",

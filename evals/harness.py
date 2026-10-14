@@ -219,20 +219,40 @@ def _fmt(v: float | None, pct: bool = True) -> str:
     return f"{v * 100:.0f}%" if pct else f"{v:.2f}"
 
 
+def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95% Wilson score interval for a proportion k/n."""
+    if n == 0:
+        return (0.0, 0.0)
+    p = k / n
+    denom = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / denom
+    half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / denom
+    return (max(0.0, centre - half), min(1.0, centre + half))
+
+
+def _ratio(k: int, n: int) -> str:
+    """'78% (32/41) [63-88]': the rate, the raw counts, and a 95% interval."""
+    if n == 0:
+        return "-"
+    lo, hi = wilson(k, n)
+    return f"{k / n * 100:.0f}% ({k}/{n}) [{lo * 100:.0f}-{hi * 100:.0f}]"
+
+
 def summary_row(run: RunRecord, ds: Dataset) -> tuple[str, ...]:
     items = {i.id: i for i in ds.items()}
     s: Summary = summarize([items[r.item_id] for r in run.items], [r.score for r in run.items])
     return (
-        run.dataset, run.split.value, run.mode.value, run.model or "-", str(s.n_items),
-        _fmt(s.recall), _fmt(s.recall_strict), _fmt(s.precision),
+        run.dataset, run.split.value, _label(run), str(s.n_scored),
+        _ratio(s.found_lenient, s.defects), _ratio(s.found_strict, s.defects),
+        _ratio(s.true_positive_findings, s.findings_on_defect_items),
         _fmt(s.fp_per_clean_diff, pct=False), f"${s.mean_cost:.4f}",
-        f"{s.mean_latency:.1f}s", str(s.n_errors), run.watchman_commit,
+        f"{s.mean_latency:.0f}s", str(s.n_errors), run.watchman_commit,
     )  # fmt: skip
 
 
 HEADER = (
-    "dataset", "split", "mode", "model", "items", "recall", "recall (strict)", "precision",
-    "findings/clean diff", "cost/review", "latency", "errors", "watchman",
+    "dataset", "split", "run", "items scored", "recall [95% CI]", "recall strict",
+    "precision", "findings/clean diff", "cost/review", "latency", "errors", "watchman",
 )  # fmt: skip
 
 
@@ -264,9 +284,12 @@ def build_report(runs_dir: Path = RUNS_DIR, datasets_dir: Path | None = None) ->
         lines.append("| " + " | ".join(summary_row(r, load(r.dataset))) + " |")
     lines += [
         "",
-        "recall: defects matched by file and overlapping lines (±3). strict: category must "
-        "also match. precision: matched / all findings on defect items (pessimistic). "
-        "findings/clean diff: false-positive rate on known-good changes.",
+        "recall: defects matched by file and overlapping lines (±3), as rate (found/total) "
+        "[Wilson 95% interval]. strict: the category must also match. precision: matched / "
+        "all findings on defect items (pessimistic: real but unlabeled issues count against "
+        "it). findings/clean diff: false-positive rate on known-good changes. Items that "
+        "failed or finished incomplete are counted under errors and excluded from every "
+        "rate.",
     ]
 
     # Recall by category, per dataset with defects.
