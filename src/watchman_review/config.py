@@ -181,17 +181,29 @@ def _merge_repo_config(cfg: Config, repo_data: dict[str, Any], source: Path) -> 
     return warnings
 
 
-def load_config(repo_root: Path | None = None) -> tuple[Config, list[str]]:
-    """Load the effective config. Returns (config, warnings)."""
+def load_config(
+    repo_root: Path | None = None, *, repo_config_text: str | None = None
+) -> tuple[Config, list[str]]:
+    """Load the effective config. Returns (config, warnings).
+
+    Pass `repo_config_text` to use a specific version of `.watchman.toml` (the review
+    reads it from the *base* revision so a change cannot relax its own review settings).
+    """
     try:
         cfg = Config.model_validate(_read_toml(user_config_path()))
     except ValueError as e:
         raise ConfigError(f"invalid user config {user_config_path()}: {e}") from e
 
     warnings: list[str] = []
-    if repo_root is not None:
-        repo_path = repo_root / REPO_CONFIG_NAME
-        repo_data = _read_toml(repo_path)
+    if repo_root is not None or repo_config_text is not None:
+        repo_path = (repo_root or Path(".")) / REPO_CONFIG_NAME
+        if repo_config_text is not None:
+            try:
+                repo_data = tomllib.loads(repo_config_text)
+            except tomllib.TOMLDecodeError as e:
+                raise ConfigError(f"invalid TOML in {repo_path}: {e}") from e
+        else:
+            repo_data = _read_toml(repo_path)
         if repo_data:
             try:
                 warnings += _merge_repo_config(cfg, repo_data, repo_path)

@@ -1,0 +1,7 @@
+# Repo-level Watchman settings (read from the *base* revision during review).
+# Only [review] options and lowered [budget] limits are honored here.
+
+[review]
+# Network/docker-marked tests can't pass in the no-network sandbox.
+test_command = ["{python}", "-m", "pytest", "-q", "--no-header", "-rfE", "-p", "no:cacheprovider",
+                "-m", "not network and not docker"]
