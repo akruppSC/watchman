@@ -21,6 +21,7 @@ from pathlib import Path
 
 from watchman_review.checks.base import Check, CheckContext
 from watchman_review.checks.manifests import declared, find_manifests, is_manifest
+from watchman_review.checks.scope import is_test_path
 from watchman_review.gitutil import GitError, run_git
 from watchman_review.pypi import Lookup, PackageIndex, PackageInfo, normalize
 from watchman_review.sandbox import find_repo_python, run_static_tool
@@ -182,6 +183,9 @@ class ImportsCheck(Check):
 
         for f in ctx.changed_python_files():
             source = (ctx.tree / f.path).read_text(errors="replace")
+            # Test tooling (pytest, hypothesis, ...) is often installed by tox/nox/CI rather
+            # than declared in a manifest, so "undeclared" is only reported for non-test code.
+            report_undeclared = has_manifest and not is_test_path(f.path)
             for imp in added_imports(source, f.path, f.changed_line_numbers()):
                 checked += 1
                 mod = imp.module
@@ -192,7 +196,7 @@ class ImportsCheck(Check):
                 if (set(cands) | provided) & declared_head:
                     continue
                 if provided:
-                    if has_manifest:
+                    if report_undeclared:
                         findings.append(_finding(
                             Category.CORRECTNESS, Severity.MINOR, 0.75, f.path, imp.line,
                             f"Import '{mod}' is installed but not declared as a dependency",
@@ -227,7 +231,7 @@ class ImportsCheck(Check):
                         "hallucinated name.",
                         "imports:suspicious-package",
                     ))  # fmt: skip
-                if has_manifest:
+                if report_undeclared:
                     findings.append(_finding(
                         Category.CORRECTNESS, Severity.MAJOR, 0.8, f.path, imp.line,
                         f"Third-party import '{mod}' is not declared as a dependency",

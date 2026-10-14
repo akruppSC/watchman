@@ -108,7 +108,10 @@ def test_deterministic_review_end_to_end_offline(defect_repo: Path) -> None:
     res = run_review(defect_repo, det_opts())
     rules = {f.rule for f in res.findings}
     # F401: fastjsonx_utils is imported but unused.
-    assert rules == {"ruff:E722", "ruff:S110", "ruff:F401", "mypy:attr-defined"}
+    # E722 and S110 describe the same bare except/pass and are merged into one finding.
+    assert rules == {"ruff:E722", "ruff:F401", "mypy:attr-defined"}
+    merged = next(f for f in res.findings if f.rule == "ruff:E722")
+    assert "Also reported by: ruff:S110" in merged.evidence
     assert res.verdict is Verdict.WARN
     assert all(c.status is not CheckStatus.ERROR for c in res.checks)
 
@@ -187,6 +190,20 @@ def test_baseline_review_grounds_and_thresholds(defect_repo: Path) -> None:
     assert "<untrusted_diff>" in user
     assert "<untrusted_task>" in user
     assert "Add a JSON loader" in user
+
+
+def test_grounding_rejects_path_escape(defect_repo: Path) -> None:
+    payload = {
+        "findings": [
+            {"category": "security", "severity": "blocker", "confidence": 0.99,
+             "file": "../../../etc/passwd", "line_start": 1, "line_end": 1,
+             "summary": "escape", "evidence": "x"},
+        ]
+    }  # fmt: skip
+    fake = FakeClient([LLMResponse(content=json.dumps(payload))])
+    res = run_review(defect_repo, det_opts(mode=ReviewMode.BASELINE, llm_client=fake))
+    assert res.findings == []
+    assert res.dropped_findings == 1
 
 
 def test_baseline_unparseable_output_is_warning_not_crash(defect_repo: Path) -> None:

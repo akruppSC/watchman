@@ -72,6 +72,38 @@ def threshold(findings: list[Finding], min_confidence: float) -> FilterReport:
     return report
 
 
+def merge_colocated(findings: list[Finding]) -> list[Finding]:
+    """Merge findings with the same file, start line, and category into one.
+
+    Several rules often describe one defect (ruff E722 and S110 both fire on a bare
+    `except: pass`). Reporting it twice is noise to the reader, and it would inflate
+    false positives in evals. The strongest finding is kept and the others are noted in
+    its evidence.
+    """
+    groups: dict[tuple[str, int, str], list[Finding]] = {}
+    passthrough: list[Finding] = []
+    for f in findings:
+        if f.file is None or f.line_start == 0:
+            passthrough.append(f)
+        else:
+            groups.setdefault((f.file, f.line_start, f.category.value), []).append(f)
+    merged: list[Finding] = []
+    for group in groups.values():
+        group.sort(key=lambda f: (-f.severity.rank, -f.confidence, f.rule or "", f.summary))
+        primary, rest = group[0], group[1:]
+        if rest:
+            also = "; ".join(f.rule or f.summary for f in rest)
+            primary = primary.model_copy(
+                update={
+                    "evidence": f"{primary.evidence} Also reported by: {also}.",
+                    "evidence_refs": sorted({r for f in group for r in f.evidence_refs}),
+                    "line_end": max(f.line_end for f in group),
+                }
+            )
+        merged.append(primary)
+    return merged + passthrough
+
+
 @dataclass
 class Finalized:
     findings: list[Finding]
@@ -83,7 +115,15 @@ def finalize(
 ) -> Finalized:
     g = ground(findings, diff, tree)
     t = threshold(g.kept, min_confidence)
-    return Finalized(findings=dedupe(t.kept), dropped=g.dropped + t.dropped)
+    return Finalized(findings=dedupe(merge_colocated(t.kept)), dropped=g.dropped + t.dropped)
 
 
-__all__ = ["FilterReport", "Finalized", "compute_verdict", "finalize", "ground", "threshold"]
+__all__ = [
+    "FilterReport",
+    "Finalized",
+    "compute_verdict",
+    "finalize",
+    "ground",
+    "merge_colocated",
+    "threshold",
+]

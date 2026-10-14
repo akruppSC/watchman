@@ -159,6 +159,16 @@ def test_imports_check_classifies_each_import(git_repo: Path) -> None:
     assert missing.severity is Severity.BLOCKER
 
 
+def test_undeclared_test_tooling_is_not_reported_but_hallucinations_are(git_repo: Path) -> None:
+    branch_change(
+        git_repo,
+        {"pyproject.toml": '[project]\nname="x"\ndependencies=[]\n', "tests/__init__.py": ""},
+        {"tests/test_a.py": "import pytest\nimport pytest_magicfixtures_xyz\n"},
+    )
+    res = run_check(ImportsCheck(fake_pypi({"pytest": MATURE})), make_ctx(git_repo))
+    assert [(f.rule, f.line_start) for f in res.findings] == [("imports:missing", 2)]
+
+
 def test_imports_check_new_manifest_entry_missing_on_pypi(git_repo: Path) -> None:
     branch_change(
         git_repo,
