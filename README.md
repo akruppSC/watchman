@@ -58,6 +58,12 @@ provider (OpenRouter, Anthropic, OpenAI, or Ollama), the model, the *name* of th
 holding the API key (or a note that the key is in the OS keyring), pricing, and budgets.
 **API key values are never written to any file.**
 
+The keyring option is only offered when a real OS keyring backend exists (Secret Service /
+GNOME Keyring, macOS Keychain, Windows Credential Locker). On headless or minimal Linux
+installs there usually isn't one. In that case setup tells you to
+`export OPENROUTER_API_KEY=...` (or the env var for your provider) instead. Watchman
+deliberately does not fall back to `keyrings.alt`, which stores keys in plaintext.
+
 A repo can add a `.watchman.toml` to tune review options:
 
 ```toml

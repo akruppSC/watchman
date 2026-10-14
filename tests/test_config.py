@@ -78,6 +78,16 @@ def test_missing_key_raises() -> None:
         resolve_api_key(LLMConfig(provider=Provider.OPENROUTER))
 
 
+def test_keyring_read_failure_is_config_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    import keyring
+    from keyring.backends import fail
+
+    monkeypatch.setattr(keyring, "get_keyring", lambda: fail.Keyring())
+    llm = LLMConfig(provider=Provider.OPENROUTER, api_key_source=KeySource.KEYRING)
+    with pytest.raises(ConfigError, match="OPENROUTER_API_KEY"):
+        resolve_api_key(llm)
+
+
 def test_ollama_needs_no_key() -> None:
     assert resolve_api_key(LLMConfig(provider=Provider.OLLAMA)) is None
 

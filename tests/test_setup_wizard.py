@@ -4,7 +4,7 @@ import pytest
 
 from watchman_review.config import Config, KeySource, Provider, SandboxKind
 from watchman_review.llm.catalog import CatalogError, ModelInfo
-from watchman_review.setup_wizard import SetupDeps, run_setup
+from watchman_review.setup_wizard import KeyringStoreError, SetupDeps, run_setup
 
 
 class ScriptedIO:
@@ -68,6 +68,42 @@ def test_keyring_path_stores_secret_not_in_config() -> None:
     assert cfg.llm.output_cost_per_mtok == 15.0
     assert "secret-value" not in cfg.model_dump_json()
     assert io.hidden_prompts == ["API key"]
+
+
+def test_keyring_store_failure_falls_back_to_env_instead_of_crashing() -> None:
+    def failing_setter(service: str, user: str, secret: str) -> None:
+        raise KeyringStoreError("NoKeyringError: no backend")
+
+    io = ScriptedIO(
+        ["openrouter", "", "", "secret-value", "vendor/good-model", "", "", "auto"],
+        confirms=[True],
+    )
+    deps = SetupDeps(catalog=lambda c, k: CATALOG, keyring_setter=failing_setter, environ={})
+    cfg = run_setup(io, Config(), deps)
+    assert cfg.llm.api_key_source is KeySource.ENV
+    assert cfg.llm.model == "vendor/good-model"
+    assert any("Could not store the key" in line for line in io.output)
+    assert any("export OPENROUTER_API_KEY" in line for line in io.output)
+    assert "secret-value" not in cfg.model_dump_json()
+
+
+def test_no_keyring_backend_skips_keyring_prompt() -> None:
+    io = ScriptedIO(["openrouter", "", "", "vendor/good-model", "", "", "auto"])
+    deps = SetupDeps(catalog=lambda c, k: CATALOG, keyring_setter=None, environ={})
+    cfg = run_setup(io, Config(), deps)
+    assert io.hidden_prompts == []  # never asked for the secret
+    assert any("no OS keyring backend" in line for line in io.output)
+    assert cfg.llm.api_key_source is KeySource.ENV
+
+
+def test_default_setter_is_none_when_backend_is_fail(monkeypatch: pytest.MonkeyPatch) -> None:
+    import keyring
+    from keyring.backends import fail
+
+    from watchman_review.setup_wizard import _default_keyring_setter
+
+    monkeypatch.setattr(keyring, "get_keyring", lambda: fail.Keyring())
+    assert _default_keyring_setter() is None
 
 
 def test_unknown_model_requires_confirmation() -> None:

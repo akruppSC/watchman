@@ -247,3 +247,12 @@ def test_openrouter_catalog_parses_pricing() -> None:
     assert models[0].id == "a/b"
     assert models[0].input_cost_per_mtok == pytest.approx(3.0)
     assert models[0].output_cost_per_mtok == pytest.approx(15.0)
+
+
+def test_catalog_pricing_has_no_float_noise() -> None:
+    def handler(req: httpx.Request) -> httpx.Response:
+        pricing = {"prompt": "0.0000001", "completion": "0.0000005"}
+        return httpx.Response(200, json={"data": [{"id": "m", "pricing": pricing}]})
+
+    [m] = list_models(LLMConfig(), None, http=mock_http(handler))
+    assert (m.input_cost_per_mtok, m.output_cost_per_mtok) == (0.1, 0.5)

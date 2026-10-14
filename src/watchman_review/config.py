@@ -223,6 +223,19 @@ def save_user_config(cfg: Config, path: Path | None = None) -> Path:
     return path
 
 
+def keyring_backend_usable() -> bool:
+    """True only if `keyring` is installed *and* a real backend (Secret Service, macOS
+    Keychain, Windows Credential Locker, ...) is available. On headless Linux without a
+    keyring daemon, keyring falls back to a 'fail' backend that raises on every call."""
+    try:
+        import keyring
+        from keyring.backends import fail
+    except ImportError:
+        return False
+    backend = keyring.get_keyring()
+    return not isinstance(backend, fail.Keyring) and float(getattr(backend, "priority", 0)) > 0
+
+
 def resolve_api_key(llm: LLMConfig) -> str | None:
     """Return the API key, or None for providers that need none. Raise if it's missing."""
     if llm.provider is Provider.OLLAMA or llm.api_key_source is KeySource.NONE:
@@ -230,12 +243,19 @@ def resolve_api_key(llm: LLMConfig) -> str | None:
     if llm.api_key_source is KeySource.KEYRING:
         try:
             import keyring
+            from keyring.errors import KeyringError
         except ImportError as e:
             raise ConfigError(
                 "api_key_source = 'keyring' but the keyring package is not installed "
                 "(install with the 'keyring' extra)"
             ) from e
-        key = keyring.get_password(KEYRING_SERVICE, llm.provider.value)
+        try:
+            key = keyring.get_password(KEYRING_SERVICE, llm.provider.value)
+        except KeyringError as e:
+            raise ConfigError(
+                f"could not read the API key from the OS keyring ({type(e).__name__}); "
+                f"set {llm.resolved_key_env()} instead and re-run `watchman setup`"
+            ) from e
         if not key:
             raise ConfigError(f"no key stored in keyring for {llm.provider}; run `watchman setup`")
         return str(key)

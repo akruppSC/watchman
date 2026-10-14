@@ -18,6 +18,7 @@ from watchman_review.config import (
     KeySource,
     Provider,
     SandboxKind,
+    keyring_backend_usable,
 )
 from watchman_review.llm.catalog import CatalogError, ModelInfo, list_models
 
@@ -36,14 +37,21 @@ def _default_catalog(cfg: Config, key: str | None) -> list[ModelInfo]:
     return list_models(cfg.llm, key)
 
 
+class KeyringStoreError(Exception):
+    """Storing the key in the OS keyring failed."""
+
+
 def _default_keyring_setter() -> KeyringSetter | None:
-    try:
-        import keyring
-    except ImportError:
+    if not keyring_backend_usable():
         return None
+    import keyring
+    from keyring.errors import KeyringError
 
     def setter(service: str, user: str, secret: str) -> None:
-        keyring.set_password(service, user, secret)
+        try:
+            keyring.set_password(service, user, secret)
+        except KeyringError as e:
+            raise KeyringStoreError(f"{type(e).__name__}: {e}") from e
 
     return setter
 
@@ -114,17 +122,29 @@ def run_setup(io: SetupIO, existing: Config, deps: SetupDeps | None = None) -> C
         cfg.llm.api_key_source = KeySource.ENV
         if key:
             io.echo(f"Found {env_name} in the environment.")
-        elif deps.keyring_setter is not None and io.confirm(
+        elif deps.keyring_setter is None:
+            io.echo(
+                f"{env_name} is not set, and no OS keyring backend is available on this "
+                "machine, so the key can't be stored securely here."
+            )
+        elif io.confirm(
             f"{env_name} is not set. Store a key in the OS keyring instead?", default=True
         ):
             secret = io.prompt("API key", hide=True).strip()
             if secret:
-                deps.keyring_setter(KEYRING_SERVICE, provider.value, secret)
-                cfg.llm.api_key_source = KeySource.KEYRING
-                key = secret
-                io.echo("Key stored in keyring.")
-        else:
-            io.echo(f"Remember to `export {env_name}=...` before running reviews.")
+                try:
+                    deps.keyring_setter(KEYRING_SERVICE, provider.value, secret)
+                except KeyringStoreError as e:
+                    io.echo(f"Could not store the key in the OS keyring ({e}).")
+                else:
+                    cfg.llm.api_key_source = KeySource.KEYRING
+                    key = secret
+                    io.echo("Key stored in keyring.")
+        if not key:
+            io.echo(
+                f"Set it in your shell before running reviews: `export {env_name}=...` "
+                "(add it to ~/.bashrc to persist)."
+            )
 
     models: list[ModelInfo] = []
     try:

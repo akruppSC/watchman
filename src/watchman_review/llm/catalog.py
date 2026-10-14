@@ -49,8 +49,9 @@ def list_models(
         pricing = item.get("pricing")
         if isinstance(pricing, dict):
             try:
-                info.input_cost_per_mtok = float(pricing["prompt"]) * 1_000_000
-                info.output_cost_per_mtok = float(pricing["completion"]) * 1_000_000
+                # Round away float noise (0.0000001 * 1e6 == 0.09999999999999999).
+                info.input_cost_per_mtok = round(float(pricing["prompt"]) * 1_000_000, 6)
+                info.output_cost_per_mtok = round(float(pricing["completion"]) * 1_000_000, 6)
             except (KeyError, TypeError, ValueError):
                 pass
         out.append(info)
