@@ -9,9 +9,8 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 *verifies* its suspicions with tools before reporting them. Every finding must cite
 evidence, and findings that can't be grounded are dropped.
 
-> **Status:** milestone 1 (foundation) is complete: the deterministic layer, the
-> single-prompt baseline, the CLI, and the eval harness skeleton. The tool-using agent is
-> milestone 2. See [Roadmap](#roadmap).
+> **Status:** milestones 1 (foundation) and 2 (the tool-using agent) are complete.
+> Milestone 3 builds the real eval datasets and runs the ablation. See [Roadmap](#roadmap).
 
 ## Install
 
@@ -42,9 +41,25 @@ uv run watchman review --base main --head HEAD --json -o review.json --fail-on b
 # Uncommitted work in progress:
 uv run watchman review --base main --worktree
 
+# Full review: deterministic layer + tool-using agent (uses your configured model):
+uv run watchman review --base main --mode agent --task "Add retry to the HTTP client"
+
+# Try a different model for one run:
+uv run watchman review --base main --mode agent --model anthropic/claude-haiku-5.5
+
 # Single-prompt LLM baseline (the ablation control arm):
 uv run watchman review --base main --mode baseline --task "Add retry to the HTTP client"
 ```
+
+| Mode | What runs | Cost |
+|---|---|---|
+| `deterministic` (default) | Layer 1 checks only | free |
+| `agent` | Layer 1, then the agent, which sees Layer 1 results as evidence | LLM |
+| `agent_no_l1` | The agent alone (ablation arm) | LLM |
+| `baseline` | One prompt over the diff: no tools, no Layer 1 (ablation arm) | LLM |
+
+To make `agent` your default, set `default_mode = "agent"` under `[review]` in
+`~/.config/watchman/config.toml`. A repo's `.watchman.toml` can't change this.
 
 Exit codes: `0` = verdict below the `--fail-on` threshold, `1` = gate tripped, `2` = error.
 
@@ -82,7 +97,7 @@ git diff (merge-base..head) ──► snapshot worktree of head
           Layer 1: deterministic checks (cheap, high precision)
           secrets · imports · hygiene · scope · ruff · mypy · pytest(sandbox)
                                   │  results become evidence for ↓
-          Layer 2: LLM reviewer (M1: single-prompt baseline; M2: tool-using agent)
+          Layer 2: tool-using agent: plan → verify with tools → submit_findings
                                   │
           post-process: grounding → confidence threshold → merge/dedupe → verdict
                                   │
@@ -102,11 +117,57 @@ git diff (merge-base..head) ──► snapshot worktree of head
 All deterministic findings are limited to lines **added by the diff**, so pre-existing debt
 never shows up as noise.
 
+### The agent
+
+The agent receives the task, the diff, and the Layer 1 results, and works through a
+**plan → verify → submit** loop with these tools:
+
+| Tool | Notes |
+|---|---|
+| `get_diff(path?)` | The change, whole or per file |
+| `read_file(path, start, end)` | Head snapshot only, line-numbered, ≤ 400 lines per call |
+| `search_repo(pattern, regex?, path_glob?)` | Find callers, existing helpers, duplicates |
+| `git_log(path?)`, `git_blame(path, start, end)` | History and intent |
+| `run_tests(selectors)` | Sandboxed, no network; flags are rejected (no option injection) |
+| `run_linter(paths)` | ruff, all lines |
+| `check_package_exists(name)` | PyPI; the only network access a tool has |
+| `read_conventions()` | `CONVENTIONS.md` from the **base** revision |
+
+Every tool result is tagged `[ref:tN]`, and each finding must list the refs that support
+it. Grounding grades each finding:
+
+- **Verified:** it cites a successful tool call or Layer 1 check that concerns its file.
+  Confidence is kept.
+- **Diff-only:** it cites only the diff. Confidence is capped at 0.6, so it can't block a
+  merge.
+- **Unverified:** it cites no valid refs (refs that never ran, or failed calls). It is
+  dropped.
+
+Dropped findings appear in the JSON output under `dropped`, each with its reason. The
+loop enforces the tool-call budget (default 25) and token and cost limits. Near a limit,
+it refuses further tools and asks for submission, so a review always ends with a
+structured result. The full tool trace is included in the output.
+
+**First measurements** come from the toy smoke set, with GPT-5 as reviewer. These five
+hand-written items sanity-check the pipeline and aren't a benchmark:
+
+| mode | recall | precision | findings per clean diff | cost/review | latency |
+|---|---|---|---|---|---|
+| deterministic | 50% | 80% | 0.00 | $0 | 1s |
+| agent (GPT-5) | 100% | 57% | 0.00 | $0.058 | 146s |
+
+- The agent found every defect the deterministic layer can't see: the duplicated helper,
+  the test that can't fail, and the silent behavior change.
+- It reported the prompt-injection comment instead of obeying it.
+- Most of its "false positives" restate a real defect under a second category on the
+  same lines. Milestone 3 will measure and tune this on the dev split of real datasets.
+
 ## Evaluation
 
 ```bash
 uv run python -m evals.harness list --dataset toy
 uv run python -m evals.harness run --dataset toy --mode deterministic
+uv run python -m evals.harness run --dataset toy --mode agent --model anthropic/claude-haiku-5.5
 make results    # regenerates evals/results/RESULTS.md from saved runs
 ```
 
@@ -128,7 +189,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 ## Roadmap
 
 1. ✅ Foundation: CLI, schema, deterministic checks, single-prompt baseline, eval harness skeleton
-2. Agent: tool-using loop with budgets and pitfall rules
+2. ✅ Agent: tool-using loop with budgets, pitfall rules, and evidence-ref grounding
 3. Evals: frozen datasets A/B/C, ablations, precision tuning
 4. Integration: GitHub Action and PR comment, pre-push hook, writeup, demo
 5. Live mode: supervising an OpenCode worker at checkpoints
@@ -147,9 +208,28 @@ uv run pytest -m docker          # tests that need a docker daemon
   append-only monthly ledger (`~/.local/share/watchman/ledger.jsonl`) that refuses calls
   once the cap is reached. Cached responses count toward the per-review budget (so a
   replayed eval behaves identically) but not toward real spend.
-- **Grounding is post-processing, not a prompt instruction.** Model findings that cite
-  files outside the repo or diff, or lines past the end of a file, are dropped and counted
-  in `dropped_findings`. Milestone 2 adds tool-call-ID citations.
+- **Grounding is post-processing, not a prompt instruction.**
+  - Model findings that cite files outside the repo or diff, or lines past the end of a
+    file, are dropped.
+  - Agent findings must also cite refs of tool calls that actually ran and succeeded.
+    Confidence is capped by evidence grade (see [The agent](#the-agent)).
+  - Every drop is recorded with its reason.
+  - The model can't set a finding's `source`, `rule`, or `id`.
+- **Submission via a `submit_findings` tool, not free text.** Tool-call arguments are
+  more reliable structured output across providers. A JSON-in-text answer is still
+  accepted as a fallback.
+- **All tools are offered on every turn, even in forced-submit mode.** Some providers
+  reject histories that reference tools missing from the request, so the loop refuses
+  non-submit calls itself.
+- **Tool output is untrusted too.** File contents, test output, and commit messages are
+  wrapped in `<untrusted_tool_output>`. The toy set includes a prompt-injection canary
+  (`seeded-003`).
+- **Reasoning models need headroom.** GPT-5 spends hidden reasoning tokens out of
+  `max_tokens`, so the defaults are 16k output tokens and a 300 s timeout.
+- **`default_mode` lives in user config only**, so a reviewed repo can't opt you into
+  paid LLM modes.
+- **Eval runs count toward the monthly cap.** The harness records real spend in the
+  same ledger as reviews.
 - **Reviewed content is untrusted.**
   - The diff, task, and conventions are wrapped in `<untrusted_*>` delimiters, and
     attempts to close a tag early are neutralized.
@@ -178,9 +258,10 @@ uv run pytest -m docker          # tests that need a docker daemon
   - A private-key match requires key material, not just the header.
   - Pattern-only secret matches in tests are downgraded.
   - Undeclared imports in test files (pytest and similar) are not reported.
-- **Baseline fairness.** The single-prompt baseline gets the same category vocabulary,
-  severity guide, and output schema as the agent will, so the ablation measures tools and
-  verification rather than prompt wording.
+- **Baseline fairness.** The baseline and the agent render their pitfall catalog from one
+  source (`prompts/pitfalls.py`) and share the severity guide. The agent's version adds a
+  "verify with" column, so the ablation measures tools and verification rather than
+  prompt wording.
 
 ## Known limitations
 
@@ -196,6 +277,12 @@ uv run pytest -m docker          # tests that need a docker daemon
 - The slopsquatting heuristic (package < 90 days old or ≤ 1 release) is coarse.
 - On defect items, eval precision is pessimistic: real but unlabeled issues count as
   false positives. The clean-diff set is the uncontaminated false-positive measure.
+- Agent reviews with GPT-5 take about 2–4 minutes, almost all of it model reasoning time.
+- The agent tends to restate one defect under two categories. This isn't merged
+  automatically yet, because cross-category merging could hide a genuinely different
+  issue on the same line.
+- Model behavior varies run to run, even at temperature 0 with a fixed seed. Use the
+  record/replay cache (`--llm-cache read_write`) when you need a review you can reproduce.
 
 ## License
 
