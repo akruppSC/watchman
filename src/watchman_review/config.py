@@ -116,7 +116,9 @@ class ReviewConfig(BaseModel):
             "pytest",
         ]
     )
-    min_confidence: float = Field(default=0.5, ge=0, le=1)
+    # Tuned on the dev split (evals/tune.py): 0.6 + restatement dropping raised precision
+    # from 56% to 68% for a 4-point recall cost with the Haiku agent.
+    min_confidence: float = Field(default=0.6, ge=0, le=1)
     block_min_confidence: float = Field(default=0.7, ge=0, le=1)
     test_command: list[str] | None = None
     test_timeout_s: float = 300.0

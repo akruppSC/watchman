@@ -322,3 +322,20 @@ def test_cli_schema_command() -> None:
     result = CliRunner().invoke(app, ["schema"])
     assert result.exit_code == 0
     assert "findings" in json.loads(result.stdout)["properties"]
+
+
+def test_restatements_dropped_but_deterministic_kept() -> None:
+    from watchman_review.postprocess import drop_restatements
+    from watchman_review.schema import Category, Finding, Severity
+
+    def f(src: Source, cat: Category, line: int, sev: Severity = Severity.MAJOR) -> Finding:
+        return Finding(category=cat, severity=sev, confidence=0.9, file="a.py", line_start=line,
+                       line_end=line, summary=f"{cat}{line}", evidence="e", source=src)  # fmt: skip
+
+    det = f(Source.DETERMINISTIC, Category.SWALLOWED_ERROR, 10)
+    restated = f(Source.AGENT, Category.CORRECTNESS, 11)
+    far = f(Source.AGENT, Category.CORRECTNESS, 40)
+    det2 = f(Source.DETERMINISTIC, Category.SECURITY, 10, Severity.MINOR)
+    r = drop_restatements([restated, far, det, det2])
+    assert {x.summary for x in r.kept} == {det.summary, det2.summary, far.summary}
+    assert [d[0].summary for d in r.dropped] == [restated.summary]

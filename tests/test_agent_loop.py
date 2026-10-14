@@ -96,9 +96,14 @@ def test_agent_verifies_with_tool_and_cites_evidence(dup_repo: Path) -> None:
     assert dup.evidence_refs == ["t1"]
     assert dup.confidence == 0.9
     assert dup.source is Source.AGENT
-    assert by_cat[Category.COMMENT_NOISE].confidence == 0.6  # diff-only: capped
+    # The diff-only comment_noise finding (capped at 0.6) sits next to the stronger
+    # duplication finding, so it is dropped as a restatement.
+    assert Category.COMMENT_NOISE not in by_cat
+    reasons = {d.finding.category: d.reason for d in res.dropped}
+    assert reasons[Category.COMMENT_NOISE].startswith("restates ")
+    assert reasons[Category.CORRECTNESS].startswith("confidence 0.30")
     assert Category.CORRECTNESS not in by_cat  # cited a ref that doesn't exist -> dropped
-    assert res.dropped_findings == 1
+    assert res.dropped_findings == 2
     assert [s.ref for s in res.tool_trace] == ["t1"]
     assert res.tool_trace[0].tool == "search_repo"
     assert "pkg/text.py:2" in res.tool_trace[0].output_excerpt
