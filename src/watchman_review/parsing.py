@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from watchman_review.schema import Finding, Source
 
+_MODEL_FIELDS = set(Finding.model_fields) - {"id", "source", "rule"}
 _FENCE = re.compile(r"```(?:json)?\s*(\{.*?\})\s*```", re.DOTALL)
 
 
@@ -51,8 +52,13 @@ def validate_items(raw: list[Any], source: Source) -> tuple[list[Finding], list[
         if not isinstance(item, dict):
             errors.append(f"finding[{i}]: not an object")
             continue
-        # id, source, and rule identify *how* a finding was produced; never trust the model.
-        item = {k: v for k, v in item.items() if k not in ("id", "source", "rule")}
+        # Lenient on input, strict on output: models (Haiku especially) add junk keys such
+        # as `line_start_note` or `x`; rejecting the whole finding for that discarded real
+        # results. Unknown keys are dropped. id, source, and rule identify *how* a finding
+        # was produced and are never taken from the model.
+        item = {k: v for k, v in item.items() if k in _MODEL_FIELDS}
+        if isinstance(item.get("summary"), str) and len(item["summary"]) > 300:
+            item["summary"] = item["summary"][:297] + "..."
         item["source"] = source
         for key in ("line_start", "line_end"):
             if item.get(key) is None:

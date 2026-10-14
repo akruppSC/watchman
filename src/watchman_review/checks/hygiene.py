@@ -48,10 +48,12 @@ def classify_suppression(text: str) -> tuple[str, Severity] | None:
     if not m:
         return None
     kind = re.sub(r"\s+", " ", m.group("kind"))
-    justified = len(re.findall(r"[A-Za-z]{3,}", m.group("rest"))) >= 2
     if not m.group("codes"):
         return kind, Severity.MINOR  # blanket suppression
-    return None if justified else (kind, Severity.NIT)
+    # A suppression naming a specific rule is a deliberate, reviewable choice. Flagging
+    # those produced 7 false alarms across the 44 dev clean diffs, so only blanket ones
+    # are reported.
+    return None
 
 
 def _finding(

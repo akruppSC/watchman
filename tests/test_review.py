@@ -90,6 +90,19 @@ def test_parse_findings_drops_invalid_items_and_forces_source() -> None:
     assert len(errors) == 2
 
 
+def test_parse_findings_drops_unknown_keys_and_truncates() -> None:
+    item = {
+        "category": "correctness", "severity": "major", "confidence": 0.9, "file": "a.py",
+        "line_start": 1, "line_end": 1, "summary": "s" * 400, "evidence": "e",
+        "line_start_note": "junk", "x": 1, "rule": "ruff:E722", "id": "spoof",
+    }  # fmt: skip
+    findings, errors = parse_findings(json.dumps({"findings": [item]}), Source.AGENT)
+    assert errors == []
+    [f] = findings
+    assert len(f.summary) == 300 and f.summary.endswith("...")
+    assert f.rule is None and f.id != "spoof"
+
+
 def test_parse_findings_rejects_garbage() -> None:
     with pytest.raises(FindingsParseError):
         parse_findings("I think it looks fine!", Source.BASELINE)

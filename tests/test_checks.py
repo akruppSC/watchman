@@ -351,9 +351,9 @@ def test_hygiene_detects_tampering(git_repo: Path) -> None:
     git(git_repo, "rm", "-q", "tests/test_gone.py")
     git(git_repo, "commit", "-q", "-m", "rm")
     res = run_check(HygieneCheck(), make_ctx(git_repo))
+    # The coded `# noqa: S307` is a deliberate suppression and is not reported.
     assert rules(res) == [
         "hygiene:assertions-removed",
-        "hygiene:suppression",
         "hygiene:test-deleted",
         "hygiene:test-skipped",
     ]
@@ -364,8 +364,8 @@ def test_hygiene_detects_tampering(git_repo: Path) -> None:
     [
         ("x = 1  # noqa", ("noqa", Severity.MINOR)),
         ("x = 1  # type: ignore", ("type: ignore", Severity.MINOR)),
-        ("x = 1  # noqa: E501", ("noqa", Severity.NIT)),
-        ("x = f()  # type: ignore[attr-defined]", ("type: ignore", Severity.NIT)),
+        ("x = 1  # noqa: E501", None),
+        ("x = f()  # type: ignore[attr-defined]", None),
         ("except Exception:  # noqa: BLE001 - must not abort the review", None),
         ("x = f()  # type: ignore[arg-type]  # stub is wrong upstream", None),
         ("x = 1  # ordinary comment", None),

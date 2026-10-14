@@ -58,6 +58,7 @@ _FINDING_SCHEMA: dict[str, Any] = {
         "category", "severity", "confidence", "file", "line_start", "line_end", "summary",
         "evidence", "evidence_refs",
     ],
+    "additionalProperties": False,
 }  # fmt: skip
 
 SUBMIT_SPEC = ToolSpec(
