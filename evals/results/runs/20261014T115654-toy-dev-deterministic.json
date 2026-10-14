@@ -1,0 +1,410 @@
+{
+  "run_id": "20261014T115654-toy-dev-deterministic",
+  "started_at": "2026-10-14T11:56:54.077008+00:00",
+  "dataset": "toy",
+  "dataset_sha256": null,
+  "dataset_frozen": false,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "a8eb513-dirty",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600
+  },
+  "items": [
+    {
+      "item_id": "clean-001",
+      "score": {
+        "item_id": "clean-001",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 2.128,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 3 added import(s)",
+            "duration_s": 0.003,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +24/-0 lines, 2 source / 1 test file(s), areas: mathx(2), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.016,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.755,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "6 passed in 0.01s",
+            "duration_s": 0.275,
+            "findings": [],
+            "output_excerpt": "......                                                                   [100%]\n6 passed in 0.01s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 2.128,
+        "dropped_findings": 0,
+        "warnings": [
+          "Running target-repo tests in a local subprocess (Docker unavailable): network disabled via unshare."
+        ]
+      }
+    },
+    {
+      "item_id": "seeded-001",
+      "score": {
+        "item_id": "seeded-001",
+        "kind": "seeded",
+        "n_defects": 3,
+        "n_findings": 4,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "e9f569d96fab",
+            "category_match": true
+          },
+          {
+            "defect_index": 1,
+            "finding_id": "635590854728",
+            "category_match": true
+          },
+          {
+            "defect_index": 2,
+            "finding_id": "dc9642321714",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "e4a8fb9caf28"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.747,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "e9f569d96fab",
+            "category": "hallucinated_dependency",
+            "severity": "blocker",
+            "confidence": 0.9,
+            "file": "demo/io.py",
+            "line_start": 2,
+            "line_end": 2,
+            "summary": "Import 'fastjsonx_utils' does not resolve to stdlib, the repo, or any PyPI package",
+            "evidence": "Not in stdlib; no local module 'fastjsonx_utils'; not declared; PyPI lookup returned 404 for ['fastjsonx-utils', 'python-fastjsonx-utils', 'pyfastjsonx-utils'].",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "imports:missing",
+            "evidence_refs": [
+              "check:imports"
+            ]
+          },
+          {
+            "id": "635590854728",
+            "category": "hallucinated_dependency",
+            "severity": "major",
+            "confidence": 0.75,
+            "file": "demo/io.py",
+            "line_start": 7,
+            "line_end": 7,
+            "summary": "mypy [attr-defined]: Module has no attribute \"parse_file\"",
+            "evidence": "mypy reported [attr-defined] at demo/io.py:7 on a changed line (no repo venv found; third-party types unknown).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "mypy:attr-defined",
+            "evidence_refs": [
+              "check:mypy"
+            ]
+          },
+          {
+            "id": "dc9642321714",
+            "category": "swallowed_error",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "demo/io.py",
+            "line_start": 8,
+            "line_end": 8,
+            "summary": "E722: Do not use bare `except`",
+            "evidence": "ruff reported E722 at demo/io.py:8 on a line added by this diff. Also reported by: ruff:S110.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:E722",
+            "evidence_refs": [
+              "check:ruff"
+            ]
+          },
+          {
+            "id": "e4a8fb9caf28",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "demo/io.py",
+            "line_start": 2,
+            "line_end": 2,
+            "summary": "F401: `fastjsonx_utils` imported but unused",
+            "evidence": "ruff reported F401 at demo/io.py:2 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:F401",
+            "evidence_refs": [
+              "check:ruff"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "failed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.002,
+            "findings": [
+              {
+                "id": "e9f569d96fab",
+                "category": "hallucinated_dependency",
+                "severity": "blocker",
+                "confidence": 0.9,
+                "file": "demo/io.py",
+                "line_start": 2,
+                "line_end": 2,
+                "summary": "Import 'fastjsonx_utils' does not resolve to stdlib, the repo, or any PyPI package",
+                "evidence": "Not in stdlib; no local module 'fastjsonx_utils'; not declared; PyPI lookup returned 404 for ['fastjsonx-utils', 'python-fastjsonx-utils', 'pyfastjsonx-utils'].",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "imports:missing",
+                "evidence_refs": [
+                  "check:imports"
+                ]
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +8/-0 lines, 1 source / 0 test file(s), areas: demo(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "failed",
+            "summary": "3 violation(s) on changed lines",
+            "duration_s": 0.014,
+            "findings": [
+              {
+                "id": "e4a8fb9caf28",
+                "category": "over_abstraction",
+                "severity": "minor",
+                "confidence": 0.95,
+                "file": "demo/io.py",
+                "line_start": 2,
+                "line_end": 2,
+                "summary": "F401: `fastjsonx_utils` imported but unused",
+                "evidence": "ruff reported F401 at demo/io.py:2 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:F401",
+                "evidence_refs": [
+                  "check:ruff"
+                ]
+              },
+              {
+                "id": "dc9642321714",
+                "category": "swallowed_error",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "demo/io.py",
+                "line_start": 8,
+                "line_end": 8,
+                "summary": "E722: Do not use bare `except`",
+                "evidence": "ruff reported E722 at demo/io.py:8 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:E722",
+                "evidence_refs": [
+                  "check:ruff"
+                ]
+              },
+              {
+                "id": "e9154ceb2fab",
+                "category": "swallowed_error",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "demo/io.py",
+                "line_start": 8,
+                "line_end": 8,
+                "summary": "S110: `try`-`except`-`pass` detected, consider logging the exception",
+                "evidence": "ruff reported S110 at demo/io.py:8 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:S110",
+                "evidence_refs": [
+                  "check:ruff"
+                ]
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "failed",
+            "summary": "1 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 0.712,
+            "findings": [
+              {
+                "id": "635590854728",
+                "category": "hallucinated_dependency",
+                "severity": "major",
+                "confidence": 0.75,
+                "file": "demo/io.py",
+                "line_start": 7,
+                "line_end": 7,
+                "summary": "mypy [attr-defined]: Module has no attribute \"parse_file\"",
+                "evidence": "mypy reported [attr-defined] at demo/io.py:7 on a changed line (no repo venv found; third-party types unknown).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "mypy:attr-defined",
+                "evidence_refs": [
+                  "check:mypy"
+                ]
+              }
+            ],
+            "output_excerpt": "{\"file\": \"demo/io.py\", \"line\": 7, \"column\": 15, \"end_line\": 7, \"end_column\": 30, \"message\": \"Module has no attribute \\\"parse_file\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "skipped",
+            "summary": "no tests found",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.747,
+        "dropped_findings": 0,
+        "warnings": [
+          "Running target-repo tests in a local subprocess (Docker unavailable): network disabled via unshare."
+        ]
+      }
+    }
+  ]
+}

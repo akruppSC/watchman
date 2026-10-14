@@ -1,0 +1,7 @@
+{
+  "id": "clean-001",
+  "kind": "clean",
+  "task": "Add a clamp(value, low, high) helper with tests.",
+  "source": {"type": "inline", "license": "CC0-1.0", "origin": "hand-written toy example"},
+  "defects": []
+}

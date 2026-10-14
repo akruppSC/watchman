@@ -1,0 +1,29 @@
+{
+  "id": "seeded-001",
+  "kind": "seeded",
+  "task": "Add a helper that loads a JSON config file and returns a dict.",
+  "source": {"type": "inline", "license": "CC0-1.0", "origin": "hand-written toy example"},
+  "defects": [
+    {
+      "file": "demo/io.py",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "hallucinated_dependency",
+      "description": "Imports a package that does not exist on PyPI."
+    },
+    {
+      "file": "demo/io.py",
+      "line_start": 7,
+      "line_end": 7,
+      "category": "hallucinated_dependency",
+      "description": "json.parse_file does not exist."
+    },
+    {
+      "file": "demo/io.py",
+      "line_start": 8,
+      "line_end": 9,
+      "category": "swallowed_error",
+      "description": "Bare except/pass hides every failure and returns None."
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+from __future__ import annotations
+
+import json
+import shutil
+from pathlib import Path
+
+import pytest
+from evals.dataset import (
+    DATASETS_DIR,
+    Dataset,
+    DatasetError,
+    Defect,
+    InlineSource,
+    Item,
+    ItemKind,
+    Split,
+    assign_split,
+    materialize,
+)
+from evals.harness import app as harness_app
+from evals.harness import build_report, run_dataset, save_run
+from evals.metrics import overlaps, score_item, summarize
+from typer.testing import CliRunner
+
+from tests.conftest import git
+from watchman_review.config import Config
+from watchman_review.llm.cache import CacheMode
+from watchman_review.llm.fake import FakeClient
+from watchman_review.llm.types import LLMResponse
+from watchman_review.schema import (
+    Category,
+    Finding,
+    ReviewMode,
+    ReviewResult,
+    Severity,
+    Source,
+    Verdict,
+)
+
+
+def finding(
+    file: str, line: int, cat: Category = Category.CORRECTNESS, conf: float = 0.9
+) -> Finding:
+    return Finding(
+        category=cat, severity=Severity.MAJOR, confidence=conf, file=file, line_start=line,
+        line_end=line, summary=f"s{line}{cat}", evidence="e", source=Source.AGENT,
+    )  # fmt: skip
+
+
+def result(findings: list[Finding]) -> ReviewResult:
+    return ReviewResult(
+        mode=ReviewMode.AGENT, base="b", head="h", verdict=Verdict.WARN, findings=findings
+    )
+
+
+@pytest.fixture
+def toy_copy(tmp_path: Path) -> Path:
+    dst = tmp_path / "datasets"
+    shutil.copytree(DATASETS_DIR / "toy", dst / "toy")
+    return dst
+
+
+def test_split_assignment_is_deterministic() -> None:
+    assert assign_split("x", "s") is assign_split("x", "s")
+    splits = {assign_split(f"item-{i}", "seed") for i in range(50)}
+    assert splits == {Split.DEV, Split.TEST}
+
+
+def test_overlap_tolerance() -> None:
+    d = Defect(file="a.py", line_start=10, line_end=12, category=Category.CORRECTNESS)
+    assert overlaps(finding("a.py", 15), d)
+    assert not overlaps(finding("a.py", 16), d)
+    assert not overlaps(finding("b.py", 11), d)
+
+
+def test_score_item_matches_each_defect_once() -> None:
+    item = Item(
+        id="i", kind=ItemKind.SEEDED, source=InlineSource(license="x", origin="y"),
+        defects=[
+            Defect(file="a.py", line_start=5, line_end=5, category=Category.SWALLOWED_ERROR),
+            Defect(file="a.py", line_start=40, line_end=40, category=Category.SECURITY),
+        ],
+    )  # fmt: skip
+    fs = [
+        finding("a.py", 5, Category.SWALLOWED_ERROR, 0.9),
+        finding("a.py", 6, Category.CORRECTNESS, 0.8),  # duplicate near defect 0 -> FP
+        finding("a.py", 41, Category.CORRECTNESS, 0.7),  # right place, wrong category
+        finding("z.py", 1),
+    ]
+    sc = score_item(item, result(fs))
+    assert [(m.defect_index, m.category_match) for m in sc.matches] == [(0, True), (1, False)]
+    assert len(sc.false_positive_ids) == 2
+    s = summarize([item], [sc])
+    assert (s.recall, s.recall_strict, s.precision) == (1.0, 0.5, 0.5)
+    assert s.recall_by_category == {"swallowed_error": (1, 1), "security": (1, 1)}
+
+
+def test_materialize_builds_base_and_head(toy_copy: Path, tmp_path: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+    item = next(i for i in ds.items() if i.id == "seeded-001")
+    repo = tmp_path / "r"
+    base, head = materialize(ds, item, repo)
+    changed = git(repo, "diff", "--name-only", f"{base}...{head}").split()
+    assert changed == ["demo/io.py"]
+
+
+def test_frozen_dataset_detects_tampering(toy_copy: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+    ds.freeze()
+    Dataset.load("toy", toy_copy).verify()
+    p = toy_copy / "toy" / "items" / "clean-001" / "item.json"
+    data = json.loads(p.read_text())
+    data["task"] = "edited after freeze"
+    p.write_text(json.dumps(data))
+    with pytest.raises(DatasetError, match="frozen"):
+        Dataset.load("toy", toy_copy).verify()
+
+
+def test_run_dataset_deterministic_and_report(toy_copy: Path, tmp_path: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+    cfg = Config()
+    cfg.review.checks = ["secrets", "imports", "hygiene", "ruff", "mypy"]
+    split = ds.split_of("seeded-001")
+    run = run_dataset(ds, split=split, mode=ReviewMode.DETERMINISTIC, cfg=cfg, offline=True,
+                      cache_dir=tmp_path / "cache")  # fmt: skip
+    rec = next(r for r in run.items if r.item_id == "seeded-001")
+    # Offline, the hallucinated import can't be confirmed as missing; ruff's unused-import
+    # finding lands on the same line, so it matches leniently but not strictly.
+    assert rec.score.error is None
+    got = sorted((m.defect_index, m.category_match) for m in rec.score.matches)
+    assert got == [(0, False), (1, True), (2, True)]
+    runs_dir = tmp_path / "runs"
+    save_run(run, runs_dir)
+    table = build_report(runs_dir, toy_copy)
+    assert "| toy |" in table
+    assert "deterministic" in table
+
+
+def test_run_dataset_baseline_uses_injected_client(toy_copy: Path, tmp_path: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+    fake = FakeClient(responder=lambda req: LLMResponse(content='{"findings": []}'))
+    split = ds.split_of("clean-001")
+    run = run_dataset(ds, split=split, mode=ReviewMode.BASELINE, cfg=Config(), llm_client=fake,
+                      llm_cache=CacheMode.OFF, cache_dir=tmp_path)  # fmt: skip
+    rec = next(r for r in run.items if r.item_id == "clean-001")
+    assert rec.score.n_findings == 0
+    assert len(fake.requests) == len(run.items)
+
+
+def test_harness_refuses_test_split_without_final() -> None:
+    res = CliRunner().invoke(harness_app, ["run", "--split", "test"])
+    assert res.exit_code == 2
+    assert "--final" in res.output
+
+
+def test_harness_freeze_requires_approval() -> None:
+    res = CliRunner().invoke(harness_app, ["freeze", "--dataset", "toy"])
+    assert res.exit_code == 2

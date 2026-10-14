@@ -53,8 +53,8 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "BLE", "RUF"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src"]
-exclude = ["tests/fixtures/"]
+files = ["src", "evals"]
+exclude = ["tests/fixtures/", "evals/datasets/"]
 
 [[tool.mypy.overrides]]
 module = ["keyring", "keyring.*", "ruff", "ruff.*"]
