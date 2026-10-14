@@ -49,7 +49,7 @@ def _mentions(step: ToolTraceStep, output: str, path: str) -> bool:
     return path in output
 
 
-_REF_RE = re.compile(r"(check:[\w\-]+|\bt\d+\b|\bdiff\b)", re.IGNORECASE)
+_REF_RE = re.compile(r"(check:[\w\-]+|\b[tor]\d+\b|\bdiff\b)", re.IGNORECASE)
 
 
 def normalize_ref(raw: str) -> str:

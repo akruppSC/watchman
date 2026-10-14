@@ -32,10 +32,15 @@ from evals.metrics import (
     summarize,
 )
 from watchman_review.budget import Ledger
-from watchman_review.config import Config
+from watchman_review.config import Config, OverseerTrigger
 from watchman_review.llm.cache import CacheMode
 from watchman_review.llm.types import LLMClient
-from watchman_review.review import ReviewError, ReviewOptions, run_review
+from watchman_review.review import (
+    ReviewError,
+    ReviewOptions,
+    effective_trigger,
+    run_review,
+)
 from watchman_review.schema import ReviewMode, ReviewResult
 
 EVALS_DIR = Path(__file__).parent
@@ -65,6 +70,7 @@ class RunRecord(BaseModel):
     watchman_commit: str
     review_config: dict[str, object]
     subset: str | None = None
+    overseer: str | None = None  # trigger used ("risky" | "always"); None = no overseer
     items: list[ItemRecord]
 
 
@@ -136,6 +142,7 @@ def run_dataset(
     jobs: int = 1,
     on_item: Callable[[ItemRecord], None] | None = None,
     only_ids: set[str] | None = None,
+    overseer: OverseerTrigger | None = None,
 ) -> RunRecord:
     ds.verify()
     items = ds.items(split)
@@ -146,7 +153,7 @@ def run_dataset(
     items = items[:limit]
     opts_kw: dict[str, Any] = {
         "model": model, "offline": offline, "llm_cache": llm_cache, "llm_client": llm_client,
-        "ledger": ledger, "cache_dir": cache_dir,
+        "ledger": ledger, "cache_dir": cache_dir, "overseer": overseer,
     }  # fmt: skip
     with tempfile.TemporaryDirectory(prefix="watchman-eval-") as tmp:
         root = Path(tmp)
@@ -165,8 +172,11 @@ def run_dataset(
     used_model = (model or cfg.llm.model) if mode is not ReviewMode.DETERMINISTIC else None
     model_slug = f"-{used_model.replace('/', '_')}" if used_model else ""
     subset = f"sample{sample}" if sample is not None else None
+    trig = effective_trigger(cfg, ReviewOptions(overseer=overseer), mode)
+    ov_name = None if trig is OverseerTrigger.NEVER else trig.value
     return RunRecord(
         run_id=f"{now:%Y%m%dT%H%M%S}-{ds.manifest.name}-{split}-{mode}{model_slug}"
+        + (f"-ov{ov_name}" if ov_name else "")
         + (f"-{subset}" if subset else ""),
         started_at=now.isoformat(),
         dataset=ds.manifest.name,
@@ -178,18 +188,21 @@ def run_dataset(
         watchman_commit=_watchman_commit(),
         review_config=cfg.review.model_dump(mode="json"),
         subset=subset,
+        overseer=ov_name,
         items=records,
     )
 
 
 def latest_run(
-    dataset: str, split: Split, mode: ReviewMode, model: str | None, sample: int | None
-) -> RunRecord | None:
+    dataset: str, split: Split, mode: ReviewMode, model: str | None, sample: int | None,
+    overseer: str | None = None,
+) -> RunRecord | None:  # fmt: skip
     subset = f"sample{sample}" if sample is not None else None
     best: RunRecord | None = None
     for p in sorted(RUNS_DIR.glob("*.json")):
         r = RunRecord.model_validate_json(p.read_text())
-        if (r.dataset, r.split, r.mode, r.model, r.subset) == (dataset, split, mode, model, subset):
+        key = (r.dataset, r.split, r.mode, r.model, r.subset, r.overseer)
+        if key == (dataset, split, mode, model, subset, overseer):
             best = r
     return best
 
@@ -258,14 +271,16 @@ HEADER = (
 
 def _label(r: RunRecord) -> str:
     label = r.mode.value + (f" ({r.model})" if r.model else "")
+    if r.overseer:
+        label += f" +overseer({r.overseer})"
     return label + (f" [{r.subset}]" if r.subset else "")
 
 
 def build_report(runs_dir: Path = RUNS_DIR, datasets_dir: Path | None = None) -> str:
     runs = [RunRecord.model_validate_json(p.read_text()) for p in sorted(runs_dir.glob("*.json"))]
-    latest: dict[tuple[str, str, str, str, str], RunRecord] = {}
+    latest: dict[tuple[str, str, str, str, str, str], RunRecord] = {}
     for r in runs:  # sorted by run_id (timestamp first), so later runs win
-        latest[(r.dataset, r.split, r.mode, r.model or "", r.subset or "")] = r
+        latest[(r.dataset, r.split, r.mode, r.model or "", r.subset or "", r.overseer or "")] = r
 
     def load(name: str) -> Dataset:
         return Dataset.load(name, datasets_dir) if datasets_dir else Dataset.load(name)
@@ -364,6 +379,10 @@ def run(
         bool,
         typer.Option(help="Re-run only the failed/incomplete items of the latest matching run."),
     ] = False,
+    overseer: Annotated[
+        OverseerTrigger | None,
+        typer.Option(help="Overseer trigger for this run (default: follow the user config)."),
+    ] = None,
 ) -> None:
     """Run one reviewer mode over a dataset split and save the run.
 
@@ -394,7 +413,11 @@ def run(
         only_ids: set[str] | None = None
         if retry_errors:
             wanted = None if mode is ReviewMode.DETERMINISTIC else (model or cfg.llm.model)
-            prev = latest_run(dataset, split, mode, wanted, sample)
+            want_ov = effective_trigger(cfg, ReviewOptions(overseer=overseer), mode)
+            prev = latest_run(
+                dataset, split, mode, wanted, sample,
+                None if want_ov is OverseerTrigger.NEVER else want_ov.value,
+            )  # fmt: skip
             if prev is None:
                 typer.echo("no matching earlier run to retry", err=True)
                 raise typer.Exit(2)
@@ -425,6 +448,7 @@ def run(
             jobs=jobs,
             on_item=progress,
             only_ids=only_ids,
+            overseer=overseer,
         )
         if prev is not None:
             record = merge_retry(prev, record)

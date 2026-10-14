@@ -207,7 +207,32 @@ def run_setup(io: SetupIO, existing: Config, deps: SetupDeps | None = None) -> C
             cfg.review.sandbox.value,
         )
     )
+    _setup_overseer(io, cfg, models)
     return cfg
+
+
+def _setup_overseer(io: SetupIO, cfg: Config, models: list[ModelInfo]) -> None:
+    io.echo(
+        "\nOptional: the overseer is a larger model that double-checks risky reviews "
+        "(spot-checks findings, digs into hard questions, sends notes back to the primary "
+        "reviewer). It runs on a minority of reviews and has its own per-review cost cap."
+    )
+    if not io.confirm("Enable the overseer?", default=cfg.overseer.enabled):
+        cfg.overseer.enabled = False
+        return
+    cfg.overseer.enabled = True
+    cfg.overseer.model = io.prompt("Overseer model id", cfg.overseer.model).strip()
+    info = next((m for m in models if m.id == cfg.overseer.model), None)
+    if info and info.input_cost_per_mtok is not None:
+        cfg.overseer.input_cost_per_mtok = info.input_cost_per_mtok
+        cfg.overseer.output_cost_per_mtok = info.output_cost_per_mtok
+        out_cost = info.output_cost_per_mtok or 0.0
+        io.echo(f"Pricing: ${info.input_cost_per_mtok:.2f}/M in, ${out_cost:.2f}/M out.")
+    cap = _parse_optional_float(
+        io.prompt("Max overseer cost per review (USD)", _fmt(cfg.overseer.max_cost_usd))
+    )
+    if cap is not None:
+        cfg.overseer.max_cost_usd = cap
 
 
 def _fmt(v: float | None) -> str | None:

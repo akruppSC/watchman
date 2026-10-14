@@ -45,6 +45,34 @@ def render(result: ReviewResult, console: Console) -> None:
         console.print(t)
         console.print()
 
+    ran = [st for st in result.stages if st.name != "primary"]
+    if ran:
+        t = Table(title="Review stages", show_edge=False, title_justify="left")
+        for col in (
+            "stage",
+            "model",
+            "status",
+            "cost",
+            "confirmed",
+            "rejected",
+            "downgraded",
+            "added",
+        ):
+            t.add_column(col)
+        for st in result.stages:
+            if st.error:
+                status = Text(f"failed: {st.error}", style="red")
+            elif not st.ran:
+                status = Text("skipped (review looked safe)", style="dim")
+            else:
+                status = Text("; ".join(st.trigger_reasons) or "ran", style="cyan")
+            t.add_row(
+                st.name, st.model or "-", status, f"${st.usage.cost_usd:.4f}",
+                str(st.confirmed), str(st.rejected), str(st.downgraded), str(st.added),
+            )  # fmt: skip
+        console.print(t)
+        console.print()
+
     if result.tool_trace:
         t = Table(title="Agent tool calls", show_edge=False, title_justify="left")
         t.add_column("ref")
@@ -69,7 +97,12 @@ def render(result: ReviewResult, console: Console) -> None:
             (f.category.value, "cyan"),
             "  ",
             (loc, "bold"),
-            (f"  conf {f.confidence:.2f}  [{f.source.value}]", "dim"),
+            (
+                f"  conf {f.confidence:.2f}  [{f.source.value}"
+                + (f", {f.verified_by}" if f.verified_by else "")
+                + "]",
+                "dim",
+            ),
         )
         refs = f"  [refs: {', '.join(f.evidence_refs)}]" if f.evidence_refs else ""
         body = [Text(f.summary), Text("evidence: " + f.evidence + refs, style="dim")]

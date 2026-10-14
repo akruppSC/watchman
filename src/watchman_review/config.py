@@ -131,6 +131,37 @@ class ReviewConfig(BaseModel):
     default_mode: ReviewMode = ReviewMode.DETERMINISTIC
 
 
+class OverseerTrigger(StrEnum):
+    RISKY = "risky"  # only when the review looks risky or unsettled
+    ALWAYS = "always"
+    NEVER = "never"
+
+
+class OverseerConfig(BaseModel):
+    """The larger model that spot-checks the primary reviewer. User config only: a reviewed
+    repo must not be able to switch on (and bill you for) a more expensive model."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+    model: str = "anthropic/claude-opus-5.5"
+    trigger: OverseerTrigger = OverseerTrigger.RISKY
+    input_cost_per_mtok: float | None = None
+    output_cost_per_mtok: float | None = None
+    max_cost_usd: float = Field(default=0.15, ge=0)
+    max_tool_calls: int = Field(default=8, ge=0)
+    max_spot_checks: int = Field(default=8, ge=1)
+    # Risk triggers (any one fires the overseer when trigger = "risky").
+    large_diff_lines: int = Field(default=300, ge=1)
+    large_diff_files: int = Field(default=8, ge=1)
+    # Feedback: send the overseer's notes back to the primary reviewer for one more pass
+    # when it rejected or added at least this many findings, or rejected this share of them.
+    feedback_min_issues: int = Field(default=3, ge=1)
+    feedback_reject_fraction: float = Field(default=0.5, ge=0, le=1)
+    feedback_max_rounds: int = Field(default=1, ge=0, le=2)
+    second_pass_tool_calls: int = Field(default=12, ge=0)
+
+
 USER_ONLY_REVIEW_KEYS = {"default_mode"}
 
 
@@ -140,6 +171,7 @@ class Config(BaseModel):
     llm: LLMConfig = Field(default_factory=LLMConfig)
     budget: BudgetConfig = Field(default_factory=BudgetConfig)
     review: ReviewConfig = Field(default_factory=ReviewConfig)
+    overseer: OverseerConfig = Field(default_factory=OverseerConfig)
 
 
 def config_dir() -> Path:

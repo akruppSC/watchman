@@ -324,7 +324,7 @@ def test_cli_schema_command() -> None:
     assert "findings" in json.loads(result.stdout)["properties"]
 
 
-def test_restatements_dropped_but_deterministic_kept() -> None:
+def test_restatements_dropped_but_distinct_defects_and_deterministic_kept() -> None:
     from watchman_review.postprocess import drop_restatements
     from watchman_review.schema import Category, Finding, Severity
 
@@ -333,9 +333,15 @@ def test_restatements_dropped_but_deterministic_kept() -> None:
                        line_end=line, summary=f"{cat}{line}", evidence="e", source=src)  # fmt: skip
 
     det = f(Source.DETERMINISTIC, Category.SWALLOWED_ERROR, 10)
-    restated = f(Source.AGENT, Category.CORRECTNESS, 11)
+    same_lines = f(Source.AGENT, Category.CORRECTNESS, 10)  # other category, same lines
+    same_cat_near = f(Source.AGENT, Category.SWALLOWED_ERROR, 12)  # same category, 2 lines off
+    other_issue_near = f(Source.AGENT, Category.OVER_ABSTRACTION, 11)  # different problem nearby
     far = f(Source.AGENT, Category.CORRECTNESS, 40)
     det2 = f(Source.DETERMINISTIC, Category.SECURITY, 10, Severity.MINOR)
-    r = drop_restatements([restated, far, det, det2])
-    assert {x.summary for x in r.kept} == {det.summary, det2.summary, far.summary}
-    assert [d[0].summary for d in r.dropped] == [restated.summary]
+    r = drop_restatements([same_lines, same_cat_near, other_issue_near, far, det, det2])
+    assert {x.summary for x in r.kept} == {
+        det.summary, det2.summary, far.summary, other_issue_near.summary,
+    }  # fmt: skip
+    assert sorted(d[0].summary for d in r.dropped) == sorted(
+        [same_lines.summary, same_cat_near.summary]
+    )

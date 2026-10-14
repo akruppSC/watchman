@@ -107,14 +107,15 @@ def merge_colocated(findings: list[Finding]) -> list[Finding]:
 RESTATEMENT_SLACK = 2
 
 
-def _near(a: Finding, b: Finding, slack: int = RESTATEMENT_SLACK) -> bool:
+def lines_near(a: Finding, b: Finding, slack: int = RESTATEMENT_SLACK) -> bool:
+    """True if two findings are in the same file and their line ranges are within `slack`."""
     if a.file is None or a.file != b.file or not a.line_start or not b.line_start:
         return False
     return a.line_start <= b.line_end + slack and b.line_start <= a.line_end + slack
 
 
 def drop_restatements(findings: list[Finding]) -> FilterReport:
-    """Drop a model finding that sits on the same lines as a stronger finding.
+    """Drop a model finding that restates a stronger one on the same lines.
 
     Stronger = deterministic, else higher (severity, confidence). LLM reviewers often
     report one defect twice under different categories (e.g. swallowed_error and
@@ -122,12 +123,18 @@ def drop_restatements(findings: list[Finding]) -> FilterReport:
     with no recall loss. Deterministic findings are never dropped.
     """
 
-    def strength(f: Finding) -> tuple[bool, int, float, str]:
-        return (f.source is Source.DETERMINISTIC, f.severity.rank, f.confidence, f.id)
+    def strength(f: Finding) -> tuple[bool, bool, int, float, str]:
+        verified = f.verified_by is not None and not f.verified_by.endswith("downgraded")
+        return (f.source is Source.DETERMINISTIC, verified, f.severity.rank, f.confidence, f.id)
+
+    def same_defect(a: Finding, b: Finding) -> bool:
+        # Different categories must truly overlap: two distinct problems a couple of lines
+        # apart (a prompt-injection comment above a SQL-injection line) are not restatements.
+        return lines_near(a, b, RESTATEMENT_SLACK if a.category == b.category else 0)
 
     report = FilterReport()
     for f in sorted(findings, key=strength, reverse=True):
-        twin = next((k for k in report.kept if _near(f, k)), None)
+        twin = next((k for k in report.kept if same_defect(f, k)), None)
         if twin is not None and f.source is not Source.DETERMINISTIC:
             report.dropped.append((f, f"restates {twin.id} ({twin.category.value})"))
         else:

@@ -19,9 +19,9 @@ from typing import Annotated
 
 import typer
 
-from evals.dataset import Dataset, Item, Split
+from evals.dataset import Dataset, Item, ItemKind, Split
 from evals.harness import RUNS_DIR, RunRecord
-from evals.metrics import score_item, summarize
+from evals.metrics import ItemScore, Summary, score_item, summarize
 from watchman_review.schema import Finding, ReviewResult, Source
 
 app = typer.Typer(add_completion=False)
@@ -68,6 +68,27 @@ def merge_restatements(fs: list[Finding]) -> list[Finding]:
     return kept
 
 
+def merge_restatements_v2(slack_same: int, slack_cross: int) -> Policy:
+    """Like merge_restatements, but different categories must overlap (slack_cross) to count
+    as the same defect; the same category may be a few lines apart (slack_same)."""
+
+    def strength(f: Finding) -> tuple[int, int, float]:
+        return (int(f.source is Source.DETERMINISTIC), f.severity.rank, f.confidence)
+
+    def apply(fs: list[Finding]) -> list[Finding]:
+        kept: list[Finding] = []
+        for f in sorted(fs, key=strength, reverse=True):
+            twin = any(
+                near(f, k, slack_same if f.category == k.category else slack_cross) for k in kept
+            )
+            if f.source is not Source.DETERMINISTIC and twin:
+                continue
+            kept.append(f)
+        return kept
+
+    return apply
+
+
 def compose(*ps: Policy) -> Policy:
     def apply(fs: list[Finding]) -> list[Finding]:
         for p in ps:
@@ -84,6 +105,8 @@ POLICIES: dict[str, Policy] = {
     "min_conf 0.8": threshold(0.8),
     "merge restatements": compose(threshold(0.5), merge_restatements),
     "merge + min_conf 0.6": compose(threshold(0.6), merge_restatements),
+    "overlap-only + 0.6": compose(threshold(0.6), merge_restatements_v2(0, 0)),
+    "same-cat 2, cross 0 + 0.6": compose(threshold(0.6), merge_restatements_v2(2, 0)),
     "merge + min_conf 0.7": compose(threshold(0.7), merge_restatements),
     "merge + min_conf 0.8": compose(threshold(0.8), merge_restatements),
 }
@@ -115,7 +138,7 @@ def evaluate(runs: list[RunRecord], policy: Policy) -> Row:
 def latest_dev_runs(
     mode: str | None, model: str | None, split: Split = Split.DEV
 ) -> dict[tuple[str, str], list[RunRecord]]:
-    latest: dict[tuple[str, str, str, str], RunRecord] = {}
+    latest: dict[tuple[str, str, str, str, str], RunRecord] = {}
     for p in sorted(Path(RUNS_DIR).glob("*.json")):
         r = RunRecord.model_validate_json(p.read_text())
         if r.split is not split:
@@ -124,10 +147,18 @@ def latest_dev_runs(
             continue
         if (mode and r.mode.value != mode) or (model and r.model != model):
             continue
-        latest[(r.dataset, r.mode.value, r.model, r.subset or "")] = r
+        latest[(r.dataset, r.mode.value, r.model, r.subset or "", r.overseer or "")] = r
     groups: dict[tuple[str, str], list[RunRecord]] = {}
-    for (_, m, mdl, subset), r in sorted(latest.items()):
-        groups.setdefault((f"{m} ({mdl})" + (f" [{subset}]" if subset else ""), ""), []).append(r)
+    for (_, m, mdl, subset, ov), r in sorted(latest.items()):
+        groups.setdefault(
+            (
+                f"{m} ({mdl})"
+                + (f" +overseer({ov})" if ov else "")
+                + (f" [{subset}]" if subset else ""),
+                "",
+            ),
+            [],
+        ).append(r)
     return groups
 
 
@@ -254,7 +285,7 @@ def compare() -> None:
     latest: dict[tuple[str, str, str, str], RunRecord] = {}
     for p in sorted(Path(RUNS_DIR).glob("*.json")):
         r = RunRecord.model_validate_json(p.read_text())
-        if r.split is Split.DEV and r.dataset.endswith("-v1"):
+        if r.split is Split.DEV and r.dataset.endswith("-v1") and not r.overseer:
             latest[(r.dataset, r.mode.value, r.model or "-", r.subset or "")] = r
     labels = sorted({(m, mdl) for (_, m, mdl, _) in latest})
     for subset_size in ("sample-opus", "sample-gpt5"):
@@ -355,6 +386,111 @@ def audit() -> None:
         save_run(run)
         if flagged:
             typer.echo(f"{p.name}: flagged {flagged} incomplete item(s)")
+
+
+@dataclass
+class ArmStats:
+    name: str
+    summary: Summary
+    clean_major: float | None
+    triggered: float | None
+    gained: int
+    lost: int
+
+
+def _arm_variants(rec_result: ReviewResult) -> tuple[ReviewResult, ReviewResult, bool] | None:
+    """(primary-only, with-overseer, would_trigger) built from one 'always' run, or None."""
+    primary = next((st for st in rec_result.stages if st.name == "primary"), None)
+    if primary is None or primary.findings_before_overseer is None:
+        return None
+    only = rec_result.model_copy(
+        update={
+            "findings": primary.findings_before_overseer,
+            "usage": primary.usage,
+            "stages": [primary],
+        }
+    )
+    return only, rec_result, bool(primary.trigger_reasons)
+
+
+def overseer_arms(runs: list[RunRecord]) -> list[ArmStats]:
+    """Paired arms from runs made with --overseer always: every arm sees the same primary
+    review, so differences are due to the overseer alone."""
+    arms: dict[str, tuple[list[Item], list[ItemScore], int, int, int, int, int]] = {}
+    for run in runs:
+        ds = {i.id: i for i in Dataset.load(run.dataset).items()}
+        for rec in run.items:
+            if rec.result is None or rec.score.error:
+                continue
+            variants = _arm_variants(rec.result)
+            if variants is None:
+                continue
+            only, full, risky = variants
+            item = ds[rec.item_id]
+            picks = {"primary only": only, "overseer when risky": full if risky else only,
+                     "overseer always": full}  # fmt: skip
+            base_matched = {m.defect_index for m in score_item(item, only).matches}
+            for name, res in picks.items():
+                items, scores, trig, gain, lose, major, clean_n = arms.setdefault(
+                    name, ([], [], 0, 0, 0, 0, 0)
+                )
+                sc = score_item(item, res)
+                items.append(item)
+                scores.append(sc)
+                matched = {m.defect_index for m in sc.matches}
+                if item.kind is ItemKind.CLEAN:
+                    clean_n += 1
+                    major += sum(1 for f in res.findings if f.severity.rank >= 2)
+                arms[name] = (
+                    items, scores, trig + (res is full), gain + len(matched - base_matched),
+                    lose + len(base_matched - matched), major, clean_n,
+                )  # fmt: skip
+    out: list[ArmStats] = []
+    for name in ("primary only", "overseer when risky", "overseer always"):
+        if name not in arms:
+            continue
+        items, scores, trig, gain, lose, major, clean_n = arms[name]
+        out.append(
+            ArmStats(
+                name,
+                summarize(items, scores),
+                major / clean_n if clean_n else None,
+                trig / len(items) if items else None,
+                gain,
+                lose,
+            )
+        )
+    return out
+
+
+@app.command("overseer")
+def overseer_report(
+    split: Annotated[Split, typer.Option()] = Split.DEV,
+    model: Annotated[str | None, typer.Option()] = None,
+) -> None:
+    """Paired comparison of primary-only vs overseer arms from `--overseer always` runs."""
+    latest: dict[tuple[str, str, str, str], RunRecord] = {}
+    for p in sorted(Path(RUNS_DIR).glob("*.json")):
+        r = RunRecord.model_validate_json(p.read_text())
+        if r.split is split and r.overseer == "always" and (not model or r.model == model):
+            latest[(r.dataset, r.mode.value, r.model or "", r.subset or "")] = r
+    groups: dict[tuple[str, str], list[RunRecord]] = {}
+    for (_, m, mdl, _), r in latest.items():
+        groups.setdefault((m, mdl), []).append(r)
+    for (m, mdl), runs in sorted(groups.items()):
+        typer.echo(f"\n{m} / {mdl} ({split.value}): {', '.join(sorted(r.dataset for r in runs))}")
+        typer.echo(
+            f"  {'arm':22} {'recall':>7} {'strict':>7} {'prec':>5} {'FP/clean':>8} "
+            f"{'FP major+':>9} {'ran':>5} {'+TP':>4} {'-TP':>4} {'$/rev':>7}"
+        )
+        for a in overseer_arms(runs):
+            sm = a.summary
+            typer.echo(
+                f"  {a.name:22} {fmt(sm.recall):>7} {fmt(sm.recall_strict):>7} "
+                f"{fmt(sm.precision):>5} {fmt(sm.fp_per_clean_diff, pct=False):>8} "
+                f"{fmt(a.clean_major, pct=False):>9} {fmt(a.triggered):>5} {a.gained:>4} "
+                f"{a.lost:>4} ${sm.mean_cost:>6.3f}"
+            )
 
 
 if __name__ == "__main__":

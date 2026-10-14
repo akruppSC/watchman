@@ -46,6 +46,7 @@ class Source(StrEnum):
     DETERMINISTIC = "deterministic"
     AGENT = "agent"
     BASELINE = "baseline"
+    OVERSEER = "overseer"  # found by the larger model that supervises the primary reviewer
 
 
 class Verdict(StrEnum):
@@ -85,6 +86,11 @@ class Finding(BaseModel):
     evidence_refs: list[str] = Field(
         default_factory=list,
         description="IDs of tool calls / check results backing this finding (grounding).",
+    )
+    verified_by: str | None = Field(
+        default=None,
+        description="Set when the overseer checked this finding: 'overseer:confirmed', "
+        "'overseer:downgraded', or 'overseer' for findings it raised itself.",
     )
 
     @field_validator("summary", "evidence")
@@ -169,6 +175,44 @@ class ToolTraceStep(BaseModel):
     duration_s: float = 0.0
 
 
+class Escalation(BaseModel):
+    """Something the primary reviewer couldn't resolve and wants a senior look at."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    file: str | None = None
+    line_start: int = Field(default=0, ge=0)
+    line_end: int = Field(default=0, ge=0)
+    question: str = Field(min_length=1, max_length=300)
+
+
+class StageSummary(BaseModel):
+    """What one pipeline stage did. Lets evals attribute cost and effect per stage."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str  # primary | overseer | second_pass
+    model: str | None = None
+    ran: bool = True
+    trigger_reasons: list[str] = Field(
+        default_factory=list,
+        description="Why the overseer was (or, in 'always' mode, would have been) triggered.",
+    )
+    usage: Usage = Field(default_factory=Usage)
+    confirmed: int = 0
+    rejected: int = 0
+    downgraded: int = 0
+    added: int = 0
+    escalations: list[Escalation] = Field(default_factory=list)
+    notes: str | None = None
+    error: str | None = None
+    findings_before_overseer: list[Finding] | None = Field(
+        default=None,
+        description="Primary stage only: the final findings the review would have reported "
+        "without the overseer, so primary-only vs overseer is a paired comparison.",
+    )
+
+
 class DroppedFinding(BaseModel):
     """A finding removed by post-processing, kept for transparency and eval analysis."""
 
@@ -196,6 +240,7 @@ class ReviewResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     tool_trace: list[ToolTraceStep] = Field(default_factory=list)
     dropped: list[DroppedFinding] = Field(default_factory=list)
+    stages: list[StageSummary] = Field(default_factory=list)
     incomplete: bool = Field(
         default=False,
         description="A model stage failed or never submitted. Findings may be missing, so "

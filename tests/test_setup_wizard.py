@@ -21,7 +21,7 @@ class ScriptedIO:
         return default or "" if ans == "" else ans
 
     def confirm(self, text: str, default: bool = True) -> bool:
-        return self.confirms.pop(0)
+        return self.confirms.pop(0) if self.confirms else False
 
     def echo(self, text: str) -> None:
         self.output.append(text)
@@ -132,3 +132,23 @@ def test_choose_reprompts_on_invalid(bad: str) -> None:
     deps = SetupDeps(catalog=lambda c, k: [], keyring_setter=None, environ={})
     cfg = run_setup(io, Config(), deps)
     assert cfg.llm.provider is Provider.OLLAMA
+
+
+def test_wizard_can_enable_the_overseer_with_catalog_pricing() -> None:
+    catalog = [*CATALOG, ModelInfo(id="anthropic/claude-opus-5.5", input_cost_per_mtok=4.0,
+                                   output_cost_per_mtok=20.0)]  # fmt: skip
+    answers = ["openrouter", "", "", "vendor/good-model", "", "", "auto"]
+    io = ScriptedIO([*answers, "anthropic/claude-opus-5.5", "0.2"], confirms=[True])
+    deps = SetupDeps(catalog=lambda c, k: catalog, keyring_setter=None,
+                     environ={"OPENROUTER_API_KEY": "k"})  # fmt: skip
+    cfg = run_setup(io, Config(), deps)
+    assert cfg.overseer.enabled and cfg.overseer.model == "anthropic/claude-opus-5.5"
+    assert (cfg.overseer.input_cost_per_mtok, cfg.overseer.output_cost_per_mtok) == (4.0, 20.0)
+    assert cfg.overseer.max_cost_usd == 0.2
+
+
+def test_wizard_leaves_the_overseer_off_by_default() -> None:
+    io = ScriptedIO(["openrouter", "", "", "vendor/good-model", "", "", "auto"])
+    deps = SetupDeps(catalog=lambda c, k: CATALOG, keyring_setter=None,
+                     environ={"OPENROUTER_API_KEY": "k"})  # fmt: skip
+    assert run_setup(io, Config(), deps).overseer.enabled is False

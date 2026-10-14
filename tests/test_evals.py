@@ -261,3 +261,48 @@ def test_merge_retry_replaces_only_errored_items(toy_copy: Path, tmp_path: Path)
     assert [r.item_id for r in merged.items] == [r.item_id for r in full.items]
     assert all(r.score.error is None for r in merged.items)
     assert merged.review_config["retried_from"] == broken.run_id
+
+
+def test_overseer_arms_are_paired_and_count_gained_and_lost_true_positives() -> None:
+    from evals.harness import ItemRecord, RunRecord
+    from evals.metrics import score_item as score
+    from evals.tune import overseer_arms
+
+    from watchman_review.schema import StageSummary, Usage
+
+    ds = Dataset.load("toy")
+    item = next(i for i in ds.items() if i.id == "seeded-002")  # defects in two separate files
+    dup = finding("textkit/articles.py", 15, Category.DUPLICATION)
+    weak = finding("tests/test_articles.py", 6, Category.WEAK_TEST)
+    noise = finding("textkit/slugs.py", 3, Category.COMMENT_NOISE)
+    primary = StageSummary(
+        name="primary", usage=Usage(cost_usd=0.01), trigger_reasons=["major finding"],
+        findings_before_overseer=[dup, noise],
+    )  # fmt: skip
+    overseer = StageSummary(name="overseer", usage=Usage(cost_usd=0.10), ran=True)
+    # The overseer rejected the duplication finding and the noise, and found the weak test.
+    full = result([weak]).model_copy(
+        update={"stages": [primary, overseer], "usage": Usage(cost_usd=0.11)}
+    )
+    run = RunRecord(
+        run_id="r", started_at="x", dataset="toy", dataset_sha256=None, dataset_frozen=False,
+        split=Split.DEV, mode=ReviewMode.AGENT, model="m", watchman_commit="c", review_config={},
+        overseer="always",
+        items=[ItemRecord(item_id="seeded-002", score=score(item, full), result=full)],
+    )  # fmt: skip
+    arms = {a.name: a for a in overseer_arms([run])}
+    assert arms["primary only"].summary.found_lenient == 1
+    assert (arms["overseer always"].gained, arms["overseer always"].lost) == (1, 1)
+    assert arms["overseer always"].summary.cost_usd == pytest.approx(0.11)
+    assert arms["primary only"].summary.cost_usd == pytest.approx(0.01)
+    assert arms["overseer when risky"].triggered == 1.0
+
+    quiet = full.model_copy(
+        update={"stages": [primary.model_copy(update={"trigger_reasons": []}), overseer]}
+    )
+    run2 = run.model_copy(
+        update={"items": [ItemRecord(item_id="seeded-002", score=score(item, quiet), result=quiet)]}
+    )  # fmt: skip
+    risky = {a.name: a for a in overseer_arms([run2])}["overseer when risky"]
+    assert risky.triggered == 0.0 and risky.summary.cost_usd == pytest.approx(0.01)
+    assert risky.summary.found_lenient == 1  # an untriggered item keeps the primary's findings

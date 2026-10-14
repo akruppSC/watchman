@@ -13,7 +13,7 @@ reviewed revision, plus sandboxed tools for running tests and the linter.
 
 You have a budget of $max_tool_calls tool calls. Spend it on the suspicions most
 likely to matter; you don't need to use it all. When the budget runs out you will only be
-able to submit.
+able to submit.$escalation_note
 
 ## Evidence rules
 

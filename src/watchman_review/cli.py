@@ -14,6 +14,7 @@ from watchman_review import __version__
 from watchman_review.budget import Ledger
 from watchman_review.config import (
     ConfigError,
+    OverseerTrigger,
     load_config,
     save_user_config,
     user_config_path,
@@ -97,6 +98,12 @@ def review(
     fail_on: Annotated[
         FailOn, typer.Option(help="Exit 1 when the verdict reaches this level.")
     ] = FailOn.BLOCK,
+    deep: Annotated[
+        bool, typer.Option("--deep", help="Always run the overseer (larger model) on this review.")
+    ] = False,
+    no_overseer: Annotated[
+        bool, typer.Option("--no-overseer", help="Skip the overseer even if it is enabled.")
+    ] = False,
     offline: Annotated[bool, typer.Option(help="No PyPI lookups.")] = False,
     llm_cache: Annotated[CacheMode, typer.Option(help="LLM record/replay cache.")] = CacheMode.OFF,
     repo: Annotated[Path, typer.Option(help="Repository path.")] = Path("."),
@@ -108,9 +115,13 @@ def review(
         err.print(f"[red]error:[/red] not a git repository: {e}")
         raise typer.Exit(EXIT_ERROR) from e
 
+    if deep and no_overseer:
+        err.print("[red]error:[/red] --deep and --no-overseer contradict each other")
+        raise typer.Exit(EXIT_ERROR)
     if task_file is not None:
         task = task_file.read_text()
     opts = ReviewOptions(
+        overseer=OverseerTrigger.ALWAYS if deep else OverseerTrigger.NEVER if no_overseer else None,
         base=base,
         head=WORKTREE if worktree else head,
         mode=mode,
