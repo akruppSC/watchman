@@ -1,0 +1,128 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index ac11bf3134b65e9182f8036492ae4c1350448430..406088e07dce6b84d8684802a3274d19e9c856e5 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -184,6 +184,9 @@ Unreleased
+     return a path object instead of a string. :issue:`405`
+ -   ``TypeError`` is raised when parameter with ``multiple=True`` or
+     ``nargs > 1`` has non-iterable default. :issue:`1749`
++-   Add a ``pass_meta_key`` decorator for passing a key from
++    ``Context.meta``. This is useful for extensions using ``meta`` to
++    store information. :issue:`1739`
+ 
+ 
+ Version 7.1.2
+diff --git a/docs/api.rst b/docs/api.rst
+index 5e8c765c4b1a505c092162f53a620016906350b1..23d6af34c7f35a543a187020b4aecc3c45550379 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -31,6 +31,9 @@ Decorators
+ 
+ .. autofunction:: make_pass_decorator
+ 
++.. autofunction:: click.decorators.pass_meta_key
++
++
+ Utilities
+ ---------
+ 
+diff --git a/src/click/decorators.py b/src/click/decorators.py
+index 5742f05e5eccd6b6ceb207f1928fadd78f942183..d2fe1056f7ea5e908433be24d4468a98bd28b3e0 100644
+--- a/src/click/decorators.py
++++ b/src/click/decorators.py
+@@ -1,4 +1,5 @@
+ import inspect
++import typing as t
+ from functools import update_wrapper
+ 
+ from .core import Argument
+@@ -8,6 +9,8 @@ from .core import Option
+ from .globals import get_current_context
+ from .utils import echo
+ 
++if t.TYPE_CHECKING:
++    F = t.TypeVar("F", bound=t.Callable[..., t.Any])
+ 
+ def pass_context(f):
+     """Marks a callback as wanting to receive the current context
+@@ -75,6 +78,39 @@ def make_pass_decorator(object_type, ensure=False):
+     return decorator
+ 
+ 
++def pass_meta_key(
++    key: str, *, doc_description: t.Optional[str] = None
++) -> "t.Callable[[F], F]":
++    """Create a decorator that passes a key from
++    :attr:`click.Context.meta` as the first argument to the decorated
++    function.
++
++    :param key: Key in ``Context.meta`` to pass.
++    :param doc_description: Description of the object being passed,
++        inserted into the decorator's docstring. Defaults to "the 'key'
++        key from Context.meta".
++
++    .. versionadded:: 8.0
++    """
++
++    def decorator(f: "F") -> "F":
++        def new_func(*args, **kwargs):
++            ctx = get_current_context()
++            obj = ctx.meta[key]
++            return ctx.invoke(f, obj, *args, **kwargs)
++
++        return update_wrapper(t.cast("F", new_func), f)
++
++    if doc_description is None:
++        doc_description = f"the {key!r} key from :attr:`click.Context.meta`"
++
++    decorator.__doc__ = (
++        f"Decorator that passes {doc_description} as the first argument"
++        " to the decorated function."
++    )
++    return decorator
++
++
+ def _make_command(f, name, attrs, cls):
+     if isinstance(f, Command):
+         raise TypeError("Attempted to convert a callback into a command twice.")
+diff --git a/tests/test_context.py b/tests/test_context.py
+index c6aee3c09c614219aa875d5953b9edf54611b520..72e7738c79ea0d20e669db5311878901483db4e1 100644
+--- a/tests/test_context.py
++++ b/tests/test_context.py
+@@ -4,6 +4,7 @@ import pytest
+ 
+ import click
+ from click.core import ParameterSource
++from click.decorators import pass_meta_key
+ 
+ 
+ def test_ensure_context_objects(runner):
+@@ -151,6 +152,28 @@ def test_context_meta(runner):
+     runner.invoke(cli, [], catch_exceptions=False)
+ 
+ 
++def test_make_pass_meta_decorator(runner):
++    @click.group()
++    @click.pass_context
++    def cli(ctx):
++        ctx.meta["value"] = "good"
++
++    @cli.command()
++    @pass_meta_key("value")
++    def show(value):
++        return value
++
++    result = runner.invoke(cli, ["show"], standalone_mode=False)
++    assert result.return_value == "good"
++
++
++def test_make_pass_meta_decorator_doc():
++    pass_value = pass_meta_key("value")
++    assert pass_value.__doc__ is not None
++    pass_value = pass_meta_key("value", doc_description="the test value")
++    assert pass_value.__doc__ is not None
++
++
+ def test_context_pushing():
+     rv = []
+ 

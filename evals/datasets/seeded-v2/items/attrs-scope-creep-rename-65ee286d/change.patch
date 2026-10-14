@@ -1,0 +1,145 @@
+diff --git a/changelog.d/1107.change.md b/changelog.d/1107.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..760649432f1c51b1f79a79a83c31d08776570d7b
+--- /dev/null
++++ b/changelog.d/1107.change.md
+@@ -0,0 +1,3 @@
++Added *type* parameter to `attrs.field()` function for use with `attrs.make_class().
++
++Please note that type checkers ignore type metadata passed into `make_class()`, but it can be useful if you're wrapping _attrs_.
+diff --git a/docs/examples.md b/docs/examples.md
+index 465dc3952f78c7df8e5a5b821c2f64ab71f2dba3..6329efc358e88c85b2c038c6d8b5ed8505cc1ad1 100644
+--- a/docs/examples.md
++++ b/docs/examples.md
+@@ -471,7 +471,7 @@ If you're the author of a third-party library with *attrs* integration, please s
+ 
+ ## Types
+ 
+-*attrs* also allows you to associate a type with an attribute using either the *type* argument to {func}`attr.ib` or using {pep}`526`-annotations:
++*attrs* also allows you to associate a type with an attribute using either the *type* argument to {func}`attr.ib` and {func}`attr.field` or using {pep}`526`-annotations:
+ 
+ ```{doctest}
+ >>> @define
+@@ -626,11 +626,13 @@ Sometimes you may want to create a class programmatically.
+ >>> from attrs import make_class
+ >>> @define
+ ... class C1:
+-...     x = field()
++...     x = field(type=int)
+ ...     y = field()
+->>> C2 = make_class("C2", ["x", "y"])
++>>> C2 = make_class("C2", {"x": field(type=int), "y": field()})
+ >>> fields(C1) == fields(C2)
+ True
++>>> fields(C1).x.type
++<class 'int'>
+ ```
+ 
+ You can still have power over the attributes if you pass a dictionary of name: {func}`~attrs.field` mappings and can pass arguments to `@attr.s`:
+diff --git a/src/attr/__init__.pyi b/src/attr/__init__.pyi
+index 003dac4b41814692e6925674140023595f3a616c..ced5a3fd40d1fe79615ae68c2e70dd3916a0fc46 100644
+--- a/src/attr/__init__.pyi
++++ b/src/attr/__init__.pyi
+@@ -259,6 +259,7 @@ def field(
+     order: Optional[bool] = ...,
+     on_setattr: Optional[_OnSetAttrArgType] = ...,
+     alias: Optional[str] = ...,
++    type: Optional[type] = ...,
+ ) -> Any: ...
+ 
+ # This form catches an explicit None or no default and infers the type from the
+@@ -279,6 +280,7 @@ def field(
+     order: Optional[_EqOrderType] = ...,
+     on_setattr: Optional[_OnSetAttrArgType] = ...,
+     alias: Optional[str] = ...,
++    type: Optional[type] = ...,
+ ) -> _T: ...
+ 
+ # This form catches an explicit default argument.
+@@ -298,6 +300,7 @@ def field(
+     order: Optional[_EqOrderType] = ...,
+     on_setattr: Optional[_OnSetAttrArgType] = ...,
+     alias: Optional[str] = ...,
++    type: Optional[type] = ...,
+ ) -> _T: ...
+ 
+ # This form covers type=non-Type: e.g. forward references (str), Any
+@@ -317,6 +320,7 @@ def field(
+     order: Optional[_EqOrderType] = ...,
+     on_setattr: Optional[_OnSetAttrArgType] = ...,
+     alias: Optional[str] = ...,
++    type: Optional[type] = ...,
+ ) -> Any: ...
+ @overload
+ @__dataclass_transform__(order_default=True, field_descriptors=(attrib, field))
+diff --git a/src/attr/_cmp.py b/src/attr/_cmp.py
+index d9cbe22cde35ff08abb0f1261f2173091490e02f..c2ed6c6a1d46522a153cd37ec523f2ff54b16475 100644
+--- a/src/attr/_cmp.py
++++ b/src/attr/_cmp.py
+@@ -124,11 +124,11 @@ def _make_operator(name, func):
+         if not self._is_comparable_to(other):
+             return NotImplemented
+ 
+-        result = func(self.value, other.value)
+-        if result is NotImplemented:
++        res = func(self.value, other.value)
++        if res is NotImplemented:
+             return NotImplemented
+ 
+-        return result
++        return res
+ 
+     method.__name__ = f"__{name}__"
+     method.__doc__ = (
+diff --git a/src/attr/_next_gen.py b/src/attr/_next_gen.py
+index 1ce7b3d7ecf2cc7e9aefab76981ef2e797fb382b..7c4d5db0c147082d189b8df70b18e28ba468aad0 100644
+--- a/src/attr/_next_gen.py
++++ b/src/attr/_next_gen.py
+@@ -167,6 +167,7 @@ def field(
+     hash=None,
+     init=True,
+     metadata=None,
++    type=None,
+     converter=None,
+     factory=None,
+     kw_only=False,
+@@ -179,6 +180,10 @@ def field(
+     Identical to `attr.ib`, except keyword-only and with some arguments
+     removed.
+ 
++    .. versionadded:: 22.3.0
++       The *type* parameter has been re-added; mostly for
++       {func}`attrs.make_class`. Please note that type checkers ignore this
++       metadata.
+     .. versionadded:: 20.1.0
+     """
+     return attrib(
+@@ -188,6 +193,7 @@ def field(
+         hash=hash,
+         init=init,
+         metadata=metadata,
++        type=type,
+         converter=converter,
+         factory=factory,
+         kw_only=kw_only,
+diff --git a/tests/test_next_gen.py b/tests/test_next_gen.py
+index cb6ee2a7845bd15fb6276adf78e8a6c0878e859d..7908a418c09965df51d2abeade2bae8cad2623d1 100644
+--- a/tests/test_next_gen.py
++++ b/tests/test_next_gen.py
+@@ -28,6 +28,16 @@ class TestNextGen:
+         """
+         C("1", 2)
+ 
++    def test_field_type(self):
++        """
++        Make class with attrs.field and type parameter.
++        """
++        classFields = {"testint": attrs.field(type=int)}
++
++        A = attrs.make_class("A", classFields)
++
++        assert int == attrs.fields(A).testint.type
++
+     def test_no_slots(self):
+         """
+         slots can be deactivated.

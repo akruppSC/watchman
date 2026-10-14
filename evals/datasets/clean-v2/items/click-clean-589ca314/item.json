@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-589ca314",
+  "kind": "clean",
+  "task": "avoid empty lines if help text is empty",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "a4f5450a2541e2f2f8cacf57f50435eb78422f99",
+    "upstream_commit": "589ca314ae8d200ff55263a2c49c8ae6341866f3",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "avoid empty lines if help text is empty",
+    "date": "2022-10-05"
+  }
+}

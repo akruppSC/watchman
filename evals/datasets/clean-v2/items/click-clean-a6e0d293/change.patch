@@ -1,0 +1,58 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 097a79f756a6df44b5a269ef6c88596649965f3f..ad627126289ff68ed261b5672485283535b70cd6 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -34,6 +34,8 @@ Unreleased
+ -   Show the ``types.ParamType.name`` for ``types.Choice`` options within
+     ``--help`` message if ``show_choices=False`` is specified.
+     :issue:`2356`
++-   Do not display default values in prompts when ``Option.show_default`` is
++    ``False``. :pr:`2509`
+ 
+ 
+ Version 8.1.8
+diff --git a/src/click/core.py b/src/click/core.py
+index cc0d4603b442c72cf170d2090c7888ae59d9ba89..66af7795a5b8b709f59a80aae3d994a222bff962 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2795,6 +2795,12 @@ class Option(Parameter):
+         if self.is_bool_flag:
+             return confirm(self.prompt, default)
+ 
++        # If show_default is set to True/False, provide this to `prompt` as well. For
++        # non-bool values of `show_default`, we use `prompt`'s default behavior
++        prompt_kwargs: t.Any = {}
++        if isinstance(self.show_default, bool):
++            prompt_kwargs["show_default"] = self.show_default
++
+         return prompt(
+             self.prompt,
+             default=default,
+@@ -2803,6 +2809,7 @@ class Option(Parameter):
+             show_choices=self.show_choices,
+             confirmation_prompt=self.confirmation_prompt,
+             value_proc=lambda x: self.process_value(ctx, x),
++            **prompt_kwargs,
+         )
+ 
+     def resolve_envvar_value(self, ctx: Context) -> str | None:
+diff --git a/tests/test_termui.py b/tests/test_termui.py
+index 7cfa939949f9d4ba1fe1f685acccf9f2182ff9f0..2af7ea18f4ac4d480a31db40266f463398fd2817 100644
+--- a/tests/test_termui.py
++++ b/tests/test_termui.py
+@@ -447,3 +447,15 @@ def test_confirmation_prompt(runner, prompt, input, default, expect):
+ 
+     if prompt == "Confirm Password":
+         assert "Confirm Password: " in result.output
++
++
++def test_false_show_default_cause_no_default_display_in_prompt(runner):
++    @click.command()
++    @click.option("--arg1", show_default=False, prompt=True, default="my-default-value")
++    def cmd(arg1):
++        pass
++
++    # Confirm that the default value is not included in the output when `show_default`
++    # is False
++    result = runner.invoke(cmd, input="my-input", standalone_mode=False)
++    assert "my-default-value" not in result.output

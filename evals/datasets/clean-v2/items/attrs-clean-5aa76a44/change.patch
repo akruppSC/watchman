@@ -1,0 +1,209 @@
+diff --git a/changelog.d/1571.change.md b/changelog.d/1571.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..acaad15bc78ae5ffe5d29f60d39da0393bc00efb
+--- /dev/null
++++ b/changelog.d/1571.change.md
+@@ -0,0 +1 @@
++Added new validator `attrs.validators.ne()` (not equal).
+diff --git a/docs/api.rst b/docs/api.rst
+index ee84d9de1947f8cdcd7e7380769e9aae3f3d3e7d..c8ab29a41d72f0a88bb0013e770c3d49fcd2ea0e 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -396,6 +396,22 @@ All objects from ``attrs.validators`` are also available from ``attr.validators`
+          ...
+       ValueError: ("'x' must be > 42: 42")
+ 
++.. autofunction:: attrs.validators.ne
++
++   For example:
++
++   .. doctest::
++
++      >>> @define
++      ... class C:
++      ...     x = field(validator=attrs.validators.ne(42))
++      >>> C(43)
++      C(x=43)
++      >>> C(42)
++      Traceback (most recent call last):
++         ...
++      ValueError: ("'x' must be != 42: 42")
++
+ .. autofunction:: attrs.validators.max_len
+ 
+    For example:
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index 0b1a294432d294c4f154be2d9439d825c3ec0781..d6fb2a47d1a720d60660a68531d8065426656e74 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -32,6 +32,7 @@ __all__ = [
+     "matches_re",
+     "max_len",
+     "min_len",
++    "ne",
+     "not_",
+     "optional",
+     "or_",
+@@ -156,10 +157,10 @@ def matches_re(regex, flags=0, func=None):
+ 
+     Args:
+         regex (str, re.Pattern):
+-            A regex string or precompiled pattern to match against
++            A regex string or precompiled pattern to match against.
+ 
+         flags (int):
+-            Flags that will be passed to the underlying re function (default 0)
++            Flags that will be passed to the underlying re function (default 0).
+ 
+         func (typing.Callable):
+             Which underlying `re` function to call. Valid options are
+@@ -368,8 +369,8 @@ def deep_iterable(member_validator, iterable_validator=None):
+         iterable_validator:
+             Validator(s) to apply to iterable itself (optional).
+ 
+-    Raises
+-        TypeError: if any sub-validators fail
++    Raises:
++        TypeError: if any sub-validators fail.
+ 
+     .. versionadded:: 19.1.0
+ 
+@@ -513,7 +514,7 @@ def ge(val):
+     The validator uses `operator.ge` to compare the values.
+ 
+     Args:
+-        val: Inclusive lower bound for values
++        val: Inclusive lower bound for values.
+ 
+     .. versionadded:: 21.3.0
+     """
+@@ -528,13 +529,28 @@ def gt(val):
+     The validator uses `operator.gt` to compare the values.
+ 
+     Args:
+-       val: Exclusive lower bound for values
++       val: Exclusive lower bound for values.
+ 
+     .. versionadded:: 21.3.0
+     """
+     return _NumberValidator(val, ">", operator.gt)
+ 
+ 
++def ne(val):
++    """
++    A validator that raises `ValueError` if the initializer is called with a
++    number equal to *val*.
++
++    The validator uses `operator.ne` to compare the values.
++
++    Args:
++       val: The value that is not allowed.
++
++    .. versionadded:: 26.2.0
++    """
++    return _NumberValidator(val, "!=", operator.ne)
++
++
+ @attrs(repr=False, frozen=True, slots=True)
+ class _MaxLengthValidator:
+     max_length = attrib()
+@@ -557,7 +573,7 @@ def max_len(length):
+     with a string or iterable that is longer than *length*.
+ 
+     Args:
+-        length (int): Maximum length of the string or iterable
++        length (int): Maximum length of the string or iterable.
+ 
+     .. versionadded:: 21.3.0
+     """
+@@ -586,7 +602,7 @@ def min_len(length):
+     with a string or iterable that is shorter than *length*.
+ 
+     Args:
+-        length (int): Minimum length of the string or iterable
++        length (int): Minimum length of the string or iterable.
+ 
+     .. versionadded:: 22.1.0
+     """
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 18fb112c89562c2b9625645e0babe1207a02675f..3841592162e0cba0365cfdacd1d1ef051a21c81d 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -85,6 +85,7 @@ def lt(val: _T) -> _ValidatorType[_T]: ...
+ def le(val: _T) -> _ValidatorType[_T]: ...
+ def ge(val: _T) -> _ValidatorType[_T]: ...
+ def gt(val: _T) -> _ValidatorType[_T]: ...
++def ne(val: _T) -> _ValidatorType[_T]: ...
+ def max_len(length: int) -> _ValidatorType[_T]: ...
+ def min_len(length: int) -> _ValidatorType[_T]: ...
+ def not_(
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index 8caa64272ab4018e6126211603dd5d7662be6ba8..cbd087dd1598273c3771f44d78169696706be888 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -28,6 +28,7 @@ from attr.validators import (
+     matches_re,
+     max_len,
+     min_len,
++    ne,
+     not_,
+     optional,
+     or_,
+@@ -875,9 +876,9 @@ def test_hashability():
+         assert hash_func is not object.__hash__
+ 
+ 
+-class TestLtLeGeGt:
++class TestLtLeGeGtNe:
+     """
+-    Tests for `Lt, Le, Ge, Gt`.
++    Tests for `Lt, Le, Ge, Gt, Ne`.
+     """
+ 
+     BOUND = 4
+@@ -887,10 +888,11 @@ class TestLtLeGeGt:
+         validator is in ``__all__``.
+         """
+         assert all(
+-            f.__name__ in validator_module.__all__ for f in [lt, le, ge, gt]
++            f.__name__ in validator_module.__all__
++            for f in [lt, le, ge, gt, ne]
+         )
+ 
+-    @pytest.mark.parametrize("v", [lt, le, ge, gt])
++    @pytest.mark.parametrize("v", [lt, le, ge, gt, ne])
+     def test_retrieve_bound(self, v):
+         """
+         The configured bound for the comparison can be extracted from the
+@@ -906,12 +908,14 @@ class TestLtLeGeGt:
+     @pytest.mark.parametrize(
+         ("v", "value"),
+         [
++            (ne, 3),
+             (lt, 3),
+             (le, 3),
+             (le, 4),
+             (ge, 4),
+             (ge, 5),
+             (gt, 5),
++            (ne, 5),
+         ],
+     )
+     def test_check_valid(self, v, value):
+@@ -930,6 +934,7 @@ class TestLtLeGeGt:
+             (le, 5),
+             (ge, 3),
+             (gt, 4),
++            (ne, 4),
+         ],
+     )
+     def test_check_invalid(self, v, value):
+@@ -942,7 +947,7 @@ class TestLtLeGeGt:
+         with pytest.raises(ValueError):
+             Tester(value)
+ 
+-    @pytest.mark.parametrize("v", [lt, le, ge, gt])
++    @pytest.mark.parametrize("v", [lt, le, ge, gt, ne])
+     def test_repr(self, v):
+         """
+         __repr__ is meaningful.

@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-ce8bb4ff",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `evolve`, `resolve_types`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "ad59a62cae7f1f5355fb121d77eda5d5d1aa0cbd",
+    "upstream_commit": "ce8bb4ffa9d4b4c3cc034e497be6809840c2a53a",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_funcs.py",
+      "line_start": 352,
+      "line_end": 389,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by ce8bb4ff: Add attribs to resolve_types and fix test_hooks (#774)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Add attribs to resolve_types and fix test_hooks (#774)",
+    "date": "2021-03-05"
+  }
+}

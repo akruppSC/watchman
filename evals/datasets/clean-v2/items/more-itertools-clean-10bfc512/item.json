@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-10bfc512",
+  "kind": "clean",
+  "task": "Improve docstring for totient",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "b30fe916b01786cf9826af101770227011e250cb",
+    "upstream_commit": "10bfc5128211277c08bce3f252749856c874be40",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Improve docstring for totient",
+    "date": "2025-01-20"
+  }
+}

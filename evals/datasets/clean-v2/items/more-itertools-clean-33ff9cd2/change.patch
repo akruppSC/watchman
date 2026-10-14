@@ -1,0 +1,119 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index a24f35d5a4e0e6ad8346bdb6248babd86cd6d04c..f179245e1d621512b47ec87bbd28cda62a172b75 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -293,6 +293,7 @@ Others
+ .. autoclass:: SequenceView
+ .. autofunction:: time_limited
+ .. autofunction:: map_if(iterable, pred, func, func_else=lambda x: x)
++.. autofunction:: doublestarmap
+ 
+ ----
+ 
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 6598435ad0008bcfc79d78a9a1a5ad17351caec8..72bd0ca4be9f9c53d9eed55cac950db46a78530c 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -67,6 +67,7 @@ __all__ = [
+     'distinct_permutations',
+     'distribute',
+     'divide',
++    'doublestarmap',
+     'duplicates_everseen',
+     'duplicates_justseen',
+     'classify_unique',
+@@ -4726,3 +4727,21 @@ def join_mappings(**field_to_map):
+             ret[key][field_name] = value
+ 
+     return dict(ret)
++
++
++def doublestarmap(func, iterable):
++    """Apply *func* to every item of *iterable* by dictionary unpacking
++    the item into *func*.
++
++    The difference between :func:`itertools.starmap` and :func:`doublestarmap`
++    parallels the distinction between ``func(*a)`` and ``func(**a)``.
++
++    >>> iterable = [{'a': 1, 'b': 2}, {'a': 40, 'b': 60}]
++    >>> list(doublestarmap(lambda a, b: a + b, iterable))
++    [3, 100]
++
++    ``TypeError`` will be raised if *func*'s signature doesn't match the
++    mapping contained in *iterable* or if *iterable* does not contain mappings.
++    """
++    for item in iterable:
++        yield func(**item)
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index dc559ebcb2bb2f5fe073ee4634decf6a22040230..ac10966e6d24fa31c4a2f5134fd54a3cfdcd602b 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -13,6 +13,7 @@ from typing import (
+     Mapping,
+     Iterable,
+     Iterator,
++    Mapping,
+     overload,
+     Reversible,
+     Sequence,
+@@ -700,3 +701,7 @@ def powerset_of_sets(iterable: Iterable[_T]) -> Iterator[set[_T]]: ...
+ def join_mappings(
+     **field_to_map: Mapping[_T, _V]
+ ) -> dict[_T, dict[str, _V]]: ...
++def doublestarmap(
++    func: Callable[..., _T],
++    iterable: Iterable[Mapping[str, Any]],
++) -> Iterator[_T]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index b3e2ade936a73d002deae25afcb9af053d22a378..7c19e0bcdb7e176635680dfe5fd38bc5643aff3a 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -5803,3 +5803,48 @@ class JoinMappingTests(TestCase):
+ 
+     def test_empty(self):
+         self.assertEqual(dict(mi.join_mappings()), {})
++
++
++class DoubleStarMapTests(TestCase):
++    def test_construction(self):
++        iterable = [{'price': 1.23}, {'price': 42}, {'price': 0.1}]
++        actual = list(mi.doublestarmap('{price:.2f}'.format, iterable))
++        expected = ['1.23', '42.00', '0.10']
++        self.assertEqual(actual, expected)
++
++    def test_identity(self):
++        iterable = [{'x': 1}, {'x': 2}, {'x': 3}]
++        actual = list(mi.doublestarmap(lambda x: x, iterable))
++        expected = [1, 2, 3]
++        self.assertEqual(actual, expected)
++
++    def test_adding(self):
++        iterable = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
++        actual = list(mi.doublestarmap(lambda a, b: a + b, iterable))
++        expected = [3, 7]
++        self.assertEqual(actual, expected)
++
++    def test_mismatch_function_smaller(self):
++        iterable = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
++        with self.assertRaises(TypeError):
++            list(mi.doublestarmap(lambda a: a, iterable))
++
++    def test_mismatch_function_different(self):
++        iterable = [{'a': 1}, {'a': 2}]
++        with self.assertRaises(TypeError):
++            list(mi.doublestarmap(lambda x: x, iterable))
++
++    def test_mismatch_function_larger(self):
++        iterable = [{'a': 1}, {'a': 2}]
++        with self.assertRaises(TypeError):
++            list(mi.doublestarmap(lambda a, b: a + b, iterable))
++
++    def test_no_mapping(self):
++        iterable = [1, 2, 3, 4]
++        with self.assertRaises(TypeError):
++            list(mi.doublestarmap(lambda x: x, iterable))
++
++    def test_empty(self):
++        actual = list(mi.doublestarmap(lambda x: x, []))
++        expected = []
++        self.assertEqual(actual, expected)

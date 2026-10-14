@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-duplicate-helper-168224a2",
+  "kind": "seeded",
+  "task": "Add join_mapping",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "7b5319da74ba371d6c21d57848caed399305616b",
+    "upstream_commit": "168224a22e3825fa7f1f8708ec65799dfa647372",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 155,
+      "line_end": 173,
+      "category": "duplication",
+      "description": "Added `_all_equal_impl`, a copy of existing `all_equal` in more_itertools/recipes.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 4758,
+          "line_end": 4758
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "Add join_mapping",
+    "date": "2024-05-20"
+  }
+}

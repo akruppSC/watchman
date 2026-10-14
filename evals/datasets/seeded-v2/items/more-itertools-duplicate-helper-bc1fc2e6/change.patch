@@ -1,0 +1,73 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 7fa96adcfd8f9967c32c545b5e9c6ce2d2c207c1..98969147770124d03860570401c7761238dd9063 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -159,6 +159,27 @@ __all__ = [
+ _fsumprod = getattr(math, 'sumprod', lambda x, y: fsum(map(mul, x, y)))
+ 
+ 
++def _all_equal_impl(iterable, key=None):
++    """
++    Returns ``True`` if all the elements are equal to each other.
++
++        >>> _all_equal_impl('aaaa')
++        True
++        >>> _all_equal_impl('aaab')
++        False
++
++    A function that accepts a single argument and returns a transformed version
++    of each input item can be specified with *key*:
++
++        >>> _all_equal_impl('AaaA', key=str.casefold)
++        True
++        >>> _all_equal_impl([1, 2, 3], key=lambda x: x < 10)
++        True
++
++    """
++    return len(list(islice(groupby(iterable, key), 2))) <= 1
++
++
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -1792,7 +1813,9 @@ def zip_offset(*iterables, offsets, longest=False, fillvalue=None):
+     return zip(*staggered)
+ 
+ 
+-def sort_together(iterables, key_list=(0,), key=None, reverse=False):
++def sort_together(
++    iterables, key_list=(0,), key=None, reverse=False, strict=False
++):
+     """Return the input iterables sorted together, with *key_list* as the
+     priority for sorting. All iterables are trimmed to the length of the
+     shortest one.
+@@ -1832,6 +1855,10 @@ def sort_together(iterables, key_list=(0,), key=None, reverse=False):
+         [(3, 2, 1), ('a', 'b', 'c')]
+ 
+     """
++    if strict:
++        if not _all_equal_impl(iterables, key=len):
++            raise UnequalIterablesError()
++
+     if key is None:
+         # if there is no key function, the key argument to sorted is an
+         # itemgetter
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 89317cc0079a431e61f85a6a2738d8a35d6bfdd4..7c8d9dff366bd9ec080d79693a98ef648669a67a 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -2173,6 +2173,14 @@ class SortTogetherTest(TestCase):
+             ],
+         )
+ 
++    def test_strict(self):
++        self.assertRaises(
++            mi.UnequalIterablesError,
++            lambda: mi.sort_together(
++                [(4, 3, 2, 1), ('a', 'b', 'c')], strict=True
++            ),
++        )
++
+ 
+ class DivideTest(TestCase):
+     """Tests for divide()"""

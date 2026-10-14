@@ -1,0 +1,29 @@
+{
+  "id": "click-swallow-exception-61bdc2ae",
+  "kind": "seeded",
+  "task": "Implement a regex-based solution to hide hidden input",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "efd4daf3e3d9a5455d8045a16b1c73a9ef331104",
+    "upstream_commit": "61bdc2ae81f6d0dc19bd247504544659245df056",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/click/termui.py",
+      "line_start": 70,
+      "line_end": 73,
+      "category": "swallowed_error",
+      "description": "`message = message.replace(repr(value), _HIDDEN_INPUT_MASK)` wrapped in try/except Exception: message = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Implement a regex-based solution to hide hidden input",
+    "date": "2026-05-08"
+  }
+}

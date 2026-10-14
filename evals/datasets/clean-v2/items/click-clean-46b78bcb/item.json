@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-46b78bcb",
+  "kind": "clean",
+  "task": "command decorator params argument",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "f6a681adc13d5961073c00e57044e3855c3b76bd",
+    "upstream_commit": "46b78bcb80ac4f81e3248a83725c6f0adcc1089a",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "command decorator params argument",
+    "date": "2022-02-21"
+  }
+}

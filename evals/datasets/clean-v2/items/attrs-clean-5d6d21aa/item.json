@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-5d6d21aa",
+  "kind": "clean",
+  "task": "Make Converter (including pipe) correctly infer the return type",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "876528893a10dc7cd866e5fa0e1165cb2ac5b83b",
+    "upstream_commit": "5d6d21aa5e598c600a3610a4721a63e58d89dc5e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Make Converter (including pipe) correctly infer the return type (#1331)",
+    "date": "2024-08-06"
+  }
+}

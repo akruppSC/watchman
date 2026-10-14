@@ -1,0 +1,33 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 2801e4d1abc322a3cd0cf20912dd0d5d8c0ac47d..1d4d1830f4495f7a95ce0a8df7fa943b0ed32e76 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -4228,17 +4228,24 @@ def nth_permutation(iterable, r, index):
+         >>> nth_permutation('ghijk', 2, 5)
+         ('h', 'i')
+ 
+-    ``ValueError`` will be raised If *r* is negative.
++    ``ValueError`` will be raised If *r* is negative or greater than the length
++    of *iterable*.
+     ``IndexError`` will be raised if the given *index* is invalid.
+     """
+     pool = list(iterable)
+     n = len(pool)
+-    if r is None:
+-        r = n
+-    c = perm(n, r)
++
++    if r is None or r == n:
++        r, c = n, factorial(n)
++    elif not 0 <= r < n:
++        raise ValueError
++    else:
++        c = perm(n, r)
++    assert c > 0  # factorial(n)>0, and r<n so perm(n,r) is never zero
+ 
+     if index < 0:
+         index += c
++
+     if not 0 <= index < c:
+         raise IndexError
+ 

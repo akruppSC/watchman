@@ -1,0 +1,29 @@
+{
+  "id": "httpx-change-default-81f385c4",
+  "kind": "seeded",
+  "task": "Add missing timeout=... to top-level httpx.stream() function.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "4fbf2751ec353b09fafe9e3b22cbe07e49a26442",
+    "upstream_commit": "81f385c484f1c2f189e8e9d05b02d16240bec199",
+    "origin": "upstream commit + seeded defect (change_default)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_api.py",
+      "line_start": 129,
+      "line_end": 129,
+      "category": "silent_behavior_change",
+      "description": "Default of a parameter of public `stream` changed from True to False; existing callers silently get new behavior.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "change_default",
+    "upstream_subject": "Add missing timeout=... to top-level httpx.stream() function. (#1613)",
+    "date": "2021-04-29"
+  }
+}

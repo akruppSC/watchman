@@ -1,0 +1,27 @@
+diff --git a/httpx/_api.py b/httpx/_api.py
+index ff40ce65e128079df9f6499655613715cb1df868..5cde648ed1dc02ed0ed8d2f93353eee2e94dcbb1 100644
+--- a/httpx/_api.py
++++ b/httpx/_api.py
+@@ -126,7 +126,7 @@ def stream(
+     auth: AuthTypes = None,
+     proxies: ProxiesTypes = None,
+     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
+-    allow_redirects: bool = True,
++    allow_redirects: bool = False,
+     verify: VerifyTypes = True,
+     cert: CertTypes = None,
+     trust_env: bool = True,
+@@ -142,7 +142,12 @@ def stream(
+     [0]: /quickstart#streaming-responses
+     """
+     with Client(
+-        cookies=cookies, proxies=proxies, cert=cert, verify=verify, trust_env=trust_env
++        cookies=cookies,
++        proxies=proxies,
++        cert=cert,
++        verify=verify,
++        timeout=timeout,
++        trust_env=trust_env,
+     ) as client:
+         with client.stream(
+             method=method,

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-656ce11b",
+  "kind": "clean",
+  "task": "Deduplicate annotation extraction",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "9f096146782a6bc3a823ebe701678739dbb07504",
+    "upstream_commit": "656ce11bc2e495419146f2f196c16769890908ba",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Deduplicate annotation extraction (#912)",
+    "date": "2022-03-14"
+  }
+}

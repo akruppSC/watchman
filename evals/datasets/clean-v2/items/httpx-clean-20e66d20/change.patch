@@ -1,0 +1,107 @@
+diff --git a/httpx/_multipart.py b/httpx/_multipart.py
+index 36bae664e33666d91e863633cbdfc04f138fc881..683e6f1311a881006f014123a1223c42fb8c2c48 100644
+--- a/httpx/_multipart.py
++++ b/httpx/_multipart.py
+@@ -1,4 +1,5 @@
+ import binascii
++import io
+ import os
+ import typing
+ from pathlib import Path
+@@ -81,6 +82,9 @@ class FileField:
+             fileobj = value
+             content_type = guess_content_type(filename)
+ 
++        if isinstance(fileobj, str) or isinstance(fileobj, io.StringIO):
++            raise TypeError(f"Expected bytes or bytes-like object got: {type(fileobj)}")
++
+         self.filename = filename
+         self.file = fileobj
+         self.content_type = content_type
+diff --git a/httpx/_types.py b/httpx/_types.py
+index 75bb9006c8705229b7d908a9881f6b4a36f187d1..2381996c01bed3f98fa834dcdcb9ea71d0b10916 100644
+--- a/httpx/_types.py
++++ b/httpx/_types.py
+@@ -79,7 +79,7 @@ ResponseContent = Union[str, bytes, Iterable[bytes], AsyncIterable[bytes]]
+ 
+ RequestData = dict
+ 
+-FileContent = Union[IO[str], IO[bytes], str, bytes]
++FileContent = Union[IO[bytes], bytes]
+ FileTypes = Union[
+     # file (or text)
+     FileContent,
+diff --git a/tests/test_multipart.py b/tests/test_multipart.py
+index 3824fb6bd6e1ff3a407d542a77ee374a5834bb70..cd71a246b38874f2fc76877ee69c527dbffdf918 100644
+--- a/tests/test_multipart.py
++++ b/tests/test_multipart.py
+@@ -139,7 +139,7 @@ def test_multipart_encode(tmp_path: typing.Any) -> None:
+ 
+ 
+ def test_multipart_encode_unicode_file_contents() -> None:
+-    files = {"file": ("name.txt", "<únicode string>")}
++    files = {"file": ("name.txt", b"<bytes content>")}
+ 
+     with mock.patch("os.urandom", return_value=os.urandom(16)):
+         boundary = os.urandom(16).hex()
+@@ -150,7 +150,7 @@ def test_multipart_encode_unicode_file_contents() -> None:
+         content = (
+             '--{0}\r\nContent-Disposition: form-data; name="file";'
+             ' filename="name.txt"\r\n'
+-            "Content-Type: text/plain\r\n\r\n<únicode string>\r\n"
++            "Content-Type: text/plain\r\n\r\n<bytes content>\r\n"
+             "--{0}--\r\n"
+             "".format(boundary).encode("utf-8")
+         )
+@@ -212,14 +212,8 @@ def test_multipart_encode_files_guesses_correct_content_type(
+         assert content == b"".join(stream)
+ 
+ 
+-@pytest.mark.parametrize(
+-    "value, output",
+-    ((b"<bytes content>", "<bytes content>"), ("<string content>", "<string content>")),
+-)
+-def test_multipart_encode_files_allows_bytes_or_str_content(
+-    value: typing.Union[str, bytes], output: str
+-) -> None:
+-    files = {"file": ("test.txt", value, "text/plain")}
++def test_multipart_encode_files_allows_bytes_content() -> None:
++    files = {"file": ("test.txt", b"<bytes content>", "text/plain")}
+     with mock.patch("os.urandom", return_value=os.urandom(16)):
+         boundary = os.urandom(16).hex()
+ 
+@@ -229,9 +223,9 @@ def test_multipart_encode_files_allows_bytes_or_str_content(
+         content = (
+             '--{0}\r\nContent-Disposition: form-data; name="file"; '
+             'filename="test.txt"\r\n'
+-            "Content-Type: text/plain\r\n\r\n{1}\r\n"
++            "Content-Type: text/plain\r\n\r\n<bytes content>\r\n"
+             "--{0}--\r\n"
+-            "".format(boundary, output).encode("ascii")
++            "".format(boundary).encode("ascii")
+         )
+         assert headers == {
+             "Content-Type": f"multipart/form-data; boundary={boundary}",
+@@ -240,6 +234,22 @@ def test_multipart_encode_files_allows_bytes_or_str_content(
+         assert content == b"".join(stream)
+ 
+ 
++def test_multipart_encode_files_raises_exception_with_str_content() -> None:
++    files = {"file": ("test.txt", "<bytes content>", "text/plain")}
++    with mock.patch("os.urandom", return_value=os.urandom(16)):
++
++        with pytest.raises(TypeError):
++            encode_request(data={}, files=files)  # type: ignore
++
++
++def test_multipart_encode_files_raises_exception_with_StringIO_content() -> None:
++    files = {"file": ("test.txt", io.StringIO("content"), "text/plain")}
++    with mock.patch("os.urandom", return_value=os.urandom(16)):
++
++        with pytest.raises(TypeError):
++            encode_request(data={}, files=files)  # type: ignore
++
++
+ def test_multipart_encode_non_seekable_filelike() -> None:
+     """
+     Test that special readable but non-seekable filelike objects are supported,

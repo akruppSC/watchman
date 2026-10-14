@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-flip-comparison-fbe3b49c",
+  "kind": "seeded",
+  "task": "Tighter estimate in _nth_prime_ub()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "569e0ad654a85c77581b318305edc2eb7c4068ae",
+    "upstream_commit": "fbe3b49c543a9f62d1862125d482399dab77af64",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 5065,
+      "line_end": 5065,
+      "category": "correctness",
+      "description": "Boundary changed: `>=` became `>` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Tighter estimate in _nth_prime_ub()",
+    "date": "2025-06-17"
+  }
+}

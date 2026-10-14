@@ -1,0 +1,48 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index da38a14346bcc079daccb171702b295fd1593166..3465a10b758830201f6b7406ffef0026a3b79758 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -325,19 +325,10 @@ class BaseClient:
+         """
+         merge_url = URL(url)
+         if merge_url.is_relative_url:
+-            # To merge URLs we always append to the base URL. To get this
+-            # behaviour correct we always ensure the base URL ends in a '/'
+-            # seperator, and strip any leading '/' from the merge URL.
+-            #
+-            # So, eg...
+-            #
+-            # >>> client = Client(base_url="https://www.example.com/subpath")
+-            # >>> client.base_url
+-            # URL('https://www.example.com/subpath/')
+-            # >>> client.build_request("GET", "/path").url
+-            # URL('https://www.example.com/subpath/path')
+-            merge_raw_path = self.base_url.raw_path + merge_url.raw_path.lstrip(b"/")
+-            return self.base_url.copy_with(raw_path=merge_raw_path)
++            # We always ensure the base_url paths include the trailing '/',
++            # and always strip any leading '/' from the merge URL.
++            merge_url = merge_url.copy_with(raw_path=merge_url.raw_path.lstrip(b"/"))
++            return self.base_url.join(merge_url)
+         return merge_url
+ 
+     def _merge_cookies(
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 83deb9a243530f0a78038805b8143a249cd45bbb..2d11888254a03491d646c9ce07cec60502f1f59d 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -394,14 +394,7 @@ class URL:
+         assert url == "https://www.example.com/test/new/path"
+         """
+         if self.is_relative_url:
+-            # Workaround to handle relative URLs, which otherwise raise
+-            # rfc3986.exceptions.ResolutionError when used as an argument
+-            # in `.resolve_with`.
+-            return (
+-                self.copy_with(scheme="http", host="example.com")
+-                .join(url)
+-                .copy_with(scheme=None, host=None)
+-            )
++            return URL(url)
+ 
+         # We drop any fragment portion, because RFC 3986 strictly
+         # treats URLs with a fragment portion as not being absolute URLs.

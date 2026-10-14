@@ -1,0 +1,29 @@
+{
+  "id": "httpx-broaden-except-b97c0594",
+  "kind": "seeded",
+  "task": "Streaming multipart support",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "af56476a8c4b35a0b27e165a7fccae08b307e32c",
+    "upstream_commit": "b97c0594a59a9a5e62e9930fe9a783be79d8cc6e",
+    "origin": "upstream commit + seeded defect (broaden_except)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_multipart.py",
+      "line_start": 178,
+      "line_end": 179,
+      "category": "swallowed_error",
+      "description": "`except io.UnsupportedOperation` broadened to `except Exception`, hiding unrelated errors.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "broaden_except",
+    "upstream_subject": "Streaming multipart support (#2382)",
+    "date": "2022-12-12"
+  }
+}

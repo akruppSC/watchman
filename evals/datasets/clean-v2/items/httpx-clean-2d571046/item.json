@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-2d571046",
+  "kind": "clean",
+  "task": "Make Request and Response picklable",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "9b8f5af7596ab2208375a4d26b5b585d51b82b01",
+    "upstream_commit": "2d571046e15d3f4c4cbe5a68173cdf12e99cb3ca",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Make Request and Response picklable (#1579)",
+    "date": "2021-04-21"
+  }
+}

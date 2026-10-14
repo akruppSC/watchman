@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-665736bc",
+  "kind": "clean",
+  "task": "Mark commands as optional in the synopsis",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "8240d25bdbb8c081b745199620b8f2fe03b10579",
+    "upstream_commit": "665736bc85a19a7a2357c071394b4a545617faa3",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Mark commands as optional in the synopsis",
+    "date": "2026-05-23"
+  }
+}

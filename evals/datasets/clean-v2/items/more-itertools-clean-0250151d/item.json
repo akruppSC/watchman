@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-0250151d",
+  "kind": "clean",
+  "task": "Optimize _chunked_even_finite",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "4bdd12f7b33da265eac1c417772f5b24631e8055",
+    "upstream_commit": "0250151d55b2deab99b5c07ac87d7f3414735377",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Optimize _chunked_even_finite",
+    "date": "2023-03-17"
+  }
+}

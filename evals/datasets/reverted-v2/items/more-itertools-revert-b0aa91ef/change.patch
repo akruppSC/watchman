@@ -1,0 +1,13 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 8f0774d899e7a08f74e5c6b89a7d41a6a3fdea5b..b56c0c17b50bfb83676a6373d951c2e2587272b1 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -580,7 +580,7 @@ def random_product(*iterables, repeat=1):
+     ``itertools.product(*args, repeat=repeat)``.
+ 
+     """
+-    pools = tuple(map(tuple, iterables)) * repeat
++    pools = tuple(map(tuple, iterables * repeat))
+     return tuple(map(choice, pools))
+ 
+ 

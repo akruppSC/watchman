@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-raise-to-return-05bd1299",
+  "kind": "seeded",
+  "task": "Eliminate unnecessary variable",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d213a20ce4b6b969afc007493a75beb3f7318844",
+    "upstream_commit": "05bd1299b594931bc67deff25c552d0fab580355",
+    "origin": "upstream commit + seeded defect (raise_to_return)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 5257,
+      "line_end": 5257,
+      "category": "silent_behavior_change",
+      "description": "`raise ValueError('Indices must be non-negative')` replaced by `return None`: callers get None instead of an error.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "raise_to_return",
+    "upstream_subject": "Eliminate unnecessary variable",
+    "date": "2025-08-13"
+  }
+}

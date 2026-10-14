@@ -1,0 +1,13 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index a89a3bf99b962df9910c4edc9707e26765760f77..5c7ed56242d0359d667ab3a0b5e8feec9cf202e2 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2528,7 +2528,7 @@ class Option(Parameter):
+             self.type = types.convert_type(None, flag_value)
+ 
+         self.is_flag: bool = is_flag
+-        self.is_bool_flag = is_flag and isinstance(self.type, types.BoolParamType)
++        self.is_bool_flag = isinstance(self.type, types.BoolParamType)
+         self.flag_value: t.Any = flag_value
+ 
+         # Counting

@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-b0106bae",
+  "kind": "clean",
+  "task": "Add repeat keyword argument to product_index",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "37ae0d6dd5e9bcc6f36979c94738d667d64d8968",
+    "upstream_commit": "b0106bae267a9b257ee1cb9241df706b68a81a0e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add repeat keyword argument to product_index",
+    "date": "2025-12-04"
+  }
+}

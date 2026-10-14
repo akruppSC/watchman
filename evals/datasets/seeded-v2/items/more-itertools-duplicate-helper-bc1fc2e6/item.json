@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-duplicate-helper-bc1fc2e6",
+  "kind": "seeded",
+  "task": "add argument `strict`",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "1ae91eb4ff6ee9c326bc1ceb52e2d6edbdb0c3a8",
+    "upstream_commit": "bc1fc2e61afbaaced9eef6b8f7a5b87db961bdbc",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 162,
+      "line_end": 180,
+      "category": "duplication",
+      "description": "Added `_all_equal_impl`, a copy of existing `all_equal` in more_itertools/recipes.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 1859,
+          "line_end": 1859
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "add argument `strict`",
+    "date": "2024-08-02"
+  }
+}

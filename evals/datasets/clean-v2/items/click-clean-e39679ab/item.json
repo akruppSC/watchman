@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-e39679ab",
+  "kind": "clean",
+  "task": "Add type annotations for instance attributes in `testing`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "648d7c403829013ade629d63ddbfe808f6b2b770",
+    "upstream_commit": "e39679ab8d0cf0a8ce203a881c5ae7f44fadaebc",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add type annotations for instance attributes in `testing`",
+    "date": "2026-05-18"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "click-negate-condition-32eec714",
+  "kind": "seeded",
+  "task": "show_default string is shown if default is None",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "7dd9b12b0d22e5a8a8674488684fd2bb799f2945",
+    "upstream_commit": "32eec714347a47e15cd2f009674dc591d4064401",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2413,
+      "line_end": 2413,
+      "category": "correctness",
+      "description": "Condition inverted: `if show_default_is_str` became `if not show_default_is_str`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "show_default string is shown if default is None",
+    "date": "2021-01-15"
+  }
+}

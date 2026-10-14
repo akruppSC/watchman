@@ -1,0 +1,97 @@
+diff --git a/changelog.d/1122.change.md b/changelog.d/1122.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6f366b9171be05e37d3178a7e77daca8f35f5f1b
+--- /dev/null
++++ b/changelog.d/1122.change.md
+@@ -0,0 +1 @@
++`attrs.validators.optional()` now also accepts a tuple of validators (in addition to lists of validators).
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index e8bd3ba68fb99978f0c003f7c50349de6d398bbd..7dfec61c84ec825c66a77cbe086cedb83bb7e738 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -270,15 +270,16 @@ def optional(validator):
+     which can be set to ``None`` in addition to satisfying the requirements of
+     the sub-validator.
+ 
+-    :param validator: A validator (or a list of validators) that is used for
+-        non-``None`` values.
+-    :type validator: callable or `list` of callables.
++    :param Callable | tuple[Callable] | list[Callable] validator: A validator
++        (or validators) that is used for non-``None`` values.
+ 
+     .. versionadded:: 15.1.0
+     .. versionchanged:: 17.1.0 *validator* can be a list of validators.
++    .. versionchanged:: 23.1.0 *validator* can also be a tuple of validators.
+     """
+-    if isinstance(validator, list):
++    if isinstance(validator, (list, tuple)):
+         return _OptionalValidator(_AndValidator(validator))
++
+     return _OptionalValidator(validator)
+ 
+ 
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 221689cf1d4f097f9c3677adcf10f5b427b11894..d194a75abcacfa434f2445e66ea25975236dffcf 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -51,7 +51,9 @@ def instance_of(
+ def instance_of(type: Tuple[type, ...]) -> _ValidatorType[Any]: ...
+ def provides(interface: Any) -> _ValidatorType[Any]: ...
+ def optional(
+-    validator: Union[_ValidatorType[_T], List[_ValidatorType[_T]]]
++    validator: Union[
++        _ValidatorType[_T], List[_ValidatorType[_T]], Tuple[_ValidatorType[_T]]
++    ]
+ ) -> _ValidatorType[Optional[_T]]: ...
+ def in_(options: Container[_T]) -> _ValidatorType[_T]: ...
+ def and_(*validators: _ValidatorType[_T]) -> _ValidatorType[_T]: ...
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index d486ca47f17811628e92066ff8a1b2d0f7a0f23c..fab040262723871edb8fe6efa7f0aaea85ababf9 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -384,7 +384,12 @@ class TestProvides:
+ 
+ 
+ @pytest.mark.parametrize(
+-    "validator", [instance_of(int), [always_pass, instance_of(int)]]
++    "validator",
++    [
++        instance_of(int),
++        [always_pass, instance_of(int)],
++        (always_pass, instance_of(int)),
++    ],
+ )
+ class TestOptional:
+     """
+@@ -437,6 +442,11 @@ class TestOptional:
+                 "<optional validator for _AndValidator(_validators=[{func}, "
+                 "<instance_of validator for type <class 'int'>>]) or None>"
+             ).format(func=repr(always_pass))
++        elif isinstance(validator, tuple):
++            repr_s = (
++                "<optional validator for _AndValidator(_validators=({func}, "
++                "<instance_of validator for type <class 'int'>>)) or None>"
++            ).format(func=repr(always_pass))
+         else:
+             repr_s = (
+                 "<optional validator for <instance_of validator for type "
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index 40080865164d27c5af9545296d3e7cd45a31ed35..b77b93c0a623775d37c245a36c6e71bc8ddfd11e 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -236,6 +236,15 @@ class Validated:
+     p: Any = attr.ib(
+         validator=attr.validators.not_(attr.validators.in_("abc"), msg=None)
+     )
++    q: Any = attr.ib(
++        validator=attrs.validators.optional(attrs.validators.instance_of(C))
++    )
++    r: Any = attr.ib(
++        validator=attrs.validators.optional([attrs.validators.instance_of(C)])
++    )
++    s: Any = attr.ib(
++        validator=attrs.validators.optional((attrs.validators.instance_of(C),))
++    )
+ 
+ 
+ @attr.define

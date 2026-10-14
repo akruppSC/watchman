@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-6197c8d5",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `is_prime`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "dfdb47ba9387a37d3a7bd100d68acc29cf450a8f",
+    "upstream_commit": "6197c8d5c95f8e1f2936fe1c753d18a881ecca6c",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 1154,
+      "line_end": 1154,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 6197c8d5: Fix the bad mistakes",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix the bad mistakes",
+    "date": "2024-12-05"
+  }
+}

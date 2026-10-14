@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-3cc31b10",
+  "kind": "clean",
+  "task": "don't hide fast progress bars",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "3018f577cc1d5e7682fd091845df999b86007a6c",
+    "upstream_commit": "3cc31b10e8187035d81f5c08163ecf15dad0e5ef",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "don't hide fast progress bars",
+    "date": "2021-03-03"
+  }
+}

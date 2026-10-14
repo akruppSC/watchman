@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-flip-comparison-8afc217f",
+  "kind": "seeded",
+  "task": "Remove branch from windowed",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "2d9450b6bef33626b8533292fe2cc2c6d651cad1",
+    "upstream_commit": "8afc217f508d28b302308db7e4224de60c12acc0",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 856,
+      "line_end": 856,
+      "category": "correctness",
+      "description": "Boundary changed: `<` became `<=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Remove branch from windowed",
+    "date": "2024-03-13"
+  }
+}

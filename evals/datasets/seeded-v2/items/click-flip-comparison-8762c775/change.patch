@@ -1,0 +1,216 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 1c4e9973427e8bd8479801b746fa5acff70f2656..d29d21ade377bdfb9b0eaa6df832876a1d6dd299 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -21,6 +21,10 @@ Unreleased
+     ``pytest-xdist`` to detect test pollution and race conditions. :pr:`3151`
+ -   Add contributor documentation for running stress tests, randomized
+     parallel tests, and Flask smoke tests. :pr:`3151` :pr:`3177`
++-   ``CliRunner``'s redirected streams now expose the original file descriptor
++    via ``fileno()``, so that ``faulthandler``, ``subprocess``, and other
++    C-level consumers no longer crash with ``io.UnsupportedOperation``.
++    :issue:`2865`
+ 
+ Version 8.3.2
+ -------------
+diff --git a/docs/testing.md b/docs/testing.md
+index 6d437a2b0ab08e0ecde8c50db42d64d79c5c2a93..c7390adbe8b54bf029194ed22f7a92fa5a06d41e 100644
+--- a/docs/testing.md
++++ b/docs/testing.md
+@@ -196,3 +196,51 @@ def test_prompts():
+ Prompts will be emulated so they write the input data to
+ the output stream as well. If hidden input is expected then this
+ does not happen.
++
++## File Descriptors and Low-Level I/O
++
++{class}`CliRunner` captures output by replacing
++`sys.stdout` and `sys.stderr` with in-memory
++{class}`~io.BytesIO`-backed wrappers. This is
++Python-level redirection: calls to {func}`~click.echo`,
++{func}`print`, or `sys.stdout.write()` are captured, but
++the wrappers have no OS-level file descriptor.
++
++Code that calls `fileno()` on `sys.stdout` or
++`sys.stderr`, like {mod}`faulthandler`,
++{mod}`subprocess`, or C extensions, would normally crash
++with {exc}`io.UnsupportedOperation` inside
++{class}`CliRunner`.
++
++To avoid this, {class}`CliRunner` preserves the original
++stream's file descriptor and exposes it via `fileno()` on
++the replacement wrapper.
++
++This means:
++- **Python-level writes** (`print()`, `click.echo()`,
++  ...) are captured as usual.
++- **fd-level writes** (C code writing directly to the
++  file descriptor) go to the original terminal and are
++  **not** captured.
++
++This is the same trade-off that
++[pytest](https://docs.pytest.org/en/stable/how-to/capture-stdout-stderr.html)
++makes with its two capture modes:
++
++- `capsys`, which captures Python-level output, where
++  `fileno()` raises `UnsupportedOperation` and fd-level
++  writes are not captured.
++- `capfd`, which captures fd-level output via
++  `os.dup2()`, where `fileno()` works and fd-level
++  writes *are* captured.
++
++Rather than implementing a full `capfd`-style mechanism,
++{class}`CliRunner` takes the simpler path: expose the
++original `fd` so that standard library helpers keep
++working, while accepting that their output is not
++captured.
++
++```{versionchanged} 8.3.3
++`fileno()` on the redirected streams now returns the
++original stream's file descriptor instead of raising.
++```
+diff --git a/src/click/testing.py b/src/click/testing.py
+index fe079ba8f1421fefa3b887c671fb2f744f8c2fee..f53fc027d16a8190fd922a36f61deb5c4ee056e5 100644
+--- a/src/click/testing.py
++++ b/src/click/testing.py
+@@ -101,21 +101,55 @@ class StreamMixer:
+ 
+ 
+ class _NamedTextIOWrapper(io.TextIOWrapper):
++    """A :class:`~io.TextIOWrapper` with custom ``name`` and ``mode``
++    that does not close its underlying buffer.
++
++    An optional ``original_fd`` preserves the file descriptor of the
++    stream being replaced, so that C-level consumers that call
++    :meth:`fileno` (``faulthandler``, ``subprocess``, ...) still work.
++    Inspired by pytest's ``capsys``/``capfd`` split: see :doc:`/testing`
++    for details.
++
++    .. versionchanged:: 8.3.3
++        Added ``original_fd`` parameter and :meth:`fileno` override.
++    """
++
+     def __init__(
+-        self, buffer: t.BinaryIO, name: str, mode: str, **kwargs: t.Any
++        self,
++        buffer: t.BinaryIO,
++        name: str,
++        mode: str,
++        *,
++        original_fd: int = -1,
++        **kwargs: t.Any,
+     ) -> None:
+         super().__init__(buffer, **kwargs)
+         self._name = name
+         self._mode = mode
++        self._original_fd = original_fd
+ 
+     def close(self) -> None:
+-        """
+-        The buffer this object contains belongs to some other object, so
+-        prevent the default __del__ implementation from closing that buffer.
++        """The buffer this object contains belongs to some other object,
++        so prevent the default ``__del__`` implementation from closing
++        that buffer.
+ 
+         .. versionadded:: 8.3.2
+         """
+-        ...
++
++    def fileno(self) -> int:
++        """Return the file descriptor of the original stream, if one was
++        provided at construction time.
++
++        This allows C-level consumers (``faulthandler``, ``subprocess``,
++        signal handlers, ...) to obtain a valid fd without crashing, even
++        though the Python-level writes are redirected to an in-memory
++        buffer.
++
++        .. versionadded:: 8.3.3
++        """
++        if self._original_fd > 0:
++            return self._original_fd
++        return super().fileno()
+ 
+     @property
+     def name(self) -> str:
+@@ -321,6 +355,20 @@ class CliRunner:
+ 
+         stream_mixer = StreamMixer()
+ 
++        # Preserve the original file descriptors so that C-level
++        # consumers (faulthandler, subprocess, etc.) can still obtain a
++        # valid fd from the redirected streams. The original streams
++        # may themselves lack a fileno() (e.g. when CliRunner is used
++        # inside pytest's capsys), so we fall back to -1.
++        def _safe_fileno(stream: t.IO[t.Any]) -> int:
++            try:
++                return stream.fileno()
++            except (AttributeError, io.UnsupportedOperation):
++                return -1
++
++        old_stdout_fd = _safe_fileno(old_stdout)
++        old_stderr_fd = _safe_fileno(old_stderr)
++
+         if self.echo_stdin:
+             bytes_input = echo_input = t.cast(
+                 t.BinaryIO, EchoingStdin(bytes_input, stream_mixer.stdout)
+@@ -336,7 +384,11 @@ class CliRunner:
+             text_input._CHUNK_SIZE = 1  # type: ignore
+ 
+         sys.stdout = _NamedTextIOWrapper(
+-            stream_mixer.stdout, encoding=self.charset, name="<stdout>", mode="w"
++            stream_mixer.stdout,
++            encoding=self.charset,
++            name="<stdout>",
++            mode="w",
++            original_fd=old_stdout_fd,
+         )
+ 
+         sys.stderr = _NamedTextIOWrapper(
+@@ -345,6 +397,7 @@ class CliRunner:
+             name="<stderr>",
+             mode="w",
+             errors="backslashreplace",
++            original_fd=old_stderr_fd,
+         )
+ 
+         @_pause_echo(echo_input)  # type: ignore
+diff --git a/tests/test_testing.py b/tests/test_testing.py
+index 47144716ce09093e17ebdef6991db5875a901c61..c8fca4d4ffb2e84c43bd60af17c5f8816edd8caf 100644
+--- a/tests/test_testing.py
++++ b/tests/test_testing.py
+@@ -1,3 +1,4 @@
++import faulthandler
+ import os
+ import pdb
+ import sys
+@@ -519,3 +520,28 @@ def test_pdb_init_restored_after_invoke():
+     runner.invoke(cli)
+ 
+     assert pdb.Pdb.__init__ is original
++
++
++def test_faulthandler_enable(runner):
++    """``faulthandler.enable()`` inside ``CliRunner`` should not crash with
++    ``io.UnsupportedOperation: fileno``.
++
++    ``faulthandler.enable()`` needs a real OS file descriptor to register
++    its signal handler. ``CliRunner`` replaces ``sys.stderr`` with a
++    ``BytesIO`` wrapper that has no ``fileno()``, causing the call to fail.
++
++    Reproduce:https://github.com/pallets/click/issues/2865
++    """
++
++    @click.command()
++    @click.option("--flag", type=bool, default=True)
++    def cli(flag):
++        click.echo("Executing main function...")
++        if flag:
++            click.echo("Registering faulthandler")
++            faulthandler.enable()
++        click.echo("Finished executing main function.")
++
++    result = runner.invoke(cli, ["--flag", True])
++    assert result.exit_code == 0, result.output
++    assert "Finished executing main function." in result.output

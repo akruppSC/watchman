@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-a365cdc5",
+  "kind": "clean",
+  "task": "More f-strings",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "c24b8ad6f77e1cc2ff9dda20800fef3d2e9a7773",
+    "upstream_commit": "a365cdc5fe17cb8147042e3c554f4b920f4bbd9c",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "More f-strings (#1317)",
+    "date": "2024-07-31"
+  }
+}

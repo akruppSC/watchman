@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-20e66d20",
+  "kind": "clean",
+  "task": "enforce-upload-files-binary-type",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "50790af69b60945f8d46d6b78d24751ae90e6cab",
+    "upstream_commit": "20e66d204864b320ba6816b501c6dca17e101836",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "enforce-upload-files-binary-type (#1736)",
+    "date": "2021-08-13"
+  }
+}

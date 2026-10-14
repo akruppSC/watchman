@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-7d55876e",
+  "kind": "clean",
+  "task": "Accept tuples in attrs.validators.optional",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "5a7d978d8a7050961f62159c63fd2b7ad7b1c7d2",
+    "upstream_commit": "7d55876ed34bf74a9c402164c11bb1f28804fd12",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Accept tuples in attrs.validators.optional (#1122)",
+    "date": "2023-04-10"
+  }
+}

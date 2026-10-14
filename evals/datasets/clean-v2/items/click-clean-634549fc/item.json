@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-634549fc",
+  "kind": "clean",
+  "task": "Don't refactor variable names unnecessarily",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c442c05c315e61b38932e6d25a4e12dfc533882e",
+    "upstream_commit": "634549fc180a4c7655eafedce5b84a9b140b0a35",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Don't refactor variable names unnecessarily",
+    "date": "2025-08-21"
+  }
+}

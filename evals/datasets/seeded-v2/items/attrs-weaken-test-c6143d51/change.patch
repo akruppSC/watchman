@@ -1,0 +1,293 @@
+diff --git a/changelog.d/859.change.rst b/changelog.d/859.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..a79bd984f5a8d68719cd31403d76686f21c05eae
+--- /dev/null
++++ b/changelog.d/859.change.rst
+@@ -0,0 +1,4 @@
++Added new context manager ``attr.validators.disabled()`` and functions ``attr.validators.(set|get)_disabled()``.
++They deprecate ``attr.(set|get)_run_validators()``.
++All functions are interoperable and modify the same internal state.
++They are not – and never were – thread-safe, though.
+diff --git a/docs/api.rst b/docs/api.rst
+index d712e4d31bb416710e61b2aae54b66439d7cb654..2306b1aa9d52cdd83da5d29993c7ee6803246adc 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -590,6 +590,14 @@ Validators
+             ...
+         TypeError: ("'x' must be <class 'str'> (got 7 that is a <class 'int'>).", Attribute(name='x', default=NOTHING, validator=<deep_mapping validator for objects mapping <instance_of validator for type <class 'str'>> to <instance_of validator for type <class 'int'>>>, repr=True, cmp=True, hash=None, init=True, metadata=mappingproxy({}), type=None, converter=None, kw_only=False), <class 'str'>, 7)
+ 
++Validators can be both globally and locally disabled:
++
++.. autofunction:: attr.validators.set_disabled
++
++.. autofunction:: attr.validators.get_disabled
++
++.. autofunction:: attr.validators.disabled
++
+ 
+ Converters
+ ----------
+diff --git a/docs/init.rst b/docs/init.rst
+index fdbf0e1265386bda8ba1027ab1c932e59000fe3f..bda39f1198dfe9f6ea8e914518fe6aa70e6d0c7c 100644
+--- a/docs/init.rst
++++ b/docs/init.rst
+@@ -242,10 +242,20 @@ If you define validators both ways for an attribute, they are both ran:
+ 
+ And finally you can disable validators globally:
+ 
+-   >>> attr.set_run_validators(False)
++   >>> attr.validators.set_disabled(True)
+    >>> C("128")
+    C(x='128')
+-   >>> attr.set_run_validators(True)
++   >>> attr.validators.set_disabled(False)
++   >>> C("128")
++   Traceback (most recent call last):
++      ...
++   TypeError: ("'x' must be <class 'int'> (got '128' that is a <class 'str'>).", Attribute(name='x', default=NOTHING, validator=[<instance_of validator for type <class 'int'>>, <function fits_byte at 0x10fd7a0d0>], repr=True, cmp=True, hash=True, init=True, metadata=mappingproxy({}), type=None, converter=None), <class 'int'>, '128')
++
++You can achieve the same by using the context manager:
++
++   >>> with attr.validators.disabled():
++   ...     C("128")
++   C(x='128')
+    >>> C("128")
+    Traceback (most recent call last):
+       ...
+diff --git a/src/attr/_config.py b/src/attr/_config.py
+index 8ec920962d1b401335927db837cc13cca1e99ae8..6503f6fb016ddad18678659aed895fc9ee173277 100644
+--- a/src/attr/_config.py
++++ b/src/attr/_config.py
+@@ -9,6 +9,10 @@ _run_validators = True
+ def set_run_validators(run):
+     """
+     Set whether or not validators are run.  By default, they are run.
++
++    .. deprecated:: 21.3.0 It will not be removed, but it also will not be
++        moved to new ``attrs`` namespace.  Use `attr.validators.set_disabled()`
++        instead.
+     """
+     if not isinstance(run, bool):
+         raise TypeError("'run' must be bool.")
+@@ -19,5 +23,9 @@ def set_run_validators(run):
+ def get_run_validators():
+     """
+     Return whether or not validators are run.
++
++    .. deprecated:: 21.3.0 It will not be removed, but it also will not be
++        moved to new ``attrs`` namespace.  Use `attr.validators.get_disabled()`
++        instead.
+     """
+     return _run_validators
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index 8c28fb05746096f58a9f8284bfbe9d2389788d06..1eb25722506476f9ab2744b78a1ce4691b55d6fb 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -7,6 +7,9 @@ from __future__ import absolute_import, division, print_function
+ import operator
+ import re
+ 
++from contextlib import contextmanager
++
++from ._config import get_run_validators, set_run_validators
+ from ._make import _AndValidator, and_, attrib, attrs
+ from .exceptions import NotCallableError
+ 
+@@ -15,7 +18,9 @@ __all__ = [
+     "and_",
+     "deep_iterable",
+     "deep_mapping",
++    "disabled",
+     "ge",
++    "get_disabled",
+     "gt",
+     "in_",
+     "instance_of",
+@@ -26,9 +31,58 @@ __all__ = [
+     "max_len",
+     "optional",
+     "provides",
++    "set_disabled",
+ ]
+ 
+ 
++def set_disabled(disabled):
++    """
++    Globally disable or enable running validators.
++
++    By default, they are run.
++
++    :param disabled: If ``True``, disable running all validators.
++    :type disabled: bool
++
++    .. warning::
++
++        This function is not thread-safe!
++
++    .. versionadded:: 21.3.0
++    """
++    set_run_validators(not disabled)
++
++
++def get_disabled():
++    """
++    Return a bool indicating whether validators are currently disabled or not.
++
++    :return: ``True`` if validators are currently disabled.
++    :rtype: bool
++
++    .. versionadded:: 21.3.0
++    """
++    return not get_run_validators()
++
++
++@contextmanager
++def disabled():
++    """
++    Context manager that disables running validators within its context.
++
++    .. warning::
++
++        This context manager is not thread-safe!
++
++    .. versionadded:: 21.3.0
++    """
++    set_run_validators(False)
++    try:
++        yield
++    finally:
++        set_run_validators(True)
++
++
+ @attrs(repr=False, slots=True, hash=True)
+ class _InstanceOfValidator(object):
+     type = attrib()
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 0f7d093e17ed0b93a1c8a5380586ad641d40927f..a4393327c7b97d2a1174ae548aeaf264e3e93829 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -3,6 +3,7 @@ from typing import (
+     AnyStr,
+     Callable,
+     Container,
++    ContextManager,
+     Iterable,
+     List,
+     Mapping,
+@@ -26,6 +27,10 @@ _K = TypeVar("_K")
+ _V = TypeVar("_V")
+ _M = TypeVar("_M", bound=Mapping)
+ 
++def set_disabled(run: bool) -> None: ...
++def get_disabled() -> bool: ...
++def disabled() -> ContextManager[None]: ...
++
+ # To be more precise on instance_of use some overloads.
+ # If there are more than 3 items in the tuple then we fall back to Any
+ @overload
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index bee4d70a8b7f80d9552a5cf1f98bad4e6555494a..1730aeccd88a812e546747ba9955ba072c75e5b0 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -10,7 +10,7 @@ import pytest
+ 
+ import attr
+ 
+-from attr import fields, has
++from attr import _config, fields, has
+ from attr import validators as validator_module
+ from attr._compat import PY2, TYPE
+ from attr.validators import (
+@@ -46,6 +46,66 @@ def zope_interface():
+     return zope.interface
+ 
+ 
++class TestDisableValidators(object):
++    @pytest.fixture(autouse=True)
++    def reset_default(self):
++        """
++        Make sure validators are always enabled after a test.
++        """
++        yield
++        _config._run_validators = True
++
++    def test_default(self):
++        """
++        Run validators by default.
++        """
++        assert _config._run_validators is True
++
++    @pytest.mark.parametrize("value, expected", [(True, False), (False, True)])
++    def test_set_validators_diabled(self, value, expected):
++        """
++        Sets `_run_validators`.
++        """
++        validator_module.set_disabled(value)
++
++        assert _config._run_validators is not None
++
++    @pytest.mark.parametrize("value, expected", [(True, False), (False, True)])
++    def test_disabled(self, value, expected):
++        """
++        Returns `_run_validators`.
++        """
++        _config._run_validators = value
++
++        assert validator_module.get_disabled() is expected
++
++    def test_disabled_ctx(self):
++        """
++        The `disabled` context manager disables running validators,
++        but only within its context.
++        """
++        assert _config._run_validators is True
++
++        with validator_module.disabled():
++            assert _config._run_validators is False
++
++        assert _config._run_validators is True
++
++    def test_disabled_ctx_with_errors(self):
++        """
++        Running validators is re-enabled even if an error is raised.
++        """
++        assert _config._run_validators is True
++
++        with pytest.raises(ValueError):
++            with validator_module.disabled():
++                assert _config._run_validators is False
++
++                raise ValueError("haha!")
++
++        assert _config._run_validators is True
++
++
+ class TestInstanceOf(object):
+     """
+     Tests for `instance_of`.
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index 9d33ca3f29563ab6b6782c396fefad31e7a14a7b..af124661ad4eede0f28572acd79554b1905a24cb 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -183,6 +183,21 @@ class Validated:
+     )
+ 
+ 
++@attr.define
++class Validated2:
++    num: int = attr.field(validator=attr.validators.ge(0))
++
++
++with attr.validators.disabled():
++    Validated2(num=-1)
++
++try:
++    attr.validators.set_disabled(True)
++    Validated2(num=-1)
++finally:
++    attr.validators.set_disabled(False)
++
++
+ # Custom repr()
+ @attr.s
+ class WithCustomRepr:

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-654aa924",
+  "kind": "clean",
+  "task": "__attrs_init__()",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "467e28b268d566701d2523c2b1681375188dbcb0",
+    "upstream_commit": "654aa924750d374bac7f5252d9899cddecc50dd9",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "__attrs_init__() (#731)",
+    "date": "2021-01-23"
+  }
+}

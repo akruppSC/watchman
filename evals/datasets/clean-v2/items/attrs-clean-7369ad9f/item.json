@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-7369ad9f",
+  "kind": "clean",
+  "task": "Improve performance of asdict in the common case",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "57f0d5441c9deaac44aebbbf45e38e477651e4f2",
+    "upstream_commit": "7369ad9f4b273e400478c8e65399d826ab3f3b32",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Improve performance of asdict in the common case (#1463)",
+    "date": "2025-09-08"
+  }
+}

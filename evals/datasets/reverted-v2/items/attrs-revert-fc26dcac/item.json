@@ -1,0 +1,42 @@
+{
+  "id": "attrs-revert-fc26dcac",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `make_class`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "58d2adce57f2c4e447eb12b892ebbb09cccbdcc3",
+    "upstream_commit": "fc26dcace17b62f741550fc57c50e54b129ce8fa",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_compat.py",
+      "line_start": 28,
+      "line_end": 33,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by fc26dcac: Fix make_class for dynamic generic classes (#770)",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_compat.py",
+          "line_start": 122,
+          "line_end": 127
+        }
+      ]
+    },
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 2931,
+      "line_end": 2931,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by fc26dcac: Fix make_class for dynamic generic classes (#770)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix make_class for dynamic generic classes (#770)",
+    "date": "2021-02-26"
+  }
+}

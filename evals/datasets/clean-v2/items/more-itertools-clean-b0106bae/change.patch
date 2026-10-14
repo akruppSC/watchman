@@ -1,0 +1,69 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 41b195c9f788f2fdb26e309224a3d8f49c96e005..61d066da75ae4a24b263b614acf5fdf5992a618e 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -4342,21 +4342,27 @@ def value_chain(*args):
+             yield value
+ 
+ 
+-def product_index(element, *args):
++def product_index(element, *iterables, repeat=1):
+     """Equivalent to ``list(product(*args)).index(element)``
+ 
+-    The products of *args* can be ordered lexicographically.
++    The products of *iterables* can be ordered lexicographically.
+     :func:`product_index` computes the first index of *element* without
+     computing the previous products.
+ 
+         >>> product_index([8, 2], range(10), range(5))
+         42
+ 
++    The *repeat* keyword argument specifies the number of repetitions
++    of the iterables::
++
++        >>> product_index([8, 0, 7], range(10), repeat=3)
++        807
++
+     ``ValueError`` will be raised if the given *element* isn't in the product
+     of *args*.
+     """
+     elements = tuple(element)
+-    pools = tuple(map(tuple, args))
++    pools = tuple(map(tuple, iterables)) * repeat
+     if len(elements) != len(pools):
+         raise ValueError('element is not a product of args')
+ 
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index eceeb8626e127e52c16f8fbfa103efcecfe5f75e..a71a7c85dfe8c507accc245379bb83f8fa93715d 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -763,7 +763,9 @@ def nth_permutation(
+     iterable: Iterable[_T], r: int, index: int
+ ) -> tuple[_T, ...]: ...
+ def value_chain(*args: _T | Iterable[_T]) -> Iterable[_T]: ...
+-def product_index(element: Iterable[_T], *args: Iterable[_T]) -> int: ...
++def product_index(
++    element: Iterable[_T], *iterables: Iterable[_T], repeat: int = ...
++) -> int: ...
+ def combination_index(
+     element: Iterable[_T], iterable: Iterable[_T]
+ ) -> int: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 9e1ff39feb79a3e9887722b621c69e13d24a95e2..602470561bea58621420a93ce759fcdf89f5d42b 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -4966,6 +4966,14 @@ class ProductIndexTests(TestCase):
+             12,
+         )
+ 
++    def test_repeat(self):
++        self.assertEqual(
++            mi.product_index([1, 2, 3, 4], range(10), repeat=4),
++            mi.product_index(
++                [1, 2, 3, 4], range(10), range(10), range(10), range(10)
++            ),
++        )
++
+ 
+ class CombinationIndexTests(TestCase):
+     def test_r_less_than_n(self):

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-124c20cd",
+  "kind": "clean",
+  "task": "Document Attribute.eq_key & .order_key",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "44ea327ab7f3a9c33578b1895f65314a81858dae",
+    "upstream_commit": "124c20cde0c7099494449e62f56781c8cb499570",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Document Attribute.eq_key & .order_key (#847)",
+    "date": "2021-10-06"
+  }
+}

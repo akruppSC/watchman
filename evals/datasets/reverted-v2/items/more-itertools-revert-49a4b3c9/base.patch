@@ -1,0 +1,14 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 29cec8f309abd804574634d0c67fc93b2de1f166..51ca502ad35450dd44dec769f0803191b22b1e1b 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -3925,8 +3925,7 @@ def chunked_even(iterable, n):
+ 
+ def _chunked_even_online(iterable, n):
+     buffer = []
+-    # TODO: n*(n - 1) - 2 is not enough (tests fail), but this might be. Proof?
+-    maxbuf = n*(n - 1) - 1
++    maxbuf = n + (n - 2) * (n - 1)
+     for x in iterable:
+         buffer.append(x)
+         if len(buffer) == maxbuf:

@@ -1,0 +1,29 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index ef814f191489572c6b1492f075b3d9e319454a12..a9b358fc628091b3795ef14f8e023fd88fbc860b 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -1105,10 +1105,21 @@ def polynomial_derivative(coefficients):
+ def totient(n):
+     """Return the count of natural numbers up to *n* that are coprime with *n*.
+ 
+-    >>> totient(9)
++    Euler's totient function φ(n) gives the number of totatives.
++    Totative are integers k in the range 1 ≤ k ≤ n such that gcd(n, k) = 1.
++
++    >>> n = 9
++    >>> totient(n)
++    6
++
++    >>> totatives = [x for x in range(1, n) if math.gcd(n, x) == 1]
++    >>> totatives
++    [1, 2, 4, 5, 7, 8]
++    >>> len(totatives)
+     6
+-    >>> totient(12)
+-    4
++
++    Reference:  https://en.wikipedia.org/wiki/Euler%27s_totient_function
++
+     """
+     for prime in set(factor(n)):
+         n -= n // prime

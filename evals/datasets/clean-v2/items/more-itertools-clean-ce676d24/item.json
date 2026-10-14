@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-ce676d24",
+  "kind": "clean",
+  "task": "Do not yield an empty list for an empty iterable when maxsplit is 0",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d92f081a089714e0aa92434c797fdd1a06da1290",
+    "upstream_commit": "ce676d24136e6efa932df8a4f3bf4801b89e1dd0",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Do not yield an empty list for an empty iterable when maxsplit is 0",
+    "date": "2026-09-04"
+  }
+}

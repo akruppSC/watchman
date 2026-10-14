@@ -1,0 +1,29 @@
+{
+  "id": "click-flip-comparison-8762c775",
+  "kind": "seeded",
+  "task": "Expose original file descriptor in `CliRunner`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "878de46100e9c29aea9dab5b385b8116863cb5e3",
+    "upstream_commit": "8762c7752cf1632d082c76922b15fef06ac3a2f1",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "src/click/testing.py",
+      "line_start": 150,
+      "line_end": 150,
+      "category": "correctness",
+      "description": "Boundary changed: `>=` became `>` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Expose original file descriptor in `CliRunner`",
+    "date": "2026-03-04"
+  }
+}

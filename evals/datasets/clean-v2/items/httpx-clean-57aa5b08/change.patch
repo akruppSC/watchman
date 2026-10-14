@@ -1,0 +1,73 @@
+diff --git a/httpx/_compat.py b/httpx/_compat.py
+index f6a9ba69a57c0d87d92ee7dc54580b258e3808e7..a9b9c63072d4ff6ab789cbfb3a7e56630a9d484d 100644
+--- a/httpx/_compat.py
++++ b/httpx/_compat.py
+@@ -38,3 +38,6 @@ else:
+         context.options |= ssl.OP_NO_SSLv3
+         context.options |= ssl.OP_NO_TLSv1
+         context.options |= ssl.OP_NO_TLSv1_1
++
++
++__all__ = ["brotli", "set_minimum_tls_version_1_2"]
+diff --git a/httpx/_config.py b/httpx/_config.py
+index a4e8f6ce3a845bc7c8e32bffc2dc9be782bc7513..0187eec47ef4e49d420c71d3b13e69ed0c9dd824 100644
+--- a/httpx/_config.py
++++ b/httpx/_config.py
+@@ -7,8 +7,9 @@ from pathlib import Path
+ import certifi
+ 
+ from ._compat import set_minimum_tls_version_1_2
+-from ._models import URL, Headers
++from ._models import Headers
+ from ._types import CertTypes, HeaderTypes, TimeoutTypes, URLTypes, VerifyTypes
++from ._urls import URL
+ from ._utils import get_ca_bundle_from_env, get_logger
+ 
+ DEFAULT_CIPHERS = ":".join(
+diff --git a/httpx/_utils.py b/httpx/_utils.py
+index c1e9a38b55beba36b2720e08c0851156e7952ca6..126936db15876ef18bb21bc0767fdabca553a763 100644
+--- a/httpx/_utils.py
++++ b/httpx/_utils.py
+@@ -16,7 +16,7 @@ import sniffio
+ from ._types import PrimitiveData
+ 
+ if typing.TYPE_CHECKING:  # pragma: no cover
+-    from ._models import URL
++    from ._urls import URL
+ 
+ 
+ _HTML5_FORM_ENCODING_REPLACEMENTS = {'"': "%22", "\\": "\\\\"}
+@@ -465,7 +465,7 @@ class URLPattern:
+     """
+ 
+     def __init__(self, pattern: str) -> None:
+-        from ._models import URL
++        from ._urls import URL
+ 
+         if pattern and ":" not in pattern:
+             raise ValueError(
+diff --git a/setup.cfg b/setup.cfg
+index 15dd84c2474e25fc6e42a3897b8398f35648b6ba..58cb1d226cce6a5e6fd5b986a803f6c749dd44a0 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -16,6 +16,7 @@ disallow_untyped_decorators = True
+ warn_redundant_casts = True
+ strict_concatenate = True
+ disallow_incomplete_defs = True
++no_implicit_reexport = True
+ warn_return_any = True
+ 
+ [mypy-tests.*]
+diff --git a/tests/conftest.py b/tests/conftest.py
+index cb4bf422c90157acad6d3571078dbfde26bcabcc..89024ba1812c62feff90ad14122cb1ccd3bdc805 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -15,7 +15,7 @@ from cryptography.hazmat.primitives.serialization import (
+     load_pem_private_key,
+ )
+ from uvicorn.config import Config
+-from uvicorn.main import Server
++from uvicorn.server import Server
+ 
+ from httpx import URL
+ from tests.concurrency import sleep

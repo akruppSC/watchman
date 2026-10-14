@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-1315e42f",
+  "kind": "seeded",
+  "task": "Improve performance of attr.astuple",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "6ef8d73dd728cdebf939b3a2cd694af57d1f6b5d",
+    "upstream_commit": "1315e42fe51743fe1c3529da6792dcda2ef6cc1f",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_funcs.py",
+      "line_start": 515,
+      "line_end": 517,
+      "category": "weak_test",
+      "description": "Every assertion in `test_non_atomic_types` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Improve performance of attr.astuple (#1469)",
+    "date": "2025-09-08"
+  }
+}

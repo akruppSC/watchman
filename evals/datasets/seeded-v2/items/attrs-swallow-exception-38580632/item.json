@@ -1,0 +1,29 @@
+{
+  "id": "attrs-swallow-exception-38580632",
+  "kind": "seeded",
+  "task": "Rework linecache handling",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "fb154878ebd2758d2a3b4dc518d21fd4f73e12d2",
+    "upstream_commit": "38580632ceac1cd6e477db71e1d190a4130beed4",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 346,
+      "line_end": 349,
+      "category": "swallowed_error",
+      "description": "`filename = \"{}-{}>\".format(base_filename[:-1], count)` wrapped in try/except Exception: filename = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Rework linecache handling (#828)",
+    "date": "2021-06-30"
+  }
+}

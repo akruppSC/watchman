@@ -1,0 +1,129 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 2044927fcbda4846b2448969b39341bcd803037b..14f575ad50417dbf21d9605dad876865f253bf89 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -11,6 +11,9 @@ Unreleased
+     :issue:`3043` :pr:`3504` :pr:`3508`
+ -   Deprecated commands and options with empty or missing help text no longer
+     render a stray leading space before the ``(DEPRECATED)`` label. :pr:`3509`
++-   A :class:`Group` with ``invoke_without_command=True`` marks its subcommand as
++    optional in the usage help, showing ``[COMMAND]`` instead of ``COMMAND``.
++    :issue:`3059` :pr:`3507`
+ 
+ 
+ Version 8.4.1
+diff --git a/docs/documentation.md b/docs/documentation.md
+index 0004efd13959439093f063d9c48a2038139297f3..73a0ea75f1b670d43571ba255aba526c32b831d6 100644
+--- a/docs/documentation.md
++++ b/docs/documentation.md
+@@ -310,6 +310,14 @@ The default placeholder variable ([meta variable](https://en.wikipedia.org/wiki/
+ 
+ ```
+ 
++```{admonition} Optional elements are bracketed
++:class: note
++
++   The usage line follows a consistent convention: an element is optional when it is enclosed in square brackets and required when it appears outside them. A required argument appears as `FOO` and an optional one as `[FOO]`, with a variadic argument adding a trailing `...` (so `[FOO]...`). A single pair of brackets can group several tokens, so a chained group renders an extra command and its arguments as one optional, repeatable unit: `[COMMAND2 [ARGS]...]...`. A {class}`Group` that can run without naming a subcommand (`invoke_without_command=True`) also brackets the leading command, showing `[COMMAND]` instead of `COMMAND`. The `[OPTIONS]` placeholder is always bracketed, since adding options is itself optional.
++
++   This mirrors the conventional utility-argument syntax for optional arguments and operands ([POSIX §12.1](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html), [`man-pages(7)`](https://man7.org/linux/man-pages/man7/man-pages.7.html)), where a bracketed expression followed by `...` denotes zero or more occurrences. A subcommand name is a positional operand, so Click brackets it under the same rule.
++```
++
+ ## Help Parameter Customization
+ 
+ Help parameters are automatically added by Click for any command. The default is `--help` but can be overridden by the context setting {attr}`~Context.help_option_names`. Click also performs automatic conflict resolution on the default help parameter, so if a command itself implements a parameter named `help` then the default help will not be run.
+diff --git a/src/click/core.py b/src/click/core.py
+index f104fee7478a75771d1e7586a4b53d627ca550d0..b422bd49f2b381bb29fb0009de78340bff234290 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -1623,8 +1623,15 @@ class Group(Command):
+         self.invoke_without_command = invoke_without_command
+ 
+         if subcommand_metavar is None:
++            # When the group can run without a subcommand, the leading command
++            # token is optional, so wrap it in brackets to reflect that.
+             if chain:
+-                subcommand_metavar = "COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]..."
++                if invoke_without_command:
++                    subcommand_metavar = "[COMMAND1] [ARGS]... [COMMAND2 [ARGS]...]..."
++                else:
++                    subcommand_metavar = "COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]..."
++            elif invoke_without_command:
++                subcommand_metavar = "[COMMAND] [ARGS]..."
+             else:
+                 subcommand_metavar = "COMMAND [ARGS]..."
+ 
+diff --git a/tests/test_arguments.py b/tests/test_arguments.py
+index 2ecf518af5d66bcf6f615928bf2f38e52414c812..60152820d99430809c1c4ab30e8a923240b29e24 100644
+--- a/tests/test_arguments.py
++++ b/tests/test_arguments.py
+@@ -306,6 +306,32 @@ def test_deprecated_usage(runner):
+     assert "[F!]" in result.output
+ 
+ 
++@pytest.mark.parametrize(
++    ("kwargs", "expected"),
++    [
++        ({}, "FOO"),
++        ({"required": True}, "FOO"),
++        ({"required": False}, "[FOO]"),
++        ({"default": "x"}, "[FOO]"),
++        ({"nargs": -1}, "[FOO]..."),
++        ({"nargs": -1, "required": True}, "FOO..."),
++        ({"nargs": 2}, "FOO..."),
++        ({"nargs": 2, "required": False}, "[FOO]..."),
++    ],
++)
++def test_argument_metavar_marks_optional(runner, kwargs, expected):
++    """An argument is bracketed in the usage line only when it is optional."""
++
++    @click.command()
++    @click.argument("foo", **kwargs)
++    def cli(foo):
++        pass
++
++    result = runner.invoke(cli, ["--help"])
++    assert result.exit_code == 0
++    assert result.output.splitlines()[0] == f"Usage: cli [OPTIONS] {expected}"
++
++
+ @pytest.mark.parametrize("deprecated", [True, "USE B INSTEAD"])
+ def test_deprecated_warning(runner, deprecated):
+     @click.command()
+diff --git a/tests/test_commands.py b/tests/test_commands.py
+index c3f0020d37d7fb7e7e58c701891384aff21dc2cd..35ba65caa615abd7a6f44200ad14fb79748661e5 100644
+--- a/tests/test_commands.py
++++ b/tests/test_commands.py
+@@ -299,6 +299,33 @@ def test_invoked_subcommand(runner):
+     assert result.output == "no subcommand, use default\nin subcommand\n"
+ 
+ 
++@pytest.mark.parametrize(
++    ("chain", "invoke_without_command", "metavar"),
++    [
++        (False, False, "COMMAND [ARGS]..."),
++        (False, True, "[COMMAND] [ARGS]..."),
++        (True, False, "COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]..."),
++        (True, True, "[COMMAND1] [ARGS]... [COMMAND2 [ARGS]...]..."),
++    ],
++)
++def test_subcommand_metavar_marks_optional(
++    runner, chain, invoke_without_command, metavar
++):
++    """The leading subcommand token is bracketed only when it is optional."""
++
++    @click.group(chain=chain, invoke_without_command=invoke_without_command)
++    def cli():
++        pass
++
++    @cli.command()
++    def sub():
++        pass
++
++    result = runner.invoke(cli, ["--help"])
++    assert result.exit_code == 0
++    assert result.output.splitlines()[0] == f"Usage: cli [OPTIONS] {metavar}"
++
++
+ def test_aliased_command_canonical_name(runner):
+     class AliasedGroup(click.Group):
+         def get_command(self, ctx, cmd_name):

@@ -1,0 +1,35 @@
+{
+  "id": "httpx-comment-noise-12be5c44",
+  "kind": "seeded",
+  "task": "add socks5h proxy support",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "e9cabc8e1deb6548c5c5e2f453e343d39a2a5321",
+    "upstream_commit": "12be5c44caa7a34bfe19f82eace5150ddeba2612",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_transports/default.py",
+      "line_start": 192,
+      "line_end": 192,
+      "category": "comment_noise",
+      "description": "2 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_transports/default.py",
+          "line_start": 342,
+          "line_end": 342
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "add socks5h proxy support (#3178)",
+    "date": "2024-10-29"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-00a53d85",
+  "kind": "clean",
+  "task": "More examples",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "cd228c1300551f7a08289d5366e684ee734f4853",
+    "upstream_commit": "00a53d852c08690be80a67382f7e426497c7f6b2",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "More examples",
+    "date": "2025-04-29"
+  }
+}

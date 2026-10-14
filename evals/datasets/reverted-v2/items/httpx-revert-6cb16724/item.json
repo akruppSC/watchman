@@ -1,0 +1,36 @@
+{
+  "id": "httpx-revert-6cb16724",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `BaseClient`, `URL`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "ea5ffce14f6a1430a3cb89eae573b388047f3f2c",
+    "upstream_commit": "6cb1672459b0c1386cb36b89a92b87419fdc478c",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_client.py",
+      "line_start": 328,
+      "line_end": 331,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 6cb16724: Fix some cases of merging with base_url (#1532)",
+      "alt_ranges": []
+    },
+    {
+      "file": "httpx/_models.py",
+      "line_start": 397,
+      "line_end": 397,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 6cb16724: Fix some cases of merging with base_url (#1532)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix some cases of merging with base_url (#1532)",
+    "date": "2021-03-24"
+  }
+}

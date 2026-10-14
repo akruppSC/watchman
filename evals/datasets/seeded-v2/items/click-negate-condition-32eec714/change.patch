@@ -1,0 +1,51 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 343c817ffed8dd4ba45abf62b171f8a5a462ddb7..ea2b00b7f3121ffc865568aa8b133ea107c3c526 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -157,6 +157,8 @@ Unreleased
+     ``Choice`` :issue:`1692`
+ -   Use ``mkstemp()`` instead of ``mktemp()`` in pager implementation.
+     :issue:`1752`
++-   If ``Option.show_default`` is a string, it is displayed even if
++    ``default`` is ``None``. :issue:`1732`
+ 
+ 
+ Version 7.1.2
+diff --git a/src/click/core.py b/src/click/core.py
+index 227025dc000a05e47ff63f6469a24eca766842e2..6aa9048726f1a1abb6f51b69d43f7a46f5aef188 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2405,9 +2405,12 @@ class Option(Parameter):
+                 extra.append(f"env var: {var_str}")
+ 
+         default_value = self.get_default(ctx, call=False)
++        show_default_is_str = isinstance(self.show_default, str)
+ 
+-        if default_value is not None and (self.show_default or ctx.show_default):
+-            if isinstance(self.show_default, str):
++        if show_default_is_str or (
++            default_value is not None and (self.show_default or ctx.show_default)
++        ):
++            if not show_default_is_str:
+                 default_string = f"({self.show_default})"
+             elif isinstance(default_value, (list, tuple)):
+                 default_string = ", ".join(str(d) for d in default_value)
+diff --git a/tests/test_options.py b/tests/test_options.py
+index 2c049414ea6840a642870b048bbc4039ab1c1cb0..e9801b1eedc2e82bd4ce959cc9e6e6669854f929 100644
+--- a/tests/test_options.py
++++ b/tests/test_options.py
+@@ -660,6 +660,14 @@ def test_show_default_boolean_flag_value(runner):
+     assert "[default: False]" in message
+ 
+ 
++def test_show_default_string(runner):
++    """When show_default is a string show that value as default."""
++    opt = click.Option(["--limit"], show_default="unlimited")
++    ctx = click.Context(click.Command("cli"))
++    message = opt.get_help_record(ctx)[1]
++    assert "[default: (unlimited)]" in message
++
++
+ @pytest.mark.parametrize(
+     ("args", "expect"),
+     [

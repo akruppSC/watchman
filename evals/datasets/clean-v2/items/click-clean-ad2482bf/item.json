@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-ad2482bf",
+  "kind": "clean",
+  "task": "test runner opens stderr with backslashreplace",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c4542263a96dd067ed1ded12a83553da05bb61dd",
+    "upstream_commit": "ad2482bf696df25025ee78fb81a8cf91256af6a5",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "test runner opens stderr with backslashreplace",
+    "date": "2021-04-04"
+  }
+}

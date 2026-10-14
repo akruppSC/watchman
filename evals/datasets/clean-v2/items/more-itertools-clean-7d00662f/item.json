@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-7d00662f",
+  "kind": "clean",
+  "task": "Better dotproduct() example. Reference math.sumprod().",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "e0b27ee67822f0931dc96b0a54e2f2ed38048265",
+    "upstream_commit": "7d00662fa593541101323b88dc9cbdc2a350354f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Better dotproduct() example. Reference math.sumprod().",
+    "date": "2025-01-20"
+  }
+}

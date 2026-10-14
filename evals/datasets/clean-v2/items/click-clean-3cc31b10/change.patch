@@ -1,0 +1,203 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index f2adc660c8a834d8e9349526e7bfb1d7bdc1a3d2..6d596b5912b321510752a17acb85d23d8e798e74 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -176,6 +176,8 @@ Unreleased
+ -   Multiline marker is removed from short help text. :issue:`1597`
+ -   Restore progress bar behavior of echoing only the label if the file
+     is not a TTY. :issue:`1138`
++-   Progress bar output is shown even if execution time is less than 0.5
++    seconds. :issue:`1648`
+ 
+ 
+ Version 7.1.2
+diff --git a/src/click/_termui_impl.py b/src/click/_termui_impl.py
+index 7029a0876c477e1eabe13c9fdf06683f3f879200..c1cc936d09a908ba890e6c68c9760f54f5344980 100644
+--- a/src/click/_termui_impl.py
++++ b/src/click/_termui_impl.py
+@@ -102,7 +102,6 @@ class ProgressBar:
+         self.current_item = None
+         self.is_hidden = not isatty(self.file)
+         self._last_line = None
+-        self.short_limit = 0.5
+ 
+     def __enter__(self):
+         self.entered = True
+@@ -126,11 +125,8 @@ class ProgressBar:
+         # twice works and does "what you want".
+         return next(iter(self))
+ 
+-    def is_fast(self):
+-        return time.time() - self.start <= self.short_limit
+-
+     def render_finish(self):
+-        if self.is_hidden or self.is_fast():
++        if self.is_hidden:
+             return
+         self.file.write(AFTER_BAR)
+         self.file.flush()
+@@ -263,7 +259,7 @@ class ProgressBar:
+         line = "".join(buf)
+         # Render the line only if it changed.
+ 
+-        if line != self._last_line and not self.is_fast():
++        if line != self._last_line:
+             self._last_line = line
+             echo(line, file=self.file, color=self.color, nl=False)
+             self.file.flush()
+diff --git a/src/click/termui.py b/src/click/termui.py
+index b6855fabb9aa232f07af29dc6c1606bb714f9ed2..4fc722916ba027f3a42a5bef6548c3f8e5d9984f 100644
+--- a/src/click/termui.py
++++ b/src/click/termui.py
+@@ -390,6 +390,9 @@ def progressbar(
+     :param update_min_steps: Render only when this many updates have
+         completed. This allows tuning for very fast iterators.
+ 
++    .. versionchanged:: 8.0
++        Output is shown even if execution time is less than 0.5 seconds.
++
+     .. versionchanged:: 8.0
+         Labels are echoed if the output is not a TTY. Reverts a change
+         in 7.0 that removed all output.
+diff --git a/tests/test_termui.py b/tests/test_termui.py
+index a4ae76f33f5ee1289d3e771dfb841b4c8232b6e7..da586af6c73d5e92a38d5e7b231c62d1ef90d1d0 100644
+--- a/tests/test_termui.py
++++ b/tests/test_termui.py
+@@ -27,16 +27,14 @@ def _create_progress(length=10, length_known=True, **kwargs):
+ 
+ 
+ def test_progressbar_strip_regression(runner, monkeypatch):
+-    fake_clock = FakeClock()
+     label = "    padded line"
+ 
+     @click.command()
+     def cli():
+         with _create_progress(label=label) as progress:
+             for _ in progress:
+-                fake_clock.advance_time()
++                pass
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
+     assert label in runner.invoke(cli, []).output
+ 
+@@ -60,30 +58,24 @@ def test_progressbar_length_hint(runner, monkeypatch):
+ 
+         next = __next__
+ 
+-    fake_clock = FakeClock()
+-
+     @click.command()
+     def cli():
+         with click.progressbar(Hinted(10), label="test") as progress:
+             for _ in progress:
+-                fake_clock.advance_time()
++                pass
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
+     result = runner.invoke(cli, [])
+     assert result.exception is None
+ 
+ 
+ def test_progressbar_hidden(runner, monkeypatch):
+-    fake_clock = FakeClock()
+-
+     @click.command()
+     def cli():
+         with _create_progress(label="working") as progress:
+             for _ in progress:
+-                fake_clock.advance_time()
++                pass
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: False)
+     assert runner.invoke(cli, []).output == "working\n"
+ 
+@@ -193,21 +185,16 @@ def test_progressbar_iter_outside_with_exceptions(runner):
+ 
+ 
+ def test_progressbar_is_iterator(runner, monkeypatch):
+-    fake_clock = FakeClock()
+-
+     @click.command()
+     def cli():
+         with click.progressbar(range(10), label="test") as progress:
+             while True:
+                 try:
+                     next(progress)
+-                    fake_clock.advance_time()
+                 except StopIteration:
+                     break
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
+-
+     result = runner.invoke(cli, [])
+     assert result.exception is None
+ 
+@@ -289,50 +276,42 @@ def test_progressbar_update(runner, monkeypatch):
+ 
+     lines = [line for line in output.split("\n") if "[" in line]
+ 
+-    assert " 25%  00:00:03" in lines[0]
+-    assert " 50%  00:00:02" in lines[1]
+-    assert " 75%  00:00:01" in lines[2]
+-    assert "100%          " in lines[3]
++    assert "  0%" in lines[0]
++    assert " 25%  00:00:03" in lines[1]
++    assert " 50%  00:00:02" in lines[2]
++    assert " 75%  00:00:01" in lines[3]
++    assert "100%          " in lines[4]
+ 
+ 
+ def test_progressbar_item_show_func(runner, monkeypatch):
+-    fake_clock = FakeClock()
+-
+     @click.command()
+     def cli():
+         with click.progressbar(
+-            range(4), item_show_func=lambda x: f"Custom {x}"
++            range(3), item_show_func=lambda x: f"Custom {x}"
+         ) as progress:
+             for _ in progress:
+-                fake_clock.advance_time()
+-                print("")
++                click.echo()
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
+     output = runner.invoke(cli, []).output
+-
+-    lines = [line for line in output.split("\n") if "[" in line]
+-
+-    assert "Custom 0" in lines[0]
+-    assert "Custom 1" in lines[1]
+-    assert "Custom 2" in lines[2]
+-    assert "Custom None" in lines[3]
++    lines = [line for line in output.splitlines() if "[" in line]
++    assert "Custom None" in lines[0]
++    assert "Custom 0" in lines[1]
++    assert "Custom 1" in lines[2]
++    assert "Custom 2" in lines[3]
++    assert "Custom None" in lines[4]
+ 
+ 
+ def test_progressbar_update_with_item_show_func(runner, monkeypatch):
+-    fake_clock = FakeClock()
+-
+     @click.command()
+     def cli():
+         with click.progressbar(
+             length=6, item_show_func=lambda x: f"Custom {x}"
+         ) as progress:
+             while not progress.finished:
+-                fake_clock.advance_time()
+                 progress.update(2, progress.pos)
+-                print("")
++                click.echo()
+ 
+-    monkeypatch.setattr(time, "time", fake_clock.time)
+     monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
+     output = runner.invoke(cli, []).output
+ 

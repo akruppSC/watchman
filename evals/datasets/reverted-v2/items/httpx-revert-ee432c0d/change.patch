@@ -1,0 +1,27 @@
+diff --git a/httpx/_urlparse.py b/httpx/_urlparse.py
+index 69ff0b4b02eaa6ddfb1c1948d553244ac6e3099e..5ee6e58201dfa2a19f0d7c5cf14609a4e03c1a90 100644
+--- a/httpx/_urlparse.py
++++ b/httpx/_urlparse.py
+@@ -253,19 +253,12 @@ def urlparse(url: str = "", **kwargs: typing.Optional[str]) -> ParseResult:
+     if has_authority:
+         path = normalize_path(path)
+ 
+-    # The GEN_DELIMS set is... : / ? # [ ] @
+-    # These do not need to be percent-quoted unless they serve as delimiters for the
+-    # specific component.
+-
+-    # For 'path' we need to drop ? and # from the GEN_DELIMS set.
+-    parsed_path: str = quote(path, safe=SUB_DELIMS + ":/[]@")
+-    # For 'query' we need to drop '#' from the GEN_DELIMS set.
++    parsed_path: str = quote(path, safe=SUB_DELIMS + ":@/")
+     parsed_query: typing.Optional[str] = (
+-        None if query is None else quote(query, safe=SUB_DELIMS + ":/?[]@")
++        None if query is None else quote(query, safe=SUB_DELIMS + "/?")
+     )
+-    # For 'fragment' we can include all of the GEN_DELIMS set.
+     parsed_fragment: typing.Optional[str] = (
+-        None if fragment is None else quote(fragment, safe=SUB_DELIMS + ":/?#[]@")
++        None if fragment is None else quote(fragment, safe=SUB_DELIMS + "/?")
+     )
+ 
+     # The parsed ASCII bytestrings are our canonical form.

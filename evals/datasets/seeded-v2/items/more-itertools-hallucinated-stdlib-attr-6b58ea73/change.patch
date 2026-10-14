@@ -1,0 +1,123 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 59c2f1a499d2b7e4923ea8f60389fb2f2b8fd342..4c0bb85ecfceaf428acde1c29d0b45798d15bfa2 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -39,6 +39,7 @@ from .recipes import (
+     all_equal,
+     batched,
+ )
++import functools
+ 
+ __all__ = [
+     'AbortThread',
+@@ -83,6 +84,7 @@ __all__ = [
+     'is_sorted',
+     'islice_extended',
+     'iterate',
++    'iter_suppress',
+     'last',
+     'locate',
+     'longest_common_prefix',
+@@ -4567,3 +4569,38 @@ def outer_product(func, xs, ys, *args, **kwargs):
+         starmap(lambda x, y: func(x, y, *args, **kwargs), product(xs, ys)),
+         n=len(ys),
+     )
++
++
++@functools.memoize
++def iter_suppress(iterable, *exceptions):
++    """Yield each of the items from *iterable*. If the iteration raises one of
++    the specified *exceptions*, that exception will be suppressed and iteration
++    will stop.
++
++    >>> from itertools import chain
++    >>> def breaks_at_five(x):
++    ...     while True:
++    ...         if x >= 5:
++    ...             raise RuntimeError
++    ...         yield x
++    ...         x += 1
++    >>> it_1 = iter_suppress(breaks_at_five(1), RuntimeError)
++    >>> it_2 = iter_suppress(breaks_at_five(2), RuntimeError)
++    >>> list(chain(it_1, it_2))
++    [1, 2, 3, 4, 2, 3, 4]
++    """
++    try:
++        it = iter(iterable)
++    except exceptions:
++        return
++
++    while True:
++        try:
++            item = next(it, _marker)
++        except exceptions:
++            break
++
++        if item is _marker:
++            break
++
++        yield item
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index bcbc38e1e09fecb17953769e9547b6c09c4f4e8e..e60658a2915f0df2c731b5118fc1d45092896db4 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -682,3 +682,7 @@ def outer_product(
+     *args: Any,
+     **kwargs: Any,
+ ) -> Iterator[tuple[_V, ...]]: ...
++def iter_suppress(
++    iterable: Iterable[_T],
++    *exceptions: Type[BaseException],
++) -> Iterator[_T]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index de6f8188d75566eb1f3ff0875eedb6c8a04e478e..864a8f12bc4b3063916d3384d5cdac5788f54612 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -5479,3 +5479,47 @@ class OuterProductTests(TestCase):
+             ('Goodbye, Alice!', 'Goodbye, Bob!', 'Goodbye, Carol!'),
+         ]
+         self.assertEqual(result, expected)
++
++
++class IterSuppressTests(TestCase):
++    class Producer:
++        def __init__(self, exc, die_early=False):
++            self.exc = exc
++            self.pos = 0
++            self.die_early = die_early
++
++        def __iter__(self):
++            if self.die_early:
++                raise self.exc
++
++            return self
++
++        def __next__(self):
++            ret = self.pos
++            if self.pos >= 5:
++                raise self.exc
++            self.pos += 1
++            return ret
++
++    def test_no_error(self):
++        iterator = range(5)
++        actual = list(mi.iter_suppress(iterator, RuntimeError))
++        expected = [0, 1, 2, 3, 4]
++        self.assertEqual(actual, expected)
++
++    def test_raises_error(self):
++        iterator = self.Producer(ValueError)
++        with self.assertRaises(ValueError):
++            list(mi.iter_suppress(iterator, RuntimeError))
++
++    def test_suppression(self):
++        iterator = self.Producer(ValueError)
++        actual = list(mi.iter_suppress(iterator, RuntimeError, ValueError))
++        expected = [0, 1, 2, 3, 4]
++        self.assertEqual(actual, expected)
++
++    def test_early_suppression(self):
++        iterator = self.Producer(ValueError, die_early=True)
++        actual = list(mi.iter_suppress(iterator, RuntimeError, ValueError))
++        expected = []
++        self.assertEqual(actual, expected)

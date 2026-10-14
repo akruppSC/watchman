@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-ee56925b",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Option`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "da2b658e6185b5ae69abcefe755077336024a5e6",
+    "upstream_commit": "ee56925bc4f5451a125317e183f498e8bd1aecb3",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2531,
+      "line_end": 2531,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by ee56925b: Fix is_bool_flag being set to True even if is_flag is False",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix is_bool_flag being set to True even if is_flag is False",
+    "date": "2021-05-24"
+  }
+}

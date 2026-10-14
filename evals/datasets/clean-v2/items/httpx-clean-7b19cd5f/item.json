@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-7b19cd5f",
+  "kind": "clean",
+  "task": "Move utility functions from _utils.py to _client.py",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b47d94c90445921dc74f42c8390a474892c3f097",
+    "upstream_commit": "7b19cd5f4b749064c6452892a5e58a3758da1d1b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Move utility functions from _utils.py to _client.py (#3389)",
+    "date": "2024-11-15"
+  }
+}

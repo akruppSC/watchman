@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-5aa76a44",
+  "kind": "clean",
+  "task": "Add `ne` validator",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f616f732c6c5f87a8f7a762176422baed250a6be",
+    "upstream_commit": "5aa76a4450c311d87eda43946ec0ecd743572649",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add `ne` validator (#1571)",
+    "date": "2026-08-01"
+  }
+}

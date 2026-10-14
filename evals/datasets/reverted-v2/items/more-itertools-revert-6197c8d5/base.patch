@@ -1,0 +1,13 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 2101401ec1caeb28aaa4dcba207baf3b996861f4..cf61fc60eb15bb172452c229cd66544dfff35037 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -1151,7 +1151,7 @@ def is_prime(n):
+ 
+ def loops(n):
+     """Returns an iterable with *n* elements for efficient looping.
+-    Like ``range(n)``, but doesn't create integegers.
++    Like ``range(n)`` but doesn't create integers.
+ 
+     >>> i = 0
+     >>> for _ in loops(5):

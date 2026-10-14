@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-205dcb9f",
+  "kind": "clean",
+  "task": "Issue 1049: Try .result with a timeout",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "cc8801726185eda99e2a585e58c74e4aa1aef617",
+    "upstream_commit": "205dcb9f4f255bef37b830f73f8a62901b0a841e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Issue 1049: Try .result with a timeout",
+    "date": "2025-11-26"
+  }
+}

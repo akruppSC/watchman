@@ -1,0 +1,65 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 817c60c6d82856594eedd0e4d22575e2fafa892d..c25e5d54fec0475dbeee04a9d9395c12fc71f55e 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -99,6 +99,8 @@ Core
+ .. autoclass:: attr.Attribute
+    :members: evolve
+ 
++   For example:
++
+    .. doctest::
+ 
+       >>> import attr
+diff --git a/docs/comparison.rst b/docs/comparison.rst
+index b2b457bab1722d396c96bc02b98b8c8c5f534c5d..c82f014baabaed48cdf6b7d4127384b9fc51baae 100644
+--- a/docs/comparison.rst
++++ b/docs/comparison.rst
+@@ -7,6 +7,8 @@ For that, ``attrs`` writes ``__eq__`` and ``__ne__`` methods for you.
+ Additionally, if you pass ``order=True`` (which is the default if you use the `attr.s` decorator), ``attrs`` will also create a full set of ordering methods that are based on the defined fields: ``__le__``, ``__lt__``, ``__ge__``, and ``__gt__``.
+ 
+ 
++.. _custom-comparison:
++
+ Customization
+ -------------
+ 
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index ac6bbc10eed3463d71b784ef0063c150a7cc2f9e..9dba4e835e3c5856799f6c2e871ad8a25b01619f 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -2573,19 +2573,26 @@ class Attribute(object):
+     """
+     *Read-only* representation of an attribute.
+ 
++    The class has *all* arguments of `attr.ib` (except for ``factory``
++    which is only syntactic sugar for ``default=Factory(...)`` plus the
++    following:
++
++    - ``name`` (`str`): The name of the attribute.
++    - ``inherited`` (`bool`): Whether or not that attribute has been inherited
++      from a base class.
++    - ``eq_key`` and ``order_key`` (`typing.Callable` or `None`): The callables
++      that are used for comparing and ordering objects by this attribute,
++      respectively. These are set by passing a callable to `attr.ib`'s ``eq``,
++      ``order``, or ``cmp`` arguments. See also :ref:`comparison customization
++      <custom-comparison>`.
++
+     Instances of this class are frequently used for introspection purposes
+     like:
+ 
+     - `fields` returns a tuple of them.
+     - Validators get them passed as the first argument.
+-    - The *field transformer* hook receives a list of them.
+-
+-    :attribute name: The name of the attribute.
+-    :attribute inherited: Whether or not that attribute has been inherited from
+-        a base class.
+-
+-    Plus *all* arguments of `attr.ib` (except for ``factory``
+-    which is only syntactic sugar for ``default=Factory(...)``.
++    - The :ref:`field transformer <transform-fields>` hook receives a list of
++      them.
+ 
+     .. versionadded:: 20.1.0 *inherited*
+     .. versionadded:: 20.1.0 *on_setattr*

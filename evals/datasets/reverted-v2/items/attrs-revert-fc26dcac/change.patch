@@ -1,0 +1,51 @@
+diff --git a/src/attr/_compat.py b/src/attr/_compat.py
+index 6939f338dad73fb25d8efebf7ea0eba1cbfb7100..b0ead6e1c8d269f3af46910a1f9671d0f7f5b98a 100644
+--- a/src/attr/_compat.py
++++ b/src/attr/_compat.py
+@@ -28,15 +28,6 @@ if PY2:
+     def isclass(klass):
+         return isinstance(klass, (type, types.ClassType))
+ 
+-    def new_class(name, bases, kwds, exec_body):
+-        """
+-        A minimal stub of types.new_class that we need for make_class.
+-        """
+-        ns = {}
+-        exec_body(ns)
+-
+-        return type(name, bases, ns)
+-
+     # TYPE is used in exceptions, repr(int) is different on Python 2 and 3.
+     TYPE = "type"
+ 
+@@ -131,8 +122,6 @@ else:  # Python 3 and later.
+     def iteritems(d):
+         return d.items()
+ 
+-    new_class = types.new_class
+-
+     def metadata_proxy(d):
+         return types.MappingProxyType(dict(d))
+ 
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index ee70160ce4b0087e9dcd1b375f229ab83518aa9e..dbbf09c1db7071d24f1738d947acf05d601e2972 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -17,7 +17,6 @@ from ._compat import (
+     isclass,
+     iteritems,
+     metadata_proxy,
+-    new_class,
+     ordered_dict,
+     set_closure_cell,
+ )
+@@ -2929,8 +2928,7 @@ def make_class(name, attrs, bases=(object,), **attributes_arguments):
+     if user_init is not None:
+         body["__init__"] = user_init
+ 
+-    type_ = new_class(name, bases, {}, lambda ns: ns.update(body))
+-
++    type_ = type(name, bases, body)
+     # For pickling to work, the __module__ variable needs to be set to the
+     # frame where the class is created.  Bypass this step in environments where
+     # sys._getframe is not defined (Jython for example) or sys._getframe is not

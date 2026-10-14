@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-hallucinated-stdlib-attr-6b58ea73",
+  "kind": "seeded",
+  "task": "Issue 735: iter_suppress",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d2d10433782f68057a95c312368963b6a57fb7a8",
+    "upstream_commit": "6b58ea73265ddcbb86020844d1b8bd3aae436f4c",
+    "origin": "upstream commit + seeded defect (hallucinated_stdlib_attr)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4574,
+      "line_end": 4574,
+      "category": "hallucinated_dependency",
+      "description": "`iter_suppress` decorated with `functools.memoize`, which doesn't exist in the stdlib.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 42,
+          "line_end": 42
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_stdlib_attr",
+    "upstream_subject": "Issue 735: iter_suppress",
+    "date": "2023-09-05"
+  }
+}

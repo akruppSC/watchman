@@ -1,0 +1,173 @@
+diff --git a/docs/exceptions.md b/docs/exceptions.md
+index 949ac47a19f0768dd8a9f16ae9f5abc4b3b35a40..3de8fc6b578e41001098ce685c3424e7d444680a 100644
+--- a/docs/exceptions.md
++++ b/docs/exceptions.md
+@@ -162,11 +162,11 @@ except httpx.HTTPStatusError as exc:
+ ::: httpx.StreamConsumed
+     :docstring:
+ 
+-::: httpx.ResponseNotRead
++::: httpx.StreamClosed
+     :docstring:
+ 
+-::: httpx.RequestNotRead
++::: httpx.ResponseNotRead
+     :docstring:
+ 
+-::: httpx.ResponseClosed
++::: httpx.RequestNotRead
+     :docstring:
+diff --git a/httpx/__init__.py b/httpx/__init__.py
+index af38f8a91285d7a1b826fadf0fd33f5e807d45da..7b130937e5ea028f19dc494bbe96ad47e9f02760 100644
+--- a/httpx/__init__.py
++++ b/httpx/__init__.py
+@@ -23,8 +23,8 @@ from ._exceptions import (
+     RemoteProtocolError,
+     RequestError,
+     RequestNotRead,
+-    ResponseClosed,
+     ResponseNotRead,
++    StreamClosed,
+     StreamConsumed,
+     StreamError,
+     TimeoutException,
+@@ -99,10 +99,10 @@ __all__ = [
+     "RequestError",
+     "RequestNotRead",
+     "Response",
+-    "ResponseClosed",
+     "ResponseNotRead",
+     "StatusCode",
+     "stream",
++    "StreamClosed",
+     "StreamConsumed",
+     "StreamError",
+     "SyncByteStream",
+diff --git a/httpx/_exceptions.py b/httpx/_exceptions.py
+index 89e6fcb74ec5807437d492cedcd96fc4d48484bb..b6e59aa0590141a7a14c15cb6a0702f1c7dc3782 100644
+--- a/httpx/_exceptions.py
++++ b/httpx/_exceptions.py
+@@ -27,9 +27,9 @@ Our exception hierarchy:
+ * CookieConflict
+ * StreamError
+   x StreamConsumed
++  x StreamClosed
+   x ResponseNotRead
+   x RequestNotRead
+-  x ResponseClosed
+ """
+ import contextlib
+ import typing
+@@ -262,7 +262,7 @@ class CookieConflict(Exception):
+ # the request/response stream in an invalid manner.
+ 
+ 
+-class StreamError(Exception):
++class StreamError(RuntimeError):
+     """
+     The base class for stream exceptions.
+ 
+@@ -292,37 +292,36 @@ class StreamConsumed(StreamError):
+         super().__init__(message)
+ 
+ 
+-class ResponseNotRead(StreamError):
++class StreamClosed(StreamError):
+     """
+-    Attempted to access streaming response content, without having called `read()`.
++    Attempted to read or stream response content, but the request has been
++    closed.
+     """
+ 
+     def __init__(self) -> None:
+-        message = "Attempted to access streaming response content, without having called `read()`."
++        message = (
++            "Attempted to read or stream content, but the stream has " "been closed."
++        )
+         super().__init__(message)
+ 
+ 
+-class RequestNotRead(StreamError):
++class ResponseNotRead(StreamError):
+     """
+-    Attempted to access streaming request content, without having called `read()`.
++    Attempted to access streaming response content, without having called `read()`.
+     """
+ 
+     def __init__(self) -> None:
+-        message = "Attempted to access streaming request content, without having called `read()`."
++        message = "Attempted to access streaming response content, without having called `read()`."
+         super().__init__(message)
+ 
+ 
+-class ResponseClosed(StreamError):
++class RequestNotRead(StreamError):
+     """
+-    Attempted to read or stream response content, but the request has been
+-    closed.
++    Attempted to access streaming request content, without having called `read()`.
+     """
+ 
+     def __init__(self) -> None:
+-        message = (
+-            "Attempted to read or stream response content, but the request has "
+-            "been closed."
+-        )
++        message = "Attempted to access streaming request content, without having called `read()`."
+         super().__init__(message)
+ 
+ 
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 1bb0d7fcd6b06e9e48b882cc066a079ea4df7f29..2e4a3b6c8ad679ed80402a9ed21f7b627604d8d3 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -27,8 +27,8 @@ from ._exceptions import (
+     HTTPStatusError,
+     InvalidURL,
+     RequestNotRead,
+-    ResponseClosed,
+     ResponseNotRead,
++    StreamClosed,
+     StreamConsumed,
+     request_context,
+ )
+@@ -1222,7 +1222,7 @@ class Response:
+         if self.is_stream_consumed:
+             raise StreamConsumed()
+         if self.is_closed:
+-            raise ResponseClosed()
++            raise StreamClosed()
+         if not isinstance(self.stream, SyncByteStream):
+             raise RuntimeError("Attempted to call a sync iterator on an async stream.")
+ 
+@@ -1320,7 +1320,7 @@ class Response:
+         if self.is_stream_consumed:
+             raise StreamConsumed()
+         if self.is_closed:
+-            raise ResponseClosed()
++            raise StreamClosed()
+         if not isinstance(self.stream, AsyncByteStream):
+             raise RuntimeError("Attempted to call an async iterator on an sync stream.")
+ 
+diff --git a/tests/models/test_responses.py b/tests/models/test_responses.py
+index 10a3f1aac3873a23e17b63453d002365ba15d928..78f5db0b705c96f52592086e8ec43d2a367d1291 100644
+--- a/tests/models/test_responses.py
++++ b/tests/models/test_responses.py
+@@ -660,7 +660,7 @@ def test_cannot_read_after_response_closed():
+     )
+ 
+     response.close()
+-    with pytest.raises(httpx.ResponseClosed):
++    with pytest.raises(httpx.StreamClosed):
+         response.read()
+ 
+ 
+@@ -672,7 +672,7 @@ async def test_cannot_aread_after_response_closed():
+     )
+ 
+     await response.aclose()
+-    with pytest.raises(httpx.ResponseClosed):
++    with pytest.raises(httpx.StreamClosed):
+         await response.aread()
+ 
+ 

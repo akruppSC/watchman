@@ -1,0 +1,130 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 9ee121c10e30048db571abf974dc11f7851d0c6c..622115defd9339b92340a95f1722369099dcfebe 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -5253,7 +5253,24 @@ def argmax(iterable, *, key=None):
+     return max(enumerate(iterable), key=itemgetter(1))[0]
+ 
+ 
+-def extract(iterable, indices):
++def _extract_monotonic(iterator, indices):
++    'Non-decreasing indices, lazily consumed'
++    num_read = 0
++    for index in indices:
++        advance = index - num_read
++        try:
++            value = next(islice(iterator, advance, None))
++        except ValueError:
++            if advance != -1 or index < 0:
++                raise ValueError(f'Invalid index: {index}') from None
++        except StopIteration:
++            raise IndexError(index) from None
++        else:
++            num_read += advance + 1
++        yield value
++
++
++def extract(iterable, indices, *, monotonic=False):
+     """Yield values at the specified indices.
+ 
+     Example:
+@@ -5263,13 +5280,20 @@ def extract(iterable, indices):
+         ['h', 'e', 'l', 'l', 'o']
+ 
+     The *iterable* is consumed lazily and can be infinite.
+-    The *indices* are consumed immediately and must be finite.
++
++    When *monotonic* is false, the *indices* are consumed immediately
++    and must be finite. When *monotonic* is true, *indices* are consumed
++    lazily and can be infinite but must be non-decreasing.
+ 
+     Raises ``IndexError`` if an index lies beyond the iterable.
+-    Raises ``ValueError`` for negative indices.
++    Raises ``ValueError`` for a negative index or for a decreasing
++    index when *monotonic* is true.
+     """
+ 
+     iterator = iter(iterable)
++    if monotonic:
++        yield from _extract_monotonic(iterator, indices)
++        return
+     index_and_position = sorted(zip(indices, count()))
+ 
+     if index_and_position and index_and_position[0][0] < 0:
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 496fd68750da887671506dd41ea213a9b71aa7b9..765ab28f946ba138925b346e99e817688aa739b9 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -909,7 +909,10 @@ def argmax(
+     iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
+ ) -> int: ...
+ def extract(
+-    iterable: Iterable[_T], indices: Iterable[int]
++    iterable: Iterable[_T],
++    indices: Iterable[int],
++    *,
++    monotonic: bool = ...,
+ ) -> Iterator[_T]: ...
+ 
+ class serialize(Generic[_T], Iterator[_T]):
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index c85617108b3d9fde954314bc77ecde33ffa94146..3ccd61a3f34c14a77577923b83b23af3886d29dd 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -902,12 +902,12 @@ def sieve(n):
+     if n > 2:
+         yield 2
+     start = 3
+-    data = bytearray((0, 1)) * (n // 2)
+-    for p in iter_index(data, 1, start, stop=isqrt(n) + 1):
+-        yield from iter_index(data, 1, start, p * p)
+-        data[p * p : n : p + p] = bytes(len(range(p * p, n, p + p)))
++    payload = bytearray((0, 1)) * (n // 2)
++    for p in iter_index(payload, 1, start, stop=isqrt(n) + 1):
++        yield from iter_index(payload, 1, start, p * p)
++        payload[p * p : n : p + p] = bytes(len(range(p * p, n, p + p)))
+         start = p * p
+-    yield from iter_index(data, 1, start)
++    yield from iter_index(payload, 1, start)
+ 
+ 
+ def _batched(iterable, n, *, strict=False):  # pragma: no cover
+diff --git a/tests/test_more.py b/tests/test_more.py
+index f44e269166481759b52ebaaa369dc3435d306038..19f21dcdeac25b7612cded33f4c8003bab94cdc6 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -6376,6 +6376,34 @@ class ExtractTests(TestCase):
+         self.assertEqual(value, 'E')  #  Returns E.
+         self.assertEqual(dead, {'A', 'B', 'D', 'C'})  # D and C are now dead.
+ 
++    def test_monotonic(self):
++        collatz = mi.iterate(lambda x: 3 * x + 1 if x % 2 == 1 else x // 2, 42)
++        indices = count(0, 2)
++        self.assertEqual(
++            mi.take(3, mi.extract(collatz, indices, monotonic=True)),
++            [42, 64, 16],
++        )
++        self.assertEqual(next(collatz), 8)
++        self.assertEqual(next(indices), 6)
++
++        # Finite Inputs
++        self.assertEqual(
++            list(mi.extract('abcdefgh', [0, 2, 4], monotonic=True)),
++            ['a', 'c', 'e'],
++        )
++        with self.assertRaises(IndexError):
++            list(mi.extract('abcdefgh', [0, 2, 40], monotonic=True))
++
++        # Error cases
++        with self.assertRaises(ValueError):
++            list(
++                mi.extract('abcdefg', [2, 4, 3], monotonic=True)
++            )  # decreasing index
++        with self.assertRaises(ValueError):
++            list(
++                mi.extract('abcdefg', [-1, 0, 1], monotonic=True)
++            )  # negative index
++
+     def test_lazy_consumption(self):
+         extract = mi.extract
+ 

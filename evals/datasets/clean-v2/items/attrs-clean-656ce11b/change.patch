@@ -1,0 +1,241 @@
+diff --git a/src/attr/_compat.py b/src/attr/_compat.py
+index dc0cb02b6435bb4cb90f1d9645150d32286379a5..7f11733a3cad2433da4fe0ebc92f822bfe626aef 100644
+--- a/src/attr/_compat.py
++++ b/src/attr/_compat.py
+@@ -112,7 +112,26 @@ if PY2:
+         consequences of not setting the cell on Python 2.
+         """
+ 
++    class _AnnotationExtractor:
++        """
++        Always return None, allows to keep ``if PY2``s from code.
++        """
++
++        __slots__ = ["sig"]
++        sig = None
++
++        def __init__(self, callable):
++            pass
++
++        def get_first_param_type(self):
++            return None
++
++        def get_return_type(self):
++            return None
++
+ else:  # Python 3 and later.
++    import inspect
++
+     from collections.abc import Mapping, Sequence  # noqa
+ 
+     def just_warn(*args, **kw):
+@@ -141,6 +160,45 @@ else:  # Python 3 and later.
+     def metadata_proxy(d):
+         return types.MappingProxyType(dict(d))
+ 
++    class _AnnotationExtractor:
++        """
++        Extract type annotations from a callable, returning None whenever there
++        is none.
++        """
++
++        __slots__ = ["sig"]
++
++        def __init__(self, callable):
++            try:
++                self.sig = inspect.signature(callable)
++            except (ValueError, TypeError):  # inspect failed
++                self.sig = None
++
++        def get_first_param_type(self):
++            """
++            Return the type annotation of the first argument if it's not empty.
++            """
++            if not self.sig:
++                return None
++
++            params = list(self.sig.parameters.values())
++            if params and params[0].annotation is not inspect.Parameter.empty:
++                return params[0].annotation
++
++            return None
++
++        def get_return_type(self):
++            """
++            Return the return type if it's not empty.
++            """
++            if (
++                self.sig
++                and self.sig.return_annotation is not inspect.Signature.empty
++            ):
++                return self.sig.return_annotation
++
++            return None
++
+ 
+ def make_set_closure_cell():
+     """Return a function of two arguments (cell, value) which sets
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index de1b7e18c7a5705c2a533ccddc680e357bcf1f66..c1b6f9949bbd0ad9d868f508e743c3f67ab17bf1 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -3,7 +3,6 @@
+ from __future__ import absolute_import, division, print_function
+ 
+ import copy
+-import inspect
+ import linecache
+ import sys
+ import warnings
+@@ -18,6 +17,7 @@ from ._compat import (
+     PY2,
+     PY310,
+     PYPY,
++    _AnnotationExtractor,
+     isclass,
+     iteritems,
+     metadata_proxy,
+@@ -2501,21 +2501,11 @@ def _attrs_to_init_script(
+         if a.init is True:
+             if a.type is not None and a.converter is None:
+                 annotations[arg_name] = a.type
+-            elif a.converter is not None and not PY2:
++            elif a.converter is not None:
+                 # Try to get the type from the converter.
+-                sig = None
+-                try:
+-                    sig = inspect.signature(a.converter)
+-                except (ValueError, TypeError):  # inspect failed
+-                    pass
+-                if sig:
+-                    sig_params = list(sig.parameters.values())
+-                    if (
+-                        sig_params
+-                        and sig_params[0].annotation
+-                        is not inspect.Parameter.empty
+-                    ):
+-                        annotations[arg_name] = sig_params[0].annotation
++                t = _AnnotationExtractor(a.converter).get_first_param_type()
++                if t:
++                    annotations[arg_name] = t
+ 
+     if attrs_to_validate:  # we can skip this if there are no validators.
+         names_for_globals["_config"] = _config
+@@ -3135,36 +3125,20 @@ def pipe(*converters):
+ 
+         return val
+ 
+-    if not PY2:
+-        if not converters:
++    if not converters:
++        if not PY2:
+             # If the converter list is empty, pipe_converter is the identity.
+             A = typing.TypeVar("A")
+             pipe_converter.__annotations__ = {"val": A, "return": A}
+-        else:
+-            # Get parameter type.
+-            sig = None
+-            try:
+-                sig = inspect.signature(converters[0])
+-            except (ValueError, TypeError):  # inspect failed
+-                pass
+-            if sig:
+-                params = list(sig.parameters.values())
+-                if (
+-                    params
+-                    and params[0].annotation is not inspect.Parameter.empty
+-                ):
+-                    pipe_converter.__annotations__["val"] = params[
+-                        0
+-                    ].annotation
+-            # Get return type.
+-            sig = None
+-            try:
+-                sig = inspect.signature(converters[-1])
+-            except (ValueError, TypeError):  # inspect failed
+-                pass
+-            if sig and sig.return_annotation is not inspect.Signature().empty:
+-                pipe_converter.__annotations__[
+-                    "return"
+-                ] = sig.return_annotation
++    else:
++        # Get parameter type from first converter.
++        t = _AnnotationExtractor(converters[0]).get_first_param_type()
++        if t:
++            pipe_converter.__annotations__["val"] = t
++
++        # Get return type from last converter.
++        rt = _AnnotationExtractor(converters[-1]).get_return_type()
++        if rt:
++            pipe_converter.__annotations__["return"] = rt
+ 
+     return pipe_converter
+diff --git a/src/attr/converters.py b/src/attr/converters.py
+index 1fb6c05d7bb8893fcdd8ed81f2a708cbf21d98f6..b591539883b307dc84c896b07137e1feb7692d0c 100644
+--- a/src/attr/converters.py
++++ b/src/attr/converters.py
+@@ -6,12 +6,11 @@ Commonly useful converters.
+ 
+ from __future__ import absolute_import, division, print_function
+ 
+-from ._compat import PY2
++from ._compat import PY2, _AnnotationExtractor
+ from ._make import NOTHING, Factory, pipe
+ 
+ 
+ if not PY2:
+-    import inspect
+     import typing
+ 
+ 
+@@ -42,22 +41,15 @@ def optional(converter):
+             return None
+         return converter(val)
+ 
+-    if not PY2:
+-        sig = None
+-        try:
+-            sig = inspect.signature(converter)
+-        except (ValueError, TypeError):  # inspect failed
+-            pass
+-        if sig:
+-            params = list(sig.parameters.values())
+-            if params and params[0].annotation is not inspect.Parameter.empty:
+-                optional_converter.__annotations__["val"] = typing.Optional[
+-                    params[0].annotation
+-                ]
+-            if sig.return_annotation is not inspect.Signature.empty:
+-                optional_converter.__annotations__["return"] = typing.Optional[
+-                    sig.return_annotation
+-                ]
++    xtr = _AnnotationExtractor(converter)
++
++    t = xtr.get_first_param_type()
++    if t:
++        optional_converter.__annotations__["val"] = typing.Optional[t]
++
++    rt = xtr.get_return_type()
++    if rt:
++        optional_converter.__annotations__["return"] = typing.Optional[rt]
+ 
+     return optional_converter
+ 
+diff --git a/tests/test_converters.py b/tests/test_converters.py
+index d0fc723eb1b8e52e501e02dd88b2777d9e182bcb..3213e3ab729fb10c7eb7d9256376dc29d9beaa35 100644
+--- a/tests/test_converters.py
++++ b/tests/test_converters.py
+@@ -137,6 +137,14 @@ class TestPipe(object):
+         c = C()
+         assert True is c.a1 is c.a2
+ 
++    def test_empty(self):
++        """
++        Empty pipe returns same value.
++        """
++        o = object()
++
++        assert o is pipe()(o)
++
+ 
+ class TestToBool(object):
+     def test_unhashable(self):

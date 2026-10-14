@@ -1,0 +1,71 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 13facd9b1b9e2a1e31c6bb699c7486e218007a6b..24eabda853317cdb71deb01dbfb13d6250c5554b 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -199,6 +199,8 @@ Unreleased
+     user dir, and env vars are expanded. :issue:`1096`
+ -   Marked messages shown by the CLI with ``gettext()`` to allow
+     applications to translate Click's built-in strings. :issue:`303`
++-   Writing invalid characters  to ``stderr`` when using the test runner
++    does not raise a ``UnicodeEncodeError``. :issue:`848`
+ 
+ 
+ Version 7.1.2
+diff --git a/src/click/testing.py b/src/click/testing.py
+index 557fbefadfddae0a1e8cee06584160f34996c1c8..3bbdbffe2a61f70ca061d5af9cd88480dcc27272 100644
+--- a/src/click/testing.py
++++ b/src/click/testing.py
+@@ -178,13 +178,17 @@ class CliRunner:
+ 
+         This is automatically done in the :meth:`invoke` method.
+ 
+-        .. versionadded:: 4.0
+-           The ``color`` parameter was added.
+-
+         :param input: the input stream to put into sys.stdin.
+         :param env: the environment overrides as dictionary.
+         :param color: whether the output should contain color codes. The
+                       application can still override this explicitly.
++
++        .. versionchanged:: 8.0
++            ``stderr`` is opened with ``errors="backslashreplace"``
++            instead of the default ``"strict"``.
++
++        .. versionchanged:: 4.0
++            Added the ``color`` parameter.
+         """
+         input = make_input_stream(input, self.charset)
+ 
+@@ -214,7 +218,11 @@ class CliRunner:
+         else:
+             bytes_error = io.BytesIO()
+             sys.stderr = _NamedTextIOWrapper(
+-                bytes_error, encoding=self.charset, name="<stderr>", mode="w"
++                bytes_error,
++                encoding=self.charset,
++                name="<stderr>",
++                mode="w",
++                errors="backslashreplace",
+             )
+ 
+         def visible_input(prompt=None):
+diff --git a/tests/test_testing.py b/tests/test_testing.py
+index 8b4059635b2247f40c8c32766cc79935da33127b..1fe4caa04506c91dc3510fead401e6601df82aad 100644
+--- a/tests/test_testing.py
++++ b/tests/test_testing.py
+@@ -334,3 +334,15 @@ def test_isolated_runner_custom_tempdir(runner, tmp_path):
+ 
+     assert os.path.exists(d)
+     os.rmdir(d)
++
++
++def test_isolation_stderr_errors():
++    """Writing to stderr should escape invalid characters instead of
++    raising a UnicodeEncodeError.
++    """
++    runner = CliRunner(mix_stderr=False)
++
++    with runner.isolation() as (_, err):
++        click.echo("\udce2", err=True, nl=False)
++
++    assert err.getvalue() == b"\\udce2"

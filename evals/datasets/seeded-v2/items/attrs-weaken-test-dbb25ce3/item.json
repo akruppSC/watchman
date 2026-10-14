@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-dbb25ce3",
+  "kind": "seeded",
+  "task": "Add support for __attrs_init_subclass__",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "fd7538f0e23a49ec34b636484de2d1b4b690c7fb",
+    "upstream_commit": "dbb25ce34787a30e2ffa65685f6c689a269c3521",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_functional.py",
+      "line_start": 763,
+      "line_end": 763,
+      "category": "weak_test",
+      "description": "Every assertion in `test_init_subclass` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Add support for __attrs_init_subclass__ (#1321)",
+    "date": "2024-08-03"
+  }
+}

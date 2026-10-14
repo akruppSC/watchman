@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-09161fc9",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `_attrs_to_init_script`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "689a0e64012d1e576ebd99e786a254bc537582c6",
+    "upstream_commit": "09161fc9181bf94aa3bbc5509c663d736a9553dc",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 2210,
+      "line_end": 2218,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 09161fc9: Fix crash when __pre_init__, kw_only, and defaults come together (#1319)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix crash when __pre_init__, kw_only, and defaults come together (#1319)",
+    "date": "2024-08-03"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-550fff93",
+  "kind": "clean",
+  "task": "Add `request` getter/setter to `HTTPError`",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "3350d7e6831e2d942f68653b2f58cfa5ecb0bacd",
+    "upstream_commit": "550fff933f103e16aaddc9ff315f69aba974db40",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add `request` getter/setter to `HTTPError` (#2158)",
+    "date": "2022-04-01"
+  }
+}

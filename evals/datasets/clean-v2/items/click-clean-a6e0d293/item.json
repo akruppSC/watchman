@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-a6e0d293",
+  "kind": "clean",
+  "task": "Hide default value when show_default is False",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1a4d8c1bb1e8f8e214ede7223bd2c05dc2ce006a",
+    "upstream_commit": "a6e0d2936891030f5092c9869c7391104f6721d9",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Hide default value when show_default is False (#2509)",
+    "date": "2024-11-02"
+  }
+}

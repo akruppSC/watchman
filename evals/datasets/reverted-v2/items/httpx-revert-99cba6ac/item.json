@@ -1,0 +1,28 @@
+{
+  "id": "httpx-revert-99cba6ac",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `DigestAuth`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "ca51b4532a4495c38c8abf1a393dbd80099deae3",
+    "upstream_commit": "99cba6ac642b12f0331d069ae324402c54c4c600",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_auth.py",
+      "line_start": 285,
+      "line_end": 293,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 99cba6ac: Fix RFC 2069 mode digest authentication (#3045)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix RFC 2069 mode digest authentication (#3045)",
+    "date": "2024-01-10"
+  }
+}

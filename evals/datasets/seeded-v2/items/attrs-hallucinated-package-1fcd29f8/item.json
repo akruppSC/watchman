@@ -1,0 +1,35 @@
+{
+  "id": "attrs-hallucinated-package-1fcd29f8",
+  "kind": "seeded",
+  "task": "Add optional namespace arguments for `make_class`",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "d40d9f3c97302f3d9bfe7c72e4d5b542e041f3d8",
+    "upstream_commit": "1fcd29f8641efbff7e1b2130a38a4404a899bd50",
+    "origin": "upstream commit + seeded defect (hallucinated_package)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 28,
+      "line_end": 28,
+      "category": "hallucinated_dependency",
+      "description": "`make_class` decorated with `cached_result` from `pyutils_cache`, a package that doesn't exist.",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2871,
+          "line_end": 2871
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_package",
+    "upstream_subject": "Add optional namespace arguments for `make_class` (#1203)",
+    "date": "2023-11-28"
+  }
+}

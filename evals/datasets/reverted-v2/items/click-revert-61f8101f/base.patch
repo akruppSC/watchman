@@ -1,0 +1,13 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index f205c79c638d6c3cf309b7f8489fd9c5db01117f..367beb266523d07c267e8f80d129ee20a084f76f 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2804,6 +2804,8 @@ class Option(Parameter):
+                 )[1]
+             elif self.is_bool_flag and not self.secondary_opts and not default_value:
+                 default_string = ""
++            elif default_value == "":
++                default_string = '""'
+             else:
+                 default_string = str(default_value)
+ 

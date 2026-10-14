@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-b0aa91ef",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `random_product`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "073d23421b60e05a99872e7b174902f4aa151f31",
+    "upstream_commit": "b0aa91efbb452eeb8ffa0447047519c6e84d5292",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 583,
+      "line_end": 583,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by b0aa91ef: Fix random_product() as well",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix random_product() as well",
+    "date": "2025-12-30"
+  }
+}

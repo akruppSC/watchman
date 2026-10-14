@@ -1,0 +1,236 @@
+diff --git a/.gitignore b/.gitignore
+index 937048e983e99680104049d301e94b9c6c129fd7..b3e3cc92e9da3f85f44206be5a8df045b776ad4f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -10,6 +10,7 @@
+ .pytest_cache
+ .tox
+ .vscode
++.venv*
+ build
+ dist
+ docs/_build
+diff --git a/changelog.d/1068.change.md b/changelog.d/1068.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..eb2be1e6fc9b115e98d49f87ea65453f771b047a
+--- /dev/null
++++ b/changelog.d/1068.change.md
+@@ -0,0 +1 @@
++`attrs.filters.exclude()` and `attrs.filters.include()` now support the passing of attribute names as strings.
+diff --git a/docs/examples.md b/docs/examples.md
+index 6329efc358e88c85b2c038c6d8b5ed8505cc1ad1..242720c6d1448e8881747b5f1207a40361d56833 100644
+--- a/docs/examples.md
++++ b/docs/examples.md
+@@ -215,7 +215,7 @@ For that, {func}`attrs.asdict` offers a callback that decides whether an attribu
+ {'users': [{'email': 'jane@doe.invalid'}, {'email': 'joe@doe.invalid'}]}
+ ```
+ 
+-For the common case where you want to [`include`](attrs.filters.include) or [`exclude`](attrs.filters.exclude) certain types or attributes, *attrs* ships with a few helpers:
++For the common case where you want to [`include`](attrs.filters.include) or [`exclude`](attrs.filters.exclude) certain types, string name or attributes, *attrs* ships with a few helpers:
+ 
+ ```{doctest}
+ >>> from attrs import asdict, filters, fields
+@@ -224,11 +224,12 @@ For the common case where you want to [`include`](attrs.filters.include) or [`ex
+ ... class User:
+ ...     login: str
+ ...     password: str
++...     email: str
+ ...     id: int
+ 
+ >>> asdict(
+-...     User("jane", "s33kred", 42),
+-...     filter=filters.exclude(fields(User).password, int))
++...     User("jane", "s33kred", "jane@example.com", 42),
++...     filter=filters.exclude(fields(User).password, "email", int))
+ {'login': 'jane'}
+ 
+ >>> @define
+@@ -240,8 +241,34 @@ For the common case where you want to [`include`](attrs.filters.include) or [`ex
+ >>> asdict(C("foo", "2", 3),
+ ...        filter=filters.include(int, fields(C).x))
+ {'x': 'foo', 'z': 3}
++
++>>> asdict(C("foo", "2", 3),
++...        filter=filters.include(fields(C).x, "z"))
++{'x': 'foo', 'z': 3}
+ ```
+ 
++:::{note}
++Though using string names directly is convenient, mistyping attribute names will silently do the wrong thing and neither Python nor your type checker can help you.
++{func}`attrs.fields()` will raise an `AttributeError` when the field doesn't exist while literal string names won't.
++Using {func}`attrs.fields()` to get attributes is worth being recommended in most cases.
++
++```{doctest}
++>>> asdict(
++...     User("jane", "s33kred", "jane@example.com", 42),
++...     filter=filters.exclude("passwd")
++... )
++{'login': 'jane', 'password': 's33kred', 'email': 'jane@example.com', 'id': 42}
++
++>>> asdict(
++...     User("jane", "s33kred", "jane@example.com", 42),
++...     filter=fields(User).passwd
++... )
++Traceback (most recent call last):
++...
++AttributeError: 'UserAttributes' object has no attribute 'passwd'. Did you mean: 'password'?
++```
++:::
++
+ Other times, all you want is a tuple and *attrs* won't let you down:
+ 
+ ```{doctest}
+diff --git a/src/attr/filters.py b/src/attr/filters.py
+index baa25e946528defd865c1bff849612b96a3a681d..f58c3493b501430524a59a99e3a119651dbe2fc9 100644
+--- a/src/attr/filters.py
++++ b/src/attr/filters.py
+@@ -13,6 +13,7 @@ def _split_what(what):
+     """
+     return (
+         frozenset(cls for cls in what if isinstance(cls, type)),
++        frozenset(cls for cls in what if isinstance(cls, str)),
+         frozenset(cls for cls in what if isinstance(cls, Attribute)),
+     )
+ 
+@@ -22,14 +23,22 @@ def include(*what):
+     Include *what*.
+ 
+     :param what: What to include.
+-    :type what: `list` of `type` or `attrs.Attribute`\\ s
++    :type what: `list` of classes `type`, field names `str` or
++        `attrs.Attribute`\\ s
+ 
+     :rtype: `callable`
++
++    .. versionchanged:: 23.1.0 Accept strings with field names.
+     """
+-    cls, attrs = _split_what(what)
++    cls, names, attrs = _split_what(what)
+ 
+     def include_(attribute, value):
+-        return value.__class__ in cls or attribute in attrs
++        # Return the result
++        return (
++            value.__class__ in cls
++            or attribute.name in names
++            or attribute in attrs
++        )
+ 
+     return include_
+ 
+@@ -39,13 +48,21 @@ def exclude(*what):
+     Exclude *what*.
+ 
+     :param what: What to exclude.
+-    :type what: `list` of classes or `attrs.Attribute`\\ s.
++    :type what: `list` of classes `type`, field names `str` or
++        `attrs.Attribute`\\ s.
+ 
+     :rtype: `callable`
++
++    .. versionchanged:: 23.3.0 Accept field name string as input argument
+     """
+-    cls, attrs = _split_what(what)
++    cls, names, attrs = _split_what(what)
+ 
+     def exclude_(attribute, value):
+-        return value.__class__ not in cls and attribute not in attrs
++        # Return the result
++        return not (
++            value.__class__ in cls
++            or attribute.name in names
++            or attribute in attrs
++        )
+ 
+     return exclude_
+diff --git a/src/attr/filters.pyi b/src/attr/filters.pyi
+index 993866865eab7ede46b6421c6f31c1e79c02fd6a..8a02fa0fc0631dde0b4501c8d1c168b467c0d1a9 100644
+--- a/src/attr/filters.pyi
++++ b/src/attr/filters.pyi
+@@ -2,5 +2,5 @@ from typing import Any, Union
+ 
+ from . import Attribute, _FilterType
+ 
+-def include(*what: Union[type, Attribute[Any]]) -> _FilterType[Any]: ...
+-def exclude(*what: Union[type, Attribute[Any]]) -> _FilterType[Any]: ...
++def include(*what: Union[type, str, Attribute[Any]]) -> _FilterType[Any]: ...
++def exclude(*what: Union[type, str, Attribute[Any]]) -> _FilterType[Any]: ...
+diff --git a/tests/test_filters.py b/tests/test_filters.py
+index 6945bd2d574830783f9726249b89013a56c9ab75..6bcc975194d6a13ebdae9b6d4a8b2ddd7e0e431f 100644
+--- a/tests/test_filters.py
++++ b/tests/test_filters.py
+@@ -30,8 +30,9 @@ class TestSplitWhat:
+         """
+         assert (
+             frozenset((int, str)),
++            frozenset(("abcd", "123")),
+             frozenset((fields(C).a,)),
+-        ) == _split_what((str, fields(C).a, int))
++        ) == _split_what((str, "123", fields(C).a, int, "abcd"))
+ 
+ 
+ class TestInclude:
+@@ -46,6 +47,10 @@ class TestInclude:
+             ((str,), "hello"),
+             ((str, fields(C).a), 42),
+             ((str, fields(C).b), "hello"),
++            (("a",), 42),
++            (("a",), "hello"),
++            (("a", str), 42),
++            (("a", fields(C).b), "hello"),
+         ],
+     )
+     def test_allow(self, incl, value):
+@@ -62,6 +67,10 @@ class TestInclude:
+             ((int,), "hello"),
+             ((str, fields(C).b), 42),
+             ((int, fields(C).b), "hello"),
++            (("b",), 42),
++            (("b",), "hello"),
++            (("b", str), 42),
++            (("b", fields(C).b), "hello"),
+         ],
+     )
+     def test_drop_class(self, incl, value):
+@@ -84,6 +93,10 @@ class TestExclude:
+             ((int,), "hello"),
+             ((str, fields(C).b), 42),
+             ((int, fields(C).b), "hello"),
++            (("b",), 42),
++            (("b",), "hello"),
++            (("b", str), 42),
++            (("b", fields(C).b), "hello"),
+         ],
+     )
+     def test_allow(self, excl, value):
+@@ -100,6 +113,10 @@ class TestExclude:
+             ((str,), "hello"),
+             ((str, fields(C).a), 42),
+             ((str, fields(C).b), "hello"),
++            (("a",), 42),
++            (("a",), "hello"),
++            (("a", str), 42),
++            (("a", fields(C).b), "hello"),
+         ],
+     )
+     def test_drop_class(self, excl, value):
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index b77b93c0a623775d37c245a36c6e71bc8ddfd11e..5f5f79ab88532d2f2bd02d69867e386359aea766 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -441,6 +441,7 @@ def accessing_from_attr() -> None:
+     attr.converters.optional
+     attr.exceptions.FrozenError
+     attr.filters.include
++    attr.filters.exclude
+     attr.setters.frozen
+     attr.validators.and_
+     attr.cmp_using
+@@ -453,6 +454,7 @@ def accessing_from_attrs() -> None:
+     attrs.converters.optional
+     attrs.exceptions.FrozenError
+     attrs.filters.include
++    attrs.filters.exclude
+     attrs.setters.frozen
+     attrs.validators.and_
+     attrs.cmp_using

@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-duplicate-helper-807e47cb",
+  "kind": "seeded",
+  "task": "is_prime and nth_prime revisions",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "9cd89a836185e3a25f460fd5badeb281b972624f",
+    "upstream_commit": "807e47cb25b1ac3b09fea05a51847d03fcbd226a",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 165,
+      "line_end": 175,
+      "category": "duplication",
+      "description": "Added `_nth_impl`, a copy of existing `nth` in more_itertools/recipes.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 5015,
+          "line_end": 5015
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "is_prime and nth_prime revisions",
+    "date": "2024-12-03"
+  }
+}

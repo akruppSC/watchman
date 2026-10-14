@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-20280d4f",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `group`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "56b15be8b843a26a8065c65f8a208eef7b7c05bc",
+    "upstream_commit": "20280d4f76928db0617fbc4c0059fabb42b8d77e",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/decorators.py",
+      "line_start": 274,
+      "line_end": 282,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 20280d4f: fix `group` overload with `cls` arg",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "fix `group` overload with `cls` arg",
+    "date": "2023-07-13"
+  }
+}

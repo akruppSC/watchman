@@ -1,0 +1,29 @@
+{
+  "id": "attrs-scope-creep-rename-65ee286d",
+  "kind": "seeded",
+  "task": "Added `type` parameter to `attrs.field()` function",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "359c2db460f4410e86782a99eef06dabbfd96d34",
+    "upstream_commit": "65ee286d6a98dbe88aba73b993532af86bffa143",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_cmp.py",
+      "line_start": 127,
+      "line_end": 131,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `result` to `res` in `method` (src/attr/_cmp.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Added `type` parameter to `attrs.field()` function (#1107)",
+    "date": "2023-04-03"
+  }
+}

@@ -1,0 +1,19 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 13574c1f88102fc1b8b336192cf7a0aa79bab2c6..c0d10c9b68f4c5ea89cb891d8d14aff53affebaa 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -5061,7 +5061,13 @@ def doublestarmap(func, iterable):
+ def _nth_prime_ub(n):
+     "Upper bound for the nth prime (counting from 1)."
+     # https://en.wikipedia.org/wiki/Prime-counting_function#Inequalities
+-    return n * log(n * log(n)) if n >= 6 else 11.1
++    ub = 11.1
++    if n > 6:
++        ub = n * log(n * log(n))
++    if n >= 688_383:
++        # Make ub accurate to within n * 0.003
++        ub -= n * (1.0 - (log(log(n)) - 2.0) / log(n))
++    return ub
+ 
+ 
+ def nth_prime(n):

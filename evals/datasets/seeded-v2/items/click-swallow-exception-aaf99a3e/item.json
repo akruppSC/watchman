@@ -1,0 +1,29 @@
+{
+  "id": "click-swallow-exception-aaf99a3e",
+  "kind": "seeded",
+  "task": "Hide `Sentinel.UNSET` values as `None` in `lookup_default()`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "cdab890e57a30a9f437b88ce9652f7bfce980c1f",
+    "upstream_commit": "aaf99a3ee6935f321f755bc7c5717a91d321cd39",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2327,
+      "line_end": 2330,
+      "category": "swallowed_error",
+      "description": "`default_map_value = ctx.lookup_default(self.name)  # type: ignore[arg-type]` wrapped in try/except Exception: default_map_value = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Hide `Sentinel.UNSET` values as `None` in `lookup_default()`",
+    "date": "2026-02-20"
+  }
+}

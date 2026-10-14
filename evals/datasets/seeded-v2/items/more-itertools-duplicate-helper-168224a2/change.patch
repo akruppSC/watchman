@@ -1,0 +1,139 @@
+diff --git a/Makefile b/Makefile
+index 74b8969d7846315ef7c918410d1ffe0b91dda278..9d4127fb19bb0dfbfe00e8866516ab9281720fd5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,7 +23,7 @@ coverage:
+ 
+ .PHONY: test
+ test:
+-	python3 -m unittest -v
++	python3 -m unittest -v ${tests}
+ 
+ .PHONY: docs
+ docs:
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index c708173800e8085e7176f4bf87d119dd18a16c6d..e6f5239f8e8e0cb16305a967dfdd75a094909ecb 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -87,6 +87,7 @@ __all__ = [
+     'islice_extended',
+     'iterate',
+     'iter_suppress',
++    'join_mapping',
+     'last',
+     'locate',
+     'longest_common_prefix',
+@@ -151,6 +152,27 @@ __all__ = [
+ ]
+ 
+ 
++def _all_equal_impl(iterable, key=None):
++    """
++    Returns ``True`` if all the elements are equal to each other.
++
++        >>> _all_equal_impl('aaaa')
++        True
++        >>> _all_equal_impl('aaab')
++        False
++
++    A function that accepts a single argument and returns a transformed version
++    of each input item can be specified with *key*:
++
++        >>> _all_equal_impl('AaaA', key=str.casefold)
++        True
++        >>> _all_equal_impl([1, 2, 3], key=lambda x: x < 10)
++        True
++
++    """
++    return len(list(islice(groupby(iterable, key), 2))) <= 1
++
++
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -4707,3 +4729,34 @@ def powerset_of_sets(iterable):
+     sets = tuple(map(set, dict.fromkeys(map(frozenset, zip(iterable)))))
+     for r in range(len(sets) + 1):
+         yield from starmap(set().union, combinations(sets, r))
++
++
++def join_mapping(field_to_map, strict=False):
++    """
++    Joins multiple mappings together using their common keys.
++
++    >>> user_scores = {'elliot': 50, 'claris': 60}
++    >>> user_times = {'elliot': 30, 'claris': 40}
++    >>> field_to_map = {'score': user_scores, 'time': user_times}
++    >>> dict(join_mapping(field_to_map))
++    {'elliot': {'score': 50, 'time': 30}, 'claris': {'score': 60, 'time': 40}}
++
++    When *strict* is ``True``, the input mappings must have identical keys.
++    If they don't ``ValueError`` is raised.
++
++    The returned object is a :obj:`collections.defaultdict` with the
++    ``default_factory`` set to ``None``, such that it behaves like a normal
++    dictionary.
++
++    """
++    ret = defaultdict(dict)
++
++    for field_name, mapping in field_to_map.items():
++        for key, value in mapping.items():
++            ret[key][field_name] = value
++
++    if strict and not _all_equal_impl((d.keys() for d in ret.values())):
++        raise ValueError('keys were not the same in all mappings')
++
++    ret.default_factory = None
++    return ret
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index c866d551cf570ee8d13de409f4440612bd59b0f8..9b6e623c60f069c80e42e70538d217fbeafc249f 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -695,3 +695,6 @@ def filter_map(
+     iterable: Iterable[_T],
+ ) -> Iterator[_V]: ...
+ def powerset_of_sets(iterable: Iterable[_T]) -> Iterator[set[_T]]: ...
++def join_mapping(
++    field_to_map: dict[Any, dict[Any, Any]], strict: bool = False
++) -> dict[Any, dict[Any, Any]]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 096019075e9569d6f575a9ce0bc56ee01393a195..020a93aec77ecfb960e70979df6caca0e029c72e 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -5782,3 +5782,35 @@ class PowersetOfSetsTests(TestCase):
+         iterable = map(Str, 'ABBBCDD')
+         self.assertEqual(len(list(mi.powerset_of_sets(iterable))), 128)
+         self.assertLessEqual(hash_count, 14)
++
++
++class JoinMappingTests(TestCase):
++    def test_basic(self):
++        salary_map = {'e1': 12, 'e2': 23, 'e3': 34}
++        dept_map = {'e1': 'eng', 'e2': 'sales', 'e3': 'eng'}
++        service_map = {'e1': 5, 'e2': 9, 'e3': 2}
++        field_to_map = {
++            'salary': salary_map,
++            'dept': dept_map,
++            'service': service_map,
++        }
++        expected = {
++            'e1': {'salary': 12, 'dept': 'eng', 'service': 5},
++            'e2': {'salary': 23, 'dept': 'sales', 'service': 9},
++            'e3': {'salary': 34, 'dept': 'eng', 'service': 2},
++        }
++        self.assertEqual(dict(mi.join_mapping(field_to_map)), expected)
++        self.assertEqual(
++            dict(mi.join_mapping(field_to_map, strict=True)), expected
++        )
++
++    def test_strict_error(self):
++        salary_map = {'e1': 12, 'e2': 23, 'e3': 34}
++        dept_map = {'e1': 'eng', 'e2': 'sales', 'e4': 'eng'}
++        field_to_map = {'salary': salary_map, 'dept': dept_map}
++        with self.assertRaises(ValueError):
++            dict(mi.join_mapping(field_to_map, strict=True))
++
++    def test_empty(self):
++        self.assertEqual(dict(mi.join_mapping({})), {})
++        self.assertEqual(dict(mi.join_mapping({}, strict=True)), {})

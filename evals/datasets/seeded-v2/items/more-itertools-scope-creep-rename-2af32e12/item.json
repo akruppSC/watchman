@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-scope-creep-rename-2af32e12",
+  "kind": "seeded",
+  "task": "Add monotonic option to extract()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "68a4c96b547378831f4ddffc6a5d1675715422cd",
+    "upstream_commit": "2af32e1202bd5f47563116cbceea4e6b36814afd",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 905,
+      "line_end": 910,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `data` to `payload` in `sieve` (more_itertools/recipes.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Add monotonic option to extract()",
+    "date": "2025-11-04"
+  }
+}

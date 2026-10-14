@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-49a4b3c9",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `chunked_even`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "c0780fbbba9655d36de09b872981ffd4a90eb120",
+    "upstream_commit": "49a4b3c94b0d71cc4576df3df9ca90197b5ec9fc",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 3928,
+      "line_end": 3929,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 49a4b3c9: Fix bugs in chunked_even",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix bugs in chunked_even",
+    "date": "2021-08-01"
+  }
+}

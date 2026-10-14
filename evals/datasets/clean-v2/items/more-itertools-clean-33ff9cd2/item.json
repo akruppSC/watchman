@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-33ff9cd2",
+  "kind": "clean",
+  "task": "Add doublestarmap (closes #679)",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "86c21de02d842d91089f3e080f3b9f0162b6a330",
+    "upstream_commit": "33ff9cd2edde12c3de18dc806b0397dcf8039011",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add doublestarmap (closes #679)",
+    "date": "2023-02-25"
+  }
+}

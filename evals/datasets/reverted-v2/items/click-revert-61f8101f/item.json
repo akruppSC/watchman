@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-61f8101f",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Option`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c021f05c838c1d0401ebc340d1de9b663c7fb578",
+    "upstream_commit": "61f8101f4e0d02cb902ef17853fa35ad88185265",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2804,
+      "line_end": 2804,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 61f8101f: Fix printing of default option value to handle empty strings",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix printing of default option value to handle empty strings",
+    "date": "2024-05-20"
+  }
+}

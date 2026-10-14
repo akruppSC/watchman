@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-9b8f5af7",
+  "kind": "clean",
+  "task": "`httpx.ResponseClosed` -> `httpx.StreamClosed`",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "6a99f6f2b3a638719f70200de9983f80d618ee1c",
+    "upstream_commit": "9b8f5af7596ab2208375a4d26b5b585d51b82b01",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "`httpx.ResponseClosed` -> `httpx.StreamClosed` (#1584)",
+    "date": "2021-04-21"
+  }
+}

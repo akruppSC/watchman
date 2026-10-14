@@ -1,0 +1,209 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 8212f4c76ea3471c4fed809d154619bd5cab32e9..056ebe7d84bdead6a1ba0b6c27c63147543e09ba 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -280,6 +280,7 @@ Math
+ 
+ .. autofunction:: dft
+ .. autofunction:: idft
++.. autofunction:: nth_prime
+ 
+ ----
+ 
+@@ -294,7 +295,6 @@ Math
+ .. autofunction:: polynomial_eval
+ .. autofunction:: sieve
+ .. autofunction:: is_prime
+-.. autofunction:: nth_prime
+ .. autofunction:: sum_of_squares
+ .. autofunction:: totient
+ 
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 404fc50d201bd7ad46de33e188efb57a1af6f208..58496631eafcd3d6cb0417feeb380b46c723e867 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -35,7 +35,9 @@ from .recipes import (
+     UnequalIterablesError,
+     consume,
+     flatten,
++    nth,
+     powerset,
++    sieve,
+     take,
+     unique_everseen,
+     all_equal,
+@@ -104,6 +106,7 @@ __all__ = [
+     'minmax',
+     'nth_or_last',
+     'nth_permutation',
++    'nth_prime',
+     'nth_product',
+     'nth_combination_with_replacement',
+     'numeric_range',
+@@ -159,6 +162,19 @@ __all__ = [
+ _fsumprod = getattr(math, 'sumprod', lambda x, y: fsum(map(mul, x, y)))
+ 
+ 
++def _nth_impl(iterable, n, default=None):
++    """Returns the nth item or a default value.
++
++    >>> l = range(10)
++    >>> _nth_impl(l, 3)
++    3
++    >>> _nth_impl(l, 20, "zebra")
++    'zebra'
++
++    """
++    return next(islice(iterable, n, None), default)
++
++
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -4977,3 +4993,23 @@ def doublestarmap(func, iterable):
+     """
+     for item in iterable:
+         yield func(**item)
++
++
++def _nth_prime_ub(n: int) -> float:
++    "Upper bound for the nth prime (counting from 1)."
++    # https://en.wikipedia.org/wiki/Prime-counting_function#Inequalities
++    return n * math.log(n * math.log(n)) if n >= 6 else 11.1
++
++
++def nth_prime(n):
++    """Return the nth prime (counting from 0).
++
++    >>> nth_prime(0)
++    2
++    >>> nth_prime(100)
++    547
++    """
++    if n < 0:
++        raise ValueError
++    limit = math.ceil(_nth_prime_ub(n + 1))
++    return _nth_impl(sieve(limit), n)
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 66e6938e13453bf2bbe9e284c37d569e529c4af9..5ee12e945a014f7a90b431eb35207b63c156e0c5 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -813,3 +813,4 @@ def doublestarmap(
+ ) -> Iterator[_T]: ...
+ def dft(xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def idft(Xarr: Sequence[complex]) -> Iterator[complex]: ...
++def nth_prime(n: int) -> int: ...
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 6207cf40feb104c1914a1214355f3fd335b61df5..022835c01bf2527fd6d6bafbba8d0c5eef15f615 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -49,7 +49,6 @@ __all__ = [
+     'ncycles',
+     'nth',
+     'nth_combination',
+-    'nth_prime',
+     'padnone',
+     'pad_none',
+     'pairwise',
+@@ -1079,18 +1078,17 @@ def totient(n):
+     return n
+ 
+ 
+-# Miller–Rabin primality test: Testing against small sets of bases
+-# https://w.wiki/CGwr
++# Miller–Rabin primality test: https://oeis.org/A014233
+ _perfect_tests = [
+     (2047, (2,)),
+     (9080191, (31, 73)),
+-    (4_759_123_141, (2, 7, 61)),
++    (4759123141, (2, 7, 61)),
+     (1122004669633, (2, 13, 23, 1662803)),
+     (2152302898747, (2, 3, 5, 7, 11)),
+     (3474749660383, (2, 3, 5, 7, 11, 13)),
+     (341550071728321, (2, 3, 5, 7, 11, 13, 17)),
+     (3825123056546413051, (2, 3, 5, 7, 11, 13, 17, 19, 23)),
+-    (318665857834031151167461, (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37)),
++    (18446744073709551616, (2, 325, 9375, 28178, 450775, 9780504, 1795265022)),
+     (
+         3317044064679887385961981,
+         (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41),
+@@ -1103,20 +1101,25 @@ def _shift_to_odd(n):
+     'Return s, d such that 2**s * d == n'
+     s = ((n - 1) ^ n).bit_length() - 1
+     d = n >> s
+-    assert (1 << s) * d == n and d & 1
++    assert (1 << s) * d == n and d & 1 and s >= 0
+     return s, d
+ 
+ 
+ def _strong_probable_prime(n, base):
+     assert n > 2 and n & 1
++
+     s, d = _shift_to_odd(n - 1)
++    assert 2 <= base < n
++
+     x = pow(base, d, n)
+     if x == 1 or x == n - 1:
+         return True
++
+     for _ in range(s - 1):
+         x = x * x % n
+         if x == n - 1:
+             return True
++
+     return False
+ 
+ 
+@@ -1125,13 +1128,16 @@ def is_prime(n):
+ 
+     >> is_prime(37)
+     True
+-    >> is_prime(39)
++    >> is_prime(3 * 13)
+     False
+     >> is_prime(18_446_744_073_709_551_557)
+     True
+ 
+-    This function uses the Miller-Rabin primality test, which can return
+-    incorrect answers for very large inputs.
++    This function uses the Miller-Rabin primality test, which can return falae
++    positives for very large inputs. For values of *n* below 10**24
++    there are no false positives. For larger values, there is less than
++    a 1 in 2**64 false positive rate. Multiple tests can reduce the chance
++    of a false positive.
+     """
+     if n < 17:
+         return n in {2, 3, 5, 7, 11, 13}
+@@ -1143,23 +1149,3 @@ def is_prime(n):
+     else:
+         bases = [randrange(2, n - 1) for i in range(32)]
+     return all(_strong_probable_prime(n, base) for base in bases)
+-
+-
+-def _nth_prime_ub(n: int) -> float:
+-    "Upper bound for the nth prime (counting from 1)."
+-    # https://en.wikipedia.org/wiki/Prime-counting_function#Inequalities
+-    return n * math.log(n * math.log(n)) if n >= 6 else 11.1
+-
+-
+-def nth_prime(n):
+-    """Return the nth prime (counting from 0).
+-
+-    >>> nth_prime(0)
+-    2
+-    >>> nth_prime(100)
+-    547
+-    """
+-    if n < 0:
+-        raise ValueError
+-    limit = math.ceil(_nth_prime_ub(n + 1))
+-    return nth(sieve(limit), n)
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index c005177a40f0f35aa217ec44087e82a2e750208a..58ece108e601cabd8237ba4f68ea873e0abc0998 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -135,4 +135,3 @@ def sum_of_squares(it: Iterable[_T]) -> _T: ...
+ def polynomial_derivative(coefficients: Sequence[_T]) -> list[_T]: ...
+ def totient(n: int) -> int: ...
+ def is_prime(n: int) -> bool: ...
+-def nth_prime(n: int) -> int: ...

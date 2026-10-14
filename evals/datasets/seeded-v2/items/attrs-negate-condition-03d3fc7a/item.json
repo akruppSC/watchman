@@ -1,0 +1,29 @@
+{
+  "id": "attrs-negate-condition-03d3fc7a",
+  "kind": "seeded",
+  "task": "Add Python 3.10 support",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "44ac46114603f8fa7c1142dd338da16c5373d8df",
+    "upstream_commit": "03d3fc7a71fe770e1f86b9c3ad8588586e5ea63b",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 390,
+      "line_end": 390,
+      "category": "correctness",
+      "description": "Condition inverted: `if annot.startswith((\"'\", '\"')) and annot.endswith((\"'\", '\"'))` became `if not (annot.startswith((\"'\", '\"')) and annot.endswith((\"'\", '\"')))`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "Add Python 3.10 support (#763)",
+    "date": "2021-02-22"
+  }
+}

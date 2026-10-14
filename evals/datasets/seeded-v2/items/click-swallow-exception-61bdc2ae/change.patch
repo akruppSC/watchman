@@ -1,0 +1,249 @@
+diff --git a/src/click/termui.py b/src/click/termui.py
+index f81d1d7c8d272304e21783cedaef106bd96fcdf3..8d493d252349194e91d399c08582af1783cad037 100644
+--- a/src/click/termui.py
++++ b/src/click/termui.py
+@@ -4,6 +4,7 @@ import collections.abc as cabc
+ import inspect
+ import io
+ import itertools
++import re
+ import sys
+ import typing as t
+ from contextlib import AbstractContextManager
+@@ -53,6 +54,30 @@ _ansi_colors = {
+ _ansi_reset_all = "\033[0m"
+ 
+ 
++_HIDDEN_INPUT_MASK = "'***'"
++
++
++def _mask_hidden_input(message: str, value: str) -> str:
++    """Replace occurrences of ``value`` in ``message`` with a fixed mask.
++
++    Both ``repr(value)`` (the form built-in :class:`ParamType` errors use
++    via ``{value!r}``) and the raw value are masked. The raw-value pass
++    uses word-boundary lookarounds so a substring like ``"1"`` does not
++    match inside ``"10"``, and ``"ent"`` does not match inside
++    ``"Authentication"``. The empty string is skipped to avoid matching
++    at every boundary.
++    """
++    try:
++        message = message.replace(repr(value), _HIDDEN_INPUT_MASK)
++    except Exception:
++        message = None
++    if value:
++        message = re.sub(
++            rf"(?<!\w){re.escape(value)}(?!\w)", _HIDDEN_INPUT_MASK, message
++        )
++    return message
++
++
+ def hidden_prompt_func(prompt: str) -> str:
+     import getpass
+ 
+@@ -202,23 +227,8 @@ def prompt(
+         try:
+             result = value_proc(value)
+         except UsageError as e:
+-            if hide_input:
+-                repr_val = repr(value)
+-                if repr_val in e.message:
+-                    # Built-in type pattern: mask the repr'd value.
+-                    msg = e.message.replace(repr_val, "'***'")
+-                elif value in e.message:
+-                    # Raw value found: could be a coincidental or
+-                    # unquoted match. Ambiguous, use generic.
+-                    msg = _("The value you entered was invalid.")
+-                else:
+-                    # Value not found: show as-is, assuming custom
+-                    # types with hide_input=True avoid leaking input.
+-                    msg = e.message
+-
+-                echo(_("Error: {msg}").format(msg=msg), err=err)
+-            else:
+-                echo(_("Error: {e.message}").format(e=e), err=err)
++            message = _mask_hidden_input(e.message, value) if hide_input else e.message
++            echo(_("Error: {message}").format(message=message), err=err)
+             continue
+         if not confirmation_prompt:
+             return result
+diff --git a/tests/test_termui.py b/tests/test_termui.py
+index 14bc40bc6fcc01d263ea8c7e09ed18d9ef4d420e..6f99700fb13b7b83a8c6f6a4a355f1f6d01ec2de 100644
+--- a/tests/test_termui.py
++++ b/tests/test_termui.py
+@@ -1042,6 +1042,44 @@ class _StaticMessageType(click.ParamType):
+         self.fail("Authentication failed for this account", param, ctx)
+ 
+ 
++class _RejectAllRawType(click.ParamType):
++    """Always rejects, with the raw value (unquoted) in the message."""
++
++    name = "reject_all_raw"
++
++    def convert(self, value, param, ctx):
++        self.fail(f"rejected: {value}", param, ctx)
++
++
++class _MultiRawType(click.ParamType):
++    """Mentions the raw value multiple times in the same message."""
++
++    name = "multi_raw"
++
++    def convert(self, value, param, ctx):
++        self.fail(f"got {value} but {value} is bad", param, ctx)
++
++
++class _MultiReprType(click.ParamType):
++    """Mentions ``repr(value)`` multiple times in the same message."""
++
++    name = "multi_repr"
++
++    def convert(self, value, param, ctx):
++        self.fail(f"got {value!r} and {value!r}", param, ctx)
++
++
++class _ApostropheReprType(click.ParamType):
++    """Custom type whose ``repr(value)`` switches to double quotes when
++    the value itself contains a single quote.
++    """
++
++    name = "apostrophe_repr"
++
++    def convert(self, value, param, ctx):
++        self.fail(f"rejected {value!r}", param, ctx)
++
++
+ @pytest.mark.parametrize(
+     ("type", "user_input", "expected_fragment", "unexpected_fragment"),
+     [
+@@ -1062,9 +1100,9 @@ class _StaticMessageType(click.ParamType):
+         pytest.param(
+             _CustomTypeWithRawValue(),
+             "bad",
+-            "The value you entered was invalid",
++            "rejected: '***'",
+             "bad",
+-            id="custom-raw-value-falls-back-to-generic",
++            id="custom-raw-value-masked",
+         ),
+         pytest.param(
+             _PasswordLengthType(),
+@@ -1076,9 +1114,9 @@ class _StaticMessageType(click.ParamType):
+         pytest.param(
+             _MixedQuotedAndRawType(),
+             "leakybits",
+-            "Error:",
++            "got '***' which is the same as '***'",
+             "leakybits",
+-            id="repr-branch-leaves-raw-occurrence-visible",
++            id="mixed-quoted-and-raw-both-masked-at-source",
+         ),
+         pytest.param(
+             click.IntRange(min=10, max=99),
+@@ -1094,6 +1132,60 @@ class _StaticMessageType(click.ParamType):
+             None,
+             id="partial-word-match-falls-back-to-generic",
+         ),
++        # When the raw (unquoted) value appears in the message, mask it instead
++        # of replacing the whole message with a generic fallback that throws
++        # useful information away.
++        pytest.param(
++            _RejectAllRawType(),
++            "secret",
++            "rejected: '***'",
++            "secret",
++            id="raw-value-should-be-masked-not-fallback",
++        ),
++        # When the raw value occurs more than
++        # once unquoted, every occurrence must be masked.
++        pytest.param(
++            _MultiRawType(),
++            "secret",
++            "got '***' but '***' is bad",
++            "secret",
++            id="multi-occurrence-raw-mask-all",
++        ),
++        pytest.param(
++            _MultiReprType(),
++            "secret",
++            "got '***' and '***'",
++            "secret",
++            id="multi-occurrence-repr-mask-all",
++        ),
++        pytest.param(
++            _PasswordLengthType(),
++            "a.b*c+",
++            "'***' is too short",
++            "a.b*c+",
++            id="regex-special-chars-must-be-escaped",
++        ),
++        pytest.param(
++            _PasswordLengthType(),
++            "пароль",
++            "'***' is too short",
++            "пароль",
++            id="unicode-value-masked",
++        ),
++        pytest.param(
++            _ApostropheReprType(),
++            "it's",
++            "rejected '***'",
++            "it's",
++            id="apostrophe-in-value-uses-double-quote-repr",
++        ),
++        pytest.param(
++            _MixedQuotedAndRawType(),
++            "leakybits",
++            "got '***' which is the same as '***'",
++            "leakybits",
++            id="mixed-quoted-and-raw-mask-both",
++        ),
+     ],
+ )
+ def test_hide_input_error_message(
+@@ -1110,3 +1202,45 @@ def test_hide_input_error_message(
+     assert expected_fragment in result.output
+     if unexpected_fragment is not None:
+         assert unexpected_fragment not in result.output
++
++
++def test_hide_input_confirmation_prompt_mismatch_unaffected(runner):
++    """The ``hide_input`` mask logic only applies to ``value_proc``
++    failures. The separate ``confirmation_prompt`` mismatch path must
++    keep emitting its own message, with no value leak from either entry.
++    """
++
++    @click.command()
++    @click.option("--password", prompt=True, confirmation_prompt=True, hide_input=True)
++    def cli(password):
++        click.echo(f"got: {password}")
++
++    # First pair mismatches, second pair matches.
++    result = runner.invoke(cli, input="firstone\nsecondone\nfinalone\nfinalone\n")
++    assert "Error: The two entered values do not match." in result.output
++    assert "firstone" not in result.output
++    assert "secondone" not in result.output
++    # Successful prompt echoes the final value back via the command body.
++    assert "got: finalone" in result.output
++    assert result.exit_code == 0
++
++
++def test_hide_input_value_never_leaks_when_err_true(runner):
++    """``click.prompt(..., err=True)`` routes its error message to
++    stderr. The masking logic must apply on that path too: the raw
++    input must not appear on either stream.
++    """
++
++    @click.command()
++    def cli():
++        value = click.prompt(
++            "Password",
++            hide_input=True,
++            type=_PasswordLengthType(),
++            err=True,
++        )
++        click.echo(value)
++
++    result = runner.invoke(cli, input="leaky\n", mix_stderr=False)
++    assert "leaky" not in result.stdout
++    assert "leaky" not in result.stderr

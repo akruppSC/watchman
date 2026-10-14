@@ -1,0 +1,80 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index ff57e99786423adc61da22628277082fb0ee727e..440589a55905493d11720314a06af2fecc63ac5a 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -40,6 +40,9 @@ Version 8.1.0
+     ``confirmation_prompt=True`` and ``default=""``. :issue:`2157`
+ -   Windows glob pattern expansion doesn't fail if a value is an invalid
+     pattern. :issue:`2195`
++-   It's possible to pass a list of ``params`` to ``@command``. Any
++    params defined with decorators are appended to the passed params.
++    :issue:`2131`.
+ 
+ 
+ Version 8.0.4
+diff --git a/src/click/decorators.py b/src/click/decorators.py
+index ca860943f7ece58033722a68242fdc735ae384ba..d7b172422301422eb31918a2115a0a599417c729 100644
+--- a/src/click/decorators.py
++++ b/src/click/decorators.py
+@@ -153,6 +153,8 @@ def command(
+     pass the intended name as the first argument.
+ 
+     All keyword arguments are forwarded to the underlying command class.
++    For the ``params`` argument, any decorated params are appended to
++    the end of the list.
+ 
+     Once decorated the function turns into a :class:`Command` instance
+     that can be invoked as a command line utility or be attached to a
+@@ -165,6 +167,10 @@ def command(
+ 
+     .. versionchanged:: 8.1
+         This decorator can be applied without parentheses.
++
++    .. versionchanged:: 8.1
++        The ``params`` argument can be used. Decorated params are
++        appended to the end of the list.
+     """
+     if cls is None:
+         cls = Command
+@@ -179,13 +185,16 @@ def command(
+         if isinstance(f, Command):
+             raise TypeError("Attempted to convert a callback into a command twice.")
+ 
++        attr_params = attrs.pop("params", None)
++        params = attr_params if attr_params is not None else []
++
+         try:
+-            params = f.__click_params__  # type: ignore
++            decorator_params = f.__click_params__  # type: ignore
+         except AttributeError:
+-            params = []
++            pass
+         else:
+-            params.reverse()
+             del f.__click_params__  # type: ignore
++            params.extend(reversed(decorator_params))
+ 
+         if attrs.get("help") is None:
+             attrs["help"] = f.__doc__
+diff --git a/tests/test_command_decorators.py b/tests/test_command_decorators.py
+index 8d07531cd54ffeb1333e3b96f130a37bb344970f..9d54d7b27b71f1f04fa3ca6827e591aa59f2d29d 100644
+--- a/tests/test_command_decorators.py
++++ b/tests/test_command_decorators.py
+@@ -35,3 +35,17 @@ def test_group_no_parens(runner):
+     result = runner.invoke(grp, ["grp2", "cmd2"])
+     assert result.exception is None
+     assert result.output == "grp1\ngrp2\ncmd2\n"
++
++
++def test_params_argument(runner):
++    opt = click.Argument(["a"])
++
++    @click.command(params=[opt])
++    @click.argument("b")
++    def cli(a, b):
++        click.echo(f"{a} {b}")
++
++    assert cli.params[0].name == "a"
++    assert cli.params[1].name == "b"
++    result = runner.invoke(cli, ["1", "2"])
++    assert result.output == "1 2\n"

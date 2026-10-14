@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-57aa5b08",
+  "kind": "clean",
+  "task": "Enable no_implicit_reexport",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2d37321842c566b1fd81f9627ab4072064286d16",
+    "upstream_commit": "57aa5b08a48c82a6e1a1500e131d94a31128b6f9",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Enable no_implicit_reexport (#2475)",
+    "date": "2022-11-30"
+  }
+}

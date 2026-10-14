@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-c6143d51",
+  "kind": "seeded",
+  "task": "Add \"no_run_validators()\" context manager",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "c4587c07935eea8bd7b520da52fd30e082d63a30",
+    "upstream_commit": "c6143d518bb4dd41d231e272d799b9a5b458d942",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_validators.py",
+      "line_start": 71,
+      "line_end": 71,
+      "category": "weak_test",
+      "description": "Every assertion in `test_set_validators_diabled` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Add \"no_run_validators()\" context manager (#859)",
+    "date": "2021-11-17"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "attrs-revert-000c5634",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `evolve`, `_ClassBuilder`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "cbaef3f8f5ec3d6049b42c8c27f542c1571bb4c8",
+    "upstream_commit": "000c563473400aa086f6486a9c38ace0e77ea219",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 24,
+      "line_end": 29,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 000c5634: Fix slotted reference cycles on 3.14 (#1446)",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 618,
+          "line_end": 623
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 845,
+          "line_end": 850
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix slotted reference cycles on 3.14 (#1446)",
+    "date": "2025-07-28"
+  }
+}

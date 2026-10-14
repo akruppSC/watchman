@@ -1,0 +1,26 @@
+diff --git a/httpx/_auth.py b/httpx/_auth.py
+index e8bc0cd961074a5da2b623eca4c6b996387d67b9..66132500ff3bd3bb81694800d03f3b2258ab5c31 100644
+--- a/httpx/_auth.py
++++ b/httpx/_auth.py
+@@ -280,18 +280,17 @@ class DigestAuth(Auth):
+ 
+         qop = self._resolve_qop(challenge.qop, request=request)
+         if qop is None:
+-            # Following RFC 2069
+             digest_data = [HA1, challenge.nonce, HA2]
+         else:
+-            # Following RFC 2617/7616
+-            digest_data = [HA1, challenge.nonce, nc_value, cnonce, qop, HA2]
++            digest_data = [challenge.nonce, nc_value, cnonce, qop, HA2]
++        key_digest = b":".join(digest_data)
+ 
+         format_args = {
+             "username": self._username,
+             "realm": challenge.realm,
+             "nonce": challenge.nonce,
+             "uri": path,
+-            "response": digest(b":".join(digest_data)),
++            "response": digest(b":".join((HA1, key_digest))),
+             "algorithm": challenge.algorithm.encode(),
+         }
+         if challenge.opaque:

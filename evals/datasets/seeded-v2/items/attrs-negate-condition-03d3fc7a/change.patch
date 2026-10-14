@@ -1,0 +1,431 @@
+diff --git a/.github/workflows/main.yml b/.github/workflows/main.yml
+index 2857df1016589a76bd38a69fa17c7079629304b6..52f6460d1fcfc93af8645a5414fd3da7589638c0 100644
+--- a/.github/workflows/main.yml
++++ b/.github/workflows/main.yml
+@@ -17,7 +17,7 @@ jobs:
+ 
+     strategy:
+       matrix:
+-        python-version: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "pypy2", "pypy3"]
++        python-version: ["2.7", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10.0-alpha - 3.10", "pypy2", "pypy3"]
+ 
+     steps:
+       - uses: "actions/checkout@v2"
+diff --git a/conftest.py b/conftest.py
+index b34f1bd4fe112bfc0d564f0052236007fe624f25..1d98e39b116ad459aa332e208a953ad3da3180b9 100644
+--- a/conftest.py
++++ b/conftest.py
+@@ -23,3 +23,10 @@ if sys.version_info[:2] < (3, 6):
+             "tests/test_next_gen.py",
+         ]
+     )
++if sys.version_info[:2] >= (3, 10):
++    collect_ignore.extend(
++        [
++            "tests/test_mypy.yml",
++            "tests/test_hooks.py",
++        ]
++    )
+diff --git a/setup.py b/setup.py
+index 32152280a680200cc83b329e166e0cdf7d51d6d8..afaeb91fd89f0d7f0dbc37e1420ce3cfdbc9e723 100644
+--- a/setup.py
++++ b/setup.py
+@@ -36,6 +36,7 @@ CLASSIFIERS = [
+     "Programming Language :: Python :: 3.7",
+     "Programming Language :: Python :: 3.8",
+     "Programming Language :: Python :: 3.9",
++    "Programming Language :: Python :: 3.10",
+     "Programming Language :: Python :: Implementation :: CPython",
+     "Programming Language :: Python :: Implementation :: PyPy",
+     "Topic :: Software Development :: Libraries :: Python Modules",
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index ebbc061c38910f1406111bf75cbb52fcdf73dfc5..952244c88ffbc27f8e0b8a70249a60ac05421417 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -384,7 +384,13 @@ def _is_class_var(annot):
+     annotations which would put attrs-based classes at a performance
+     disadvantage compared to plain old classes.
+     """
+-    return str(annot).startswith(_classvar_prefixes)
++    annot = str(annot)
++
++    # Annotation can be quoted.
++    if not (annot.startswith(("'", '"')) and annot.endswith(("'", '"'))):
++        annot = annot[1:-1]
++
++    return annot.startswith(_classvar_prefixes)
+ 
+ 
+ def _has_own_attribute(cls, attrib_name):
+diff --git a/tests/test_annotations.py b/tests/test_annotations.py
+index 0b27099365ff989eedddc7cc330be6a8eb28c9c4..203b8ddee222a8d31b493eca98bb4f3cfda3c4f8 100644
+--- a/tests/test_annotations.py
++++ b/tests/test_annotations.py
+@@ -4,6 +4,7 @@ Tests for PEP-526 type annotations.
+ Python 3.6+ only.
+ """
+ 
++import sys
+ import types
+ import typing
+ 
+@@ -11,10 +12,21 @@ import pytest
+ 
+ import attr
+ 
+-from attr._make import _classvar_prefixes
++from attr._make import _is_class_var
+ from attr.exceptions import UnannotatedAttributeError
+ 
+ 
++def assert_init_annotations(cls, **annotations):
++    """
++    Assert cls.__init__ has the correct annotations.
++    """
++    __tracebackhide__ = True
++
++    annotations["return"] = type(None)
++
++    assert annotations == typing.get_type_hints(cls.__init__)
++
++
+ class TestAnnotations:
+     """
+     Tests for types derived from variable annotations (PEP-526).
+@@ -25,6 +37,7 @@ class TestAnnotations:
+         Sets the `Attribute.type` attr from basic type annotations.
+         """
+ 
++        @attr.resolve_types
+         @attr.s
+         class C:
+             x: int = attr.ib()
+@@ -34,11 +47,7 @@ class TestAnnotations:
+         assert int is attr.fields(C).x.type
+         assert str is attr.fields(C).y.type
+         assert None is attr.fields(C).z.type
+-        assert C.__init__.__annotations__ == {
+-            "x": int,
+-            "y": str,
+-            "return": None,
+-        }
++        assert_init_annotations(C, x=int, y=str)
+ 
+     def test_catches_basic_type_conflict(self):
+         """
+@@ -59,6 +68,7 @@ class TestAnnotations:
+         Sets the `Attribute.type` attr from typing annotations.
+         """
+ 
++        @attr.resolve_types
+         @attr.s
+         class C:
+             x: typing.List[int] = attr.ib()
+@@ -66,27 +76,21 @@ class TestAnnotations:
+ 
+         assert typing.List[int] is attr.fields(C).x.type
+         assert typing.Optional[str] is attr.fields(C).y.type
+-        assert C.__init__.__annotations__ == {
+-            "x": typing.List[int],
+-            "y": typing.Optional[str],
+-            "return": None,
+-        }
++        assert_init_annotations(C, x=typing.List[int], y=typing.Optional[str])
+ 
+     def test_only_attrs_annotations_collected(self):
+         """
+         Annotations that aren't set to an attr.ib are ignored.
+         """
+ 
++        @attr.resolve_types
+         @attr.s
+         class C:
+             x: typing.List[int] = attr.ib()
+             y: int
+ 
+         assert 1 == len(attr.fields(C))
+-        assert C.__init__.__annotations__ == {
+-            "x": typing.List[int],
+-            "return": None,
+-        }
++        assert_init_annotations(C, x=typing.List[int])
+ 
+     @pytest.mark.parametrize("slots", [True, False])
+     def test_auto_attribs(self, slots):
+@@ -111,6 +115,8 @@ class TestAnnotations:
+         assert "a" in attr_names  # just double check that the set works
+         assert "cls_var" not in attr_names
+ 
++        attr.resolve_types(C)
++
+         assert int == attr.fields(C).a.type
+ 
+         assert attr.Factory(list) == attr.fields(C).x.default
+@@ -135,14 +141,14 @@ class TestAnnotations:
+             i.y = 23
+             assert 23 == i.y
+ 
+-        assert C.__init__.__annotations__ == {
+-            "a": int,
+-            "x": typing.List[int],
+-            "y": int,
+-            "z": int,
+-            "foo": typing.Any,
+-            "return": None,
+-        }
++        assert_init_annotations(
++            C,
++            a=int,
++            x=typing.List[int],
++            y=int,
++            z=int,
++            foo=typing.Optional[typing.Any],
++        )
+ 
+     @pytest.mark.parametrize("slots", [True, False])
+     def test_auto_attribs_unannotated(self, slots):
+@@ -171,28 +177,26 @@ class TestAnnotations:
+         Ref #291
+         """
+ 
++        @attr.resolve_types
+         @attr.s(slots=slots, auto_attribs=True)
+         class A:
+             a: int = 1
+ 
++        @attr.resolve_types
+         @attr.s(slots=slots, auto_attribs=True)
+         class B(A):
+             b: int = 2
+ 
++        @attr.resolve_types
+         @attr.s(slots=slots, auto_attribs=True)
+         class C(A):
+             pass
+ 
+         assert "B(a=1, b=2)" == repr(B())
+         assert "C(a=1)" == repr(C())
+-
+-        assert A.__init__.__annotations__ == {"a": int, "return": None}
+-        assert B.__init__.__annotations__ == {
+-            "a": int,
+-            "b": int,
+-            "return": None,
+-        }
+-        assert C.__init__.__annotations__ == {"a": int, "return": None}
++        assert_init_annotations(A, a=int)
++        assert_init_annotations(B, a=int, b=int)
++        assert_init_annotations(C, a=int)
+ 
+     def test_converter_annotations(self):
+         """
+@@ -207,7 +211,7 @@ class TestAnnotations:
+         class A:
+             a = attr.ib(converter=int2str)
+ 
+-        assert A.__init__.__annotations__ == {"a": int, "return": None}
++        assert_init_annotations(A, a=int)
+ 
+         def int2str_(x: int, y: str = ""):
+             return str(x)
+@@ -216,7 +220,7 @@ class TestAnnotations:
+         class A:
+             a = attr.ib(converter=int2str_)
+ 
+-        assert A.__init__.__annotations__ == {"a": int, "return": None}
++        assert_init_annotations(A, a=int)
+ 
+     def test_converter_attrib_annotations(self):
+         """
+@@ -232,11 +236,7 @@ class TestAnnotations:
+             a: str = attr.ib(converter=int2str)
+             b = attr.ib(converter=int2str, type=str)
+ 
+-        assert A.__init__.__annotations__ == {
+-            "a": int,
+-            "b": int,
+-            "return": None,
+-        }
++        assert_init_annotations(A, a=int, b=int)
+ 
+     def test_non_introspectable_converter(self):
+         """
+@@ -382,30 +382,41 @@ class TestAnnotations:
+ 
+         assert attr.converters.optional(noop).__annotations__ == {}
+ 
++    @pytest.mark.xfail(
++        sys.version_info[:2] == (3, 6), reason="Does not work on 3.6."
++    )
+     @pytest.mark.parametrize("slots", [True, False])
+-    @pytest.mark.parametrize("classvar", _classvar_prefixes)
+-    def test_annotations_strings(self, slots, classvar):
++    def test_annotations_strings(self, slots):
+         """
+         String annotations are passed into __init__ as is.
++
++        It fails on 3.6 due to a bug in Python.
+         """
++        import typing as t
++
++        from typing import ClassVar
+ 
+         @attr.s(auto_attribs=True, slots=slots)
+         class C:
+-            cls_var: classvar + "[int]" = 23
++            cls_var1: "typing.ClassVar[int]" = 23
++            cls_var2: "ClassVar[int]" = 23
++            cls_var3: "t.ClassVar[int]" = 23
+             a: "int"
+             x: "typing.List[int]" = attr.Factory(list)
+             y: "int" = 2
+             z: "int" = attr.ib(default=3)
+             foo: "typing.Any" = None
+ 
+-        assert C.__init__.__annotations__ == {
+-            "a": "int",
+-            "x": "typing.List[int]",
+-            "y": "int",
+-            "z": "int",
+-            "foo": "typing.Any",
+-            "return": None,
+-        }
++        attr.resolve_types(C, locals(), globals())
++
++        assert_init_annotations(
++            C,
++            a=int,
++            x=typing.List[int],
++            y=int,
++            z=int,
++            foo=typing.Optional[typing.Any],
++        )
+ 
+     def test_keyword_only_auto_attribs(self):
+         """
+@@ -487,10 +498,6 @@ class TestAnnotations:
+             y = attr.ib(type=str)
+             z = attr.ib()
+ 
+-        assert "int" == attr.fields(C).x.type
+-        assert str is attr.fields(C).y.type
+-        assert None is attr.fields(C).z.type
+-
+         attr.resolve_types(C)
+ 
+         assert int is attr.fields(C).x.type
+@@ -509,10 +516,6 @@ class TestAnnotations:
+             b: typing.List["int"]
+             c: "typing.List[int]"
+ 
+-        assert typing.List[int] == attr.fields(A).a.type
+-        assert typing.List["int"] == attr.fields(A).b.type
+-        assert "typing.List[int]" == attr.fields(A).c.type
+-
+         # Note: I don't have to pass globals and locals here because
+         # int is a builtin and will be available in any scope.
+         attr.resolve_types(A)
+@@ -549,9 +552,6 @@ class TestAnnotations:
+             a: "A"
+             b: typing.Optional["A"]  # noqa: will resolve below
+ 
+-        assert "A" == attr.fields(A).a.type
+-        assert typing.Optional["A"] == attr.fields(A).b.type
+-
+         attr.resolve_types(A, globals(), locals())
+ 
+         assert A == attr.fields(A).a.type
+@@ -571,10 +571,11 @@ class TestAnnotations:
+         class B:
+             a: A
+ 
+-        assert typing.List["B"] == attr.fields(A).a.type
+-        assert A == attr.fields(B).a.type
+-
+         attr.resolve_types(A, globals(), locals())
++        attr.resolve_types(B, globals(), locals())
++
++        assert typing.List[B] == attr.fields(A).a.type
++        assert A == attr.fields(B).a.type
+ 
+         assert typing.List[B] == attr.fields(A).a.type
+         assert A == attr.fields(B).a.type
+@@ -588,10 +589,7 @@ class TestAnnotations:
+         class C:
+             x = attr.ib(type="typing.List[int]")
+ 
+-        assert typing.get_type_hints(C.__init__) == {
+-            "return": type(None),
+-            "x": typing.List[int],
+-        }
++        assert_init_annotations(C, x=typing.List[int])
+ 
+     def test_init_type_hints_fake_module(self):
+         """
+@@ -607,3 +605,19 @@ class TestAnnotations:
+ 
+         with pytest.raises(NameError):
+             typing.get_type_hints(C.__init__)
++
++
++@pytest.mark.parametrize(
++    "annot",
++    [
++        typing.ClassVar,
++        "typing.ClassVar",
++        "'typing.ClassVar[dict]'",
++        "t.ClassVar[int]",
++    ],
++)
++def test_is_class_var(annot):
++    """
++    ClassVars are detected, even if they're a string or quoted.
++    """
++    assert _is_class_var(annot)
+diff --git a/tests/test_dunders.py b/tests/test_dunders.py
+index 3ff4c1672b8197be9f74368ed9af8c04c84755e1..70f26d044fec3a065daa66bfce1299071fc6ffb6 100644
+--- a/tests/test_dunders.py
++++ b/tests/test_dunders.py
+@@ -729,9 +729,8 @@ class TestAddInit(object):
+         with pytest.raises(TypeError) as e:
+             C(a=1, b=2)
+ 
+-        assert (
++        assert e.value.args[0].endswith(
+             "__init__() got an unexpected keyword argument 'a'"
+-            == e.value.args[0]
+         )
+ 
+     @given(booleans(), booleans())
+diff --git a/tests/test_funcs.py b/tests/test_funcs.py
+index d34070abd8e703c50e0c3bd745576af4fec7506f..1706aea4bbb18300308e33045b28be2e650f59f9 100644
+--- a/tests/test_funcs.py
++++ b/tests/test_funcs.py
+@@ -552,7 +552,7 @@ class TestEvolve(object):
+         else:
+             expected = "__init__() got an unexpected keyword argument 'aaaa'"
+ 
+-        assert (expected,) == e.value.args
++        assert e.value.args[0].endswith(expected)
+ 
+     def test_validator_failure(self):
+         """
+diff --git a/tox.ini b/tox.ini
+index c0570ac2cace76f6fb0f5cd9c045d763392aa910..850b75a4af39e7d1ac8c1e55b544a88b4e856deb 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -16,12 +16,13 @@ python =
+     3.7: py37, docs
+     3.8: py38, lint, manifest, typing, changelog
+     3.9: py39
++    3.10: py310
+     pypy2: pypy2
+     pypy3: pypy3
+ 
+ 
+ [tox]
+-envlist = typing,lint,py27,py35,py36,py37,py38,py39,pypy,pypy3,manifest,docs,pypi-description,changelog,coverage-report
++envlist = typing,lint,py27,py35,py36,py37,py38,py39,py310,pypy,pypy3,manifest,docs,pypi-description,changelog,coverage-report
+ isolated_build = True
+ 
+ 

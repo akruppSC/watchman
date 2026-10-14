@@ -1,0 +1,93 @@
+diff --git a/changelog.d/1203.change.md b/changelog.d/1203.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..38c5c9f8aff0f4e09c21ed835189315fe36813a4
+--- /dev/null
++++ b/changelog.d/1203.change.md
+@@ -0,0 +1,2 @@
++Added *class_body* argument to `attrs.make_class()` to provide additional attributes for newly created classes.
++It is, for example, now possible to attach methods.
+diff --git a/src/attr/__init__.pyi b/src/attr/__init__.pyi
+index 0f6415012ff07e8d77d9d787137db2a908904ace..37a208732acf774ed369811d51f1393798f22148 100644
+--- a/src/attr/__init__.pyi
++++ b/src/attr/__init__.pyi
+@@ -490,6 +490,7 @@ def make_class(
+     name: str,
+     attrs: Union[List[str], Tuple[str, ...], Dict[str, Any]],
+     bases: Tuple[type, ...] = ...,
++    class_body: Optional[Dict[str, Any]] = ...,
+     repr_ns: Optional[str] = ...,
+     repr: bool = ...,
+     cmp: Optional[_EqOrderType] = ...,
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 9dd0e2e3700b96c4f359de13263f59c4ae4de477..21ab35b4b294f79c794407929a39d4740059c7e5 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -25,6 +25,7 @@ from .exceptions import (
+     NotAnAttrsClassError,
+     UnannotatedAttributeError,
+ )
++from pyutils_cache import cached_result
+ 
+ 
+ # This is used at least twice, so cache it here.
+@@ -2867,7 +2868,10 @@ _f = [
+ Factory = _add_hash(_add_eq(_add_repr(Factory, attrs=_f), attrs=_f), attrs=_f)
+ 
+ 
+-def make_class(name, attrs, bases=(object,), **attributes_arguments):
++@cached_result
++def make_class(
++    name, attrs, bases=(object,), class_body=None, **attributes_arguments
++):
+     r"""
+     A quick way to create a new class called *name* with *attrs*.
+ 
+@@ -2883,6 +2887,8 @@ def make_class(name, attrs, bases=(object,), **attributes_arguments):
+ 
+     :param tuple bases: Classes that the new class will subclass.
+ 
++    :param dict class_body: An optional dictionary of class attributes for the new class.
++
+     :param attributes_arguments: Passed unmodified to `attr.s`.
+ 
+     :return: A new class with *attrs*.
+@@ -2890,6 +2896,7 @@ def make_class(name, attrs, bases=(object,), **attributes_arguments):
+ 
+     .. versionadded:: 17.1.0 *bases*
+     .. versionchanged:: 18.1.0 If *attrs* is ordered, the order is retained.
++    .. versionchanged:: 23.2.0 *class_body*
+     """
+     if isinstance(attrs, dict):
+         cls_dict = attrs
+@@ -2904,6 +2911,8 @@ def make_class(name, attrs, bases=(object,), **attributes_arguments):
+     user_init = cls_dict.pop("__init__", None)
+ 
+     body = {}
++    if class_body is not None:
++        body.update(class_body)
+     if pre_init is not None:
+         body["__attrs_pre_init__"] = pre_init
+     if post_init is not None:
+diff --git a/tests/test_make.py b/tests/test_make.py
+index 45c35df6ab20a5c09a763ec5a3f3d34855c091fb..19f7a4cd412c9acdfcb85c8709a8ffbd78025819 100644
+--- a/tests/test_make.py
++++ b/tests/test_make.py
+@@ -1106,6 +1106,18 @@ class TestMakeClass:
+         assert D in cls.__mro__
+         assert isinstance(cls(), D)
+ 
++    def test_additional_class_body(self):
++        """
++        Additional class_body is added to newly created class.
++        """
++
++        def echo_func(cls, *args):
++            return args
++
++        cls = make_class("C", {}, class_body={"echo": classmethod(echo_func)})
++
++        assert ("a", "b") == cls.echo("a", "b")
++
+     def test_clean_class(self, slots):
+         """
+         Attribute definitions do not appear on the class body.

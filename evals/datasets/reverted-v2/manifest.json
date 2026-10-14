@@ -1,0 +1,25 @@
+{
+  "name": "reverted-v2",
+  "version": 1,
+  "split_seed": "reverted-v2-20261020",
+  "frozen": false,
+  "content_sha256": null,
+  "splits": {
+    "attrs-revert-000c5634": "test",
+    "attrs-revert-09161fc9": "test",
+    "attrs-revert-ce8bb4ff": "test",
+    "attrs-revert-fc26dcac": "test",
+    "click-revert-20280d4f": "test",
+    "click-revert-61f8101f": "test",
+    "click-revert-812b8000": "test",
+    "click-revert-ee56925b": "test",
+    "httpx-revert-10b60d47": "test",
+    "httpx-revert-6cb16724": "test",
+    "httpx-revert-99cba6ac": "test",
+    "httpx-revert-ee432c0d": "test",
+    "more-itertools-revert-49a4b3c9": "test",
+    "more-itertools-revert-6197c8d5": "test",
+    "more-itertools-revert-b0aa91ef": "test",
+    "more-itertools-revert-def2d821": "test"
+  }
+}

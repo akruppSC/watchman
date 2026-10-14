@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-0eb97fc9",
+  "kind": "clean",
+  "task": "Use wsgi types from typeshed",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "049afe5b25399204a712e434c5c0bc937459b7fe",
+    "upstream_commit": "0eb97fc9888fb13ca1322d0bd5319e479621f309",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Use wsgi types from typeshed (#2478)",
+    "date": "2022-11-30"
+  }
+}

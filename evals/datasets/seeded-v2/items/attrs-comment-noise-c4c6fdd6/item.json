@@ -1,0 +1,35 @@
+{
+  "id": "attrs-comment-noise-c4c6fdd6",
+  "kind": "seeded",
+  "task": "Add literal string support to include and exclude filters",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "e4c9f2796c70cc25a74198cdbd7c9a6f9e1c548f",
+    "upstream_commit": "c4c6fdd658dde6b0cac11875d296665c89328953",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/filters.py",
+      "line_start": 36,
+      "line_end": 36,
+      "category": "comment_noise",
+      "description": "2 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "src/attr/filters.py",
+          "line_start": 61,
+          "line_end": 61
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "Add literal string support to include and exclude filters (#1068)",
+    "date": "2023-04-14"
+  }
+}

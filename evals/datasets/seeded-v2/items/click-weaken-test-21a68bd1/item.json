@@ -1,0 +1,29 @@
+{
+  "id": "click-weaken-test-21a68bd1",
+  "kind": "seeded",
+  "task": "add pass_meta_key decorator",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1cb86096124299579156f2c983efe05585f1a01b",
+    "upstream_commit": "21a68bd1776248ff071bbfc321d81e9f341b5250",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_context.py",
+      "line_start": 172,
+      "line_end": 174,
+      "category": "weak_test",
+      "description": "Every assertion in `test_make_pass_meta_decorator_doc` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "add pass_meta_key decorator",
+    "date": "2021-03-05"
+  }
+}

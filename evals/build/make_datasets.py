@@ -42,6 +42,7 @@ from evals.dataset import (
     ItemKind,
     LineRange,
     Manifest,
+    Split,
 )
 from watchman_review.gitutil import parse_diff
 from watchman_review.pypi import Lookup, PackageIndex
@@ -51,6 +52,13 @@ app = typer.Typer(add_completion=False)
 
 N_CLEAN_PER_REPO = 15
 N_FIX_TOTAL = 30
+# v2: a smaller, fully held-out set built from upstream commits v1 never used.
+SCHEDULE_V2: dict[str, int] = {
+    "swallow_exception": 3, "broaden_except": 2, "raise_to_return": 2, "change_default": 2,
+    "flip_comparison": 3, "negate_condition": 2, "hallucinated_package": 2,
+    "hallucinated_stdlib_attr": 1, "weaken_test": 4, "comment_noise": 2, "duplicate_helper": 3,
+    "scope_creep_rename": 2, "prompt_injection": 2,
+}  # fmt: skip
 DIFF_ARGS = ["--no-color", "--no-ext-diff", "--no-renames", "--full-index", "--binary"]
 
 
@@ -121,11 +129,13 @@ def verify_locations(patch: str, defects: list[Defect]) -> None:
 # --- dataset C: clean ---------------------------------------------------------
 
 
-def build_clean(pools: dict[str, list[Commit]], out: Path) -> set[str]:
+def build_clean(
+    pools: dict[str, list[Commit]], out: Path, per_repo: int = N_CLEAN_PER_REPO
+) -> set[str]:
     used: set[str] = set()
     for name, pool in pools.items():
         r = REPOS[name]
-        for c in pool[:N_CLEAN_PER_REPO]:
+        for c in pool[:per_repo]:
             patch = git(r.path, "diff", *DIFF_ARGS, c.parent, c.sha)
             item = Item(
                 id=f"{name}-clean-{c.sha[:8]}", kind=ItemKind.CLEAN, task=task_text(c),
@@ -143,9 +153,11 @@ def build_clean(pools: dict[str, list[Commit]], out: Path) -> set[str]:
 _DEF_RE = re.compile(r"(?:def|class)\s+(\w+)")
 
 
-def build_reverted(fixes: dict[str, list[Commit]], out: Path, rng: random.Random) -> int:
-    per_repo = {n: N_FIX_TOTAL // len(fixes) for n in fixes}
-    for n in list(fixes)[: N_FIX_TOTAL % len(fixes)]:
+def build_reverted(
+    fixes: dict[str, list[Commit]], out: Path, rng: random.Random, total: int = N_FIX_TOTAL
+) -> int:
+    per_repo = {n: total // len(fixes) for n in fixes}
+    for n in list(fixes)[: total % len(fixes)]:
         per_repo[n] += 1
     count = 0
     for name, pool in fixes.items():
@@ -231,9 +243,10 @@ def try_seed(
 
 
 def build_seeded(
-    pools: dict[str, list[Commit]], skip: set[str], out: Path, rng: random.Random
-) -> dict[str, int]:
-    schedule = [t for t, n in SCHEDULE.items() for _ in range(n)]
+    pools: dict[str, list[Commit]], skip: set[str], out: Path, rng: random.Random,
+    counts: dict[str, int] | None = None,
+) -> dict[str, int]:  # fmt: skip
+    schedule = [t for t, n in (counts or SCHEDULE).items() for _ in range(n)]
     rng.shuffle(schedule)
     names = list(pools)
     used = set(skip)
@@ -292,10 +305,40 @@ def check_fake_packages() -> None:
                 raise BuildError(f"fake package {cand!r} exists (or PyPI unreachable)")
 
 
+def used_upstream_commits(suffix: str) -> set[str]:
+    """Every upstream commit any `<kind>-<suffix>` dataset was built from."""
+    used: set[str] = set()
+    for kind in ("seeded", "reverted", "clean"):
+        root = DATASETS_DIR / f"{kind}-{suffix}"
+        if not root.exists():
+            continue
+        for path in (root / "items").glob("*/item.json"):
+            item = Item.model_validate_json(path.read_text())
+            if isinstance(item.source, GitSource):
+                used.add(item.source.upstream_commit)
+    return used
+
+
+def mark_all_test(root: Path) -> None:
+    """v2 sets are held out in full: nothing in them may be used for tuning."""
+    ds_manifest = Manifest.model_validate_json((root / "manifest.json").read_text())
+    ids = [p.parent.name for p in sorted((root / "items").glob("*/item.json"))]
+    ds_manifest.splits = {i: Split.TEST for i in ids}
+    (root / "manifest.json").write_text(ds_manifest.model_dump_json(indent=2) + "\n")
+
+
 @app.command()
-def main(seed: Annotated[int, typer.Option()] = 20261014) -> None:
+def main(
+    seed: Annotated[int, typer.Option()] = 20261014,
+    suffix: Annotated[str, typer.Option(help="Dataset version suffix, e.g. v1 or v2.")] = "v1",
+    exclude: Annotated[
+        str | None, typer.Option(help="Skip upstream commits used by datasets with this suffix.")
+    ] = None,
+) -> None:
+    v2 = suffix != "v1"
     rng = random.Random(seed)
     check_fake_packages()
+    skip = used_upstream_commits(exclude) if exclude else set()
     clean_pools: dict[str, list[Commit]] = {}
     fix_pools: dict[str, list[Commit]] = {}
     for name, r in REPOS.items():
@@ -303,23 +346,32 @@ def main(seed: Annotated[int, typer.Option()] = 20261014) -> None:
         commits = list_commits(r)
         clean = [c for c in commits if is_clean_candidate(c, r)]
         fixes = [c for c in commits if is_fix_candidate(c, r)]
-        rng.shuffle(clean)
+        rng.shuffle(clean)  # shuffle before filtering: v1 must stay byte-for-byte reproducible
         rng.shuffle(fixes)
-        clean_pools[name], fix_pools[name] = clean, fixes
+        clean_pools[name] = [c for c in clean if c.sha not in skip]
+        fix_pools[name] = [c for c in fixes if c.sha not in skip]
+    if skip:
+        typer.echo(f"excluding {len(skip)} upstream commits used by {exclude}")
 
-    c_root = init_dataset("clean-v1", seed)
-    used = build_clean(clean_pools, c_root)
-    typer.echo(f"clean-v1: {len(used)} items")
+    c_name, b_name, a_name = (f"{k}-{suffix}" for k in ("clean", "reverted", "seeded"))
+    c_root = init_dataset(c_name, seed)
+    used = build_clean(clean_pools, c_root, per_repo=8 if v2 else N_CLEAN_PER_REPO)
+    typer.echo(f"{c_name}: {len(used)} items")
 
-    b_root = init_dataset("reverted-v1", seed)
-    typer.echo(f"reverted-v1: {build_reverted(fix_pools, b_root, rng)} items")
+    b_root = init_dataset(b_name, seed)
+    n_rev = build_reverted(fix_pools, b_root, rng, total=16 if v2 else N_FIX_TOTAL)
+    typer.echo(f"{b_name}: {n_rev} items")
 
-    a_root = init_dataset("seeded-v1", seed)
-    made = build_seeded(clean_pools, used, a_root, rng)
-    typer.echo(f"seeded-v1: {sum(made.values())} items: {made}")
-    missing = {t: n - made.get(t, 0) for t, n in SCHEDULE.items() if made.get(t, 0) < n}
+    a_root = init_dataset(a_name, seed)
+    schedule = SCHEDULE_V2 if v2 else SCHEDULE
+    made = build_seeded(clean_pools, used, a_root, rng, schedule if v2 else None)
+    typer.echo(f"{a_name}: {sum(made.values())} items: {made}")
+    missing = {t: n - made.get(t, 0) for t, n in schedule.items() if made.get(t, 0) < n}
     if missing:
         typer.echo(f"  templates short of target: {missing}")
+    if v2:
+        for root in (a_root, b_root, c_root):
+            mark_all_test(root)
     subprocess.run(["git", "worktree", "prune"], cwd=DATASETS_DIR, check=False)
 
 
