@@ -102,7 +102,15 @@ class ReviewConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     checks: list[str] = Field(
-        default_factory=lambda: ["ruff", "mypy", "pytest", "secrets", "imports", "scope"]
+        default_factory=lambda: [
+            "secrets",
+            "imports",
+            "hygiene",
+            "scope",
+            "ruff",
+            "mypy",
+            "pytest",
+        ]
     )
     min_confidence: float = Field(default=0.5, ge=0, le=1)
     block_min_confidence: float = Field(default=0.7, ge=0, le=1)

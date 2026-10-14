@@ -100,6 +100,23 @@ def _run_process(
     )
 
 
+def run_static_tool(
+    argv: list[str], cwd: Path, timeout: float = 120.0, env: dict[str, str] | None = None
+) -> ExecResult:
+    """Run a trusted static-analysis tool (ruff, mypy) that does not execute repo code."""
+    return _run_process(argv, cwd, timeout, scrubbed_env({"HOME": str(cwd), **(env or {})}))
+
+
+def find_repo_python(*roots: Path) -> Path | None:
+    """Locate the target repo's virtualenv interpreter, if it has one."""
+    for base in roots:
+        for name in (".venv", "venv"):
+            candidate = base / name / "bin" / "python"
+            if candidate.exists():
+                return candidate
+    return None
+
+
 class Sandbox(ABC):
     name: str
     network_isolated: bool
@@ -140,11 +157,8 @@ class SubprocessSandbox(Sandbox):
         return _run_process(full, workdir, timeout, child_env)
 
     def python(self, workdir: Path, repo_root: Path) -> list[str]:
-        for base in (workdir, repo_root):
-            candidate = base / ".venv" / "bin" / "python"
-            if candidate.exists():
-                return [str(candidate)]
-        return [sys.executable]
+        found = find_repo_python(workdir, repo_root)
+        return [str(found)] if found else [sys.executable]
 
 
 @functools.cache

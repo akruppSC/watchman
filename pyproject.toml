@@ -57,7 +57,7 @@ files = ["src"]
 exclude = ["tests/fixtures/"]
 
 [[tool.mypy.overrides]]
-module = ["keyring", "keyring.*"]
+module = ["keyring", "keyring.*", "ruff", "ruff.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
