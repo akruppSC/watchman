@@ -59,9 +59,12 @@ def pytest_argv(
         for part in custom:
             argv += python if part == "{python}" else [part]
         return argv + (selector or [])
+    # -W ignore::DeprecationWarning: many suites set filterwarnings=error, and a newer pytest
+    # or Python than the project pinned turns harmless deprecations into collection errors.
+    # Watchman cares about behavior, not deprecations.
     return [
         *python, "-m", "pytest", "-q", "--no-header", "-rfE", "-p", "no:cacheprovider",
-        "--color=no", *(selector or []),
+        "--color=no", "-W", "ignore::DeprecationWarning", *(selector or []),
     ]  # fmt: skip
 
 

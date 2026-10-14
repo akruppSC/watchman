@@ -52,7 +52,10 @@ class AnthropicClient:
             "messages": _to_wire(request.messages),
         }
         if system:
-            payload["system"] = system
+            payload["system"] = [
+                {"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}
+            ]
+        _cache_last_message(payload["messages"])
         if request.tools:
             payload["tools"] = [
                 {"name": t.name, "description": t.description, "input_schema": t.parameters}
@@ -60,6 +63,22 @@ class AnthropicClient:
             ]
         data = post_json(self._http, self._url, payload, self._headers, backoff_s=self._backoff)
         return _from_wire(data, self._model)
+
+
+def _cache_last_message(wire: list[dict[str, Any]]) -> None:
+    """Cache breakpoint on the newest message, so the growing history is billed at the
+    cache-read rate on the next turn."""
+    if not wire:
+        return
+    last = wire[-1]
+    content = last["content"]
+    if isinstance(content, str):
+        if content:
+            last["content"] = [
+                {"type": "text", "text": content, "cache_control": {"type": "ephemeral"}}
+            ]
+    elif isinstance(content, list) and content:
+        content[-1] = {**content[-1], "cache_control": {"type": "ephemeral"}}
 
 
 def _to_wire(messages: list[Message]) -> list[dict[str, Any]]:
@@ -105,11 +124,15 @@ def _from_wire(data: dict[str, Any], model: str) -> LLMResponse:
                 )
             )
     usage = data.get("usage") or {}
+    cache_read = int(usage.get("cache_read_input_tokens") or 0)
+    cache_write = int(usage.get("cache_creation_input_tokens") or 0)
     return LLMResponse(
         content="".join(text),
         tool_calls=calls,
-        input_tokens=int(usage.get("input_tokens") or 0),
+        # Anthropic reports uncached input separately; normalize to total input tokens.
+        input_tokens=int(usage.get("input_tokens") or 0) + cache_read + cache_write,
         output_tokens=int(usage.get("output_tokens") or 0),
+        cached_input_tokens=cache_read,
         model=str(data.get("model") or model),
         stop_reason=str(data.get("stop_reason") or ""),
     )

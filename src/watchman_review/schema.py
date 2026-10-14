@@ -142,6 +142,7 @@ class Usage(BaseModel):
     tool_calls: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
+    cached_input_tokens: int = 0
     cost_usd: float = 0.0
 
     def add(self, other: Usage) -> None:
@@ -149,6 +150,7 @@ class Usage(BaseModel):
         self.tool_calls += other.tool_calls
         self.input_tokens += other.input_tokens
         self.output_tokens += other.output_tokens
+        self.cached_input_tokens += other.cached_input_tokens
         self.cost_usd += other.cost_usd
         if other.model and not self.model:
             self.model = other.model

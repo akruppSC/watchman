@@ -51,6 +51,7 @@ class LLMResponse(BaseModel):
     tool_calls: list[ToolCall] = Field(default_factory=list)
     input_tokens: int = 0
     output_tokens: int = 0
+    cached_input_tokens: int = 0  # subset of input_tokens served from the provider's cache
     cost_usd: float | None = Field(
         default=None, description="Provider-reported cost, if any (e.g. OpenRouter)."
     )

@@ -45,9 +45,12 @@ class OpenAICompatClient:
         return self._model
 
     def complete(self, request: CompletionRequest) -> LLMResponse:
+        messages = [_to_wire(m) for m in request.messages]
+        if self._is_openrouter and self._model.startswith("anthropic/"):
+            add_cache_breakpoints(messages)
         payload: dict[str, Any] = {
             "model": self._model,
-            "messages": [_to_wire(m) for m in request.messages],
+            "messages": messages,
             "max_tokens": request.max_tokens,
             "temperature": request.temperature,
         }
@@ -69,6 +72,23 @@ class OpenAICompatClient:
             payload["usage"] = {"include": True}
         data = post_json(self._http, self._url, payload, self._headers, backoff_s=self._backoff)
         return _from_wire(data, self._model)
+
+
+def add_cache_breakpoints(messages: list[dict[str, Any]]) -> None:
+    """Mark the system prompt and the newest message as cacheable (Anthropic via OpenRouter).
+
+    Anthropic only caches at explicit breakpoints. Agent turns resend the whole growing
+    history, so caching the prefix bills it at roughly 10% on every following turn. Older
+    messages are never modified, which keeps the cached prefix byte-identical.
+    """
+    for idx in {0, len(messages) - 1}:
+        if not 0 <= idx < len(messages):
+            continue
+        content = messages[idx].get("content")
+        if isinstance(content, str) and content:
+            messages[idx]["content"] = [
+                {"type": "text", "text": content, "cache_control": {"type": "ephemeral"}}
+            ]
 
 
 def _to_wire(m: Message) -> dict[str, Any]:
@@ -111,11 +131,13 @@ def _from_wire(data: dict[str, Any], model: str) -> LLMResponse:
         )
     usage = data.get("usage") or {}
     cost = usage.get("cost")
+    details = usage.get("prompt_tokens_details") or {}
     return LLMResponse(
         content=msg.get("content") or "",
         tool_calls=calls,
         input_tokens=int(usage.get("prompt_tokens") or 0),
         output_tokens=int(usage.get("completion_tokens") or 0),
+        cached_input_tokens=int(details.get("cached_tokens") or 0),
         cost_usd=float(cost) if isinstance(cost, int | float) else None,
         model=str(data.get("model") or model),
         stop_reason=str(choice.get("finish_reason") or ""),

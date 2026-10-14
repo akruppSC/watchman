@@ -140,6 +140,7 @@ class MeteredClient:
         u.llm_calls += 1
         u.input_tokens += resp.input_tokens
         u.output_tokens += resp.output_tokens
+        u.cached_input_tokens += resp.cached_input_tokens
         # Cached responses count toward the per-review budget (so evals behave the same
         # on replay) but not toward the real-money ledger.
         u.cost_usd += cost

@@ -38,9 +38,15 @@ class MypyCheck(Check):
     name = "mypy"
 
     def run(self, ctx: CheckContext) -> CheckResult:
-        files = [f.path for f in ctx.changed_python_files()]
+        all_files = [f.path for f in ctx.changed_python_files()]
+        # A module with a sibling .pyi stub is typed by the stub; passing the .py makes
+        # mypy abort with "Duplicate module". Its implementation is left to the agent.
+        files = [
+            p for p in all_files
+            if p.endswith(".pyi") or not (ctx.tree / p).with_suffix(".pyi").exists()
+        ]  # fmt: skip
         if not files:
-            return self.result(CheckStatus.SKIPPED, "no changed Python files")
+            return self.result(CheckStatus.SKIPPED, "no changed Python files mypy can check")
 
         repo_python = find_repo_python(ctx.repo_root)
         with tempfile.TemporaryDirectory(prefix="watchman-mypy-") as tmp:

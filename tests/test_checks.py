@@ -300,6 +300,34 @@ def test_pytest_in_docker_attributes_only_new_failures(git_repo: Path) -> None:
     assert "docker sandbox" in res.findings[0].evidence
 
 
+def test_pytest_ignores_deprecations_under_filterwarnings_error(git_repo: Path) -> None:
+    branch_change(
+        git_repo,
+        {
+            "pyproject.toml": '[tool.pytest.ini_options]\nfilterwarnings = ["error"]\n',
+            "test_a.py": "def test_a():\n    assert True\n",
+        },
+        {
+            "test_a.py": (
+                "import warnings\n\nwarnings.warn('old api', DeprecationWarning)\n\n\n"
+                "def test_a():\n    assert 1 + 1 == 2\n"
+            )
+        },
+    )
+    res = run_check(TestsCheck(), make_ctx(git_repo, sandbox=SubprocessSandbox()))
+    assert res.status is CheckStatus.PASSED, res.output_excerpt
+
+
+def test_mypy_skips_modules_with_stub(git_repo: Path) -> None:
+    branch_change(
+        git_repo,
+        {"m.py": "import json\n", "m.pyi": "def f() -> int: ...\n"},
+        {"m.py": "import json\n\n\ndef f():\n    return json.parse_string('1')\n"},
+    )
+    res = run_check(MypyCheck(), make_ctx(git_repo))
+    assert res.status is CheckStatus.SKIPPED
+
+
 def test_pytest_skipped_without_sandbox(git_repo: Path) -> None:
     branch_change(git_repo, {"a.py": ""}, {"a.py": "x = 1\n"})
     assert run_check(TestsCheck(), make_ctx(git_repo)).status is CheckStatus.SKIPPED

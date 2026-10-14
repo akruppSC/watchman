@@ -162,7 +162,11 @@ def test_anthropic_wire_format() -> None:
     resp = client.complete(CompletionRequest(messages=history, tools=[TOOL]))
     body = seen["body"]
     assert seen["key"] == "k"
-    assert body["system"] == "rules"
+    assert body["system"] == [
+        {"type": "text", "text": "rules", "cache_control": {"type": "ephemeral"}}
+    ]
+    # The newest message carries a cache breakpoint so the next turn reads the prefix.
+    assert body["messages"][-1]["content"][-1]["cache_control"] == {"type": "ephemeral"}
     assert body["tools"][0]["input_schema"]["type"] == "object"
     # Two tool results must be merged into a single user turn.
     assert len(body["messages"]) == 3
@@ -256,3 +260,47 @@ def test_catalog_pricing_has_no_float_noise() -> None:
 
     [m] = list_models(LLMConfig(), None, http=mock_http(handler))
     assert (m.input_cost_per_mtok, m.output_cost_per_mtok) == (0.1, 0.5)
+
+
+def test_openrouter_anthropic_models_get_cache_breakpoints() -> None:
+    seen: list[dict[str, Any]] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(req.content))
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "ok"}}],
+                "usage": {"prompt_tokens": 100, "completion_tokens": 1,
+                          "prompt_tokens_details": {"cached_tokens": 80}},
+            },
+        )  # fmt: skip
+
+    msgs = [Message.system("sys"), Message.user("u1"), Message.user("u2")]
+    for model in ("anthropic/claude-x", "openai/gpt-5"):
+        client = OpenAICompatClient(
+            model=model, base_url="https://x", api_key="k", is_openrouter=True,
+            http=mock_http(handler),
+        )  # fmt: skip
+        resp = client.complete(CompletionRequest(messages=msgs))
+        assert resp.cached_input_tokens == 80
+    anthropic_body, openai_body = seen
+    first, middle, last = anthropic_body["messages"]
+    assert first["content"][0]["cache_control"] == {"type": "ephemeral"}
+    assert middle["content"] == "u1"  # older messages untouched -> stable cached prefix
+    assert last["content"][0]["cache_control"] == {"type": "ephemeral"}
+    assert all(isinstance(m["content"], str) for m in openai_body["messages"])
+
+
+def test_anthropic_input_tokens_include_cache() -> None:
+    def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"content": [{"type": "text", "text": "x"}],
+                  "usage": {"input_tokens": 10, "output_tokens": 2,
+                            "cache_read_input_tokens": 900, "cache_creation_input_tokens": 90}},
+        )  # fmt: skip
+
+    client = AnthropicClient(model="c", base_url="https://a", api_key="k", http=mock_http(handler))
+    resp = client.complete(CompletionRequest(messages=[Message.user("q")]))
+    assert (resp.input_tokens, resp.cached_input_tokens) == (1000, 900)
