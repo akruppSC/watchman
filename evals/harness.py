@@ -383,6 +383,9 @@ def run(
         OverseerTrigger | None,
         typer.Option(help="Overseer trigger for this run (default: follow the user config)."),
     ] = None,
+    rpm: Annotated[
+        int | None, typer.Option(help="Cap LLM requests per minute per model (shared by jobs).")
+    ] = None,
 ) -> None:
     """Run one reviewer mode over a dataset split and save the run.
 
@@ -394,6 +397,8 @@ def run(
     from watchman_review.config import load_config
 
     cfg, _ = load_config(None)
+    if rpm is not None:
+        cfg.llm.max_requests_per_minute = rpm
     if checks is not None:
         cfg.review.checks = [c.strip() for c in checks.split(",") if c.strip()]
     done = 0

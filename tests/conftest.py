@@ -20,6 +20,14 @@ def isolated_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[P
     yield home
 
 
+@pytest.fixture(autouse=True)
+def sleeps(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Record retry sleeps instead of actually waiting (a 429 wait can be a minute)."""
+    waited: list[float] = []
+    monkeypatch.setattr("watchman_review.llm.http._sleep", waited.append)
+    return waited
+
+
 def git(repo: Path, *args: str) -> str:
     out = subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True, text=True)
     return out.stdout

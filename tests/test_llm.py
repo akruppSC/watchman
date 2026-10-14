@@ -369,3 +369,119 @@ def test_non_json_200_is_retried() -> None:
         _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")])).content
         == "ok"
     )
+
+
+def test_rate_limiter_spaces_requests_within_the_window() -> None:
+    from watchman_review.llm.ratelimit import RateLimiter
+
+    now = [0.0]
+    slept: list[float] = []
+
+    def sleep(seconds: float) -> None:
+        slept.append(seconds)
+        now[0] += seconds
+
+    lim = RateLimiter(3, clock=lambda: now[0], sleep=sleep)
+    for t in (0.0, 1.0, 2.0):
+        now[0] = t
+        lim.acquire()
+    assert slept == []  # three requests fit in the window
+    now[0] = 3.0
+    lim.acquire()  # the fourth must wait for the first to age out at t=60
+    assert slept and slept[0] == pytest.approx(57.0)
+    assert now[0] == pytest.approx(60.0)
+
+
+def test_limiter_registry_shares_per_key_and_is_off_without_a_limit() -> None:
+    from watchman_review.llm.ratelimit import limiter_for
+
+    assert limiter_for("k1", None) is None
+    assert limiter_for("k1", 10) is limiter_for("k1", 10)
+    assert limiter_for("k1", 10) is not limiter_for("k2", 10)
+
+
+def test_429_waits_for_the_providers_reset_time(sleeps: list[float]) -> None:
+    import time as _time
+
+    calls = 0
+    reset_ms = int((_time.time() + 30) * 1000)
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            body = {
+                "error": {
+                    "code": 429,
+                    "message": "slow down",
+                    "metadata": {"headers": {"X-RateLimit-Reset": str(reset_ms)}},
+                }
+            }
+            return httpx.Response(429, json=body)
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    resp = _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+    assert resp.content == "ok"
+    assert 25 <= sleeps[0] <= 31  # waited for the reset, not a fixed 1-2 second backoff
+
+
+def test_429_honors_retry_after_header_and_caps_the_wait(sleeps: list[float]) -> None:
+    calls = 0
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(429, headers={"retry-after": "3"})
+        if calls == 2:
+            return httpx.Response(429, headers={"retry-after": "9999"})
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+    assert sleeps == [3.0, 65.0]
+
+
+def test_429_inside_a_200_is_treated_as_rate_limited(sleeps: list[float]) -> None:
+    calls = 0
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(200, json={"error": {"code": 429, "message": "rate limited"}})
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    assert (
+        _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")])).content
+        == "ok"
+    )
+    assert len(sleeps) == 1 and sleeps[0] >= 1.0
+
+
+def test_persistent_429_gives_up_with_a_clear_error() -> None:
+    def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(429, json={"error": {"code": 429, "message": "no"}})
+
+    with pytest.raises(LLMError, match="rate limited 9 times"):
+        _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+
+
+def test_client_waits_on_the_limiter_before_each_request() -> None:
+    from watchman_review.llm.ratelimit import RateLimiter
+
+    acquired = 0
+
+    class Counting(RateLimiter):
+        def acquire(self) -> None:
+            nonlocal acquired
+            acquired += 1
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    client = OpenAICompatClient(
+        model="m", base_url="https://x", api_key="k", http=mock_http(handler), limiter=Counting(5)
+    )
+    client.complete(CompletionRequest(messages=[Message.user("x")]))
+    client.complete(CompletionRequest(messages=[Message.user("y")]))
+    assert acquired == 2

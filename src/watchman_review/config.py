@@ -71,6 +71,9 @@ class LLMConfig(BaseModel):
     # too low a value truncates the final answer.
     max_output_tokens: int = 16000
     timeout_s: float = 300.0
+    # Throttle requests per minute per model. Providers cap new accounts (OpenRouter: 20/min
+    # per model); parallel batches share this limit instead of triggering 429s.
+    max_requests_per_minute: int | None = Field(default=None, ge=1)
     input_cost_per_mtok: float | None = Field(
         default=None, description="USD per 1M input tokens; enables cost tracking."
     )

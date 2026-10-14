@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 
 from watchman_review.llm.http import post_json
+from watchman_review.llm.ratelimit import RateLimiter
 from watchman_review.llm.types import (
     CompletionRequest,
     LLMResponse,
@@ -28,6 +29,7 @@ class AnthropicClient:
         timeout_s: float = 120.0,
         http: httpx.Client | None = None,
         retry_backoff_s: float = 1.0,
+        limiter: RateLimiter | None = None,
     ) -> None:
         self._model = model
         self._url = f"{base_url.rstrip('/')}/v1/messages"
@@ -38,6 +40,7 @@ class AnthropicClient:
         }
         self._http = http or httpx.Client(timeout=timeout_s)
         self._backoff = retry_backoff_s
+        self._limiter = limiter
 
     @property
     def model(self) -> str:
@@ -61,7 +64,14 @@ class AnthropicClient:
                 {"name": t.name, "description": t.description, "input_schema": t.parameters}
                 for t in request.tools
             ]
-        data = post_json(self._http, self._url, payload, self._headers, backoff_s=self._backoff)
+        data = post_json(
+            self._http,
+            self._url,
+            payload,
+            self._headers,
+            backoff_s=self._backoff,
+            limiter=self._limiter,
+        )
         return _from_wire(data, self._model)
 
 

@@ -14,15 +14,21 @@ cd "$(dirname "$0")/.."
 STAGE="${1:?stage: flash | overseer}"
 DATASETS=(seeded-v1 reverted-v1 clean-v1)
 declare -A SAMPLE=([seeded-v1]=16 [reverted-v1]=10 [clean-v1]=14)
-run() { uv run python -m evals.harness run "$@"; }
+# New OpenRouter accounts are capped at 20 requests/minute per model; stay just under it.
+RPM="${RPM:-18}"
+run() { uv run python -m evals.harness run --rpm "$RPM" "$@"; }
 
 if [[ "$STAGE" == flash ]]; then
+  # Rate limits are per model, so the two models run side by side.
   for model in google/gemini-3.7-flash google/gemini-3.8-flash; do
-    for ds in "${DATASETS[@]}"; do
-      run --dataset "$ds" --mode agent --model "$model" --sample "${SAMPLE[$ds]}" \
-          --overseer never --jobs 6
-    done
+    (
+      for ds in "${DATASETS[@]}"; do
+        run --dataset "$ds" --mode agent --model "$model" --sample "${SAMPLE[$ds]}" \
+            --overseer never --jobs 6
+      done
+    ) &
   done
+  wait
 else
   model="${2:?primary model}"
   for ds in "${DATASETS[@]}"; do

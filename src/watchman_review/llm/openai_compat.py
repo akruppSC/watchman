@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 
 from watchman_review.llm.http import post_json
+from watchman_review.llm.ratelimit import RateLimiter
 from watchman_review.llm.types import (
     CompletionRequest,
     LLMError,
@@ -30,6 +31,7 @@ class OpenAICompatClient:
         is_openrouter: bool = False,
         http: httpx.Client | None = None,
         retry_backoff_s: float = 1.0,
+        limiter: RateLimiter | None = None,
     ) -> None:
         self._model = model
         self._url = f"{base_url.rstrip('/')}/chat/completions"
@@ -39,6 +41,7 @@ class OpenAICompatClient:
         self._is_openrouter = is_openrouter
         self._http = http or httpx.Client(timeout=timeout_s)
         self._backoff = retry_backoff_s
+        self._limiter = limiter
 
     @property
     def model(self) -> str:
@@ -70,7 +73,14 @@ class OpenAICompatClient:
             ]
         if self._is_openrouter:
             payload["usage"] = {"include": True}
-        data = post_json(self._http, self._url, payload, self._headers, backoff_s=self._backoff)
+        data = post_json(
+            self._http,
+            self._url,
+            payload,
+            self._headers,
+            backoff_s=self._backoff,
+            limiter=self._limiter,
+        )
         return _from_wire(data, self._model)
 
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from watchman_review.config import LLMConfig, Provider, resolve_api_key
 from watchman_review.llm.anthropic import AnthropicClient
 from watchman_review.llm.openai_compat import OpenAICompatClient
+from watchman_review.llm.ratelimit import limiter_for
 from watchman_review.llm.types import (
     CompletionRequest,
     LLMClient,
@@ -34,10 +35,13 @@ def build_client(cfg: LLMConfig) -> LLMClient:
         raise LLMError("no model configured; run `watchman setup` or pass --model")
     key = resolve_api_key(cfg)
     base = cfg.resolved_base_url()
+    limiter = limiter_for(f"{base}|{cfg.model}", cfg.max_requests_per_minute)
     if cfg.provider is Provider.ANTHROPIC:
         if not key:
             raise LLMError("Anthropic provider requires an API key")
-        return AnthropicClient(model=cfg.model, base_url=base, api_key=key, timeout_s=cfg.timeout_s)
+        return AnthropicClient(
+            model=cfg.model, base_url=base, api_key=key, timeout_s=cfg.timeout_s, limiter=limiter
+        )
     headers: dict[str, str] = {}
     if cfg.provider is Provider.OPENROUTER:
         headers = {
@@ -51,4 +55,5 @@ def build_client(cfg: LLMConfig) -> LLMClient:
         extra_headers=headers,
         timeout_s=cfg.timeout_s,
         is_openrouter=cfg.provider is Provider.OPENROUTER,
+        limiter=limiter,
     )

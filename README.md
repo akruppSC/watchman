@@ -10,8 +10,8 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 evidence, and findings that can't be grounded are dropped.
 
 > **Status:** milestones 1 (foundation), 2 (the tool-using agent) and 3 (evaluation) are
-> complete. Next: an overseer stage (a larger model that double-checks risky reviews). See
-> [Roadmap](#roadmap).
+> complete, and the overseer stage (a larger model that double-checks risky reviews) is
+> built and being evaluated. See [Roadmap](#roadmap).
 
 ## Install
 
@@ -47,6 +47,10 @@ uv run watchman review --base main --mode agent --task "Add retry to the HTTP cl
 
 # Try a different model for one run:
 uv run watchman review --base main --mode agent --model anthropic/claude-haiku-5.5
+
+# Make the larger overseer model check this review no matter what / never:
+uv run watchman review --base main --mode agent --deep
+uv run watchman review --base main --mode agent --no-overseer
 
 # Single-prompt LLM baseline (the ablation control arm):
 uv run watchman review --base main --mode baseline --task "Add retry to the HTTP client"
@@ -99,7 +103,9 @@ git diff (merge-base..head) ──► snapshot worktree of head
           secrets · imports · hygiene · scope · ruff · mypy · pytest(sandbox)
                                   │  results become evidence for ↓
           Layer 2: tool-using agent: plan → verify with tools → submit_findings
-                                  │
+                                  │  only if the review looks risky (or --deep)
+          Layer 3: overseer, a larger model: spot-check → dig deep → brief the agent
+                                  │  if it rejected/added many findings: one more agent pass
           post-process: grounding → confidence threshold → merge/dedupe → verdict
                                   │
                     terminal report / JSON (ReviewResult schema)
@@ -162,6 +168,70 @@ hand-written items sanity-check the pipeline and aren't a benchmark:
 - It reported the prompt-injection comment instead of obeying it.
 - Most of its "false positives" restate a real defect under a second category on the
   same lines. Milestone 3 will measure and tune this on the dev split of real datasets.
+
+### The overseer
+
+A larger, more expensive model (default `anthropic/claude-opus-5.5`) that supervises the
+primary reviewer, "the watcher of the watchman". It runs only when a review looks risky
+or unsettled, so most clean diffs never pay for it.
+
+**When it runs** (`trigger = "risky"`). Any one of these fires it:
+
+- the primary reviewer reported a major or blocker finding
+- the primary reviewer escalated a question it couldn't resolve (the submit tool gains an
+  optional `escalations` field whenever the overseer is active)
+- a Layer 1 check failed or errored
+- the diff is large (over 300 lines or 8 files)
+- the diff touches security-sensitive code (subprocess, eval, pickle, SQL execution,
+  disabled TLS verification, crypto, auth and session paths, and similar)
+- the primary review didn't finish
+
+`--deep` (or `trigger = "always"`) forces it, and `--no-overseer` disables it.
+
+**What it does**, in one tool-using stage with its own caps (default $0.15 and 8 tool
+calls per review, in addition to the primary's budget):
+
+1. **Spot-check.** It receives compact evidence packets for the primary's findings: the
+   claim, a ±12 line code excerpt, and the tool output the primary cited. For each of up to
+   8 findings it answers `confirm`, `reject`, or `downgrade`, with a reason. It can use the
+   same read-only tools to check.
+2. **Dig deep.** It investigates the escalated questions and anything risky the primary
+   missed. New findings carry `source = overseer`, are grounded exactly like the
+   primary's (they must cite tool calls that ran, with refs `o1`, `o2`, ...), and are
+   dropped if the evidence isn't real.
+3. **Brief.** It writes notes for the primary reviewer.
+
+If it rejected or added **3 or more** findings, or rejected at least half of those it
+checked, the notes go back to the primary model for **one** more pass with a fresh tool
+budget (refs `r1`, `r2`, ...). The larger model directs the review; the cheap model does the
+reading and running. Findings the overseer rejected stay rejected: a second-pass finding
+that matches one is discarded.
+
+**Trust and failure handling:**
+
+- Everything the overseer reads is wrapped as untrusted data, including the primary
+  reviewer's own text (it was written after reading untrusted code).
+- It can never touch deterministic findings. Those aren't packaged for review.
+- `[overseer]` is read from user config only. A repo's `.watchman.toml` can't enable it,
+  retarget it, or raise its budget.
+- If the overseer fails (timeout, no credit, budget), the review keeps the primary's
+  findings, says so in a warning, and records the error on the stage. It does not mark the
+  review incomplete, since the primary review stands on its own.
+
+Every result records per-stage usage (`stages` in the JSON) and what the overseer
+confirmed, rejected, downgraded, and added. When the overseer is active, the primary
+stage also keeps the findings the review would have reported without it, so primary-only
+and overseer arms can be compared from a single run (see the evaluation below).
+
+```toml
+# ~/.config/watchman/config.toml
+[overseer]
+enabled = true
+# model = "anthropic/claude-opus-5.5"   # default
+# trigger = "risky"                     # risky | always | never
+# max_cost_usd = 0.15
+# max_tool_calls = 8
+```
 
 ## Evaluation
 
@@ -315,6 +385,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 1. ✅ Foundation: CLI, schema, deterministic checks, single-prompt baseline, eval harness skeleton
 2. ✅ Agent: tool-using loop with budgets, pitfall rules, and evidence-ref grounding
 3. ✅ Evals: frozen datasets A/B/C, ablations, precision tuning
+3b. Overseer: a larger model that spot-checks and directs the primary reviewer (built; being evaluated on fresh v2 datasets)
 4. Integration: GitHub Action and PR comment, pre-push hook, writeup, demo
 5. Live mode: supervising an OpenCode worker at checkpoints
 
@@ -386,6 +457,30 @@ uv run pytest -m docker          # tests that need a docker daemon
   source (`prompts/pitfalls.py`) and share the severity guide. The agent's version adds a
   "verify with" column, so the ablation measures tools and verification rather than
   prompt wording.
+- **A larger model supervises instead of replacing the cheap one.** On the v1 dev split the
+  cheap reviewer found as many defects as the 50x costlier ones and was far quieter on clean
+  diffs, so the expensive model is used where it helps: judging what the cheap one found,
+  and digging into what it couldn't resolve. The overseer is triggered by risk signals, not
+  run on every review.
+- **Notes flow back to the cheap model, not to the user.** The larger model directs and the
+  cheap model does the reading and test-running, which keeps the overseer's cost small
+  (compact packets, 8 tool calls, a hard dollar cap). The cost is that overseer notes are
+  model-written text passed to another model, so they are wrapped as untrusted too.
+- **One stage engine, three callers.** The primary reviewer, the overseer, and the second
+  pass run on the same tool loop (`agent/engine.py`), differing only in their submit tool and
+  tool-ref prefix (`t`, `o`, `r`), so budgets, grounding, and prompt-injection handling are
+  identical across stages.
+- **The overseer cannot silently approve itself.** It never sees deterministic findings as
+  things to judge, its own findings must cite tool calls that ran, and unverifiable ones
+  are dropped and not counted toward the feedback threshold.
+- **Provider errors are failures.** A model stage that errors or never submits marks the
+  review `incomplete` (never PASS, exit code 2), instead of looking like a clean review.
+- **Restatements need real overlap across categories.** A real run showed that dropping
+  any finding within two lines of a stronger one lost a SQL injection sitting under a
+  prompt-injection comment. Different categories must now overlap on the same lines;
+  the same category may still be two lines apart.
+- **Config files never pin old defaults.** `save_user_config` writes only values that
+  differ from the defaults, so later improvements to a default reach existing users.
 
 ## Known limitations
 
@@ -407,6 +502,12 @@ uv run pytest -m docker          # tests that need a docker daemon
   issue on the same line.
 - Model behavior varies run to run, even at temperature 0 with a fixed seed. Use the
   record/replay cache (`--llm-cache read_write`) when you need a review you can reproduce.
+- The overseer (Claude Opus) and a Claude coding worker may share blind spots. The primary
+  reviewer is a different family (Gemini Flash) for that reason, but the overseer is not.
+  Measuring this needs live mode (milestone 5).
+- Overseer notes are model-written. A prompt-injection in the reviewed code could try to
+  steer them; they are wrapped as untrusted, and the second pass must re-verify claims with
+  its own tools, but this isn't a hard guarantee.
 
 ## License
 
