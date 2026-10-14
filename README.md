@@ -164,19 +164,62 @@ hand-written items sanity-check the pipeline and aren't a benchmark:
 
 ## Evaluation
 
+### Datasets
+
+Three frozen datasets are built from four permissively licensed, well-tested projects:
+more-itertools (MIT), attrs (MIT), click (BSD-3), and httpx (BSD-3). Each item pins an
+upstream commit SHA plus patches.
+
+| dataset | items | dev / test | what it is |
+|---|---|---|---|
+| `seeded-v1` (A) | 60 | 41 / 19 | Real commits with **one injected AI-style defect**, from 13 hand-written templates |
+| `reverted-v1` (B) | 30 | 22 / 8 | Real **bug fixes with the source change undone**; ground truth is the fix |
+| `clean-v1` (C) | 60 | 44 / 16 | Unmodified real commits; measures false positives |
+
+How the datasets are built:
+
+- **Templates edit real code.** Templates (`evals/build/mutators.py`) are AST-guided
+  edits to lines the real commit added. They cover:
+  - swallowed or broadened exceptions
+  - `raise` → `return None`
+  - a changed default on an existing public function
+  - off-by-one and inverted conditions
+  - hallucinated packages and stdlib attributes
+  - weakened tests
+  - restating comments
+  - copied helpers
+  - drive-by renames
+  - prompt-injection comments
+
+  Each records exact ground-truth lines, plus acceptable alternates such as the import
+  *and* the decorator. The build checks these against the generated diff.
+- **No model writes the defects** a model is later graded on. The build is deterministic:
+  `python -m evals.build.make_datasets --seed 20261014` reproduces it byte for byte.
+- **The future is hidden.** Materialized repos contain no commits after the item, and
+  reverted-fix items hide the fix's message, so a reviewer can't find the answer in
+  `git log`. The fix's regression test is not included.
+- **Splits are stratified** by template (A) or repo (B, C). Datasets were frozen after
+  owner review of `REVIEW.md`. The test split was run exactly once
+  (`evals/results/test_access.log`).
+
+Known biases:
+
+- Clean items are real commits that may contain real issues, so measured precision is
+  pessimistic.
+- Every B item is labeled `correctness`, and B diffs are small, so lenient recall on B is
+  inflated. Use strict recall there.
+- There are no `over_abstraction` or `convention_violation` items.
+
+### Running
+
 ```bash
-uv run python -m evals.harness list --dataset toy
-uv run python -m evals.harness run --dataset toy --mode deterministic
-uv run python -m evals.harness run --dataset toy --mode agent --model anthropic/claude-haiku-5.5
-make results    # regenerates evals/results/RESULTS.md from saved runs
+uv run python -m evals.harness run --dataset seeded-v1 --mode agent --model anthropic/claude-haiku-5.5 --jobs 6
+evals/ablation.sh            # the full dev-split ablation used for the results below
+uv run python -m evals.tune policies   # replay post-processing policies on dev runs (free)
+make results                 # regenerates evals/results/RESULTS.md
 ```
 
-Datasets live in `evals/datasets/<name>/`. Each item has a `base/` tree, a `head/` tree,
-and ground-truth defects (file, line range, category). Freezing a dataset records a
-SHA-256 of its content, and the harness refuses to run if a frozen dataset has changed.
-Items are split dev/test by a seeded hash. The held-out **test split** only runs with
-`--final`, and every such run is appended to `evals/results/test_access.log`. Milestone 3
-builds the real datasets: seeded defects, reverted fixes, and clean diffs.
+RESULTS_PLACEHOLDER
 
 ## Development
 

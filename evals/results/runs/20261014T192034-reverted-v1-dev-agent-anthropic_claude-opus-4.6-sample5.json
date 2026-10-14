@@ -1,0 +1,1411 @@
+{
+  "run_id": "20261014T192034-reverted-v1-dev-agent-anthropic_claude-opus-4.6-sample5",
+  "started_at": "2026-10-14T19:20:34.437932+00:00",
+  "dataset": "reverted-v1",
+  "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "agent",
+  "model": "anthropic/claude-opus-4.6",
+  "watchman_commit": "a0524a6",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic"
+  },
+  "subset": "sample5",
+  "items": [
+    {
+      "item_id": "attrs-revert-9de675f4",
+      "score": {
+        "item_id": "attrs-revert-9de675f4",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "00d8b9107e29",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.12255975000000001,
+        "latency_s": 52.161,
+        "tool_calls": 10,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "agent",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "00d8b9107e29",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.93,
+            "file": "src/attr/_make.py",
+            "line_start": 798,
+            "line_end": 799,
+            "summary": "Removing property closure-cell handling breaks `super()` inside property getters on attrs classes",
+            "evidence": "The removed code extracted closure cells from `item.fget` for `property` objects. A `property` is a C-level descriptor that does NOT have a `__closure__` attribute itself, so the fallback `getattr(item, \"__closure__\", None)` at line 799 will return `None`. This means if a user defines a property whose getter uses no-arg `super()` or references `__class__`, the compiler-baked `__class__` cell reference will not be rewritten to point to the new (cloned) class, causing `super()` to silently refer to the stale pre-clone class. The original comment explicitly stated: 'Workaround for property `super()` shortcut (PY3-only).'",
+            "suggested_fix": "Restore the removed `elif isinstance(item, property)` branch that accesses `item.fget.__closure__`.",
+            "source": "agent",
+            "rule": null,
+            "evidence_refs": [
+              "diff",
+              "t1",
+              "t9"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.07,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.006,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +0/-4 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.065,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.017,
+            "findings": [],
+            "output_excerpt": "t: \\\"filtered: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1481, \"column\": 56, \"end_line\": 1481, \"end_column\": 66, \"message\": \"Argument 2 to \\\"setdefault\\\" of \\\"MutableMapping\\\" has incompatible type \\\"tuple[int, None, tuple[str], str]\\\"; expected \\\"tuple[Callable[[], str | None]] | tuple[int, float | None, list[str], str]\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1554, \"column\": 4, \"end_line\": 1554, \"end_column\": 9, \"message\": \"Need type annotation for \\\"globs\\\" (hint: \\\"globs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1555, \"column\": 4, \"end_line\": 1555, \"end_column\": 8, \"message\": \"Need type annotation for \\\"locs\\\" (hint: \\\"locs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1624, \"column\": 4, \"end_line\": 1624, \"end_column\": 9, \"message\": \"Need type annotation for \\\"globs\\\" (hint: \\\"globs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1625, \"column\": 4, \"end_line\": 1625, \"end_column\": 8, \"message\": \"Need type annotation for \\\"locs\\\" (hint: \\\"locs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 1908, \"column\": 4, \"end_line\": 1908, \"end_column\": 8, \"message\": \"Need type annotation for \\\"locs\\\" (hint: \\\"locs: dict[<type>, <type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2303, \"column\": 11, \"end_line\": 2303, \"end_column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2457, \"column\": 15, \"end_line\": 2457, \"end_column\": 22, \"message\": \"\\\"Attribute\\\" has no attribute \\\"eq\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2457, \"column\": 27, \"end_line\": 2457, \"end_column\": 37, \"message\": \"\\\"Attribute\\\" has no attribute \\\"order\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2483, \"column\": 64, \"end_line\": 2483, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2523, \"column\": 0, \"end_line\": 2523, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2526, \"column\": 32, \"end_line\": 2526, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2528, \"column\": 28, \"end_line\": 2528, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2528, \"column\": 39, \"end_line\": 2528, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2662, \"column\": 0, \"end_line\": 2662, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2784, \"column\": 4, \"end_line\": 2784, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2792, \"column\": 11, \"end_line\": 2792, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 14.751,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:5: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": "anthropic/claude-opus-4.6",
+          "llm_calls": 7,
+          "tool_calls": 10,
+          "input_tokens": 39132,
+          "output_tokens": 1810,
+          "cached_input_tokens": 28322,
+          "cost_usd": 0.12255975000000001
+        },
+        "latency_s": 52.161,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [
+          {
+            "ref": "t1",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/attr/_make.py",
+              "start": 780,
+              "end": 830
+            },
+            "ok": true,
+            "output_excerpt": "src/attr/_make.py lines 780-830 of 2848:\n780|         qualname = getattr(self._cls, \"__qualname__\", None)\n781|         if qualname is not None:\n782|             cd[\"__qualname__\"] = qualname\n783| \n784|         # Create new class based on old class and our methods.\n785|         cls = type(self._cls)(self._cls.__name__, self._cls.__bases__, cd)\n786| \n787|         # The following is a fix for\n788|         # https://github.com/python-attrs/attrs/issues/102.  On Python 3,\n789|         # if a method mentions `__class__` or uses the no-arg super(), the\n790|         # compiler will bake a reference to the class in the method itself\n791|         # as `method.__closure__`.  Since we replace the class with a\n792|         # clone, we rewrite these references so it keeps working.\n793|         for item in cls.__dict__.values():\n794|             if isinstance(item, (classmethod, staticmethod)):\n795|                 # Class- and staticmethods hide their functions inside.\n796|                 # These might need to be rewritten as well.\n797|                 closure_cells = getattr(item.__func__, \"__closure__\", None)\n798|             else:\n799|                 closure_cells = getattr(item, \"__closure__\", None)\n800| \n801|             if not closure_cells:  # Catch None or the empty list.\n802|                 continue\n803|             for cell in closure_cells:\n804|                 try:\n805|                     match = cell.cell_contents is self._cls\n806|                 except ValueError:  # Val",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t2",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "closure_cells",
+              "path_glob": "src/attr/_make.py"
+            },
+            "ok": true,
+            "output_excerpt": "4 match(es) in 1 file(s):\nsrc/attr/_make.py:797: closure_cells = getattr(item.__func__, \"__closure__\", None)\nsrc/attr/_make.py:799: closure_cells = getattr(item, \"__closure__\", None)\nsrc/attr/_make.py:801: if not closure_cells:  # Catch None or the empty list.\nsrc/attr/_make.py:803: for cell in closure_cells:",
+            "duration_s": 0.11
+          },
+          {
+            "ref": "t3",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "property",
+              "path_glob": "tests/test_make.py",
+              "regex": false,
+              "max_results": 20
+            },
+            "ok": true,
+            "output_excerpt": "2 match(es) in 1 file(s):\ntests/test_make.py:1168: def test_convert_property(self, val, init):\ntests/test_make.py:1187: def test_converter_factory_property(self, val, init):",
+            "duration_s": 0.134
+          },
+          {
+            "ref": "t4",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "super()",
+              "path_glob": "tests/test_make.py",
+              "max_results": 20
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'super()' in tests/test_make.py",
+            "duration_s": 0.141
+          },
+          {
+            "ref": "t5",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "super()",
+              "path_glob": "tests/**/*.py",
+              "max_results": 20
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'super()' in tests/**/*.py",
+            "duration_s": 0.103
+          },
+          {
+            "ref": "t6",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "__class__",
+              "path_glob": "tests/**/*.py",
+              "max_results": 20
+            },
+            "ok": true,
+            "output_excerpt": "no matches for '__class__' in tests/**/*.py",
+            "duration_s": 0.1
+          },
+          {
+            "ref": "t7",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "issue.*102",
+              "path_glob": "src/attr/_make.py"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'issue.*102' in src/attr/_make.py",
+            "duration_s": 0.098
+          },
+          {
+            "ref": "t8",
+            "tool": "git_log",
+            "arguments": {
+              "path": "src/attr/_make.py",
+              "limit": 10
+            },
+            "ok": true,
+            "output_excerpt": "c17cf6e 2026-10-14 watchman-eval\n    Simplify the implementation of `_ClassBuilder`.\nf50c078 2026-10-14 watchman-eval\n    Snapshot\n345fb0b 2020-12-30 Hynek Schlawack\n    Add versionchanged for #732\nf132c07 2020-12-21 Hynek Schlawack\n    Make NOTHING falsey (#732)\n1f627dd 2020-12-13 Andrei Bodrov\n    Fixed slots inheritance (#718)\ne09b1d6 2020-12-13 Nicholas Coltharp\n    Infer type annotations from converters (#710)\nf2dabea 2020-11-04 Hynek Schlawack\n    Fix exception chaining on PyPy (#712)\nbc527b9 2020-10-19 Andrei Bodrov\n    [RFC] kw_only python 2 backport (#700)\nae51f34 2020-10-16 Hynek Schlawack\n    Attribute.assoc → evolve\n0eae613 2020-10-15 Stefan Scherfke\n    Add hooks for field transformation and for asdict serialization (#653)\n",
+            "duration_s": 0.006
+          },
+          {
+            "ref": "t9",
+            "tool": "git_blame",
+            "arguments": {
+              "path": "src/attr/_make.py",
+              "start": 787,
+              "end": 812
+            },
+            "ok": true,
+            "output_excerpt": "3040bdab (Hynek Schlawack 2017-10-26 787)         # The following is a fix for\n3040bdab (Hynek Schlawack 2017-10-26 788)         # https://github.com/python-attrs/attrs/issues/102.  On Python 3,\n3040bdab (Hynek Schlawack 2017-10-26 789)         # if a method mentions `__class__` or uses the no-arg super(), the\n3040bdab (Hynek Schlawack 2017-10-26 790)         # compiler will bake a reference to the class in the method itself\n3040bdab (Hynek Schlawack 2017-10-26 791)         # as `method.__closure__`.  Since we replace the class with a\n3040bdab (Hynek Schlawack 2017-10-26 792)         # clone, we rewrite these references so it keeps working.\n3040bdab (Hynek Schlawack 2017-10-26 793)         for item in cls.__dict__.values():\n3040bdab (Hynek Schlawack 2017-10-26 794)             if isinstance(item, (classmethod, staticmethod)):\n3040bdab (Hynek Schlawack 2017-10-26 795)                 # Class- and staticmethods hide their functions inside.\n3040bdab (Hynek Schlawack 2017-10-26 796)                 # These might need to be rewritten as well.\n3040bdab (Hynek Schlawack 2017-10-26 797)                 closure_cells = getattr(item.__func__, \"__closure__\", None)\n3040bdab (Hynek Schlawack 2017-10-26 798)             else:\n3040bdab (Hynek Schlawack 2017-10-26 799)                 closure_cells = getattr(item, \"__closure__\", None)\n3040bdab (Hynek Schlawack 2017-10-26 800) \n3040bdab (Hynek Schlawack 2017-10-26 801)             if not closure_cells:  # Catch None or the empty list.\n3040bda",
+            "duration_s": 0.057
+          },
+          {
+            "ref": "t10",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "Workaround for property",
+              "max_results": 5
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'Workaround for property'",
+            "duration_s": 0.086
+          }
+        ],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-af9c5109",
+      "score": {
+        "item_id": "attrs-revert-af9c5109",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "f8bea4b416c5",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.149539,
+        "latency_s": 78.449,
+        "tool_calls": 14,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "agent",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "f8bea4b416c5",
+            "category": "silent_behavior_change",
+            "severity": "blocker",
+            "confidence": 0.97,
+            "file": "src/attr/validators.py",
+            "line_start": 87,
+            "line_end": 87,
+            "summary": "Nested `disabled()` context managers are broken: inner exit re-enables validators while outer is still active",
+            "evidence": "The old code saved `prev = get_run_validators()` and restored it in `finally: set_run_validators(prev)`, making nesting safe. The new code unconditionally does `set_run_validators(True)` on exit. When nesting `with disabled(): with disabled(): pass`, the inner context manager's `finally` sets validators back to True even though the outer `disabled()` is still active. Similarly, if a user calls `set_disabled(True)` before entering `disabled()`, exiting the context manager will silently re-enable validators. The removed `versionchanged:: 26.1.0 The contextmanager is nestable` doc note confirms nestability was a deliberate feature.",
+            "suggested_fix": "Restore the save/restore pattern:\n```python\nprev = get_run_validators()\nset_run_validators(False)\ntry:\n    yield\nfinally:\n    set_run_validators(prev)\n```",
+            "source": "agent",
+            "rule": null,
+            "evidence_refs": [
+              "diff",
+              "t1",
+              "t5",
+              "t12"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.165,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.007,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +1/-3 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 30.349,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:7: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": "anthropic/claude-opus-4.6",
+          "llm_calls": 10,
+          "tool_calls": 14,
+          "input_tokens": 62865,
+          "output_tokens": 2232,
+          "cached_input_tokens": 51268,
+          "cost_usd": 0.149539
+        },
+        "latency_s": 78.449,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [
+          {
+            "ref": "t1",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/attr/validators.py",
+              "start": 70,
+              "end": 95
+            },
+            "ok": true,
+            "output_excerpt": "src/attr/validators.py lines 70-95 of 748:\n70| \n71| \n72| @contextmanager\n73| def disabled():\n74|     \"\"\"\n75|     Context manager that disables running validators within its context.\n76| \n77|     .. warning::\n78| \n79|         This context manager is not thread-safe!\n80| \n81|     .. versionadded:: 21.3.0\n82|     \"\"\"\n83|     set_run_validators(False)\n84|     try:\n85|         yield\n86|     finally:\n87|         set_run_validators(True)\n88| \n89| \n90| @attrs(repr=False, slots=True, unsafe_hash=True)\n91| class _InstanceOfValidator:\n92|     type = attrib()\n93| \n94|     def __call__(self, inst, attr, value):\n95|         \"\"\"",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t2",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "disabled",
+              "path_glob": "tests/**/*.py"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'disabled' in tests/**/*.py",
+            "duration_s": 0.117
+          },
+          {
+            "ref": "t3",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "get_run_validators"
+            },
+            "ok": true,
+            "output_excerpt": "11 match(es) in 6 file(s):\ndocs/api-attr.rst:243: .. autofunction:: get_run_validators\nsrc/attr/__init__.py:12: from ._config import get_run_validators, set_run_validators\nsrc/attr/__init__.py:67: \"get_run_validators\",\nsrc/attr/__init__.pyi:383: def get_run_validators() -> bool: ...\nsrc/attr/_config.py:3: __all__ = [\"get_run_validators\", \"set_run_validators\"]\nsrc/attr/_config.py:23: def get_run_validators():\nsrc/attr/validators.py:13: from ._config import get_run_validators, set_run_validators\nsrc/attr/validators.py:69: return not get_run_validators()\ntests/test_config.py:28: def test_get_run_validators(self):\ntests/test_config.py:33: assert _config._run_validators is _config.get_run_validators()\ntests/test_config.py:35: assert _config._run_validators is _config.get_run_validators()",
+            "duration_s": 0.1
+          },
+          {
+            "ref": "t4",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "disabled",
+              "path_glob": "tests/**",
+              "regex": true
+            },
+            "ok": true,
+            "output_excerpt": "11 match(es) in 2 file(s):\ntests/test_make.py:72: attr.validators.set_disabled(request.param)\ntests/test_make.py:77: attr.validators.set_disabled(False)\ntests/test_validators.py:56: def test_set_validators_disabled(self, value, expected):\ntests/test_validators.py:60: validator_module.set_disabled(value)\ntests/test_validators.py:67: def test_disabled(self, value, expected):\ntests/test_validators.py:73: assert validator_module.get_disabled() is expected\ntests/test_validators.py:75: def test_disabled_ctx(self):\ntests/test_validators.py:77: The `disabled` context manager disables running validators,\ntests/test_validators.py:82: with validator_module.disabled():\ntests/test_validators.py:87: def test_disabled_ctx_with_errors(self):\ntests/test_validators.py:93: with pytest.raises(ValueError), validator_module.disabled():",
+            "duration_s": 0.096
+          },
+          {
+            "ref": "t5",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/attr/validators.py",
+              "start": 60,
+              "end": 70
+            },
+            "ok": true,
+            "output_excerpt": "src/attr/validators.py lines 60-70 of 748:\n60| def get_disabled():\n61|     \"\"\"\n62|     Return a bool indicating whether validators are currently disabled or not.\n63| \n64|     Returns:\n65|         bool:`True` if validators are currently disabled.\n66| \n67|     .. versionadded:: 21.3.0\n68|     \"\"\"\n69|     return not get_run_validators()\n70| ",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t6",
+            "tool": "git_log",
+            "arguments": {
+              "path": "src/attr/validators.py",
+              "limit": 5
+            },
+            "ok": true,
+            "output_excerpt": "1c6e416 2026-10-14 watchman-eval\n    Simplify the implementation of `disabled`.\n05e3419 2026-10-14 watchman-eval\n    Snapshot\n5bab46d 2025-07-29 Hynek Schlawack\n    Allow deep_iterable and deep_mapping take lists/tuples (#1449)\ncbaef3f 2025-07-28 Hynek Schlawack\n    Make validators optional in deep_mapping (#1448)\n3d42a69 2025-04-08 jfs\n    doc: fix typo in attrs.validators.gt's docstring: ge -> gt (#1423)\n",
+            "duration_s": 0.004
+          },
+          {
+            "ref": "t7",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/test_validators.py",
+              "start": 55,
+              "end": 100
+            },
+            "ok": true,
+            "output_excerpt": "tests/test_validators.py lines 55-100 of 1379:\n 55|     )\n 56|     def test_set_validators_disabled(self, value, expected):\n 57|         \"\"\"\n 58|         Sets `_run_validators`.\n 59|         \"\"\"\n 60|         validator_module.set_disabled(value)\n 61| \n 62|         assert _config._run_validators is expected\n 63| \n 64|     @pytest.mark.parametrize(\n 65|         (\"value\", \"expected\"), [(True, False), (False, True)]\n 66|     )\n 67|     def test_disabled(self, value, expected):\n 68|         \"\"\"\n 69|         Returns `_run_validators`.\n 70|         \"\"\"\n 71|         _config._run_validators = value\n 72| \n 73|         assert validator_module.get_disabled() is expected\n 74| \n 75|     def test_disabled_ctx(self):\n 76|         \"\"\"\n 77|         The `disabled` context manager disables running validators,\n 78|         but only within its context.\n 79|         \"\"\"\n 80|         assert _config._run_validators is True\n 81| \n 82|         with validator_module.disabled():\n 83|             assert _config._run_validators is False\n 84| \n 85|         assert _config._run_validators is True\n 86| \n 87|     def test_disabled_ctx_with_errors(self):\n 88|         \"\"\"\n 89|         Running validators is re-enabled even if an error is raised.\n 90|         \"\"\"\n 91|         assert _config._run_validators is True\n 92| \n 93|         with pytest.raises(ValueError), validator_module.disabled():\n 94|             assert _config._run_validators is False\n 95| \n 96|             raise ValueError(\"haha!\")\n 97| \n 98|         ",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t8",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "nestable"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'nestable'",
+            "duration_s": 0.093
+          },
+          {
+            "ref": "t9",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "disabled.*disabled",
+              "regex": true
+            },
+            "ok": true,
+            "output_excerpt": "4 match(es) in 4 file(s):\nCHANGELOG.md:428: - Added new context manager `attrs.validators.disabled()` and functions `attrs.validators.(set|get)_disabled()`.\ndocs/api-attr.rst:239: Before *attrs* got `attrs.validators.set_disabled` and  `attrs.validators.set_disabled`, it had the following APIs to globally enable and disable validators.\nsrc/attr/_next_gen.py:494: `attrs.validators.get_disabled` / `attrs.validators.set_disabled`.\nsrc/attr/validators.py:42: def set_disabled(disabled):",
+            "duration_s": 0.092
+          },
+          {
+            "ref": "t10",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "26.1.0",
+              "path_glob": "CHANGELOG.md"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for '26.1.0' in CHANGELOG.md",
+            "duration_s": 0.085
+          },
+          {
+            "ref": "t11",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "nest",
+              "path_glob": "tests/**"
+            },
+            "ok": true,
+            "output_excerpt": "11 match(es) in 2 file(s):\ntests/strategies.py:52: def _create_hyp_nested_strategy(draw, simple_class_strategy):\ntests/strategies.py:214: nested_classes = st.recursive(\ntests/strategies.py:215: simple_classes(), _create_hyp_nested_strategy, max_leaves=3\ntests/test_funcs.py:24: from .strategies import nested_classes, simple_classes\ntests/test_funcs.py:85: def test_nested_lists(self, C):\ntests/test_funcs.py:87: Test unstructuring deeply nested lists.\ntests/test_funcs.py:94: def test_nested_dicts(self, C):\ntests/test_funcs.py:96: Test unstructuring deeply nested dictionaries.\ntests/test_funcs.py:103: @given(nested_classes, st.sampled_from(MAPPING_TYPES))\ntests/test_funcs.py:322: @given(nested_classes, st.sampled_from(SEQUENCE_TYPES))\ntests/test_funcs.py:340: @given(nested_classes, st.sampled_from(SEQUENCE_TYPES))",
+            "duration_s": 0.105
+          },
+          {
+            "ref": "t12",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/attr/validators.py",
+              "start": 42,
+              "end": 58
+            },
+            "ok": true,
+            "output_excerpt": "src/attr/validators.py lines 42-58 of 748:\n42| def set_disabled(disabled):\n43|     \"\"\"\n44|     Globally disable or enable running validators.\n45| \n46|     By default, they are run.\n47| \n48|     Args:\n49|         disabled (bool): If `True`, disable running all validators.\n50| \n51|     .. warning::\n52| \n53|         This function is not thread-safe!\n54| \n55|     .. versionadded:: 21.3.0\n56|     \"\"\"\n57|     set_run_validators(not disabled)\n58| ",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t13",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/attr/validators.py",
+              "start": 1,
+              "end": 20
+            },
+            "ok": true,
+            "output_excerpt": "src/attr/validators.py lines 1-20 of 748:\n 1| # SPDX-License-Identifier: MIT\n 2| \n 3| \"\"\"\n 4| Commonly useful validators.\n 5| \"\"\"\n 6| \n 7| import operator\n 8| import re\n 9| \n10| from contextlib import contextmanager\n11| from re import Pattern\n12| \n13| from ._config import get_run_validators, set_run_validators\n14| from ._make import _AndValidator, and_, attrib, attrs\n15| from .converters import default_if_none\n16| from .exceptions import NotCallableError\n17| \n18| \n19| __all__ = [\n20|     \"and_\",",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t14",
+            "tool": "run_tests",
+            "arguments": {
+              "selectors": [
+                "tests/test_validators.py::TestDisabledValidator"
+              ]
+            },
+            "ok": true,
+            "output_excerpt": "exit code 4 (failed)\nImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:7: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 1.033
+          }
+        ],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-04351129",
+      "score": {
+        "item_id": "click-revert-04351129",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1709ae0380f9",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.17979575,
+        "latency_s": 110.48,
+        "tool_calls": 12,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "agent",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "1709ae0380f9",
+            "category": "silent_behavior_change",
+            "severity": "blocker",
+            "confidence": 0.95,
+            "file": "src/click/core.py",
+            "line_start": 699,
+            "line_end": 702,
+            "summary": "Removing `ctx.params.update(kwargs)` breaks multi-level forwarding: when Command A invokes Command B with explicit kwargs, and B then calls `ctx.forward(C)`, the forwarded params are lost because B's sub-context `params` dict is never populated with the invoke kwargs.",
+            "evidence": "The removed line `ctx.params.update(kwargs)` (visible in diff) was responsible for storing explicit kwargs into the sub-context's `params` dict. The `forward()` method at line 719-721 copies from `self.params` into kwargs before calling `invoke`. Without the update, a sub-context created by `_make_sub_context` (line 664) starts with `self.params = {}` (line 280), so `forward()` from that context will have nothing to propagate. The removed versionchanged notes explicitly documented this as the purpose: 'All kwargs are tracked in params so they will be passed if forward is called at multiple levels.'",
+            "suggested_fix": "Restore the `ctx.params.update(kwargs)` line after the defaults loop in `invoke()`. The docstring removals are cosmetic and acceptable, but the functional code removal breaks the multi-level forwarding contract.",
+            "source": "agent",
+            "rule": null,
+            "evidence_refs": [
+              "diff",
+              "t1",
+              "t7",
+              "t8",
+              "t10"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.164,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.007,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +0/-12 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.119,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/click/core.py\", \"line\": 706, \"column\": 23, \"end_line\": 706, \"end_column\": 48, \"message\": \"\\\"Context\\\" not callable\", \"hint\": null, \"code\": \"operator\", \"severity\": \"error\"}\n{\"file\": \"src/click/core.py\", \"line\": 879, \"column\": 8, \"end_line\": 879, \"end_column\": 15, \"message\": \"Need type annotation for \\\"results\\\" (hint: \\\"results: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/click/core.py\", \"line\": 1309, \"column\": 8, \"end_line\": 1309, \"end_column\": 15, \"message\": \"Need type annotation for \\\"results\\\" (hint: \\\"results: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/click/core.py\", \"line\": 1861, \"column\": 52, \"end_line\": 1861, \"end_column\": 69, \"message\": \"\\\"Parameter\\\" has no attribute \\\"_parse_decls\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/click/core.py\", \"line\": 2405, \"column\": 8, \"end_line\": 2405, \"end_column\": 27, \"message\": \"Need type annotation for \\\"any_prefix_is_slash\\\" (hint: \\\"any_prefix_is_slash: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest failed without test failures: AttributeError: __spec__",
+            "duration_s": 49.54,
+            "findings": [],
+            "output_excerpt": "Traceback (most recent call last):\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 145, in __makeattr\n    modpath, attrname = self.__map__[name]\n                        ~~~~~~~~~~~~^^^^^^\nKeyError: '__spec__'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 189, in _run_module_as_main\n  File \"<frozen runpy>\", line 148, in _get_module_details\n  File \"<frozen runpy>\", line 112, in _get_module_details\n  File \"/work/.wm-venv/lib/python3.12/site-packages/pytest/__init__.py\", line 5, in <module>\n    from _pytest.assertion import register_assert_rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/__init__.py\", line 9, in <module>\n    from _pytest.assertion import rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py\", line 34, in <module>\n    from _pytest.assertion import util\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/util.py\", line 13, in <module>\n    import _pytest._code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/__init__.py\", line 2, in <module>\n    from .code import Code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 54, in <module>\n    class Code:\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 81, in Code\n    def path(self) -> Union[py.path.local, str]:\n                            ^^^^^^^^^^^^^\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 152, in __makeattr\n    result = importobj(modpath, attrname)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 72, in importobj\n    module = __import__(modpath, None, None, ['__doc__'])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1320, in _find_and_load_unlocked\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 150, in __makeattr\n    raise AttributeError(name)\nAttributeError: __spec__"
+          }
+        ],
+        "usage": {
+          "model": "anthropic/claude-opus-4.6",
+          "llm_calls": 11,
+          "tool_calls": 12,
+          "input_tokens": 76952,
+          "output_tokens": 2772,
+          "cached_input_tokens": 63614,
+          "cost_usd": 0.17979575
+        },
+        "latency_s": 110.48,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest failed without test failures: AttributeError: __spec__"
+        ],
+        "tool_trace": [
+          {
+            "ref": "t1",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/click/core.py",
+              "start": 670,
+              "end": 730
+            },
+            "ok": true,
+            "output_excerpt": "src/click/core.py lines 670-730 of 2630:\n670|         1.  the first argument can be a callback and all other arguments and\n671|             keyword arguments are forwarded directly to the function.\n672|         2.  the first argument is a click command object.  In that case all\n673|             arguments are forwarded as well but proper click parameters\n674|             (options and click arguments) must be keyword arguments and Click\n675|             will fill in defaults.\n676| \n677|         Note that before Click 3.2 keyword arguments were not properly filled\n678|         in against the intention of this code and no context was created.  For\n679|         more information about this change and why it was done in a bugfix\n680|         release see :ref:`upgrade-to-3.2`.\n681|         \"\"\"\n682|         self, callback = args[:2]\n683|         ctx = self\n684| \n685|         # It's also possible to invoke another command which might or\n686|         # might not have a callback.  In that case we also fill\n687|         # in defaults and make a new context for this command.\n688|         if isinstance(callback, Command):\n689|             other_cmd = callback\n690|             callback = other_cmd.callback\n691| \n692|             if callback is None:\n693|                 raise TypeError(\n694|                     \"The given command does not have a callback that can be invoked.\"\n695|                 )\n696| \n697|             ctx = self._make_sub_context(other_cmd)\n698| \n699|             for para",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t2",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "ctx.params",
+              "path_glob": "src/click/*.py"
+            },
+            "ok": true,
+            "output_excerpt": "4 match(es) in 2 file(s):\nsrc/click/core.py:1296: return ctx.invoke(self.callback, **ctx.params)\nsrc/click/core.py:1504: value = ctx.invoke(self.result_callback, value, **ctx.params)\nsrc/click/core.py:2118: ctx.params[self.name] = value\nsrc/click/shell_completion.py:414: value = ctx.params[param.name]",
+            "duration_s": 0.331
+          },
+          {
+            "ref": "t3",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "forward",
+              "path_glob": "tests/*.py"
+            },
+            "ok": true,
+            "output_excerpt": "2 match(es) in 1 file(s):\ntests/test_commands.py:22: def test_other_command_forward(runner):\ntests/test_commands.py:34: ctx.forward(test)",
+            "duration_s": 0.341
+          },
+          {
+            "ref": "t4",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "ctx.params.update"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'ctx.params.update'",
+            "duration_s": 0.364
+          },
+          {
+            "ref": "t5",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/test_commands.py",
+              "start": 22,
+              "end": 60
+            },
+            "ok": true,
+            "output_excerpt": "tests/test_commands.py lines 22-60 of 316:\n22| def test_other_command_forward(runner):\n23|     cli = click.Group()\n24| \n25|     @cli.command()\n26|     @click.option(\"--count\", default=1)\n27|     def test(count):\n28|         click.echo(f\"Count: {count:d}\")\n29| \n30|     @cli.command()\n31|     @click.option(\"--count\", default=1)\n32|     @click.pass_context\n33|     def dist(ctx, count):\n34|         ctx.forward(test)\n35|         ctx.invoke(test, count=42)\n36| \n37|     result = runner.invoke(cli, [\"dist\"])\n38|     assert not result.exception\n39|     assert result.output == \"Count: 1\\nCount: 42\\n\"\n40| \n41| \n42| def test_auto_shorthelp(runner):\n43|     @click.group()\n44|     def cli():\n45|         pass\n46| \n47|     @cli.command()\n48|     def short():\n49|         \"\"\"This is a short text.\"\"\"\n50| \n51|     @cli.command()\n52|     def special_chars():\n53|         \"\"\"Login and store the token in ~/.netrc.\"\"\"\n54| \n55|     @cli.command()\n56|     def long():\n57|         \"\"\"This is a long text that is too long to show as short help\n58|         and will be truncated instead.\"\"\"\n59| \n60|     result = runner.invoke(cli, [\"--help\"])",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t6",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "_make_sub_context",
+              "path_glob": "src/click/core.py"
+            },
+            "ok": true,
+            "output_excerpt": "3 match(es) in 1 file(s):\nsrc/click/core.py:658: def _make_sub_context(self, command):\nsrc/click/core.py:697: ctx = self._make_sub_context(other_cmd)\nsrc/click/core.py:1401: sub_ctx = ctx._make_sub_context(command)",
+            "duration_s": 0.382
+          },
+          {
+            "ref": "t7",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/click/core.py",
+              "start": 658,
+              "end": 670
+            },
+            "ok": true,
+            "output_excerpt": "src/click/core.py lines 658-670 of 2630:\n658|     def _make_sub_context(self, command):\n659|         \"\"\"Create a new context of the same type as this context, but\n660|         for a new command.\n661| \n662|         :meta private:\n663|         \"\"\"\n664|         return type(self)(command, info_name=command.name, parent=self)\n665| \n666|     def invoke(*args, **kwargs):  # noqa: B902\n667|         \"\"\"Invokes a command callback in exactly the way it expects.  There\n668|         are two ways to invoke this method:\n669| \n670|         1.  the first argument can be a callback and all other arguments and",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t8",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "self.params",
+              "path_glob": "src/click/core.py",
+              "max_results": 20
+            },
+            "ok": true,
+            "output_excerpt": "7 match(es) in 1 file(s):\nsrc/click/core.py:280: self.params = {}\nsrc/click/core.py:719: for param in self.params:\nsrc/click/core.py:721: kwargs[param] = self.params[param]\nsrc/click/core.py:1088: self.params = params or []\nsrc/click/core.py:1127: rv = self.params\nsrc/click/core.py:1153: for param in self.params:\nsrc/click/core.py:1388: for param in self.params:",
+            "duration_s": 0.355
+          },
+          {
+            "ref": "t9",
+            "tool": "run_tests",
+            "arguments": {
+              "selectors": [
+                "tests/test_commands.py::test_other_command_forward"
+              ]
+            },
+            "ok": true,
+            "output_excerpt": "exit code 1 (failed)\nTraceback (most recent call last):\n  File \"/work/.wm-venv/lib/python3.12/site-packages/py/_vendored_packages/apipkg/__init__.py\", line 145, in __makeattr\n    modpath, attrname = self.__map__[name]\n                        ~~~~~~~~~~~~^^^^^^\nKeyError: '__spec__'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 189, in _run_module_as_main\n  File \"<frozen runpy>\", line 148, in _get_module_details\n  File \"<frozen runpy>\", line 112, in _get_module_details\n  File \"/work/.wm-venv/lib/python3.12/site-packages/pytest/__init__.py\", line 5, in <module>\n    from _pytest.assertion import register_assert_rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/__init__.py\", line 9, in <module>\n    from _pytest.assertion import rewrite\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py\", line 34, in <module>\n    from _pytest.assertion import util\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/assertion/util.py\", line 13, in <module>\n    import _pytest._code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/__init__.py\", line 2, in <module>\n    from .code import Code\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 54, in <module>\n    class Code:\n  File \"/work/.wm-venv/lib/python3.12/site-packages/_pytest/_code/code.py\", line 81, in Code\n    def path(self) -> Union[py.path.loca",
+            "duration_s": 0.773
+          },
+          {
+            "ref": "t10",
+            "tool": "read_file",
+            "arguments": {
+              "path": "src/click/core.py",
+              "start": 708,
+              "end": 724
+            },
+            "ok": true,
+            "output_excerpt": "src/click/core.py lines 708-724 of 2630:\n708|     def forward(*args, **kwargs):  # noqa: B902\n709|         \"\"\"Similar to :meth:`invoke` but fills in default keyword\n710|         arguments from the current context if the other command expects\n711|         it.  This cannot invoke callbacks directly, only other commands.\n712|         \"\"\"\n713|         self, cmd = args[:2]\n714| \n715|         # Can only forward to other commands, not direct callbacks.\n716|         if not isinstance(cmd, Command):\n717|             raise TypeError(\"Callback is not a command.\")\n718| \n719|         for param in self.params:\n720|             if param not in kwargs:\n721|                 kwargs[param] = self.params[param]\n722| \n723|         return self.invoke(cmd, **kwargs)\n724| ",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t11",
+            "tool": "git_log",
+            "arguments": {
+              "limit": 5
+            },
+            "ok": true,
+            "output_excerpt": "c181dc1 2026-10-14 watchman-eval\n    Simplify the implementation of `Context`.\n0624d85 2026-10-14 watchman-eval\n    Snapshot\n6c76244 2021-04-12 David Lord\n    Merge pull request #1847 from pallets/pre-commit-ci-update-config\n673e1a4 2021-04-12 pre-commit-ci[bot]\n    [pre-commit.ci] pre-commit autoupdate\n269a4ae 2021-04-12 David Lord\n    Merge pull request #1846 from pallets/fsdecode\n",
+            "duration_s": 0.002
+          },
+          {
+            "ref": "t12",
+            "tool": "git_blame",
+            "arguments": {
+              "path": "src/click/core.py",
+              "start": 697,
+              "end": 706
+            },
+            "ok": true,
+            "output_excerpt": "4f384465 src/click/core.py (David Lord             2020-08-16 697)             ctx = self._make_sub_context(other_cmd)\nca4e4d96 src/click/core.py (Javier Domingo Cansino 2020-08-08 698) \nbb42d2ed click/core.py     (Armin Ronacher         2014-08-14 699)             for param in other_cmd.params:\nbb42d2ed click/core.py     (Armin Ronacher         2014-08-14 700)                 if param.name not in kwargs and param.expose_value:\nbb42d2ed click/core.py     (Armin Ronacher         2014-08-14 701)                     kwargs[param.name] = param.get_default(ctx)\nbb42d2ed click/core.py     (Armin Ronacher         2014-08-14 702) \n23d3f681 click.py          (Armin Ronacher         2014-04-25 703)         args = args[2:]\n1407ecbb click/core.py     (Armin Ronacher         2014-05-25 704)         with augment_usage_errors(self):\n0d9731e9 click/core.py     (Armin Ronacher         2015-03-31 705)             with ctx:\n0d9731e9 click/core.py     (Armin Ronacher         2015-03-31 706)                 return callback(*args, **kwargs)\n",
+            "duration_s": 0.058
+          }
+        ],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-15d09a3b",
+      "score": {
+        "item_id": "httpx-revert-15d09a3b",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "c3526024a9b2",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.3009535,
+        "latency_s": 198.177,
+        "tool_calls": 17,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "agent",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c3526024a9b2",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "httpx/_utils.py",
+            "line_start": 262,
+            "line_end": 262,
+            "summary": "IPv6 NO_PROXY entries are broken: `all://*::1` is not a valid URL pattern",
+            "evidence": "The old code detected IPv6 addresses and wrapped them in brackets: `all://[::1]`. The new code produces `all://*::1` for a `NO_PROXY=::1` entry. The colons in `::1` will be misinterpreted by the URL parser (used in URLPattern.__init__ at _utils.py:397 via `url = URL(pattern)`), since colons are special characters in URL authority sections (used for port separation). This silently breaks IPv6 NO_PROXY support. No tests cover this case (search for 'ipv6' in tests only finds tests/models/test_url.py, not proxy tests).",
+            "suggested_fix": "Restore the IPv6 detection branch that wraps IPv6 addresses in brackets: `mounts[f\"all://[{hostname}]\"] = None` for IPv6 hostnames.",
+            "source": "agent",
+            "rule": null,
+            "evidence_refs": [
+              "diff",
+              "t4",
+              "t10",
+              "t14",
+              "t17"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.093,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.004,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +1/-27 lines, 1 source / 0 test file(s), areas: httpx(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.851,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 813 passed, 1 skipped in 4.28s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 106.632,
+            "findings": [],
+            "output_excerpt": "ger object at 0x78f07d6de000>\ntyp = <class 'socket.gaierror'>\nvalue = gaierror(-3, 'Temporary failure in name resolution')\ntraceback = <traceback object at 0x78f07c4ae800>\n\n    def __exit__(self, typ, value, traceback):\n        if typ is None:\n            try:\n                next(self.gen)\n            except StopIteration:\n                return False\n            else:\n                try:\n                    raise RuntimeError(\"generator didn't stop\")\n                finally:\n                    self.gen.close()\n        else:\n            if value is None:\n                # Need to force instantiation so we can reliably\n                # tell if we get the same exception back\n                value = typ()\n            try:\n>               self.gen.throw(value)\n\n/usr/local/lib/python3.12/contextlib.py:158: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            client = httpx.Client(proxies={\"https://\": PROXY_URL})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:149: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1041: in get\n    return self.request(\nhttpx/_client.py:814: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:901: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:929: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:966: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:1002: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:217: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE-786\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:77: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 813 passed, 1 skipped in 4.28s"
+          }
+        ],
+        "usage": {
+          "model": "anthropic/claude-opus-4.6",
+          "llm_calls": 14,
+          "tool_calls": 17,
+          "input_tokens": 157008,
+          "output_tokens": 4213,
+          "cached_input_tokens": 135792,
+          "cost_usd": 0.3009535
+        },
+        "latency_s": 198.177,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [
+          {
+            "ref": "t1",
+            "tool": "read_file",
+            "arguments": {
+              "path": "httpx/_utils.py",
+              "start": 240,
+              "end": 275
+            },
+            "ok": true,
+            "output_excerpt": "httpx/_utils.py lines 240-275 of 451:\n240|         if proxy_info.get(scheme):\n241|             hostname = proxy_info[scheme]\n242|             mounts[f\"{scheme}://\"] = (\n243|                 hostname if \"://\" in hostname else f\"http://{hostname}\"\n244|             )\n245| \n246|     no_proxy_hosts = [host.strip() for host in proxy_info.get(\"no\", \"\").split(\",\")]\n247|     for hostname in no_proxy_hosts:\n248|         # See https://curl.haxx.se/libcurl/c/CURLOPT_NOPROXY.html for details\n249|         # on how names in `NO_PROXY` are handled.\n250|         if hostname == \"*\":\n251|             # If NO_PROXY=* is used or if \"*\" occurs as any one of the comma\n252|             # separated hostnames, then we should just bypass any information\n253|             # from HTTP_PROXY, HTTPS_PROXY, ALL_PROXY, and always ignore\n254|             # proxies.\n255|             return {}\n256|         elif hostname:\n257|             # NO_PROXY=.google.com is marked as \"all://*.google.com,\n258|             #   which disables \"www.google.com\" but not \"google.com\"\n259|             # NO_PROXY=google.com is marked as \"all://*google.com,\n260|             #   which disables \"www.google.com\" and \"google.com\".\n261|             #   (But not \"wwwgoogle.com\")\n262|             mounts[f\"all://*{hostname}\"] = None\n263| \n264|     return mounts\n265| \n266| \n267| def to_bytes(value: typing.Union[str, bytes], encoding: str = \"utf-8\") -> bytes:\n268|     return value.encode(encoding) if isinstance(value, str) else value\n269| \n27",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t2",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "URLPattern",
+              "path_glob": "httpx/**/*.py"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'URLPattern' in httpx/**/*.py",
+            "duration_s": 0.763
+          },
+          {
+            "ref": "t3",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "URLPattern"
+            },
+            "ok": true,
+            "output_excerpt": "28 match(es) in 4 file(s):\nhttpx/_client.py:52: URLPattern,\nhttpx/_client.py:682: self._mounts: typing.Dict[URLPattern, typing.Optional[BaseTransport]] = {\nhttpx/_client.py:683: URLPattern(key): None\nhttpx/_client.py:698: {URLPattern(key): transport for key, transport in mounts.items()}\nhttpx/_client.py:1408: self._mounts: typing.Dict[URLPattern, typing.Optional[AsyncBaseTransport]] = {\nhttpx/_client.py:1409: URLPattern(key): None\nhttpx/_client.py:1424: {URLPattern(key): transport for key, transport in mounts.items()}\nhttpx/_utils.py:345: class URLPattern:\nhttpx/_utils.py:350: >>> pattern = URLPattern(\"all\")\nhttpx/_utils.py:355: >>> pattern = URLPattern(\"https\")\nhttpx/_utils.py:362: >>> pattern = URLPattern(\"https://example.com\")\nhttpx/_utils.py:371: >>> pattern = URLPattern(\"all://example.com\")\nhttpx/_utils.py:380: >>> pattern = URLPattern(\"https://example.com:1234\")\nhttpx/_utils.py:433: The priority allows URLPattern instances to be sortable, so that\nhttpx/_utils.py:447: def __lt__(self, other: \"URLPattern\") -> bool:\nhttpx/_utils.py:451: return isinstance(other, URLPattern) and self.pattern == other.pattern\ntests/client/test_proxies.py:5: from httpx._utils import URLPattern\ntests/client/test_proxies.py:40: pattern = URLPattern(proxy_key)\ntests/test_utils.py:10: URLPattern,\ntests/test_utils.py:259: pattern = URLPattern(pattern)\ntests/test_utils.py:265: URLPattern(\"all://\"),\ntests/test_utils.py:266: URLPattern(\"http://\"),\ntests/test_utils.py:267: URLPattern(\"http://example.co",
+            "duration_s": 0.762
+          },
+          {
+            "ref": "t4",
+            "tool": "read_file",
+            "arguments": {
+              "path": "httpx/_utils.py",
+              "start": 400,
+              "end": 451
+            },
+            "ok": true,
+            "output_excerpt": "httpx/_utils.py lines 400-451 of 451:\n400|         self.host = \"\" if url.host == \"*\" else url.host\n401|         self.port = url.port\n402|         if not url.host or url.host == \"*\":\n403|             self.host_regex: typing.Optional[typing.Pattern[str]] = None\n404|         elif url.host.startswith(\"*.\"):\n405|             # *.example.com should match \"www.example.com\", but not \"example.com\"\n406|             domain = re.escape(url.host[2:])\n407|             self.host_regex = re.compile(f\"^.+\\\\.{domain}$\")\n408|         elif url.host.startswith(\"*\"):\n409|             # *example.com should match \"www.example.com\" and \"example.com\"\n410|             domain = re.escape(url.host[1:])\n411|             self.host_regex = re.compile(f\"^(.+\\\\.)?{domain}$\")\n412|         else:\n413|             # example.com should match \"example.com\" but not \"www.example.com\"\n414|             domain = re.escape(url.host)\n415|             self.host_regex = re.compile(f\"^{domain}$\")\n416| \n417|     def matches(self, other: \"URL\") -> bool:\n418|         if self.scheme and self.scheme != other.scheme:\n419|             return False\n420|         if (\n421|             self.host\n422|             and self.host_regex is not None\n423|             and not self.host_regex.match(other.host)\n424|         ):\n425|             return False\n426|         if self.port is not None and self.port != other.port:\n427|             return False\n428|         return True\n429| \n430|     @property\n431|     def priority(self) -> typing.Tuple[i",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t5",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "get_environment_proxies"
+            },
+            "ok": true,
+            "output_excerpt": "6 match(es) in 3 file(s):\nhttpx/_client.py:53: get_environment_proxies,\nhttpx/_client.py:218: for key, url in get_environment_proxies().items()\nhttpx/_utils.py:229: def get_environment_proxies() -> typing.Dict[str, typing.Optional[str]]:\ntests/test_utils.py:12: get_environment_proxies,\ntests/test_utils.py:190: def test_get_environment_proxies(environment, proxies):\ntests/test_utils.py:193: assert get_environment_proxies() == proxies",
+            "duration_s": 0.805
+          },
+          {
+            "ref": "t6",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/test_utils.py",
+              "start": 1,
+              "end": 50
+            },
+            "ok": true,
+            "output_excerpt": "tests/test_utils.py lines 1-50 of 276:\n 1| import logging\n 2| import os\n 3| import random\n 4| \n 5| import certifi\n 6| import pytest\n 7| \n 8| import httpx\n 9| from httpx._utils import (\n10|     URLPattern,\n11|     get_ca_bundle_from_env,\n12|     get_environment_proxies,\n13|     guess_json_utf,\n14|     is_https_redirect,\n15|     obfuscate_sensitive_headers,\n16|     parse_header_links,\n17|     same_origin,\n18| )\n19| \n20| from .common import TESTS_DIR\n21| \n22| \n23| @pytest.mark.parametrize(\n24|     \"encoding\",\n25|     (\n26|         \"utf-32\",\n27|         \"utf-8-sig\",\n28|         \"utf-16\",\n29|         \"utf-8\",\n30|         \"utf-16-be\",\n31|         \"utf-16-le\",\n32|         \"utf-32-be\",\n33|         \"utf-32-le\",\n34|     ),\n35| )\n36| def test_encoded(encoding):\n37|     data = \"{}\".encode(encoding)\n38|     assert guess_json_utf(data) == encoding\n39| \n40| \n41| def test_bad_utf_like_encoding():\n42|     assert guess_json_utf(b\"\\x00\\x00\\x00\\x00\") is None\n43| \n44| \n45| @pytest.mark.parametrize(\n46|     (\"encoding\", \"expected\"),\n47|     (\n48|         (\"utf-16-be\", \"utf-16\"),\n49|         (\"utf-16-le\", \"utf-16\"),\n50|         (\"utf-32-be\", \"utf-32\"),",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t7",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/test_utils.py",
+              "start": 100,
+              "end": 200
+            },
+            "ok": true,
+            "output_excerpt": "tests/test_utils.py lines 100-200 of 276:\n100|         response = client.get(server.url.copy_with(path=\"/redirect_301\"))\n101|         assert response.status_code == 200\n102| \n103|     assert caplog.record_tuples == [\n104|         (\n105|             \"httpx\",\n106|             logging.INFO,\n107|             'HTTP Request: GET http://127.0.0.1:8000/redirect_301 \"HTTP/1.1 301 Moved Permanently\"',\n108|         ),\n109|         (\n110|             \"httpx\",\n111|             logging.INFO,\n112|             'HTTP Request: GET http://127.0.0.1:8000/ \"HTTP/1.1 200 OK\"',\n113|         ),\n114|     ]\n115| \n116| \n117| def test_logging_ssl(caplog):\n118|     caplog.set_level(logging.DEBUG)\n119|     with httpx.Client():\n120|         pass\n121| \n122|     cafile = certifi.where()\n123|     assert caplog.record_tuples == [\n124|         (\n125|             \"httpx\",\n126|             logging.DEBUG,\n127|             \"load_ssl_context verify=True cert=None trust_env=True http2=False\",\n128|         ),\n129|         (\n130|             \"httpx\",\n131|             logging.DEBUG,\n132|             f\"load_verify_locations cafile='{cafile}'\",\n133|         ),\n134|     ]\n135| \n136| \n137| def test_get_ssl_cert_file():\n138|     # Two environments is not set.\n139|     assert get_ca_bundle_from_env() is None\n140| \n141|     os.environ[\"SSL_CERT_DIR\"] = str(TESTS_DIR)\n142|     # SSL_CERT_DIR is correctly set, SSL_CERT_FILE is not set.\n143|     ca_bundle = get_ca_bundle_from_env()\n144|     assert ca_bundle is not None and ca_bun",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t8",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "NO_PROXY"
+            },
+            "ok": true,
+            "output_excerpt": "36 match(es) in 5 file(s):\nCHANGELOG.md:660: * Add support for `NO_PROXY` environment variable. (Pull #835)\ndocs/environment_variables.md:97: ### `NO_PROXY`\ndocs/environment_variables.md:101: `NO_PROXY` disables the proxy for specific urls\ndocs/environment_variables.md:105: export NO_PROXY=http://127.0.0.1,python-httpx.org\nhttpx/_utils.py:249: # on how names in `NO_PROXY` are handled.\nhttpx/_utils.py:251: # If NO_PROXY=* is used or if \"*\" occurs as any one of the comma\nhttpx/_utils.py:257: # NO_PROXY=.google.com is marked as \"all://*.google.com,\nhttpx/_utils.py:259: # NO_PROXY=google.com is marked as \"all://*google.com,\ntests/client/test_proxies.py:172: {\"HTTP_PROXY\": \"http://example.com\", \"NO_PROXY\": \"google.com\"},\ntests/client/test_proxies.py:175: # Everything proxied when NO_PROXY is empty/unset\ntests/client/test_proxies.py:178: {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"\"},\ntests/client/test_proxies.py:181: # Not proxied if NO_PROXY matches URL.\ntests/client/test_proxies.py:184: {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"127.0.0.1\"},\ntests/client/test_proxies.py:187: # Proxied if NO_PROXY scheme does not match URL.\ntests/client/test_proxies.py:190: {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"https://127.0.0.1\"},\ntests/client/test_proxies.py:193: # Proxied if NO_PROXY scheme does not match host.\ntests/client/test_proxies.py:196: {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"1.1.1.1\"},\ntests/client/test_proxies.py:199: # Not proxied if NO_PROXY m",
+            "duration_s": 0.776
+          },
+          {
+            "ref": "t9",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/client/test_proxies.py",
+              "start": 170,
+              "end": 260
+            },
+            "ok": true,
+            "output_excerpt": "tests/client/test_proxies.py lines 170-260 of 286:\n170|         (\n171|             \"http://google.com\",\n172|             {\"HTTP_PROXY\": \"http://example.com\", \"NO_PROXY\": \"google.com\"},\n173|             None,\n174|         ),\n175|         # Everything proxied when NO_PROXY is empty/unset\n176|         (\n177|             \"http://127.0.0.1\",\n178|             {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"\"},\n179|             \"http://localhost:123\",\n180|         ),\n181|         # Not proxied if NO_PROXY matches URL.\n182|         (\n183|             \"http://127.0.0.1\",\n184|             {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"127.0.0.1\"},\n185|             None,\n186|         ),\n187|         # Proxied if NO_PROXY scheme does not match URL.\n188|         (\n189|             \"http://127.0.0.1\",\n190|             {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"https://127.0.0.1\"},\n191|             \"http://localhost:123\",\n192|         ),\n193|         # Proxied if NO_PROXY scheme does not match host.\n194|         (\n195|             \"http://127.0.0.1\",\n196|             {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"1.1.1.1\"},\n197|             \"http://localhost:123\",\n198|         ),\n199|         # Not proxied if NO_PROXY matches host domain suffix.\n200|         (\n201|             \"http://courses.mit.edu\",\n202|             {\"ALL_PROXY\": \"http://localhost:123\", \"NO_PROXY\": \"mit.edu\"},\n203|             None,\n204|         ),\n205|         # Proxied even though NO_PROXY matches ho",
+            "duration_s": 0.0
+          },
+          {
+            "ref": "t10",
+            "tool": "read_file",
+            "arguments": {
+              "path": "httpx/_utils.py",
+              "start": 345,
+              "end": 416
+            },
+            "ok": true,
+            "output_excerpt": "httpx/_utils.py lines 345-416 of 451:\n345| class URLPattern:\n346|     \"\"\"\n347|     A utility class currently used for making lookups against proxy keys...\n348| \n349|     # Wildcard matching...\n350|     >>> pattern = URLPattern(\"all\")\n351|     >>> pattern.matches(httpx.URL(\"http://example.com\"))\n352|     True\n353| \n354|     # Witch scheme matching...\n355|     >>> pattern = URLPattern(\"https\")\n356|     >>> pattern.matches(httpx.URL(\"https://example.com\"))\n357|     True\n358|     >>> pattern.matches(httpx.URL(\"http://example.com\"))\n359|     False\n360| \n361|     # With domain matching...\n362|     >>> pattern = URLPattern(\"https://example.com\")\n363|     >>> pattern.matches(httpx.URL(\"https://example.com\"))\n364|     True\n365|     >>> pattern.matches(httpx.URL(\"http://example.com\"))\n366|     False\n367|     >>> pattern.matches(httpx.URL(\"https://other.com\"))\n368|     False\n369| \n370|     # Wildcard scheme, with domain matching...\n371|     >>> pattern = URLPattern(\"all://example.com\")\n372|     >>> pattern.matches(httpx.URL(\"https://example.com\"))\n373|     True\n374|     >>> pattern.matches(httpx.URL(\"http://example.com\"))\n375|     True\n376|     >>> pattern.matches(httpx.URL(\"https://other.com\"))\n377|     False\n378| \n379|     # With port matching...\n380|     >>> pattern = URLPattern(\"https://example.com:1234\")\n381|     >>> pattern.matches(httpx.URL(\"https://example.com:1234\"))\n382|     True\n383|     >>> pattern.matches(httpx.URL(\"https://example.com\"))\n384|     False\n385|     \"\"\"\n386| \n3",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t11",
+            "tool": "run_tests",
+            "arguments": {
+              "selectors": [
+                "tests/client/test_proxies.py::test_proxies_environ"
+              ]
+            },
+            "ok": true,
+            "output_excerpt": "exit code 0 (passed)\n..................................                                       [100%]\n34 passed in 0.31s",
+            "duration_s": 1.684
+          },
+          {
+            "ref": "t12",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "class URL",
+              "path_glob": "httpx/_urls.py"
+            },
+            "ok": true,
+            "output_excerpt": "1 match(es) in 1 file(s):\nhttpx/_urls.py:11: class URL:",
+            "duration_s": 0.759
+          },
+          {
+            "ref": "t13",
+            "tool": "read_file",
+            "arguments": {
+              "path": "httpx/_urls.py",
+              "start": 11,
+              "end": 80
+            },
+            "ok": true,
+            "output_excerpt": "httpx/_urls.py lines 11-80 of 642:\n11| class URL:\n12|     \"\"\"\n13|     url = httpx.URL(\"HTTPS://jo%40email.com:a%20secret@müller.de:1234/pa%20th?search=ab#anchorlink\")\n14| \n15|     assert url.scheme == \"https\"\n16|     assert url.username == \"jo@email.com\"\n17|     assert url.password == \"a secret\"\n18|     assert url.userinfo == b\"jo%40email.com:a%20secret\"\n19|     assert url.host == \"müller.de\"\n20|     assert url.raw_host == b\"xn--mller-kva.de\"\n21|     assert url.port == 1234\n22|     assert url.netloc == b\"xn--mller-kva.de:1234\"\n23|     assert url.path == \"/pa th\"\n24|     assert url.query == b\"?search=ab\"\n25|     assert url.raw_path == b\"/pa%20th?search=ab\"\n26|     assert url.fragment == \"anchorlink\"\n27| \n28|     The components of a URL are broken down like this:\n29| \n30|        https://jo%40email.com:a%20secret@müller.de:1234/pa%20th?search=ab#anchorlink\n31|     [scheme]   [  username  ] [password] [ host ][port][ path ] [ query ] [fragment]\n32|                [       userinfo        ] [   netloc   ][    raw_path    ]\n33| \n34|     Note that:\n35| \n36|     * `url.scheme` is normalized to always be lowercased.\n37| \n38|     * `url.host` is normalized to always be lowercased. Internationalized domain\n39|       names are represented in unicode, without IDNA encoding applied. For instance:\n40| \n41|       url = httpx.URL(\"http://中国.icom.museum\")\n42|       assert url.host == \"中国.icom.museum\"\n43|       url = httpx.URL(\"http://xn--fiqs8s.icom.museum\")\n44|       assert url.host == \"中国.ico",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t14",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "ipv6",
+              "path_glob": "tests/**/*.py",
+              "regex": true
+            },
+            "ok": true,
+            "output_excerpt": "3 match(es) in 1 file(s):\ntests/models/test_url.py:376: def test_ipv6_url():\ntests/models/test_url.py:392: def test_ipv6_url_copy_with_host(url_str, new_host):\ntests/models/test_url.py:401: def test_ipv6_url_from_raw_url(host):",
+            "duration_s": 0.753
+          },
+          {
+            "ref": "t15",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "is_ipv4_hostname"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'is_ipv4_hostname'",
+            "duration_s": 0.777
+          },
+          {
+            "ref": "t16",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "is_ipv6_hostname"
+            },
+            "ok": true,
+            "output_excerpt": "no matches for 'is_ipv6_hostname'",
+            "duration_s": 0.743
+          },
+          {
+            "ref": "t17",
+            "tool": "read_file",
+            "arguments": {
+              "path": "httpx/_urls.py",
+              "start": 71,
+              "end": 130
+            },
+            "ok": true,
+            "output_excerpt": "httpx/_urls.py lines 71-130 of 642:\n 71|     def __init__(\n 72|         self, url: typing.Union[\"URL\", str] = \"\", **kwargs: typing.Any\n 73|     ) -> None:\n 74|         if kwargs:\n 75|             allowed = {\n 76|                 \"scheme\": str,\n 77|                 \"username\": str,\n 78|                 \"password\": str,\n 79|                 \"userinfo\": bytes,\n 80|                 \"host\": str,\n 81|                 \"port\": int,\n 82|                 \"netloc\": bytes,\n 83|                 \"path\": str,\n 84|                 \"query\": bytes,\n 85|                 \"raw_path\": bytes,\n 86|                 \"fragment\": str,\n 87|                 \"params\": object,\n 88|             }\n 89| \n 90|             # Perform type checking for all supported keyword arguments.\n 91|             for key, value in kwargs.items():\n 92|                 if key not in allowed:\n 93|                     message = f\"{key!r} is an invalid keyword argument for URL()\"\n 94|                     raise TypeError(message)\n 95|                 if value is not None and not isinstance(value, allowed[key]):\n 96|                     expected = allowed[key].__name__\n 97|                     seen = type(value).__name__\n 98|                     message = f\"Argument {key!r} must be {expected} but got {seen}\"\n 99|                     raise TypeError(message)\n100|                 if isinstance(value, bytes):\n101|                     kwargs[key] = value.decode(\"ascii\")\n102| \n103|             if \"params\" in kwargs:\n104|                 ",
+            "duration_s": 0.001
+          }
+        ],
+        "dropped": [
+          {
+            "finding": {
+              "id": "2b27e6d34d16",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.8,
+              "file": "httpx/_utils.py",
+              "line_start": 262,
+              "line_end": 262,
+              "summary": "IPv4 and localhost NO_PROXY entries now use wildcard prefix matching instead of exact matching",
+              "evidence": "The old code produced exact-match patterns for IPv4 (`all://127.0.0.1`) and localhost (`all://localhost`). The new code produces wildcard patterns (`all://*127.0.0.1`, `all://*localhost`). Per URLPattern (line 408-411), `*127.0.0.1` creates regex `^(.+\\.)?127\\.0\\.0\\.1$` which matches both `127.0.0.1` and `x.127.0.0.1`. Similarly `*localhost` matches `localhost` and `x.localhost`. While unlikely to cause real issues, this is a semantic broadening of the NO_PROXY matching that contradicts curl's NO_PROXY behavior (referenced in the comment at line 249).",
+              "suggested_fix": "Restore the exact-match branches for IPv4 addresses and localhost, or document the intentional broadening.",
+              "source": "agent",
+              "rule": null,
+              "evidence_refs": [
+                "diff",
+                "t10",
+                "t9"
+              ]
+            },
+            "reason": "restates c3526024a9b2 (correctness); grounding=verified"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-06f31819",
+      "score": {
+        "item_id": "more-itertools-revert-06f31819",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "5ca4fc7b5c4c",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.14916649999999998,
+        "latency_s": 138.338,
+        "tool_calls": 6,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "agent",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "5ca4fc7b5c4c",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.97,
+            "file": "more_itertools/more.py",
+            "line_start": 4276,
+            "line_end": 4277,
+            "summary": "New `r > n` guard incorrectly rejects valid inputs where r > len(pool)",
+            "evidence": "Python's `itertools.combinations_with_replacement` allows `r > n` (e.g., `combinations_with_replacement('ab', 3)` yields 4 tuples). The old code computed `c = comb(n + r - 1, r)` which correctly gives `comb(4, 3) = 4` for n=2, r=3. The new guard `r > n` raises `ValueError` for this valid case, breaking the documented equivalence to `list(combinations_with_replacement(iterable, r))[index]`. The existing test suite doesn't cover `r > n` with `n > 0`, so this regression is not caught.",
+            "suggested_fix": "Remove the `r > n` guard. The original special-case `c = comb(n + r - 1, r) if n else 0 if r else 1` was needed to handle n=0 correctly; if simplifying, only guard against `r < 0` and handle the n=0 edge case.",
+            "source": "agent",
+            "rule": null,
+            "evidence_refs": [
+              "diff",
+              "t2",
+              "t4"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.123,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.011,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +7/-4 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.021,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "701 passed, 19866 subtests passed in 42.30s",
+            "duration_s": 81.95,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 11%]\n......................................................... [ 19%]\n........................................................................ [ 30%]\n.................................................. [ 37%]\n..................................................................... [ 47%]\n..................................... [ 52%]\n.................................... [ 57%]\n.............................................................................................. [ 70%]\n............................................................ [ 79%]\n................................................................................................................................................                          [100%]\n701 passed, 19866 subtests passed in 42.30s"
+          }
+        ],
+        "usage": {
+          "model": "anthropic/claude-opus-4.6",
+          "llm_calls": 6,
+          "tool_calls": 6,
+          "input_tokens": 34881,
+          "output_tokens": 2887,
+          "cached_input_tokens": 23733,
+          "cost_usd": 0.14916649999999998
+        },
+        "latency_s": 138.338,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [
+          {
+            "ref": "t1",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "combinations_with_replacement",
+              "path_glob": "more_itertools/more.py"
+            },
+            "ok": true,
+            "output_excerpt": "2 match(es) in 1 file(s):\nmore_itertools/more.py:4259: ``list(combinations_with_replacement(iterable, r))[index]``.\nmore_itertools/more.py:4412: ``list(combinations_with_replacement(iterable, r)).index(element)``",
+            "duration_s": 0.47
+          },
+          {
+            "ref": "t2",
+            "tool": "read_file",
+            "arguments": {
+              "path": "more_itertools/more.py",
+              "start": 4245,
+              "end": 4310
+            },
+            "ok": true,
+            "output_excerpt": "more_itertools/more.py lines 4245-4310 of 5441:\n4245|     result = [0] * r\n4246|     q = index * factorial(n) // c if r < n else index\n4247|     for d in range(1, n + 1):\n4248|         q, i = divmod(q, d)\n4249|         if 0 <= n - d < r:\n4250|             result[n - d] = i\n4251|         if q == 0:\n4252|             break\n4253| \n4254|     return tuple(map(pool.pop, result))\n4255| \n4256| \n4257| def nth_combination_with_replacement(iterable, r, index):\n4258|     \"\"\"Equivalent to\n4259|     ``list(combinations_with_replacement(iterable, r))[index]``.\n4260| \n4261| \n4262|     The subsequences with repetition of *iterable* that are of length *r* can\n4263|     be ordered lexicographically. :func:`nth_combination_with_replacement`\n4264|     computes the subsequence at sort position *index* directly, without\n4265|     computing the previous subsequences with replacement.\n4266| \n4267|         >>> nth_combination_with_replacement(range(5), 3, 5)\n4268|         (0, 1, 1)\n4269| \n4270|     ``ValueError`` will be raised If *r* is negative or greater than the length\n4271|     of *iterable*.\n4272|     ``IndexError`` will be raised if the given *index* is invalid.\n4273|     \"\"\"\n4274|     pool = tuple(iterable)\n4275|     n = len(pool)\n4276|     if (r < 0) or (r > n):\n4277|         raise ValueError\n4278| \n4279|     c = comb(n + r - 1, r)\n4280| \n4281|     if index < 0:\n4282|         index += c\n4283| \n4284|     if (index < 0) or (index >= c):\n4285|         raise IndexError\n4286| \n4287|     result = [",
+            "duration_s": 0.001
+          },
+          {
+            "ref": "t3",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "nth_combination_with_replacement",
+              "path_glob": "tests/*.py"
+            },
+            "ok": true,
+            "output_excerpt": "4 match(es) in 1 file(s):\ntests/test_more.py:4880: actual = mi.nth_combination_with_replacement(iterable, r, index)\ntests/test_more.py:4884: actual = mi.nth_combination_with_replacement(range(90), 4, 2000000)\ntests/test_more.py:4891: mi.nth_combination_with_replacement([], r, 0)\ntests/test_more.py:4895: mi.nth_combination_with_replacement('abcdefg', 3, -85)",
+            "duration_s": 0.412
+          },
+          {
+            "ref": "t4",
+            "tool": "read_file",
+            "arguments": {
+              "path": "tests/test_more.py",
+              "start": 4860,
+              "end": 4910
+            },
+            "ok": true,
+            "output_excerpt": "tests/test_more.py lines 4860-4910 of 6615:\n4860|             mi.nth_product(1234, 'abcde', repeat=5),\n4861|             mi.nth_product(1234, 'abcde', 'abcde', 'abcde', 'abcde', 'abcde'),\n4862|         )\n4863|         self.assertEqual(\n4864|             mi.nth_product(123, 'AB', 'CD', 'EFG', repeat=2),\n4865|             mi.nth_product(123, 'AB', 'CD', 'EFG', 'AB', 'CD', 'EFG'),\n4866|         )\n4867|         self.assertEqual(\n4868|             mi.nth_product(123, iter('AB'), iter('CD'), iter('EFG'), repeat=2),\n4869|             mi.nth_product(123, 'AB', 'CD', 'EFG', 'AB', 'CD', 'EFG'),\n4870|         )\n4871| \n4872| \n4873| class NthCombinationWithReplacementTests(TestCase):\n4874|     def test_basic(self):\n4875|         iterable = 'abcdefg'\n4876|         r = 4\n4877|         for index, expected in enumerate(\n4878|             combinations_with_replacement(iterable, r)\n4879|         ):\n4880|             actual = mi.nth_combination_with_replacement(iterable, r, index)\n4881|             self.assertEqual(actual, expected)\n4882| \n4883|     def test_long(self):\n4884|         actual = mi.nth_combination_with_replacement(range(90), 4, 2000000)\n4885|         expected = (22, 65, 68, 81)\n4886|         self.assertEqual(actual, expected)\n4887| \n4888|     def test_invalid_r(self):\n4889|         for r in (-1, 3):\n4890|             with self.assertRaises(ValueError):\n4891|                 mi.nth_combination_with_replacement([], r, 0)\n4892| \n4893|     def test_invalid_index(self):\n4894|         wi",
+            "duration_s": 0.002
+          },
+          {
+            "ref": "t5",
+            "tool": "run_tests",
+            "arguments": {
+              "selectors": [
+                "tests/test_more.py::NthCombinationWithReplacementTests"
+              ]
+            },
+            "ok": true,
+            "output_excerpt": "exit code 0 (passed)\n....                                                                     [100%]\n4 passed in 0.25s",
+            "duration_s": 5.917
+          },
+          {
+            "ref": "t6",
+            "tool": "search_repo",
+            "arguments": {
+              "pattern": "from math import",
+              "path_glob": "more_itertools/more.py"
+            },
+            "ok": true,
+            "output_excerpt": "4 match(es) in 1 file(s):\nmore_itertools/more.py:25: from math import comb, e, exp, factorial, floor, fsum, log, log1p, perm, tau\nmore_itertools/more.py:26: from math import ceil\nmore_itertools/more.py:181: from math import sumprod as _fsumprod\nmore_itertools/more.py:3745: >>> from math import sqrt",
+            "duration_s": 0.455
+          }
+        ],
+        "dropped": [
+          {
+            "finding": {
+              "id": "12b66f0b0a23",
+              "category": "correctness",
+              "severity": "blocker",
+              "confidence": 0.95,
+              "file": "more_itertools/more.py",
+              "line_start": 4279,
+              "line_end": 4279,
+              "summary": "`comb(n + r - 1, r)` crashes with ValueError when n=0, r=0 because math.comb(-1, 0) is invalid",
+              "evidence": "When n=0 and r=0, the new guard `r > n` evaluates to `0 > 0` = False, so execution reaches `comb(0 + 0 - 1, 0) = comb(-1, 0)`. Python's `math.comb` requires non-negative first argument, so this raises `ValueError`. The old code had `comb(n + r - 1, r) if n else 0 if r else 1` which returned 1 for this case, matching `list(combinations_with_replacement([], 0))` which returns `[()]`. The simplification removed necessary edge-case handling.",
+              "suggested_fix": "Restore the special-case handling for n=0: `c = comb(n + r - 1, r) if n else 0 if r else 1`.",
+              "source": "agent",
+              "rule": null,
+              "evidence_refs": [
+                "diff",
+                "t2",
+                "t6"
+              ]
+            },
+            "reason": "restates 5ca4fc7b5c4c (correctness); grounding=verified"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1528 @@
+{
+  "run_id": "20261014T161041-reverted-v1-dev-baseline-anthropic_claude-haiku-5.5",
+  "started_at": "2026-10-14T16:10:41.409356+00:00",
+  "dataset": "reverted-v1",
+  "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "b5c6a50",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic"
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-revert-937b1e23",
+      "score": {
+        "item_id": "attrs-revert-937b1e23",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "2083dfe5941d",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000952245,
+        "latency_s": 0.208,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "2083dfe5941d",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.75,
+            "file": "src/attr/_make.py",
+            "line_start": 2325,
+            "line_end": 2340,
+            "summary": "`pre_init_args` is now the full `__init__` parameter-definition string, not the list of bare argument names, so the call to `__attrs_pre_init__` receives default sentinels or invalid call syntax instead of the argument values.",
+            "evidence": "Previously `pre_init_args.append(arg_name)` built a list of bare names, separate from `args`, which holds the definition text (e.g. `arg = f\"{arg_name}=NOTHING\"` for attributes with defaults/factories). The diff removes that list and sets `pre_init_args = args` after `args = \", \".join(args)`. The generated line `lines[0] = f\"self.__attrs_pre_init__({pre_init_args})\"` will therefore contain things like `self.__attrs_pre_init__(x=NOTHING, y=NOTHING)` (passing the sentinel as the keyword value, not the user's value), and for any annotated parameter would produce a syntax error in the call. The kw-only path also still appends `pre_init_kw_only_args` derived from definition-style strings.",
+            "suggested_fix": "Revert the removal of `pre_init_args`; keep a separate list of bare names (`arg_name`) for the pre-init call, or derive the call arguments from names only. The simplification is not safe as written.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2085,
+          "output_tokens": 1630,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000952245
+        },
+        "latency_s": 0.208,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-9de675f4",
+      "score": {
+        "item_id": "attrs-revert-9de675f4",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "f5224c97464d",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000432745,
+        "latency_s": 0.241,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "f5224c97464d",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "src/attr/_make.py",
+            "line_start": 798,
+            "line_end": 800,
+            "summary": "Removing the property branch means slotted classes whose properties use zero-argument super() will keep a stale __class__ closure cell and break at runtime.",
+            "evidence": "The removed `elif isinstance(item, property)` branch read `item.fget.__closure__` so that the `__class__` cell could be rewritten to the new slotted class. After the change, a property falls into the generic `else` branch, where `getattr(item, \"__closure__\", None)` returns None because property objects have no `__closure__`. The cell is therefore never updated, and a zero-arg `super()` inside a property getter on a `slots=True` class will raise TypeError because it still refers to the original class.",
+            "suggested_fix": "Restore the property branch (closure_cells from item.fget). The task is to simplify, but this removal is a functional regression, not a simplification. If the branch must go, cover the property case in some other way and add a test for super() inside a property on a slots class.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1429,
+          "output_tokens": 755,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000432745
+        },
+        "latency_s": 0.241,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-af9c5109",
+      "score": {
+        "item_id": "attrs-revert-af9c5109",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "5d39843cd828",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00035237,
+        "latency_s": 0.245,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5d39843cd828",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/attr/validators.py",
+            "line_start": 82,
+            "line_end": 88,
+            "summary": "The simplified `disabled()` no longer restores the previous validator state, so nested or pre-disabled use re-enables validation too early.",
+            "evidence": "The original code saved `prev = get_run_validators()` and restored it in `finally`. The new code unconditionally calls `set_run_validators(True)` on exit. With `with disabled(): with disabled(): ...`, the inner exit turns validators back on while the outer block is still active. Calling `disabled()` while validators are already off globally also turns them on at exit. The removed docstring line `versionchanged:: 26.1.0 The contextmanager is nestable` documents the behavior this change drops.",
+            "suggested_fix": "Keep the save/restore logic; it is already the simplest correct form. If the goal is to simplify, reduce only the surrounding code, not the restore step.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1398,
+          "output_tokens": 602,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00035237
+        },
+        "latency_s": 0.245,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-c9150d27",
+      "score": {
+        "item_id": "attrs-revert-c9150d27",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "23d9502439d2",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00055937,
+        "latency_s": 0.288,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "23d9502439d2",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 936,
+            "line_end": 939,
+            "summary": "Removing the tuple branch from the generated `__setstate__` breaks unpickling of instances serialized by attrs versions before 22.2.0, and can silently skip restoring their attributes.",
+            "evidence": "The removed `if isinstance(state, tuple):` branch existed to handle pickles that stored state as a tuple (per its comment, pre-v22.2.0). With the branch gone, a tuple `state` falls through to `for name in state_attr_names: if name in state:`. That checks membership of attribute names in a tuple of values, so it is normally False and attributes are left unset without any error. Old pickles therefore load into broken objects silently.",
+            "suggested_fix": "Restore the tuple-compatibility branch, or make it an explicit, documented break with a clear error. Keep this out of a 'simplify' refactor unless the compatibility drop is intended and announced.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1510,
+          "output_tokens": 988,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00055937
+        },
+        "latency_s": 0.288,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f192d99620e8",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/attr/_make.py",
+              "line_start": 936,
+              "line_end": 939,
+              "summary": "The change drops documented backward-compatibility support, which is a behavior change rather than a pure simplification of `_ClassBuilder`.",
+              "evidence": "The diff removes the pre-22.2.0 compatibility path inside the generated `__setstate__`. Simplifying the builder's structure would not normally remove a supported load path. The change should be called out or split into its own PR.",
+              "suggested_fix": "Separate the compatibility removal from the refactor, or revert it and keep only the structural simplification.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-revert-ce89f5d1",
+      "score": {
+        "item_id": "attrs-revert-ce89f5d1",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "392af05a99e8",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00089987,
+        "latency_s": 0.232,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "392af05a99e8",
+            "category": "silent_behavior_change",
+            "severity": "minor",
+            "confidence": 0.5,
+            "file": "src/attr/exceptions.py",
+            "line_start": 19,
+            "line_end": 20,
+            "summary": "Removing __init__ lets FrozenError accept arbitrary constructor arguments, which are then silently ignored by the class-level args.",
+            "evidence": "Before, FrozenError() took no parameters, so FrozenError('x') raised TypeError. After, the class attribute `args = [msg]` shadows BaseException.args, so FrozenError('x').args still returns [\"can't set attribute\"] and the passed value is dropped without error.",
+            "suggested_fix": "Keep an explicit __init__ that takes no arguments, or accept that the constructor is now permissive and document it.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1450,
+          "output_tokens": 1684,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00089987
+        },
+        "latency_s": 0.232,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "d72692cdfafc",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/attr/exceptions.py",
+              "line_start": 20,
+              "line_end": 20,
+              "summary": "A single mutable list is shared by every FrozenError instance as its args, so in-place mutation leaks across instances.",
+              "evidence": "`args: ClassVar[tuple[str]] = [msg]` creates one list object on the class. Any `e.args.append(...)` or `e.args[0] = ...` on one instance changes what every other FrozenError instance reports. The annotation also says tuple while the value is a list.",
+              "suggested_fix": "Use a tuple, `args = (msg,)`, and annotate it consistently, or restore the __init__ that sets args per instance.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-revert-f31bb285",
+      "score": {
+        "item_id": "attrs-revert-f31bb285",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "14200ec48082",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00044787,
+        "latency_s": 0.239,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "14200ec48082",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/attr/_funcs.py",
+            "line_start": 380,
+            "line_end": 392,
+            "summary": "Storing `True` instead of the class breaks subclass resolution: a subclass inherits `__attrs_types_resolved__` from its resolved parent and is then skipped.",
+            "evidence": "The original code stored `cls` in `__attrs_types_resolved__` and compared with `!= cls`, with a comment saying this lets subclasses know they haven't been resolved. The new code does `cls.__attrs_types_resolved__` inside a try and stores `True`. For a subclass `B(A)` where `A` was already resolved, `B.__attrs_types_resolved__` resolves through normal attribute lookup to `True` from `A`, so no AttributeError is raised and `B`'s string annotations are never resolved or written to its fields.",
+            "suggested_fix": "Keep the identity check: store `cls` again and compare `cls.__dict__.get('__attrs_types_resolved__') is not cls` (or `vars(cls)`), or otherwise check the attribute on the class's own `__dict__` rather than through inheritance.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1662,
+          "output_tokens": 727,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00044787
+        },
+        "latency_s": 0.239,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-04351129",
+      "score": {
+        "item_id": "click-revert-04351129",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "18b050f5c319",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000417245,
+        "latency_s": 0.117,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "18b050f5c319",
+            "category": "silent_behavior_change",
+            "severity": "blocker",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 700,
+            "line_end": 706,
+            "summary": "Removing `ctx.params.update(kwargs)` from `Context.invoke` breaks `forward()` for multi-level calls, which the removed docstring explicitly promised.",
+            "evidence": "The diff deletes the block that tracks all invoke kwargs in `ctx.params` (\"Track all kwargs as params, so that forward() will pass them on in subsequent calls\"). `forward()` (around line 709+) builds its kwargs from `self.params`, so kwargs passed to an intermediate `invoke` are no longer visible to a deeper `forward`. The diff also removes the `.. versionchanged:: 8.0` notes that documented this exact behavior, so the removal is a functional regression, not a simplification.",
+            "suggested_fix": "Restore the `ctx.params.update(kwargs)` tracking and the versionchanged notes, or find a simplification that keeps the forward() multi-level semantics. Add or run a test covering forward() across multiple levels.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1701,
+          "output_tokens": 656,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000417245
+        },
+        "latency_s": 0.117,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-05b795c9",
+      "score": {
+        "item_id": "click-revert-05b795c9",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "debb6144f2f7",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "ab8766631da1"
+        ],
+        "cost_usd": 0.00045787,
+        "latency_s": 0.107,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "debb6144f2f7",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.97,
+            "file": "src/click/termui.py",
+            "line_start": 599,
+            "line_end": 599,
+            "summary": "The overline branch now keys off `underline` instead of `overline`, so overline is emitted based on the wrong flag.",
+            "evidence": "src/click/termui.py:599 changes `53 if overline else 55` to `53 if underline else 55`. Passing `overline=True` without `underline` now emits SGR 55 (overline off), and passing `underline=True` turns on overline without being asked.",
+            "suggested_fix": "Restore the condition to `bits.append(f\"\\033[{53 if overline else 55}m\")`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "ab8766631da1",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.97,
+            "file": "src/click/termui.py",
+            "line_start": 601,
+            "line_end": 601,
+            "summary": "The italic branch emits SGR 5 (blink) instead of SGR 3 (italic), and it is also keyed off `underline`.",
+            "evidence": "src/click/termui.py:601 changes `3 if italic else 23` to `5 if underline else 23`. Italic never turns on, and italic=True produces a blink code only when underline is set. This also breaks the blink-related codes for `italic`.",
+            "suggested_fix": "Restore the line to `bits.append(f\"\\033[{3 if italic else 23}m\")`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1426,
+          "output_tokens": 806,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00045787
+        },
+        "latency_s": 0.107,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-4fd2fea0",
+      "score": {
+        "item_id": "click-revert-4fd2fea0",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "17464bc75d64",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00060512,
+        "latency_s": 0.101,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "17464bc75d64",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2613,
+            "line_end": 2619,
+            "summary": "Moving the `flag_value` default under `if is_flag and type is None` means explicitly typed boolean flags no longer get a default flag value.",
+            "evidence": "Before the change, `if is_flag and flag_value is None: flag_value = not self.default` ran for every flag. After the change, that assignment only runs inside `if is_flag and type is None:`. For `Option(..., is_flag=True, type=bool)` (or any explicit type), `flag_value` stays `None`, and that value is then stored as `self.flag_value`. Presence of the flag would then supply `None` instead of `True`, and `is_bool_flag` derived from the type can no longer rely on a sensible flag value.",
+            "suggested_fix": "Keep the `flag_value` default computation unconditional on `type` (restore the original `if is_flag and flag_value is None:` block before the type handling), and only keep the type re-guess inside the `type is None` branch.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1372,
+          "output_tokens": 1114,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00060512
+        },
+        "latency_s": 0.101,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-955ca492",
+      "score": {
+        "item_id": "click-revert-955ca492",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1cd5c57ab5bf",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00060037,
+        "latency_s": 0.161,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1cd5c57ab5bf",
+            "category": "other",
+            "severity": "minor",
+            "confidence": 0.5,
+            "file": "src/click/core.py",
+            "line_start": 2782,
+            "line_end": 2789,
+            "summary": "The diff does not simplify the Option implementation. It only adds a docstring note and rewrites a comment, and the logic is unchanged.",
+            "evidence": "The only code-adjacent change is the comment block above `elif is_flag is False and not self._flag_needs_value:`. The condition `flag_value is not UNSET or self.default is UNSET` is identical before and after the diff.",
+            "suggested_fix": "Either make the intended simplification to the Option logic, or state that this change is documentation-only and does not address the task.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1678,
+          "output_tokens": 1028,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00060037
+        },
+        "latency_s": 0.161,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "16c29148b85c",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "src/click/core.py",
+              "line_start": 2785,
+              "line_end": 2787,
+              "summary": "The new comment and versionchanged note describe a behavior change that this diff does not make.",
+              "evidence": "The added `.. versionchanged:: 8.3.dev` note at core.py:2687-2689 says the flag 'can be accepted without an argument', but the code at line 2790 is the pre-existing check. The comment at 2785-2787 also drops the original explanation of why both `flag_value` and `default` are checked.",
+              "suggested_fix": "Remove the versionchanged note unless a behavior change is actually introduced, and restore the explanation that either `flag_value` or `default` is sufficient.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-revert-c326df95",
+      "score": {
+        "item_id": "click-revert-c326df95",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "7f2c89ddfd55",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000567745,
+        "latency_s": 0.149,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7f2c89ddfd55",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "src/click/core.py",
+            "line_start": 701,
+            "line_end": 703,
+            "summary": "Removing `self.close()` from `Context.exit()` changes when `call_on_close` callbacks run, and the removed docstring documented that exact guarantee.",
+            "evidence": "The diff deletes `self.close()` and the `.. versionchanged:: 8.2 Force closing of callbacks registered with :meth:`call_on_close` before exiting the CLI.` note. Previously `exit()` forced close callbacks to run before raising `Exit`. Now they run only when the exception unwinds through `Context.__exit__`, and only at depth zero. Nested contexts that call `ctx.exit()` will no longer close their own callbacks at that point, and any code that calls `exit()` outside a `with ctx:` block will never run them. This is a documented 8.2 behavior, so removing it is not a pure simplification.",
+            "suggested_fix": "Keep `self.close()` in `exit()` and keep the versionchanged note. If the goal is to simplify, do it without changing the close-before-exit guarantee, and confirm with the existing call_on_close/exit tests.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1393,
+          "output_tokens": 1034,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000567745
+        },
+        "latency_s": 0.149,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-15d09a3b",
+      "score": {
+        "item_id": "httpx-revert-15d09a3b",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "45c37b79cc89",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [
+          "7135e2731159"
+        ],
+        "cost_usd": 0.000845995,
+        "latency_s": 0.143,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "45c37b79cc89",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_utils.py",
+            "line_start": 262,
+            "line_end": 262,
+            "summary": "Collapsing the IP and localhost branches changes how NO_PROXY entries for IPv4, IPv6, and localhost are matched, so those hosts may no longer bypass the proxy.",
+            "evidence": "Previously NO_PROXY=192.168.0.0/16 produced 'all://192.168.0.0/16', NO_PROXY=::1 produced 'all://[::1]', and NO_PROXY=localhost produced 'all://localhost'. Now every entry becomes 'all://*{hostname}'. For example '*::1' and '*192.168.0.0/16' are not valid host patterns for IP literals, and the wildcard form is no longer an exact host match for 'localhost'. Requests to these hosts can now be sent through the proxy, which is a regression.",
+            "suggested_fix": "Restore the IPv4/IPv6/localhost branches, or simplify them without changing the emitted pattern strings, and add tests for NO_PROXY with IPv4 CIDR, IPv6, and localhost.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "7135e2731159",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.5,
+            "file": "httpx/_utils.py",
+            "line_start": 262,
+            "line_end": 263,
+            "summary": "The retained comment says NO_PROXY can include IPv6 and IPv4 addresses, but the code no longer handles them specially.",
+            "evidence": "The comment block '# NO_PROXY can include domains, IPv6, IPv4 addresses and \"localhost\" / NO_PROXY=example.com,::1,localhost,192.168.0.0/16' remains above the single wildcard assignment, which now misrepresents the behavior.",
+            "suggested_fix": "Update or remove the comment to match the new behavior.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1871,
+          "output_tokens": 1471,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000845995
+        },
+        "latency_s": 0.143,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b1c65c2814c0",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_utils.py",
+              "line_start": 449,
+              "line_end": 451,
+              "summary": "The task asks to simplify URLPattern, but the diff does not touch the URLPattern class and only removes helper functions.",
+              "evidence": "The URLPattern class body is unchanged in the hunk; only is_ipv4_hostname and is_ipv6_hostname are deleted from the module bottom. Removing these helpers may also break any tests or internal callers that import them, and the diff does not show that they were checked.",
+              "suggested_fix": "Either simplify URLPattern as requested or confirm the task scope. Grep the repo for is_ipv4_hostname and is_ipv6_hostname before removing them.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-revert-3b9060ee",
+      "score": {
+        "item_id": "httpx-revert-3b9060ee",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "6bea699a858f",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000494995,
+        "latency_s": 0.124,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "6bea699a858f",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "httpx/_utils.py",
+            "line_start": 229,
+            "line_end": 231,
+            "summary": "Removing the `\"://\" in hostname` branch breaks scheme-qualified NO_PROXY entries, which now get mangled into wildcard host patterns.",
+            "evidence": "Previously a NO_PROXY entry such as `http://example.com` was stored verbatim as a mount key (`mounts[hostname] = None`). With the branch removed, it falls through to the final `else` (not shown in the diff, but the surrounding code routes plain hostnames there), producing a pattern like `all://*http://example.com`. That pattern matches nothing useful, so the proxy bypass for that entry silently stops working. The task was to simplify the implementation, not to change which NO_PROXY forms are honored.",
+            "suggested_fix": "Restore the `if \"://\" in hostname: mounts[hostname] = None` branch before the IPv4 check. The simplification should come from elsewhere, not from dropping this case.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1483,
+          "output_tokens": 866,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000494995
+        },
+        "latency_s": 0.124,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-6d852d31",
+      "score": {
+        "item_id": "httpx-revert-6d852d31",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "391b9175312d",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000665995,
+        "latency_s": 0.158,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "391b9175312d",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "httpx/_client.py",
+            "line_start": 911,
+            "line_end": 914,
+            "summary": "Removing `_set_timeout` from `send()` means requests that reach `send()` without a `timeout` extension no longer inherit the client's configured timeout.",
+            "evidence": "The diff deletes `BaseClient._set_timeout` (previously at _client.py:565-571) and its calls in `Client.send` (~line 914) and `AsyncClient.send` (~line 1661). That helper was the only place in this diff that injected `self.timeout` into `request.extensions` when it was missing. A `Request` constructed directly with `httpx.Request(...)` and passed to `client.send(request)` never goes through `build_request`, so it will now reach the transport with no timeout extension, and the client's timeout setting is silently ignored.",
+            "suggested_fix": "Keep the timeout-defaulting logic in `send()` (or move it into a shared helper that both sync and async paths call). If it is intentionally redundant because `build_request` already sets it, verify that every path into `send()` sets the extension and add a test that sends a user-constructed Request through a client with a custom timeout.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1603,
+          "output_tokens": 1178,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000665995
+        },
+        "latency_s": 0.158,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-b7dc0c3d",
+      "score": {
+        "item_id": "httpx-revert-b7dc0c3d",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000566495,
+        "latency_s": 0.11,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1615,
+          "output_tokens": 976,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000566495
+        },
+        "latency_s": 0.11,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "14001e5b8ad1",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_content.py",
+              "line_start": 53,
+              "line_end": 53,
+              "summary": "Dropping the `not isinstance(..., SyncByteStream)` guard means any object that is both a SyncByteStream and has a `read` method is now consumed via `read()` instead of iteration.",
+              "evidence": "httpx/_content.py:53 now checks only `hasattr(self._stream, \"read\")`. Previously a SyncByteStream subclass that also defined `read` was iterated. The async counterpart at line 78 has the same change for `aread` and `AsyncByteStream`. The diff does not show that no such class exists, and the guard was an explicit precedence rule.",
+              "suggested_fix": "Confirm no SyncByteStream/AsyncByteStream subclass defines read/aread, or add a test covering such a class. If the guard was not meant to be removed, restore it; the simplification is not worth a silent change in precedence.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-revert-d5900cd4",
+      "score": {
+        "item_id": "httpx-revert-d5900cd4",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "974e14fac39b",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000343245,
+        "latency_s": 0.181,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "974e14fac39b",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "httpx/_urls.py",
+            "line_start": 543,
+            "line_end": 543,
+            "summary": "Dropping keep_blank_values=True makes blank query parameters such as 'a=' or 'a' disappear from QueryParams, which is a behavior change the task did not ask for.",
+            "evidence": "httpx/_urls.py:543 now calls parse_qs(value) without keep_blank_values=True. urllib's parse_qs defaults to keep_blank_values=False, so a string like 'a=&b=1' now yields only {'b': ['1']} instead of {'a': [''], 'b': ['1']}. Callers that round-trip URLs or read parameters by key will silently lose those keys.",
+            "suggested_fix": "Restore keep_blank_values=True. If the goal is simplification, make it without changing which parameters are kept, and add a test for blank values such as 'a=' and bare 'a'.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1429,
+          "output_tokens": 576,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000343245
+        },
+        "latency_s": 0.181,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-06f31819",
+      "score": {
+        "item_id": "more-itertools-revert-06f31819",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 3,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "6b7b5eb8a80c",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "d4cf880072cc",
+          "28f66aa86c61"
+        ],
+        "cost_usd": 0.000734745,
+        "latency_s": 0.197,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "d4cf880072cc",
+            "category": "silent_behavior_change",
+            "severity": "blocker",
+            "confidence": 0.95,
+            "file": "more_itertools/more.py",
+            "line_start": 4270,
+            "line_end": 4276,
+            "summary": "The new `r > n` check rejects valid combinations-with-replacement, where r may exceed the pool size.",
+            "evidence": "The diff adds `if (r < 0) or (r > n): raise ValueError`. Combinations with replacement are valid for r > n (e.g. `combinations_with_replacement('ab', 3)` yields `('a','a','a')`, and the original code computed `comb(n + r - 1, r)` for that case). `nth_combination_with_replacement('ab', 3, 0)` used to return `('a','a','a')` and now raises ValueError.",
+            "suggested_fix": "Remove the `r > n` condition and keep only the `r < 0` check.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "28f66aa86c61",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 4273,
+            "line_end": 4273,
+            "summary": "Removing the `n == 0` special case makes `comb(n + r - 1, r)` receive a negative first argument for empty input with r=0.",
+            "evidence": "The original `c = comb(n + r - 1, r) if n else 0 if r else 1` returned 1 when n == 0 and r == 0. The new `c = comb(n + r - 1, r)` computes `comb(-1, 0)`, which raises ValueError for a negative n. So `nth_combination_with_replacement([], 0, 0)` previously returned `()` and now raises.",
+            "suggested_fix": "Keep the empty-pool special case, e.g. `c = comb(n + r - 1, r) if n else int(not r)`, or add an explicit branch for n == 0.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "6b7b5eb8a80c",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 4270,
+            "line_end": 4271,
+            "summary": "The docstring documents the new r > len(iterable) ValueError, which describes incorrect semantics.",
+            "evidence": "The added docstring line says ValueError is raised when r is greater than the length of iterable. This is the wrong contract for combinations with replacement and contradicts the intended behavior of the function.",
+            "suggested_fix": "Revert the docstring change to only document the negative-r ValueError.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1561,
+          "output_tokens": 1326,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000734745
+        },
+        "latency_s": 0.197,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-4bd0bd87",
+      "score": {
+        "item_id": "more-itertools-revert-4bd0bd87",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "3101643cb2b1",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00064512,
+        "latency_s": 0.2,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "3101643cb2b1",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 666,
+            "line_end": 695,
+            "summary": "The stated task is to simplify the implementation of `distinct_permutations`, but the diff only rewrites the docstring and leaves the algorithm untouched.",
+            "evidence": "All hunks are in the docstring (lines 666-695). The hunk header shows the code context `# Algorithm: https://w.wiki/Qai`, but no lines of executable code are added or removed. Nothing in the diff simplifies the implementation.",
+            "suggested_fix": "Either make the intended implementation change, or update the task/PR description to say this is a docstring-only change.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2036,
+          "output_tokens": 1028,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00064512
+        },
+        "latency_s": 0.2,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "ac896b0d2418",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "more_itertools/more.py",
+              "line_start": 686,
+              "line_end": 693,
+              "summary": "The new paragraph about equal-but-non-identical elements is hard to parse and makes a specific behavioral claim (\"drawn evenly from its class, cycled thereafter\") that the diff does not verify.",
+              "evidence": "Text reads: \"If a) sorting is not possible, and b) multiple distinct elements compare equal, forming equivalent group (e.g. [1,True] in [1, True, \\\"love\\\"]), then the particular element ... is drawn evenly from its class, in the order of appearance in *iterable* (cycled thereafter).\" It has a missing article (\"forming an equivalent group\"), a stray double space, and an example list that is not valid as written.",
+              "suggested_fix": "Tighten the wording and add a doctest that demonstrates the stated ordering, or keep the original explanatory examples.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-adeda34b",
+      "score": {
+        "item_id": "more-itertools-revert-adeda34b",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "9f97acf7fc10",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000467995,
+        "latency_s": 0.172,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "9f97acf7fc10",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 3083,
+            "line_end": 3083,
+            "summary": "For n <= -2, the new one-liner raises ValueError from islice instead of returning False as the old code did.",
+            "evidence": "The new body is `return ilen(islice(filter(predicate, iterable), n + 1)) == n`. For n = -2, `n + 1` is -1, and `islice` rejects negative stop values with ValueError. The removed code had an explicit `if n < 0: return False` branch, so `exactly_n(iterable, -2)` used to return False and now raises.",
+            "suggested_fix": "Keep a guard such as `if n < 0: return False` before the islice call, or otherwise make sure negative n never reaches islice. Add a test for a negative n below -1.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1455,
+          "output_tokens": 819,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000467995
+        },
+        "latency_s": 0.172,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-cca32949",
+      "score": {
+        "item_id": "more-itertools-revert-cca32949",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000530495,
+        "latency_s": 0.101,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1391,
+          "output_tokens": 960,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000530495
+        },
+        "latency_s": 0.101,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "da1795ce49b3",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 286,
+              "line_end": 286,
+              "summary": "Switching from getattr(...) truthiness to hasattr changes behavior when an iterable sets __reversed__ to None.",
+              "evidence": "Previously `getattr(iterable, '__reversed__', None)` was falsy when the attribute exists but is None, so `last` fell through to the deque path and still returned the last item. With `hasattr`, such an object takes the `next(reversed(iterable))` branch; calling a None `__reversed__` raises TypeError, which the except clause turns into ValueError (or the default) even though the iterable is iterable and has a valid last item.",
+              "suggested_fix": "Keep the truthiness check, e.g. `if getattr(iterable, '__reversed__', None):`, or add a test covering an iterable whose __reversed__ is None.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-cd0a3a87",
+      "score": {
+        "item_id": "more-itertools-revert-cd0a3a87",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "3b941edb2cff",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00045487,
+        "latency_s": 0.117,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "3b941edb2cff",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 478,
+            "line_end": 478,
+            "summary": "Removing the StopIteration handler changes how `iterate` ends: a `func` that raises StopIteration now breaks iteration instead of terminating it cleanly.",
+            "evidence": "The original code caught StopIteration from `func(start)` and broke out of the loop, so the generator ended normally. The new `start = func(start)` lets StopIteration escape the generator body. Under PEP 479 (Python 3.7+), that becomes a RuntimeError ('generator raised StopIteration'). Any caller or test relying on StopIteration as the termination signal will now crash.",
+            "suggested_fix": "Keep the try/except StopIteration; it is the behavior that makes the iterator terminate. If the goal is simplification, express it differently without changing the termination semantics, and add a test that func raising StopIteration ends the iterator.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1314,
+          "output_tokens": 828,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00045487
+        },
+        "latency_s": 0.117,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-cf186b5d",
+      "score": {
+        "item_id": "more-itertools-revert-cf186b5d",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "0b613bdbe8a0",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "b08344580764"
+        ],
+        "cost_usd": 0.000560495,
+        "latency_s": 0.064,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "0b613bdbe8a0",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 4334,
+            "line_end": 4334,
+            "summary": "The length check now calls len() on the raw `element` argument, which breaks when `element` is a non-sized iterable such as a generator.",
+            "evidence": "more.py:4333 does `elements = tuple(element)`, which consumes and accepts any iterable. The changed check at 4334 then calls `len(element)`. For a generator or other iterator without `__len__`, this raises TypeError instead of the intended ValueError or a successful index. The original `len(elements)` was safe because `elements` is already a tuple. `len(args)` is equivalent to `len(pools)`, so only the `element` side is a regression.",
+            "suggested_fix": "Keep `if len(elements) != len(args):`. This is the simplification that is actually safe, since `len(elements)` and `len(args)` match the original semantics.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "b08344580764",
+            "category": "scope_creep",
+            "severity": "nit",
+            "confidence": 0.5,
+            "file": "more_itertools/more.py",
+            "line_start": 4338,
+            "line_end": 4338,
+            "summary": "An unrelated blank line was added before `return index`.",
+            "evidence": "The diff inserts an empty line between the loop and `return index` at more.py:4338. This is formatting noise outside the stated simplification task.",
+            "suggested_fix": "Remove the added blank line.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1379,
+          "output_tokens": 1023,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000560495
+        },
+        "latency_s": 0.064,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    }
+  ]
+}

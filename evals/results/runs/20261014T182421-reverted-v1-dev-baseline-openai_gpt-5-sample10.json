@@ -1,0 +1,758 @@
+{
+  "run_id": "20261014T182421-reverted-v1-dev-baseline-openai_gpt-5-sample10",
+  "started_at": "2026-10-14T18:24:21.552770+00:00",
+  "dataset": "reverted-v1",
+  "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "baseline",
+  "model": "openai/gpt-5",
+  "watchman_commit": "a0524a6",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic"
+  },
+  "subset": "sample10",
+  "items": [
+    {
+      "item_id": "attrs-revert-9de675f4",
+      "score": {
+        "item_id": "attrs-revert-9de675f4",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "436b85bb3c27",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.01873125,
+        "latency_s": 23.216,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "436b85bb3c27",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.74,
+            "file": "src/attr/_make.py",
+            "line_start": 795,
+            "line_end": 801,
+            "summary": "Removed special-case handling for property closures, potentially breaking zero-arg super() in property getters.",
+            "evidence": "The branch handling properties was removed: previously, for `property`, `closure_cells = getattr(item.fget, \"__closure__\", None)` with a comment 'Workaround for property `super()` shortcut (PY3-only)'. Now properties fall through to `else: closure_cells = getattr(item, \"__closure__\", None)` (src/attr/_make.py:~795). `property` objects do not have `__closure__`, so closures for fget are no longer captured or rewritten.",
+            "suggested_fix": "Reintroduce the property-specific branch to derive closures from `item.fget` (and possibly `fset`/`fdel`), so zero-arg super() cells in property getters are updated correctly.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 913,
+          "output_tokens": 1759,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.01873125
+        },
+        "latency_s": 23.216,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-af9c5109",
+      "score": {
+        "item_id": "attrs-revert-af9c5109",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "7e74e4758356",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "900493e9f1cf"
+        ],
+        "cost_usd": 0.0196875,
+        "latency_s": 34.871,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7e74e4758356",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "src/attr/validators.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "disabled() can erroneously enable validators when they were disabled before entering the context.",
+            "evidence": "The finally block sets set_run_validators(True) regardless of the prior state. If validators were already disabled before entering disabled(), exiting will enable them, corrupting global state.",
+            "suggested_fix": "Restore the prior state captured before the context: use prev = get_run_validators() and set_run_validators(prev) in the finally block.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "900493e9f1cf",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.94,
+            "file": "src/attr/validators.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "disabled() no longer restores the previous validator state, breaking nestability and changing behavior.",
+            "evidence": "In disabled(), the finally block now calls set_run_validators(True) unconditionally instead of restoring the previous state (prev = get_run_validators(); ... finally: set_run_validators(prev)). This breaks nesting: exiting an inner disabled() will re-enable validators even if an outer disabled() is still active.",
+            "suggested_fix": "Capture the previous state with prev = get_run_validators() before setting False, and restore it in the finally block: set_run_validators(prev).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 902,
+          "output_tokens": 1856,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0196875
+        },
+        "latency_s": 34.871,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-ce89f5d1",
+      "score": {
+        "item_id": "attrs-revert-ce89f5d1",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "0e289e9f0ec6",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "8fdc10fc62f7"
+        ],
+        "cost_usd": 0.04078375,
+        "latency_s": 52.767,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "0e289e9f0ec6",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.86,
+            "file": "src/attr/exceptions.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "ClassVar 'args' is set to a list instead of a tuple and will be ignored at runtime by BaseException, leaving instances with empty args",
+            "evidence": "The new code sets: args: ClassVar[tuple[str]] = [msg]. This assigns a list to a variable annotated as a tuple, and more importantly BaseException.__init__ sets an instance attribute self.args to the provided args (defaulting to ()), so this class-level 'args' is not used. Instances created with FrozenError() will have args == () instead of (\"can't set attribute\",).",
+            "suggested_fix": "Don't set a class-level 'args'. Instead, set the instance args by overriding __init__: def __init__(self): super().__init__(self.msg). If keeping a class-level constant, ensure it's a tuple: (msg,).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "8fdc10fc62f7",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.92,
+            "file": "src/attr/exceptions.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "FrozenError no longer sets a default message and now accepts arbitrary args, changing error text and behavior",
+            "evidence": "The __init__ method that previously did `super().__init__(\"can't set attribute\")` was removed, and replaced with class attributes:\n+    msg = \"can't set attribute\"\n+    args: ClassVar[tuple[str]] = [msg]\nWithout an overridden __init__, BaseException.__init__ sets self.args based on passed args (defaulting to ()), so FrozenError() now has empty args and str(FrozenError()) is an empty string. Previously, it was always \"can't set attribute\". Additionally, FrozenError('x') is now accepted and changes the message, which previously resulted in a TypeError.",
+            "suggested_fix": "Restore a custom __init__ that calls super().__init__(self.msg) and do not rely on a class-level args. For example: def __init__(self): super().__init__(self.msg).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 923,
+          "output_tokens": 3963,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.04078375
+        },
+        "latency_s": 52.767,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-04351129",
+      "score": {
+        "item_id": "click-revert-04351129",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "e17668eb68fd",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.0208875,
+        "latency_s": 28.432,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e17668eb68fd",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.86,
+            "file": "src/click/core.py",
+            "line_start": 700,
+            "line_end": 710,
+            "summary": "Removed tracking of kwargs in Context.invoke, changing forward() behavior across multiple levels.",
+            "evidence": "In Context.invoke, the line that updated ctx.params with kwargs was removed (previously: 'ctx.params.update(kwargs)'). See around src/click/core.py:700-710 where this assignment no longer exists. The corresponding docstrings noting this 8.0 behavior were also removed earlier in the file. This breaks the previous contract where forward() would pass kwargs on in subsequent calls.",
+            "suggested_fix": "Restore 'ctx.params.update(kwargs)' (or an equivalent mechanism) to preserve multi-level forward propagation of kwargs. If behavior change is intended, document it clearly and gate it behind a major-version change.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1110,
+          "output_tokens": 1950,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0208875
+        },
+        "latency_s": 28.432,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-revert-05b795c9",
+      "score": {
+        "item_id": "click-revert-05b795c9",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "fd89445ae23f",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.02451,
+        "latency_s": 30.037,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "fd89445ae23f",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.97,
+            "file": "src/click/termui.py",
+            "line_start": 600,
+            "line_end": 600,
+            "summary": "Overline styling now incorrectly depends on 'underline' instead of 'overline'.",
+            "evidence": "src/click/termui.py:600: bits.append(f\"\\033[{53 if underline else 55}m\") — this line uses 'underline' where it should use 'overline', breaking the overline flag behavior.",
+            "suggested_fix": "Use the correct condition variable: bits.append(f\"\\033[{53 if overline else 55}m\").",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 944,
+          "output_tokens": 2333,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.02451
+        },
+        "latency_s": 30.037,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "8a2c15298076",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.97,
+              "file": "src/click/termui.py",
+              "line_start": 602,
+              "line_end": 602,
+              "summary": "Italic styling uses the wrong condition and ANSI code, colliding with blink and ignoring 'italic'.",
+              "evidence": "src/click/termui.py:602: bits.append(f\"\\033[{5 if underline else 23}m\") — this references 'underline' instead of 'italic' and uses code 5 (blink) instead of 3 (italic), causing incorrect behavior and potential duplication with the blink block at line ~604.",
+              "suggested_fix": "Restore correct logic: bits.append(f\"\\033[{3 if italic else 23}m\").",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates fd89445ae23f (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-revert-955ca492",
+      "score": {
+        "item_id": "click-revert-955ca492",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "06a83d9e49c0",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "95bd9d4bd96b"
+        ],
+        "cost_usd": 0.03700125,
+        "latency_s": 45.236,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "06a83d9e49c0",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.78,
+            "file": "src/click/core.py",
+            "line_start": 2686,
+            "line_end": 2690,
+            "summary": "Documentation claims new behavior that contradicts the actual code logic for whether an option needs a value.",
+            "evidence": "Docstring adds: 'If flag_value is set or no default is provided, the flag can be accepted without an argument.' (src/click/core.py:2686-2690). However, the code later sets self._flag_needs_value = flag_value is not UNSET or self.default is UNSET (src/click/core.py:2786-2787), which indicates the option needs a value under those same conditions.",
+            "suggested_fix": "Either update the code to match the documented behavior (e.g., set self._flag_needs_value = (flag_value is UNSET) and (self.default is not UNSET)) or revert the documentation to reflect the current behavior.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "95bd9d4bd96b",
+            "category": "comment_noise",
+            "severity": "minor",
+            "confidence": 0.73,
+            "file": "src/click/core.py",
+            "line_start": 2782,
+            "line_end": 2787,
+            "summary": "Inline comment misstates behavior relative to the code assignment directly below it.",
+            "evidence": "Comment says: 'If flag_value is set or no default is provided the flag can be accepted without an argument.' (src/click/core.py:2782-2785). The next line assigns self._flag_needs_value = flag_value is not UNSET or self.default is UNSET (src/click/core.py:2786-2787), which implies the flag needs a value in those cases.",
+            "suggested_fix": "Align the comment with actual logic, or update the logic to match the intended behavior.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1105,
+          "output_tokens": 3562,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.03700125
+        },
+        "latency_s": 45.236,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f828de3cb64d",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.6,
+              "file": "src/click/core.py",
+              "line_start": 2684,
+              "line_end": 2787,
+              "summary": "Change updates documentation and comments but does not simplify the implementation as stated in the task.",
+              "evidence": "No functional code simplification was made; only docstrings and comments were modified between 2684-2690 and 2782-2787.",
+              "suggested_fix": "Either provide the intended implementation simplification or adjust the task/commit message to reflect documentation-only changes.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 06a83d9e49c0 (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-revert-15d09a3b",
+      "score": {
+        "item_id": "httpx-revert-15d09a3b",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "9374dadf1be8",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.04410875,
+        "latency_s": 53.859,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "9374dadf1be8",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.86,
+            "file": "httpx/_utils.py",
+            "line_start": 259,
+            "line_end": 268,
+            "summary": "NO_PROXY IPv6 entries are now rendered as invalid patterns (missing brackets), likely breaking matching or parsing",
+            "evidence": "In get_environment_proxies, the special handling for IPv6 was removed and replaced with a single line: mounts[f\"all://*{hostname}\"] = None (httpx/_utils.py: around the loop over NO_PROXY values). Previously IPv6 addresses were wrapped in brackets: mounts[f\"all://[{hostname}]\"] = None. For an entry like ::1, the new pattern becomes all://*::1, which is not a valid host/netloc format and will not match IPv6 hosts as intended, and may cause parsing errors in URLPattern.",
+            "suggested_fix": "Detect IPv6 entries (e.g., presence of ':') and wrap them in brackets: mounts[f\"all://[{hostname}]\"] = None, without a leading wildcard.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1191,
+          "output_tokens": 4262,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.04410875
+        },
+        "latency_s": 53.859,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "4d7330a20576",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.7,
+              "file": "httpx/_utils.py",
+              "line_start": 259,
+              "line_end": 268,
+              "summary": "Changed NO_PROXY handling for IPv4 addresses and 'localhost' from exact to suffix-matching wildcard, broadening scope",
+              "evidence": "The previous code treated IPv4 addresses and 'localhost' as exact matches (e.g., mounts[f\"all://{hostname}\"] = None and mounts[f\"all://localhost\"] = None). The new code applies mounts[f\"all://*{hostname}\"] = None for all cases, including IPv4 and 'localhost'. This changes matching semantics, potentially excluding proxies for hosts that merely end with 'localhost' or an IP string.",
+              "suggested_fix": "Retain exact matching for IPv4 addresses and 'localhost' (no leading *) while using wildcard suffix only for domain names.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 9374dadf1be8 (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-revert-b7dc0c3d",
+      "score": {
+        "item_id": "httpx-revert-b7dc0c3d",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "12b2708db6ac"
+        ],
+        "cost_usd": 0.03672375,
+        "latency_s": 40.083,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "12b2708db6ac",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.76,
+            "file": "httpx/_content.py",
+            "line_start": 1,
+            "line_end": 1,
+            "summary": "Removed guard now treats SyncByteStream with a read attribute as file-like, changing behavior and possibly breaking call signature expectations",
+            "evidence": "httpx/_content.py: condition changed from `if hasattr(self._stream, \"read\") and not isinstance(self._stream, SyncByteStream):` to `if hasattr(self._stream, \"read\"):`. The code then calls `self._stream.read(self.CHUNK_SIZE)`. Also reported by: Removed guard now treats AsyncByteStream with an aread attribute as file-like, changing behavior and possibly breaking call signature expectations.",
+            "suggested_fix": "Restore the `and not isinstance(self._stream, SyncByteStream)` guard or otherwise ensure we only use the file-like read path for non-ByteStream objects.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1019,
+          "output_tokens": 3545,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.03672375
+        },
+        "latency_s": 40.083,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-06f31819",
+      "score": {
+        "item_id": "more-itertools-revert-06f31819",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "47b6f2da30b7",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.0375425,
+        "latency_s": 37.655,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "47b6f2da30b7",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.92,
+            "file": "more_itertools/more.py",
+            "line_start": 4276,
+            "line_end": 4280,
+            "summary": "Unconditional comb(n + r - 1, r) raises ValueError for n == 0, breaking empty-iterable cases",
+            "evidence": "more_itertools/more.py:4279 sets c = comb(n + r - 1, r) unconditionally. For n == 0 and r == 0 this calls comb(-1, 0), and for n == 0 and r > 0 this calls comb(r - 1, r); math.comb raises ValueError in both cases. Previously, c was computed as 'comb(n + r - 1, r) if n else 0 if r else 1', yielding c == 1 for (n==0,r==0) and c == 0 for (n==0,r>0).",
+            "suggested_fix": "Restore the guarded computation: c = comb(n + r - 1, r) if n else (0 if r else 1).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1050,
+          "output_tokens": 3623,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0375425
+        },
+        "latency_s": 37.655,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f99f2c8b35eb",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.9,
+              "file": "more_itertools/more.py",
+              "line_start": 4272,
+              "line_end": 4276,
+              "summary": "Added ValueError for r > len(iterable) changes API; combinations with replacement should allow r > n",
+              "evidence": "more_itertools/more.py:4273-4274 adds 'if (r < 0) or (r > n): raise ValueError' and the docstring was updated to say 'ValueError will be raised if r is negative or greater than the length of iterable'. Previously, r > n was supported (standard for combinations with replacement) and c was computed accordingly.",
+              "suggested_fix": "Remove the 'r > n' check and revert the docstring to only mention negative r; combinations with replacement should allow r > n.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 47b6f2da30b7 (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-revert-cd0a3a87",
+      "score": {
+        "item_id": "more-itertools-revert-cd0a3a87",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1445ddffce4c",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.0161225,
+        "latency_s": 28.051,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1445ddffce4c",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "more_itertools/more.py",
+            "line_start": 475,
+            "line_end": 481,
+            "summary": "Removing StopIteration handling changes behavior and can raise RuntimeError per PEP 479 instead of cleanly terminating",
+            "evidence": "In iterate(), the try/except StopIteration block was removed and replaced with a bare `start = func(start)` (more_itertools/more.py:~479). Previously, a StopIteration from func would break the loop; now it bubbles out of the generator and becomes RuntimeError: generator raised StopIteration.",
+            "suggested_fix": "Restore the try/except StopIteration: wrap `start = func(start)` in try/except StopIteration and `break` on StopIteration to preserve prior semantics and avoid PEP 479 RuntimeError.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 858,
+          "output_tokens": 1505,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0161225
+        },
+        "latency_s": 28.051,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    }
+  ]
+}

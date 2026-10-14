@@ -1,0 +1,1073 @@
+{
+  "run_id": "20261014T182747-clean-v1-dev-baseline-openai_gpt-5-sample14",
+  "started_at": "2026-10-14T18:27:47.110472+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "baseline",
+  "model": "openai/gpt-5",
+  "watchman_commit": "a0524a6",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.5,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic"
+  },
+  "subset": "sample14",
+  "items": [
+    {
+      "item_id": "attrs-clean-8c9a7968",
+      "score": {
+        "item_id": "attrs-clean-8c9a7968",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.06246125,
+        "latency_s": 62.156,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3497,
+          "output_tokens": 5809,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.06246125
+        },
+        "latency_s": 62.156,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c7308a66",
+      "score": {
+        "item_id": "attrs-clean-c7308a66",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "1007c513e37b",
+          "2fc6109a1849"
+        ],
+        "cost_usd": 0.0450675,
+        "latency_s": 39.806,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1007c513e37b",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.92,
+            "file": "src/attr/__init__.pyi",
+            "line_start": 489,
+            "line_end": 496,
+            "summary": "resolve_types stub now accepts and returns an instance type variable instead of a class type, which is incorrect",
+            "evidence": "In the stub, `_A = TypeVar(\"_A\", bound=AttrsInstance)` was added (line ~69) and the signature changed to `def resolve_types(cls: _A, ...) -> _A` (lines 489-496). resolve_types operates on a class and returns the class, consistent with other APIs like `fields(cls: Type[AttrsInstance])`, so the parameter should be a Type[...] not an instance.",
+            "suggested_fix": "Change the stub to accept and return a class type. For example: `def resolve_types(cls: Type[_A], globalns: Optional[Dict[str, Any]] = ..., localns: Optional[Dict[str, Any]] = ..., attribs: Optional[List[Attribute[Any]]] = ..., include_extras: bool = ...) -> Type[_A]`, with `_A = TypeVar(\"_A\", bound=AttrsInstance)`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "2fc6109a1849",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.65,
+            "file": "src/attr/_funcs.py",
+            "line_start": 401,
+            "line_end": 406,
+            "summary": "Docstring mentions typing.get_hints instead of typing.get_type_hints",
+            "evidence": "Docstring says: `Pass ``include_extras`` to ``typing.get_hints```, but the code calls `typing.get_type_hints` (lines 431-435).",
+            "suggested_fix": "Update the docstring to say `typing.get_type_hints`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2214,
+          "output_tokens": 4230,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0450675
+        },
+        "latency_s": 39.806,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c824bbe1",
+      "score": {
+        "item_id": "attrs-clean-c824bbe1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "f386c2a30923",
+          "054ef5863685"
+        ],
+        "cost_usd": 0.0669125,
+        "latency_s": 89.569,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "f386c2a30923",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": ".github/workflows/ci.yml",
+            "line_start": 96,
+            "line_end": 96,
+            "summary": "CI workflow change is unrelated to the stated task",
+            "evidence": "Changed coverage summary command to use a different format: .github/workflows/ci.yml:96 'python -Im coverage report --format=markdown >> $GITHUB_STEP_SUMMARY'",
+            "suggested_fix": "Revert the CI workflow change or submit it in a separate PR focused on CI/reporting.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "054ef5863685",
+            "category": "scope_creep",
+            "severity": "nit",
+            "confidence": 0.9,
+            "file": ".gitignore",
+            "line_start": 20,
+            "line_end": 20,
+            "summary": "Ignoring t.py is unrelated to the stated task",
+            "evidence": "Added line in .gitignore:20 't.py'",
+            "suggested_fix": "Remove this ignore entry or include it in a separate housekeeping PR.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1738,
+          "output_tokens": 6474,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0669125
+        },
+        "latency_s": 89.569,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "afb46942722b",
+              "category": "hallucinated_dependency",
+              "severity": "major",
+              "confidence": 0.7,
+              "file": ".github/workflows/ci.yml",
+              "line_start": 96,
+              "line_end": 96,
+              "summary": "Uses coverage CLI option --format=markdown that may not be available in the pinned/installed coverage.py version",
+              "evidence": "Updated command: .github/workflows/ci.yml:96 'python -Im coverage report --format=markdown >> $GITHUB_STEP_SUMMARY'",
+              "suggested_fix": "Ensure the project pins a coverage.py version that supports --format=markdown, or keep the previous sed-based formatting for compatibility.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates f386c2a30923 (scope_creep)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-edcaf04a",
+      "score": {
+        "item_id": "attrs-clean-edcaf04a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.03695,
+        "latency_s": 42.431,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1328,
+          "output_tokens": 3529,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.03695
+        },
+        "latency_s": 42.431,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-555fa9bb",
+      "score": {
+        "item_id": "click-clean-555fa9bb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "61ea5363a445",
+          "778e3ca71020"
+        ],
+        "cost_usd": 0.04354125,
+        "latency_s": 56.065,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "61ea5363a445",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.74,
+            "file": "src/click/core.py",
+            "line_start": 483,
+            "line_end": 496,
+            "summary": "Context.__exit__ now returns the ExitStack result, potentially suppressing exceptions where previously they always propagated",
+            "evidence": "Changed signature at src/click/core.py:483 from `) -> None:` to `) -> bool | None:` and added `return exit_result` (lines ~491-494). Previously `__exit__` called `self.close()` and returned None; now it calls `_close_with_exception_info(...)` and returns its result.",
+            "suggested_fix": "If suppression is not intended, keep forwarding exception info to ExitStack but always return None from Context.__exit__. Otherwise, document this behavior change clearly.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "778e3ca71020",
+            "category": "comment_noise",
+            "severity": "minor",
+            "confidence": 0.86,
+            "file": "src/click/core.py",
+            "line_start": 626,
+            "line_end": 634,
+            "summary": "Sphinx markup typo in _close_with_exception_info docstring breaks :meth: role",
+            "evidence": "Docstring in _close_with_exception_info: \"using :meth;`with_resource`\" (note the semicolon) at src/click/core.py around the new method. Correct form is \":meth:`with_resource`\".",
+            "suggested_fix": "Replace \":meth;`with_resource`\" with \":meth:`with_resource`\" in the docstring.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1217,
+          "output_tokens": 4202,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.04354125
+        },
+        "latency_s": 56.065,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-a9711c50",
+      "score": {
+        "item_id": "click-clean-a9711c50",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "e45f12317f66",
+          "f4b5b95e0696"
+        ],
+        "cost_usd": 0.04974625,
+        "latency_s": 47.892,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e45f12317f66",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.83,
+            "file": "tests/test_testing.py",
+            "line_start": 322,
+            "line_end": 330,
+            "summary": "Test asserts directory is removed even though implementation intentionally ignores removal failures, causing potential flakiness",
+            "evidence": "tests/test_testing.py: after the context, test_isolated_runner asserts `assert not os.path.exists(d)`. However, src/click/testing.py wraps the cleanup in `try: shutil.rmtree(t) except OSError: pass`, meaning failures to remove are explicitly ignored and the directory may remain. See src/click/testing.py: lines around the `except OSError:  # noqa: B014` block.",
+            "suggested_fix": "Instead of asserting the directory was removed, assert that the working directory is restored, or monkeypatch/shim `shutil.rmtree` to assert it was called when `temp_dir` is None. For example, use monkeypatch to track that `shutil.rmtree` was invoked, rather than checking filesystem state.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "f4b5b95e0696",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "CHANGES.rst",
+            "line_start": 165,
+            "line_end": 167,
+            "summary": "Typo in class name in changelog: 'CLIRunner' should be 'CliRunner'",
+            "evidence": "CHANGES.rst: 'Control the location of the temporary directory created by ``CLIRunner.isolated_filesystem`` ...' The class in code is named CliRunner, not CLIRunner.",
+            "suggested_fix": "Change 'CLIRunner.isolated_filesystem' to 'CliRunner.isolated_filesystem'.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1621,
+          "output_tokens": 4772,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.04974625
+        },
+        "latency_s": 47.892,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-b9abeaa3",
+      "score": {
+        "item_id": "click-clean-b9abeaa3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "8ac004ade3c2"
+        ],
+        "cost_usd": 0.0241175,
+        "latency_s": 36.121,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [
+          {
+            "id": "8ac004ade3c2",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.74,
+            "file": "src/click/core.py",
+            "line_start": 2084,
+            "line_end": 2092,
+            "summary": "New comment contains minor grammatical issues that can confuse readers.",
+            "evidence": "Lines 2084-2092: '# XXX The default historically embed two concepts:' (should be 'embeds'); 'handy to arbitrage the default value' likely intends 'arbitrate' or 'determine'.",
+            "suggested_fix": "Revise the comment for clarity, e.g.: 'The default historically embeds two concepts: (1) declaring that the Parameter carries a default (useful to arbitrate/resolve defaults for coupled Parameters sharing the same name, such as flag options), and (2) the actual default value.'",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1038,
+          "output_tokens": 2282,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0241175
+        },
+        "latency_s": 36.121,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-f561f188",
+      "score": {
+        "item_id": "click-clean-f561f188",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "854f9c71970a"
+        ],
+        "cost_usd": 0.03472625,
+        "latency_s": 39.741,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "854f9c71970a",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.72,
+            "file": "src/click/core.py",
+            "line_start": 2365,
+            "line_end": 2374,
+            "summary": "Docstring now claims the sentinel is only passed when no default is specified, which likely misdocuments existing behavior.",
+            "evidence": "New text: \"The :attr:`callback` gets an internal sentinel if the parameter was not set by the user and no default was specified.\" (src/click/core.py:2369-2371). Previously the doc explicitly stated the callback receives the sentinel if the parameter is not given by the CLI user, regardless of default, and the code behavior was not changed in this diff.",
+            "suggested_fix": "Adjust the versionchanged note to accurately reflect behavior without naming the sentinel, e.g., \"The callback receives an internal sentinel when the user does not provide a value,\" and avoid adding the \"no default was specified\" condition unless the code actually enforces it.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1077,
+          "output_tokens": 3338,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.03472625
+        },
+        "latency_s": 39.741,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "62b37deba898",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.9,
+              "file": "src/click/core.py",
+              "line_start": 2366,
+              "line_end": 2368,
+              "summary": "Minor grammar issue in the new docstring sentence.",
+              "evidence": "Text reads: \"The callback is receiving the value as-is, which let the developer decide...\" (src/click/core.py:2366-2368). It should be \"which lets the developer decide\" or \"which allows the developer to decide\".",
+              "suggested_fix": "Change to: \"The callback receives the value as-is, which lets the developer decide how to handle different cases.\"",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 854f9c71970a (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-b43af721",
+      "score": {
+        "item_id": "httpx-clean-b43af721",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "b1b8793f2781",
+          "7efb025bd9b2",
+          "08626015399c"
+        ],
+        "cost_usd": 0.10041,
+        "latency_s": 123.717,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b1b8793f2781",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "httpx/_client.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "Closing the auth flow in a finally block can raise and override a successful return or mask original exceptions.",
+            "evidence": "Client._send_handling_auth (sync): a new finally block calls auth_flow.close() unconditionally (httpx/_client.py: added 'finally: auth_flow.close()'). AsyncClient equivalent calls 'await auth_flow.aclose()' in finally. If the auth generator mishandles GeneratorExit (e.g., yields on close), close()/aclose() will raise RuntimeError, potentially overriding a returned Response or masking the original exception.",
+            "suggested_fix": "Wrap auth_flow.close()/auth_flow.aclose() in a try/except that suppresses exceptions (e.g., using contextlib.suppress(Exception)) so they cannot override prior outcomes.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "7efb025bd9b2",
+            "category": "hallucinated_dependency",
+            "severity": "major",
+            "confidence": 0.55,
+            "file": "httpx/_config.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "Use of ssl.PROTOCOL_TLS_CLIENT may not be available on all supported Python versions, risking runtime AttributeError.",
+            "evidence": "In _create_default_ssl_context the code now constructs the context with 'ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)' (httpx/_config.py: new lines in that method). The repository still contains Python 3.6 compatibility code (httpx/_compat.py), but PROTOCOL_TLS_CLIENT is not available on some older Python versions. This can break initialization on those versions.",
+            "suggested_fix": "Fallback to a broadly-available protocol if PROTOCOL_TLS_CLIENT is missing, e.g.: protocol = getattr(ssl, 'PROTOCOL_TLS_CLIENT', ssl.PROTOCOL_TLS); context = ssl.SSLContext(protocol); or use ssl.create_default_context(ssl.Purpose.SERVER_AUTH).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "08626015399c",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.95,
+            "file": "httpx/_client.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "Typos in new comments reduce clarity.",
+            "evidence": "In __del__: 'partically initiallized' should be 'partially initialized' (httpx/_client.py: comment above getattr(self, '_state', None)).",
+            "suggested_fix": "Correct typos in comments: 'partially initialized'.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3568,
+          "output_tokens": 9595,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.10041
+        },
+        "latency_s": 123.717,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-db9072f9",
+      "score": {
+        "item_id": "httpx-clean-db9072f9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "c112f35271ff",
+          "4cc98e8157ee",
+          "3a8bb9227d58"
+        ],
+        "cost_usd": 0.1263225,
+        "latency_s": 102.291,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c112f35271ff",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.65,
+            "file": "httpx/_urlparse.py",
+            "line_start": 260,
+            "line_end": 266,
+            "summary": "normalize_path is now applied whenever a scheme is present, not only when an authority is present, which may alter behavior for non-hierarchical schemes",
+            "evidence": "Changed condition from 'if has_authority:' to 'if has_scheme or has_authority:' in urlparse (httpx/_urlparse.py: ~260).",
+            "suggested_fix": "Restrict normalize_path to URLs with an authority or known hierarchical schemes; avoid normalizing for opaque/non-hierarchical schemes (e.g., mailto:, data:).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "4cc98e8157ee",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "httpx/_urlparse.py",
+            "line_start": 328,
+            "line_end": 332,
+            "summary": "Host quoting now treats '%' and other forbidden characters as safe, potentially producing invalid reg-name hosts with raw percent signs",
+            "evidence": "In encode_host, WHATWG_SAFE = '\"`{}%|\\\\' and return quote(host.lower(), safe=SUB_DELIMS + WHATWG_SAFE) (httpx/_urlparse.py: ~328-331). This allows raw '%' and other disallowed characters to remain, which violates RFC 3986 reg-name grammar unless validated elsewhere.",
+            "suggested_fix": "Do not include '%' in the safe set for hosts. Instead, detect forbidden host code points and raise InvalidURL to align with WHATWG tests, rather than preserving them unencoded.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "3a8bb9227d58",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.8,
+            "file": "tests/models/test_whatwg.py",
+            "line_start": 22,
+            "line_end": 30,
+            "summary": "Tests use 'return' to skip cases rather than pytest.skip, which reduces test output clarity",
+            "evidence": "if test_case[\"href\"] in (\"a: foo.com\", \"lolscheme:x x#x%20x\"): ... return (tests/models/test_whatwg.py: ~22-27).",
+            "suggested_fix": "Use pytest.skip(\"reason\") to explicitly mark skipped cases.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 41354,
+          "output_tokens": 7463,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.1263225
+        },
+        "latency_s": 102.291,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "e5cad82876cf",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.75,
+              "file": "tests/models/test_whatwg.py",
+              "line_start": 12,
+              "line_end": 20,
+              "summary": "Reading JSON test data without specifying encoding is brittle on non-UTF-8 locales and happens at import time",
+              "evidence": "with open(\"tests/models/whatwg.json\", \"r\") as input: ... json.load(input) at module import (tests/models/test_whatwg.py: ~12-16).",
+              "suggested_fix": "Open the file with encoding='utf-8' and move reading/processing inside a helper function or a fixture to avoid file I/O at import time.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates 3a8bb9227d58 (convention_violation)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-e9b0c85d",
+      "score": {
+        "item_id": "httpx-clean-e9b0c85d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "d11906866b4e"
+        ],
+        "cost_usd": 0.061845,
+        "latency_s": 60.317,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "d11906866b4e",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.75,
+            "file": "httpx/_urls.py",
+            "line_start": 488,
+            "line_end": 492,
+            "summary": "Redundant double construction of URL object may re-trigger parsing/normalization and undermines intent",
+            "evidence": "In copy_with, the code constructs a URL twice: first `new_url = URL(self)` then returns `URL(new_url)` after mutating `new_url._uri_reference` (httpx/_urls.py:488-492). Returning `URL(new_url)` is redundant and could cause unintended re-parsing depending on the constructor’s handling of URL instances.",
+            "suggested_fix": "Return the already prepared instance: replace `return URL(new_url)` with `return new_url`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1532,
+          "output_tokens": 5993,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.061845
+        },
+        "latency_s": 60.317,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "e3b93c4b43d9",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_urls.py",
+              "line_start": 490,
+              "line_end": 491,
+              "summary": "Normalization now only applied for absolute URLs, which may change behavior for relative URLs compared to previous implementation",
+              "evidence": "New code conditionally normalizes only when `new_url.is_absolute_url` (httpx/_urls.py:490-491). Previously, creating a new URL from `unsplit()` could have applied normalization regardless via the constructor path.",
+              "suggested_fix": "Clarify and align normalization behavior with constructor semantics, or document the intended change. If normalization should match previous behavior, consider normalizing consistently or deferring to the constructor’s established normalization path.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.50"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4e105c4c",
+      "score": {
+        "item_id": "more-itertools-clean-4e105c4c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.035655,
+        "latency_s": 46.875,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1444,
+          "output_tokens": 3385,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.035655
+        },
+        "latency_s": 46.875,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-c0780fbb",
+      "score": {
+        "item_id": "more-itertools-clean-c0780fbb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "b4edcf9c6105",
+          "420ecb165429"
+        ],
+        "cost_usd": 0.10568625,
+        "latency_s": 88.818,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b4edcf9c6105",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "more_itertools/more.py",
+            "line_start": 3923,
+            "line_end": 3932,
+            "summary": "_chunked_even_online yields incorrect results for small n (n<=2) and can hang for infinite iterables when n=1",
+            "evidence": "In _chunked_even_online, maxbuf is set to n*(n - 1) - 1 (line 3926). For n=1 this is -1, so the condition at line 3929 is never met, causing no yields on an infinite source and unbounded buffering. For n=2, maxbuf==1, so when len(buffer)==1 the code yields buffer[:n] (line 3930), producing a 1-element chunk instead of length 2, violating the intended behavior.",
+            "suggested_fix": "Ensure the online algorithm never yields a chunk shorter than n while streaming; e.g., set maxbuf = max(n, n*(n-1)-1) and special-case n==1 to yield singletons immediately. Add tests for infinite sources with n=1 and n=2.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "420ecb165429",
+            "category": "weak_test",
+            "severity": "minor",
+            "confidence": 0.7,
+            "file": "tests/test_more.py",
+            "line_start": 4552,
+            "line_end": 4564,
+            "summary": "Infinite-iterable test only covers n=4, missing cases n=1 and n=2 that reveal online algorithm bugs",
+            "evidence": "In ChunkedEvenTests.test_infinite, n is hard-coded to 4 ('n = 4'). This misses failures for n=1 (no yields) and n=2 (yields size-1 chunks) in _chunked_even_online.",
+            "suggested_fix": "Add similar infinite-iterable tests for n=1 and n=2 to catch small-n streaming behavior.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2317,
+          "output_tokens": 10279,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.10568625
+        },
+        "latency_s": 88.818,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "800a9db756eb",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.9,
+              "file": "more_itertools/more.py",
+              "line_start": 3925,
+              "line_end": 3926,
+              "summary": "Leftover TODO comment with uncertain bound in production code",
+              "evidence": "Line 3925: '# TODO: n*(n - 1) - 2 is not enough (tests fail), but this might be. Proof?'",
+              "suggested_fix": "Either provide a proof/rationale for the bound, adjust it to a correct one, or remove the TODO before merging.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates b4edcf9c6105 (correctness)"
+          },
+          {
+            "finding": {
+              "id": "b062faf5c2a5",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.8,
+              "file": "more_itertools/more.py",
+              "line_start": 3903,
+              "line_end": 3942,
+              "summary": "No validation for n>=1 leads to ZeroDivisionError for n=0 and undefined behavior in online path",
+              "evidence": "chunked_even accepts any n without validation. In the finite path, num_lists = ceil(N / n) (line 3940) will raise ZeroDivisionError for n==0. In the online path, maxbuf = n*(n - 1) - 1 (line 3926) becomes negative for n in {0,1}, causing incorrect behavior.",
+              "suggested_fix": "At the start of chunked_even, validate n>=1 and raise ValueError consistent with chunked().",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "restates b4edcf9c6105 (correctness)"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa60e38e",
+      "score": {
+        "item_id": "more-itertools-clean-fa60e38e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "2ae330040e77",
+          "a94079a8c431",
+          "dbc1f1294249"
+        ],
+        "cost_usd": 0.1229125,
+        "latency_s": 112.957,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2ae330040e77",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "more_itertools/recipes.py",
+            "line_start": 722,
+            "line_end": 729,
+            "summary": "convolve may now return floats instead of ints on Python 3.12+ due to use of math.sumprod via _sumprod",
+            "evidence": "more_itertools/recipes.py:725 now yields `_sumprod(kernel, window)` after introducing `_sumprod = getattr(math, 'sumprod', ...)` at lines ~68-72. Previously it used `sum(map(operator.mul, kernel, window))`, which preserves integer type. On Python 3.12+, math.sumprod returns a float, changing the type of convolve's outputs for integer inputs.",
+            "suggested_fix": "Restore integer-preserving behavior by using `sum(map(operator.mul, kernel, window))` (or `dotproduct(kernel, window)`) in convolve instead of `_sumprod`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "a94079a8c431",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "more_itertools/recipes.py",
+            "line_start": 814,
+            "line_end": 820,
+            "summary": "polynomial_from_roots may produce float coefficients on Python 3.12+ due to new convolve implementation using math.sumprod",
+            "evidence": "more_itertools/recipes.py:816-818 rewrites polynomial_from_roots to use `convolve`, which at 725 now uses `_sumprod` (math.sumprod on 3.12+). Previously, coefficients were computed via integer arithmetic (combinations/prod) and returned ints for integer roots; now results may be floats.",
+            "suggested_fix": "Either revert convolve to integer-preserving multiplication for integer inputs (use `dotproduct`/`sum(map(mul, ...))`) or ensure polynomial_from_roots casts coefficients appropriately when inputs are integers.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "dbc1f1294249",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "more_itertools/recipes.py",
+            "line_start": 917,
+            "line_end": 921,
+            "summary": "matmul may return floats instead of ints on Python 3.12+ due to replacing dotproduct with math.sumprod via _sumprod",
+            "evidence": "more_itertools/recipes.py:919 changes `starmap(dotproduct, ...)` to `starmap(_sumprod, ...)`. On Python 3.12+, `_sumprod` uses `math.sumprod`, which returns a float, changing the matrix element type for integer matrices.",
+            "suggested_fix": "Keep using `dotproduct` in matmul to preserve integer results for integer inputs, or explicitly cast the result type if needed.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "openai/gpt-5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2370,
+          "output_tokens": 11995,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.1229125
+        },
+        "latency_s": 112.957,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b0fa628a2ee2",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "more_itertools/recipes.py",
+              "line_start": 722,
+              "line_end": 729,
+              "summary": "Potential change in behavior for convolve when kernel length is 0: sliding_window(n=0) may raise instead of yielding nothing",
+              "evidence": "more_itertools/recipes.py:723-726 now uses `sliding_window(padded_signal, n)`. If `n == 0`, many sliding_window implementations raise ValueError, whereas the prior deque-based implementation effectively yielded no outputs.",
+              "suggested_fix": "Guard against `n == 0` (e.g., `if n == 0: return`), or document and test the intended behavior.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.50"
+          }
+        ]
+      }
+    }
+  ]
+}

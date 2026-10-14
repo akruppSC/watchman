@@ -1,0 +1,3501 @@
+{
+  "run_id": "20261014T181807-clean-v1-dev-baseline-anthropic_claude-haiku-5.5-rescored",
+  "started_at": "2026-10-14T18:18:07.839073+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "a0524a6",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "rescored_from": "20261014T161044-clean-v1-dev-baseline-anthropic_claude-haiku-5.5"
+  },
+  "subset": null,
+  "items": [
+    {
+      "item_id": "attrs-clean-112e50fc",
+      "score": {
+        "item_id": "attrs-clean-112e50fc",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00093612,
+        "latency_s": 0.295,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4936,
+          "output_tokens": 885,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00093612
+        },
+        "latency_s": 0.295,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-1921da6e",
+      "score": {
+        "item_id": "attrs-clean-1921da6e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000552745,
+        "latency_s": 0.242,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2113,
+          "output_tokens": 824,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000552745
+        },
+        "latency_s": 0.242,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-597c3a8a",
+      "score": {
+        "item_id": "attrs-clean-597c3a8a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.004215745,
+        "latency_s": 0.296,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 9149,
+          "output_tokens": 6391,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.004215745
+        },
+        "latency_s": 0.296,
+        "dropped_findings": 5,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "864bdd6e0a9d",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "tests/test_slots.py",
+              "line_start": 740,
+              "line_end": 752,
+              "summary": "Test names and docstrings are wrong: a typo in the test name, and a copy-pasted docstring that does not match the test.",
+              "evidence": "test_slots_cached_property_works_on_frozen_isntances has the docstring 'Infers type of cached property.' and the name contains the typo 'isntances'. The docstring is copied from test_slots_cached_property_infers_type.",
+              "suggested_fix": null,
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "a0f2c134a9da",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "src/attr/_make.py",
+              "line_start": 916,
+              "line_end": 940,
+              "summary": "Cached-property return annotations are written into the class's own __annotations__ dict only when that dict already exists; for a class with no annotations, the annotation is silently dropped.",
+              "evidence": "_get_annotations(self._cls) returns a fresh {} when the class has no own __annotations__, so `class_annotations[name] = annotation` mutates a temporary and the annotation is lost. The test test_slots_cached_property_infers_type only passes because the class already has `x: int`. The result depends on whether the class happens to have other annotations.",
+              "suggested_fix": "Write annotations to the same dict that ends up on the new class (for example, set cd['__annotations__'] explicitly), and add a test for a class with only a cached_property and no attr annotations.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "2fedf0b6b0a9",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.25,
+              "file": "src/attr/_make.py",
+              "line_start": 926,
+              "line_end": 934,
+              "summary": "The code mutates the user's original class __annotations__ dict in place while building the replacement class.",
+              "evidence": "class_annotations = _get_annotations(self._cls) returns the original class's __annotations__ object, and `class_annotations[name] = annotation` writes into it. The original class is normally discarded, but this is a side effect on user-owned state.",
+              "suggested_fix": null,
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "8de6e035dbdb",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "docs/how-does-it-work.md",
+              "line_start": 103,
+              "line_end": 118,
+              "summary": "Docs section has a trailing period in the heading and grammatical errors ('when uses *attrs*', 'as makes using slotted classes so easy').",
+              "evidence": "The heading '## Cached Properties on Slotted Classes.' ends with a period, and the sentence 'This could be surprising when uses *attrs*, as makes using slotted classes so easy' is ungrammatical.",
+              "suggested_fix": null,
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "56293ac2abf7",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.2,
+              "file": "tests/strategies.py",
+              "line_start": 6,
+              "line_end": 8,
+              "summary": "Unrelated whitespace churn: a blank line after the module docstring is removed and another is added before list_of_attrs.",
+              "evidence": "The diff removes the blank line after the module docstring and adds a blank line before `# Python functions support up to 255 arguments.`, neither of which relates to cached_property support.",
+              "suggested_fix": null,
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.20 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-7373d88f",
+      "score": {
+        "item_id": "attrs-clean-7373d88f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001474245,
+        "latency_s": 0.265,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3705,
+          "output_tokens": 2269,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001474245
+        },
+        "latency_s": 0.265,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "163bdcfbbb0e",
+              "category": "weak_test",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "tests/test_annotations.py",
+              "line_start": 592,
+              "line_end": 593,
+              "summary": "Imperative pytest.xfail() inside the test body skips all assertions on 3.14 for non-slotted classes, so a real regression in forward-reference handling can't fail the suite.",
+              "evidence": "tests/test_annotations.py: `if PY_3_14_PLUS and not slots: pytest.xfail(...)` is added before the test body in both the self-reference and forward-reference tests. pytest.xfail aborts the test immediately, so nothing after it runs. The same pattern is applied to the forward-reference test at ~line 609.",
+              "suggested_fix": "Use a non-strict @pytest.mark.xfail(PY_3_14_PLUS and not slots, strict=True, reason=...) marker, or make the 3.14 expectation an explicit assertion, so failures are visible and unexpected passes are flagged.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "142f90c2e6a4",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.3,
+              "file": "src/attr/_compat.py",
+              "line_start": 29,
+              "line_end": 33,
+              "summary": "On 3.14, annotationlib.get_annotations defaults to VALUE format, which evaluates annotations and can raise NameError for unresolved forward references; the previous code read __dict__ without evaluating them.",
+              "evidence": "_compat.py: `_get_annotations = annotationlib.get_annotations` is called with no format argument. The old `_get_annotations` in _make.py only read `cls.__dict__['__annotations__']`, which never triggered evaluation. The xfails for forward-reference tests in test_annotations.py suggest this path is behaviorally different on 3.14.",
+              "suggested_fix": "Call annotationlib.get_annotations(cls, format=annotationlib.Format.FORWARDREF) (or the equivalent non-evaluating format) so forward references don't raise, and verify the behavior with a test.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "9209213d643a",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "tests/test_slots.py",
+              "line_start": 778,
+              "line_end": 780,
+              "summary": "Non-strict xfail markers will silently pass (XPASS) if the 3.14 breakage is fixed, so the markers never force cleanup.",
+              "evidence": "Several new `@pytest.mark.xfail(PY_3_14_PLUS, reason=...)` markers (test_slots.py, test_make.py, test_3rd_party.py) lack strict=True.",
+              "suggested_fix": "Add strict=True so that an unexpected pass fails the suite and prompts removal of the marker.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "88928f0a5ea2",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "tests/test_make.py",
+              "line_start": 1841,
+              "line_end": 1846,
+              "summary": "Unrelated docstring reflow and a blank line insertion in test_slots.py are drive-by edits outside the 3.14 fix.",
+              "evidence": "test_make.py reflows the docstring of test_no_references_to_original_when_using_cached_property; test_slots.py adds a blank line after the module docstring.",
+              "suggested_fix": "Drop the unrelated formatting changes to keep the diff focused.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-7c9b31ea",
+      "score": {
+        "item_id": "attrs-clean-7c9b31ea",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001030995,
+        "latency_s": 0.196,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3267,
+          "output_tokens": 1492,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001030995
+        },
+        "latency_s": 0.196,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "0307e7f5c110",
+              "category": "swallowed_error",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "src/attr/validators.py",
+              "line_start": 625,
+              "line_end": 632,
+              "summary": "`_OrValidator.__call__` catches every `Exception` and discards it, so programming errors inside a wrapped validator (e.g. an AttributeError or NameError) are reported as a generic 'None satisfied' ValueError with no trace of the original cause.",
+              "evidence": "src/attr/validators.py:627-630: `except Exception: # noqa: BLE001, PERF203, S112` followed by `continue`. The original exception is never chained or logged, and the final `raise ValueError(msg)` does not reference it.",
+              "suggested_fix": "Catch only the validation-failure types (e.g. ValueError/TypeError, or a configurable exc_types like `not_` does), or attach the last caught exception as `__cause__`/included in the message so debugging remains possible.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d3f9b899237d",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_validators.py",
+              "line_start": 1280,
+              "line_end": 1288,
+              "summary": "Tests do not cover flattening of nested `or_` validators, the empty-argument case, or the error message content, so those behaviors are unverified.",
+              "evidence": "TestOr has test_success, test_fail (only `pytest.raises(ValueError)` with no message check), and test_repr; no test exercises `or_(or_(a, b), c)` flattening or `or_()` with no arguments.",
+              "suggested_fix": "Add a test asserting nested or_ flattens into one validator's `validators` tuple, and check the ValueError message text in test_fail.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-8c9a7968",
+      "score": {
+        "item_id": "attrs-clean-8c9a7968",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00165487,
+        "latency_s": 0.275,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5338,
+          "output_tokens": 2222,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00165487
+        },
+        "latency_s": 0.275,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "230c5c568d37",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "tests/test_make.py",
+              "line_start": 2349,
+              "line_end": 2460,
+              "summary": "A 'minor polish' change rewrites most of the match_args tests from attr.s/attr.ib to attr.define/attr.field and reverses assertion order, which goes beyond polish.",
+              "evidence": "tests/test_make.py: TestMatchArgs tests switch from `@attr.s()`/`attr.ib()` to `@attr.define`/`attr.field()` (e.g. test_match_args, test_explicit_match_args, test_match_args_kw_only, test_match_args_inheritance). Assertions are also flipped, e.g. `assert C1.__match_args__ == (\"a\", \"b\")` becomes `assert (\"a\", \"b\") == C1.__match_args__`. Switching the decorator changes which auto-detection path is exercised, so these tests no longer cover the same behavior as before, and the reordering adds churn with no functional effect.",
+              "suggested_fix": "Keep the original attr.s/attr.ib decorators and assertion order in the existing tests. Add new define/frozen coverage as separate, explicitly named tests, as test_pattern_matching.py already does for the parametrized case.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-c58ffd4e",
+      "score": {
+        "item_id": "attrs-clean-c58ffd4e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "c0aa006218cb",
+          "3e8f2b99f79d"
+        ],
+        "cost_usd": 0.00101337,
+        "latency_s": 0.1,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c0aa006218cb",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 726,
+            "line_end": 735,
+            "summary": "On 3.10+, the slots path returns early without calling abc.update_abstractmethods, so slotted attrs classes keep stale abstractness.",
+            "evidence": "In the PY310 build_class, `if self._slots is True: return self._create_slots_class()` returns before reaching `self.abc.update_abstractmethods(...)`. Only the non-slots path is updated. Slotted classes are rebuilt via type(), so the new class's __abstractmethods__ is never recomputed. The added test test_abc_implementation is parametrized over `slots`, so its slots=True case should fail (inspect.isabstract still True).",
+            "suggested_fix": "Compute cls = self._create_slots_class() or self._patch_original_class() in both cases, then return self.abc.update_abstractmethods(cls).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "3e8f2b99f79d",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "changelog.d/1001.change.rst",
+            "line_start": 1,
+            "line_end": 3,
+            "summary": "The changelog hyperlink is malformed: the domain is misspelled ('docs.pytho.') and the URL is split across a line break.",
+            "evidence": "The link reads `https://docs.pytho.` followed by a newline and `org/3.10/library/abc.html#...`. The domain should be docs.python.org, and the URL is broken across lines, so the rendered link will be wrong.",
+            "suggested_fix": "Use a single correct URL: https://docs.python.org/3.10/library/abc.html#abc.update_abstractmethods",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2458,
+          "output_tokens": 1659,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00101337
+        },
+        "latency_s": 0.1,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "83d6a2eed1e6",
+              "category": "over_abstraction",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/attr/_make.py",
+              "line_start": 720,
+              "line_end": 722,
+              "summary": "Importing abc inside the class body and calling it as self.abc leaks a module onto the builder class and is harder to read than a module-level import.",
+              "evidence": "`import abc` sits inside `if PY310:` in the class body, and the method calls `self.abc.update_abstractmethods`. This works via class-attribute lookup but is unusual.",
+              "suggested_fix": "Import abc at module top and call abc.update_abstractmethods directly.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-c7308a66",
+      "score": {
+        "item_id": "attrs-clean-c7308a66",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "376fed096375"
+        ],
+        "cost_usd": 0.001331245,
+        "latency_s": 0.092,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "376fed096375",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "src/attr/_funcs.py",
+            "line_start": 382,
+            "line_end": 382,
+            "summary": "Defaulting include_extras to True changes the resolved `.type` of existing fields that use Annotated on 3.9+, even for callers who never opted in.",
+            "evidence": "`def resolve_types(cls, globalns=None, localns=None, attribs=None, include_extras=True)` and the body passes `include_extras` on PY_3_9_PLUS. Previously `get_type_hints` stripped Annotated metadata, so `attr.fields(C).x.type` was e.g. `float`; it is now `Annotated[float, ...]`. Code that compares or inspects field types will see different values after upgrading. The changelog mentions the default but does not flag it as a behavior change.",
+            "suggested_fix": "Consider defaulting to False to preserve existing behavior, or explicitly call out the default change as breaking in the changelog.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3509,
+          "output_tokens": 2032,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001331245
+        },
+        "latency_s": 0.092,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "ec5a9ab1a9f5",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "src/attr/_funcs.py",
+              "line_start": 404,
+              "line_end": 405,
+              "summary": "The new docstring refers to a nonexistent `typing.get_hints` and repeats the same point twice.",
+              "evidence": "\":param bool include_extras: ... Pass ``include_extras`` to ``typing.get_hints``, if supported by the typing module. On supported Python versions (3.9+), this resolves the types more accurately.\" The function is `typing.get_type_hints`, and the sentence about 3.9+ duplicates the first sentence.",
+              "suggested_fix": "Rewrite as: 'Pass include_extras to typing.get_type_hints() on Python 3.9+ so Annotated metadata is kept.'",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "6ad5f9e8725d",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.45,
+              "file": "src/attr/__init__.pyi",
+              "line_start": 491,
+              "line_end": 497,
+              "summary": "Narrowing the stub's `cls` parameter to `_A bound=AttrsInstance` rejects the documented use of resolve_types on a non-attrs class via `attribs`.",
+              "evidence": "The runtime docstring says `attribs` is needed 'when calling from inside a field_transformer since *cls* is not an *attrs* class yet'. The stub now types `cls: _A` with `bound=AttrsInstance`, so type checkers will flag that legitimate call. The old `_C` bound did not have this restriction.",
+              "suggested_fix": "Keep `cls` typed as `_C` (or a looser type) so the field_transformer use case still type-checks.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "b64cd08bc2b9",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "src/attr/__init__.pyi",
+              "line_start": 72,
+              "line_end": 73,
+              "summary": "The new `_A` TypeVar is inserted between the AttrsInstance class and the `# _make --` section marker with no spacing, which breaks the file's layout.",
+              "evidence": "`_A = TypeVar(\"_A\", bound=AttrsInstance)` is placed directly after `class AttrsInstance(...): pass` and before `# _make --`, without the blank-line separation used elsewhere in the stub.",
+              "suggested_fix": "Move the TypeVar next to the other module-level TypeVar definitions near the top of the stub.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-c824bbe1",
+      "score": {
+        "item_id": "attrs-clean-c824bbe1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "7c77528a3204"
+        ],
+        "cost_usd": 0.001866995,
+        "latency_s": 0.101,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7c77528a3204",
+            "category": "scope_creep",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": ".gitignore",
+            "line_start": 22,
+            "line_end": 22,
+            "summary": "Adds `t.py` to .gitignore, an unrelated scratch-file rule that doesn't belong in this change.",
+            "evidence": ".gitignore:22 `+t.py` has no connection to the AttrsInstance/Protocol change and looks like a leftover from the agent's own scratch work.",
+            "suggested_fix": "Drop the .gitignore change from this PR.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2759,
+          "output_tokens": 3291,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001866995
+        },
+        "latency_s": 0.101,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "452acef5095c",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": ".github/workflows/ci.yml",
+              "line_start": 96,
+              "line_end": 96,
+              "summary": "Changes the CI coverage report to `--format=markdown` and drops the sed indentation, which is unrelated to the task and depends on a newer coverage version.",
+              "evidence": ".github/workflows/ci.yml:96 replaces the sed-based summary with `coverage report --format=markdown`; the markdown format requires a recent coverage release, so this can break CI on older pinned versions.",
+              "suggested_fix": "Revert the CI change or split it into a separate PR.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d7a873a0788b",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "tests/test_compat.py",
+              "line_start": 56,
+              "line_end": 64,
+              "summary": "The new test only defines a class and never instantiates it or asserts anything, so it checks little beyond that the class statement doesn't raise.",
+              "evidence": "tests/test_compat.py:56-65 `test_attrsinstance_subclass_protocol` contains only a class definition with a `...` body and no assertions; it also lives in test_compat rather than alongside AttrsInstance tests.",
+              "suggested_fix": "Assert issubclass/MRO membership and, ideally, instantiate an attrs class that subclasses both AttrsInstance and a Protocol.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "6b24671993b3",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.4,
+              "file": "src/attr/__init__.py",
+              "line_start": 35,
+              "line_end": 36,
+              "summary": "AttrsInstance becoming a Protocol changes runtime behavior of isinstance/issubclass checks against it.",
+              "evidence": "src/attr/__init__.py:35 `class AttrsInstance(Protocol)`: previously `isinstance(x, attr.AttrsInstance)` returned False for any object; now non-runtime-checkable Protocols raise TypeError on isinstance/issubclass. Callers doing such checks will break, and this is not mentioned as a breaking change beyond the changelog wording.",
+              "suggested_fix": "Verify no runtime isinstance checks exist, and document the behavior change explicitly in the changelog (or consider @runtime_checkable).",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "488e27df9a9a",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "pyproject.toml",
+              "line_start": 136,
+              "line_end": 139,
+              "summary": "New coverage exclude patterns are overly broad and could hide genuinely untested code.",
+              "evidence": "pyproject.toml:136-139 excludes any line ending in `: ...` and any line consisting only of indented `...`, which silently removes lines from coverage across the whole codebase rather than just the test stub.",
+              "suggested_fix": "Narrow the exclusion or use a targeted `# pragma: no cover` on the stub body.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-edcaf04a",
+      "score": {
+        "item_id": "attrs-clean-edcaf04a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00072062,
+        "latency_s": 0.113,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2040,
+          "output_tokens": 1178,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00072062
+        },
+        "latency_s": 0.113,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "dbbbd8cf8b71",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "tests/test_make.py",
+              "line_start": 1170,
+              "line_end": 1172,
+              "summary": "The inline comment on the `type=None` attribute gives the wrong reason for its exclusion.",
+              "evidence": "The comment says \"Won't be added to ann. b/c of unfavorable default\", but the attribute has no default. It is excluded because `type=None` fails the `v.type is not None` filter in `_make.py`.",
+              "suggested_fix": "Change the comment to something like \"# Excluded: type=None is not added to __annotations__\".",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "attrs-clean-f53fc544",
+      "score": {
+        "item_id": "attrs-clean-f53fc544",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00038612,
+        "latency_s": 0.142,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1804,
+          "output_tokens": 568,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00038612
+        },
+        "latency_s": 0.142,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-051bb0f3",
+      "score": {
+        "item_id": "click-clean-051bb0f3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "8cbb6f02e650"
+        ],
+        "cost_usd": 0.001907745,
+        "latency_s": 0.162,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "8cbb6f02e650",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 447,
+            "line_end": 456,
+            "summary": "The `elif isinstance(stream, t.BinaryIO)` branch was removed, so pure binary streams are now yielded without the MaybeStripAnsi wrapper that previously handled ANSI stripping and text encoding.",
+            "evidence": "Before, a BinaryIO stream without a text buffer was wrapped in MaybeStripAnsi(stream, color=color, encoding=encoding). After the change, the only wrapping path is `_has_binary_buffer(stream)`; any other stream is yielded raw, and `t.cast(t.TextIO, stream)` hides the mismatch from the type checker. Callers that write str to such a stream will now fail, and ANSI codes are no longer stripped when color is off.",
+            "suggested_fix": "Restore the BinaryIO branch, wrapping it in MaybeStripAnsi, and make sure the detach/close logic covers it, or justify the removal with a test.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5105,
+          "output_tokens": 2786,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001907745
+        },
+        "latency_s": 0.162,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "57b7da58f8f6",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 486,
+              "line_end": 492,
+              "summary": "The no-pager fallback now uses the caller's color flag and the stream's best encoding instead of the previous hardcoded False and \"utf-8\".",
+              "evidence": "Previously `yield stdout, \"utf-8\", False` ignored the color argument. Now `_nullpager(stdout, color)` passes through a non-None color, so `echo_via_pager(..., color=True)` can emit ANSI sequences to a fallback stdout where it previously did not. The encoding also now comes from get_best_encoding(stream).",
+              "suggested_fix": "Decide explicitly whether the fallback should honor color and encoding changes, and document it in CHANGES.rst or keep the old values.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-05f6fd0d",
+      "score": {
+        "item_id": "click-clean-05f6fd0d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000831745,
+        "latency_s": 0.128,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2541,
+          "output_tokens": 1275,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000831745
+        },
+        "latency_s": 0.128,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f857f10e6031",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "src/click/core.py",
+              "line_start": 3803,
+              "line_end": 3814,
+              "summary": "Argument.get_help_record now returns a tuple for every argument, so any caller that filters out None rows may list undocumented arguments where it previously skipped them.",
+              "evidence": "Before this change, Argument.get_help_record returned None when help was unset, which let generic callers skip it. The diff removes that path (core.py:3803-3814), and the Positional arguments caller now builds rows for all arguments. If Command.format_options (not in this diff) iterates over all params and keeps only non-None get_help_record results, as it does in click 8.x, undocumented arguments will now appear in the Options section with an empty description. The diff does not show format_options being checked or guarded by isinstance(Option), and no test covers the Options section for an argument without help.",
+              "suggested_fix": "Confirm format_options filters to Option instances, or make it skip Arguments explicitly. Add a test asserting that an undocumented argument does not appear under Options in the help output.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-555fa9bb",
+      "score": {
+        "item_id": "click-clean-555fa9bb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00068262,
+        "latency_s": 0.105,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1848,
+          "output_tokens": 1150,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00068262
+        },
+        "latency_s": 0.105,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b704a2895806",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "src/click/core.py",
+              "line_start": 627,
+              "line_end": 631,
+              "summary": "The new docstring has a typo in the Sphinx role (`meth;` instead of `meth:`), which will break the cross-reference rendering.",
+              "evidence": "The docstring of `_close_with_exception_info` reads \":meth;`with_resource`\", with a semicolon where the colon belongs.",
+              "suggested_fix": "Change \":meth;`with_resource`\" to \":meth:`with_resource`\".",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-985ca165",
+      "score": {
+        "item_id": "click-clean-985ca165",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00103562,
+        "latency_s": 0.102,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2752,
+          "output_tokens": 1630,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00103562
+        },
+        "latency_s": 0.102,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "36fe2e88a459",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.2,
+              "file": "tests/test_options.py",
+              "line_start": 555,
+              "line_end": 555,
+              "summary": "The test override signature change to `get_default(self, ctx, call=True)` is unrelated to the help-text fix and is not explained.",
+              "evidence": "tests/test_options.py:555 changes `CustomArgument.get_default` to accept `call=True`. The change touches an Argument subclass, while the fix only modifies Option.get_help_record and Parameter.get_default.",
+              "suggested_fix": "Confirm whether this is required by the new call path. If not, drop the hunk, or mention it in the commit message.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.20 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "88f4c996e733",
+              "category": "silent_behavior_change",
+              "severity": "nit",
+              "confidence": 0.15,
+              "file": "src/click/core.py",
+              "line_start": 2742,
+              "line_end": 2742,
+              "summary": "Removing the `t.Union[str, t.Any]` annotation and forcing `str(default_value)` changes the formatted default for non-string defaults in a way the diff does not call out.",
+              "evidence": "core.py now assigns `default_string = str(default_value)` in the final else branch and drops the annotation on the first branch. The output text is usually identical because the caller formats with `.format`, but the type annotation is no longer declared for the variable.",
+              "suggested_fix": "Keep the annotation if mypy needs it, or leave the original assignment unchanged since `format` already stringifies the value.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.15 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-a0bbbf20",
+      "score": {
+        "item_id": "click-clean-a0bbbf20",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001126245,
+        "latency_s": 0.117,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2041,
+          "output_tokens": 1989,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001126245
+        },
+        "latency_s": 0.117,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f275bab5ed22",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.4,
+              "file": "src/click/decorators.py",
+              "line_start": 150,
+              "line_end": 162,
+              "summary": "The new `cls: Type[CmdType] = ...` overload is listed before the bare-callable overload and has a default for `cls`, so a bare `@command` on a function may match it and leave `CmdType` unsolved.",
+              "evidence": "Overload at lines ~136-143 is `def command(name: t.Callable, cls: t.Type[CmdType] = ..., **attrs) -> CmdType`, and it precedes the `name: t.Callable, **attrs -> Command` overload. Because `cls` has a default, a call like `command(func)` matches the first callable overload, where CmdType cannot be inferred from arguments, so the type checker may infer Never/Any instead of Command.",
+              "suggested_fix": "Move the no-`cls` callable overload (`name: t.Callable, **attrs -> Command`) above the `cls`-taking callable overload, or make `cls` required in the callable overload, and verify with mypy on bare `@command` and `@command(cls=X)` usages.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "b5d232418987",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.25,
+              "file": "src/click/decorators.py",
+              "line_start": 131,
+              "line_end": 137,
+              "summary": "The no-`cls` `name: Optional[str]` overload return type was widened from `Callable[[F], Command]` to `Callable[..., Command]`, losing the function-type precision that the original overload provided.",
+              "evidence": "Original: `-> t.Callable[[F], Command]`. New overload 2: `-> t.Callable[..., Command]`. The `F` typevar is still used elsewhere, so the decorator's parameter type is no longer checked against the wrapped function.",
+              "suggested_fix": "Keep `t.Callable[[F], Command]` for the no-`cls` overload, since the task only concerns the `cls` return type.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-a9711c50",
+      "score": {
+        "item_id": "click-clean-a9711c50",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000483495,
+        "latency_s": 0.1,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2571,
+          "output_tokens": 571,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000483495
+        },
+        "latency_s": 0.1,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "click-clean-ac5cec5f",
+      "score": {
+        "item_id": "click-clean-ac5cec5f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001842245,
+        "latency_s": 0.123,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3693,
+          "output_tokens": 3008,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001842245
+        },
+        "latency_s": 0.123,
+        "dropped_findings": 5,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "6e4895d3b61f",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "src/click/core.py",
+              "line_start": 2576,
+              "line_end": 2582,
+              "summary": "The diff changes the enum order and the three comparison-based call sites but adds no test covering the new ordering or the `<` / `>=` semantics.",
+              "evidence": "The deprecated check (core.py:2576), the flag_value check (core.py:3298), the multiple-flag check (core.py:3308), and the prompt condition (core.py:3317) now rely on `source < DEFAULT_MAP` / `source >= DEFAULT_MAP`. No test file is touched, so a future reorder of members would silently flip prompting and deprecation behavior without any failing test.",
+              "suggested_fix": "Add tests asserting the member order (PROMPT < COMMANDLINE < ENVIRONMENT < DEFAULT_MAP < DEFAULT), and that prompting and deprecation behavior are unchanged for each source.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "28da02836ac6",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "docs/commands-and-groups.md",
+              "line_start": 345,
+              "line_end": 355,
+              "summary": "The docs present the list as the order of precedence Click checks, but the enum order is not the resolution order, and PROMPT is only used after a value is otherwise missing.",
+              "evidence": "The added section says 'Click checks several sources in the following order of precedence' and lists Prompt first. In the code, prompting happens only when `value is UNSET or source >= DEFAULT_MAP` (core.py:3317), i.e. after command line, env, and default_map have been considered. Listing Prompt as the highest precedence is misleading.",
+              "suggested_fix": "Describe the enum as an explicitness ordering, not a precedence/checking order, and state that PROMPT applies only when no value was otherwise provided.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "f3143147ef58",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "src/click/core.py",
+              "line_start": 169,
+              "line_end": 179,
+              "summary": "Converting to IntEnum and renumbering members changes the underlying values of every ParameterSource member, which is not part of a pure reorder.",
+              "evidence": "PROMPT was previously 4 and is now 1; DEFAULT was 3 and is now 5, etc. Code or stored data that persists or compares `.value` (or uses ints) will change. Also, IntEnum changes `str()`/`format()` behavior on Python versions before 3.11.",
+              "suggested_fix": "If the value change is not wanted, assign explicit values that preserve the old numbers, or call out the change in the changelog as a breaking change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "6255495461c6",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/__init__.py",
+              "line_start": 17,
+              "line_end": 17,
+              "summary": "Exporting ParameterSource at the top level is a public API addition not requested by a reorder task.",
+              "evidence": "`from .core import ParameterSource as ParameterSource` is added to `click/__init__.py`, expanding the public namespace.",
+              "suggested_fix": "Drop the export unless it is explicitly part of this change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "1b6cd7714f35",
+              "category": "hallucinated_dependency",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "CHANGES.rst",
+              "line_start": 29,
+              "line_end": 30,
+              "summary": "The changelog and docstring cite an issue/PR number and a version (8.3.3) that may not correspond to real references.",
+              "evidence": "CHANGES.rst adds `:issue:`2879` :pr:`3248`` and core.py adds `.. versionchanged:: 8.3.3`. Nothing in the diff confirms these numbers or the next version.",
+              "suggested_fix": "Verify the issue/PR numbers and the target release version, or remove the placeholders.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-b5529479",
+      "score": {
+        "item_id": "click-clean-b5529479",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "2e9a101e2399",
+          "15bf6b1d1d88"
+        ],
+        "cost_usd": 0.001394495,
+        "latency_s": 0.123,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2e9a101e2399",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "tests/test_termui.py",
+            "line_start": 566,
+            "line_end": 627,
+            "summary": "test_pager_shlex_split only calls stdlib shlex.split and never exercises click's pager(), so it would pass even if pager() stopped using shlex or changed how it splits PAGER.",
+            "evidence": "test_pager_shlex_split ends with `assert shlex.split(pager_env) == expected_parts`. The docstring says it tests 'the splitting logic used by click._termui_impl.pager', but pager() is never called. The same applies to the Windows-path and backslash cases, which assert stdlib behavior rather than click behavior.",
+            "suggested_fix": "Drive pager() with PAGER set via monkeypatch, with isatty patched to True and the pager subprocess mocked (as the existing pager tests do), and assert the argv that is passed to the subprocess.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "15bf6b1d1d88",
+            "category": "scope_creep",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 369,
+            "line_end": 383,
+            "summary": "The diff deletes the documented rationale and seealso references from the pager, _pipepager, and Editor.edit_files docstrings, which is unrelated to adding tests.",
+            "evidence": "The pager docstring note about posix=False (PR #1477) and the shlex.quote revert (PR #1543), and the `.. seealso::` blocks for issue #1026, PR #1477, and PR #2775, were removed. The _pipepager docstring also loses its description of the PR #2775 error-handling changes. The rationale was moved into inline comments, which are less visible in generated API docs.",
+            "suggested_fix": "Restore the original docstrings. If the goal is to avoid duplication, keep the rationale in the docstring and only add the short inline comments.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4883,
+          "output_tokens": 1815,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001394495
+        },
+        "latency_s": 0.123,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "7f1fc086c938",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.45,
+              "file": "tests/test_termui.py",
+              "line_start": 428,
+              "line_end": 458,
+              "summary": "Existing test IDs that reference issue and PR numbers were renamed without a stated reason, which is an unrelated churn.",
+              "evidence": "Ids such as 'quoted windows path with spaces (issue 1026)', 'command with flags (pr 1477)', and 'escaped space in unix path (issue 1026)' were changed to drop the issue/PR references. This makes it harder to trace these cases to their origin and changes test IDs that CI reports or filters may depend on.",
+              "suggested_fix": "Revert the ID renames to keep the diff focused on new edge cases.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-b9abeaa3",
+      "score": {
+        "item_id": "click-clean-b9abeaa3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000371495,
+        "latency_s": 0.143,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1571,
+          "output_tokens": 597,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000371495
+        },
+        "latency_s": 0.143,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b1fc7c8612ed",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "src/click/core.py",
+              "line_start": 2083,
+              "line_end": 2092,
+              "summary": "The design note is a multi-line XXX block placed between parameters in the __init__ signature, with grammar and wording problems and a link that may go stale.",
+              "evidence": "The added comment says 'The default historically embed two concepts' (should be 'embeds'), uses 'arbitrage' where 'reconcile' or 'disambiguate' is probably meant, and points to an external PR URL. Comments inside a long signature are easy to miss and tend to drift from the code.",
+              "suggested_fix": "Tighten the wording, fix the grammar, and move the note into the class docstring or the default-handling code, or track it in an issue instead of an XXX comment in the signature.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-cf0e5242",
+      "score": {
+        "item_id": "click-clean-cf0e5242",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00052137,
+        "latency_s": 0.145,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1926,
+          "output_tokens": 808,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00052137
+        },
+        "latency_s": 0.145,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "3cbdbbd0a1cb",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "src/click/core.py",
+              "line_start": 2146,
+              "line_end": 2168,
+              "summary": "The diff only relocates internal comments in docstrings to code comments, which does not match the stated task of keeping a change entry concise.",
+              "evidence": "The diff moves the UNSET explanation from the `to_info_dict` docstrings of Parameter (core.py ~2149) and Option (~2748) into inline comments above the `default` and `flag_value` dict entries. No changelog or change-entry file is touched, so the stated task does not appear to be addressed.",
+              "suggested_fix": "If a concise change entry was the goal, add or shorten the entry in CHANGES.rst; otherwise confirm this comment relocation was intended and is in scope.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "click-clean-f561f188",
+      "score": {
+        "item_id": "click-clean-f561f188",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000550745,
+        "latency_s": 0.12,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1613,
+          "output_tokens": 945,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000550745
+        },
+        "latency_s": 0.12,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "748f351fd3c8",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/core.py",
+              "line_start": 2362,
+              "line_end": 2368,
+              "summary": "The rewritten versionchanged note refers to an unnamed 'internal sentinel', which leaves callers unable to tell what value they will receive.",
+              "evidence": "The 8.3 note now reads 'The callback gets an internal sentinel if the parameter was not set by the user and no default was specified.' The previous text described the case analysis for None, UNSET, and other values. The new wording removes that guidance without giving a replacement, so a developer writing a callback cannot tell which value to check for.",
+              "suggested_fix": "Keep the task constraint by not naming UNSET, but state what callers should check for (for example, 'a sentinel value distinct from None') and restore the guidance on handling the different cases.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-2129a978",
+      "score": {
+        "item_id": "httpx-clean-2129a978",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "76e554db24bf"
+        ],
+        "cost_usd": 0.00123562,
+        "latency_s": 0.127,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "76e554db24bf",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "httpx/_utils.py",
+            "line_start": 352,
+            "line_end": 355,
+            "summary": "peek_filelike_length returns the total file size, ignoring the current read position, so a partially consumed file sent via content= gets a Content-Length larger than the bytes actually streamed.",
+            "evidence": "httpx/_utils.py:352-355 uses os.fstat(fd).st_size, and the seek fallback (lines 357-362) returns the END position, not `length - offset`. Both ignore `stream.tell()` for the fstat path. encode_content (httpx/_content.py, Iterable branch) now emits `Content-Length: str(content_length_or_none)` for any such stream. IteratorByteStream then reads only from the current position, so the declared length does not match the body and the request breaks.",
+            "suggested_fix": "Compute the remaining length as total minus current position (tell()) for both paths, or fall back to chunked when the position is non-zero.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2940,
+          "output_tokens": 1983,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00123562
+        },
+        "latency_s": 0.127,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "14d27231dd11",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "httpx/_utils.py",
+              "line_start": 349,
+              "line_end": 353,
+              "summary": "For non-regular file descriptors (pipes, sockets, character devices) st_size is 0 or meaningless, so content= with such a file-like now sends `Content-Length: 0` (or a wrong value) instead of chunked streaming.",
+              "evidence": "httpx/_utils.py:352 treats any object with a fileno() as a regular file and returns os.fstat(fd).st_size. For a pipe, st_size is 0 while the stream yields data. Before this change, encode_content used chunked encoding for all iterables, so this is a new regression introduced by the change to encode_content (httpx/_content.py Iterable branch).",
+              "suggested_fix": "Only trust st_size when stat.S_ISREG(os.fstat(fd).st_mode) holds; otherwise return None so chunked encoding is used.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "4eac38906150",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "tests/test_content.py",
+              "line_start": 51,
+              "line_end": 61,
+              "summary": "The new test only covers an in-memory BytesIO at position 0; it does not cover real files, partially-read streams, or the chunked fallback for generators/non-seekable streams.",
+              "evidence": "tests/test_content.py adds test_bytesio_content with a fresh BytesIO. The position-dependence and fileno/pipe paths touched in _utils.py are not exercised, so the bugs above would not be caught.",
+              "suggested_fix": "Add tests for a partially-read BytesIO, a real temp file, and a generator that still expects Transfer-Encoding: chunked.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-4b5a92e8",
+      "score": {
+        "item_id": "httpx-clean-4b5a92e8",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000264745,
+        "latency_s": 0.099,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1453,
+          "output_tokens": 413,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000264745
+        },
+        "latency_s": 0.099,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-4f6edf36",
+      "score": {
+        "item_id": "httpx-clean-4f6edf36",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "6e2e468acfd9"
+        ],
+        "cost_usd": 0.00065662,
+        "latency_s": 0.117,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "6e2e468acfd9",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "tests/test_utils.py",
+            "line_start": 82,
+            "line_end": 83,
+            "summary": "The parametrized test only checks that each expected link is present in the values, so it never verifies the parsed result is complete, exact, or correctly keyed.",
+            "evidence": "`all_links = httpx.Response(200, headers={\"link\": value}).links.values()` followed by `assert all(link in all_links for link in expected)`. This passes if extra links are parsed, if links are returned under wrong keys, and passes trivially when `expected` is empty. The original `assert parse_header_links(value) == expected` checked exact equality.",
+            "suggested_fix": "Compare exactly, e.g. `assert list(response.links.values()) == expected` (or compare the dict against the expected keyed mapping), so extra, missing, or mis-keyed links fail the test.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1776,
+          "output_tokens": 1116,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00065662
+        },
+        "latency_s": 0.117,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "98dfc7fceaa4",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "httpx/_models.py",
+              "line_start": 774,
+              "line_end": 784,
+              "summary": "The task is to add tests, but the diff also refactors the production `Response.links` property, which is unrelated to testing.",
+              "evidence": "The `links` property is rewritten from a loop with `if header:` to an early return with `if header is None:` and a dict comprehension. The behavior is roughly equivalent, but this is an unrequested product code change that is not covered by the stated task and would need its own review.",
+              "suggested_fix": "Revert the `_models.py` change and keep the diff limited to tests.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-541a0afe",
+      "score": {
+        "item_id": "httpx-clean-541a0afe",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001444995,
+        "latency_s": 0.135,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 6255,
+          "output_tokens": 1573,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001444995
+        },
+        "latency_s": 0.135,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "581503c0b19f",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "httpx/_client.py",
+              "line_start": 168,
+              "line_end": 168,
+              "summary": "The new Client constructor parameter is named `allow_redirects`, but the stated task asks for `allow_redirect`.",
+              "evidence": "Task: \"Add Client(allow_redirect=<...>)\". Diff line 168 adds `allow_redirects: bool = True,` to BaseClient.__init__, and line 183 stores it as `self.allow_redirects`. Passing `allow_redirect=` as the task specifies would raise TypeError.",
+              "suggested_fix": "Confirm the intended spelling. If the task is literal, rename the parameter and attribute to `allow_redirect`, or document the deliberate deviation.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0e6ec5670caf",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "httpx/_client.py",
+              "line_start": 168,
+              "line_end": 169,
+              "summary": "The new parameter is inserted between `timeout` and `max_redirects`, shifting the positional slots of every later parameter.",
+              "evidence": "Diff hunk at line 165: `allow_redirects: bool = True,` is placed before `max_redirects`, `event_hooks`, `base_url`, and the other trailing parameters. Any caller passing these positionally would now bind values to the wrong parameters without an error if the signature is not keyword-only.",
+              "suggested_fix": "Append the new parameter at the end of the signature, or make the constructor parameters keyword-only, so existing positional calls keep their meaning.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-8327e134",
+      "score": {
+        "item_id": "httpx-clean-8327e134",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.002550245,
+        "latency_s": 0.126,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 8213,
+          "output_tokens": 3294,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.002550245
+        },
+        "latency_s": 0.126,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "3fb5da132934",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "tests/client/test_auth.py",
+              "line_start": 155,
+              "line_end": 620,
+              "summary": "The diff renames the test credentials from 'tomchristie'/'password123' to 'user' across many unrelated tests and updates their base64 expectations.",
+              "evidence": "Dozens of hunks change auth=('tomchristie', ...) to ('user', ...) and rewrite the expected 'Basic dG9tY2hyaXN0aWU6...' strings to 'Basic dXNlcjpw...'. None of this relates to reusing digest auth state.",
+              "suggested_fix": "Revert the credential renames and keep the diff limited to the digest caching and nonce-count tests.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "7b26dc02769f",
+              "category": "security",
+              "severity": "major",
+              "confidence": 0.4,
+              "file": "httpx/_auth.py",
+              "line_start": 165,
+              "line_end": 170,
+              "summary": "The cached digest challenge is attached to every subsequent request made with this auth instance, regardless of origin, so a digest Authorization computed for one host is sent to other hosts.",
+              "evidence": "auth_flow() now unconditionally sets request.headers['Authorization'] from self._last_challenge before the first yield. Previously the header was only sent after the server at that origin issued a 401 challenge. A client-level or per-request DigestAuth used for a request to host A, then for a request to host B, will now send host A's realm/nonce-derived response to host B. That value can be replayed or used for offline guessing of the password.",
+              "suggested_fix": "Scope the cached challenge to the origin (scheme/host/port) and realm it was issued for, and only reuse it for requests matching that protection space.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "c8994474bf7e",
+              "category": "correctness",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "httpx/_auth.py",
+              "line_start": 161,
+              "line_end": 168,
+              "summary": "Mutable nonce-count state on a shared auth instance is not safe under concurrent use from multiple threads.",
+              "evidence": "_nonce_count is read and incremented in _build_auth_header on a DigestAuth instance that may be shared across threads by a Client. Two threads can compute the same nc value, which the server will reject as a replay.",
+              "suggested_fix": "Guard the read-increment with a lock, or document that a DigestAuth instance must not be shared across threads.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-a7092af2",
+      "score": {
+        "item_id": "httpx-clean-a7092af2",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00163312,
+        "latency_s": 0.161,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3220,
+          "output_tokens": 2708,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00163312
+        },
+        "latency_s": 0.161,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "6b0be92d0b56",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.4,
+              "file": "httpx/_urlparse.py",
+              "line_start": 418,
+              "line_end": 425,
+              "summary": "Removing '%' from the safe set in percent_encoded may double-encode already-escaped sequences in URL query strings, contradicting the diff's own test expectations.",
+              "evidence": "The old is_safe() always allowed '%'. The new percent_encoded() builds NON_ESCAPED_CHARS = UNRESERVED_CHARACTERS + safe with no '%', so any '%' is encoded to '%25'. The new test test_query_with_existing_percent_encoding (tests/models/test_url.py) expects 'http://webservice?u=phrase%20with%20spaces' to stay unchanged. If the query-string parsing path calls percent_encoded, that test fails. The diff does not show the call sites, so this is only a risk.",
+              "suggested_fix": "Confirm which call sites use percent_encoded for raw URL query strings. Keep the '%'-preserving behaviour for URL-parsed components and apply the strict encoding only to params={} values.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "df798c40bcb2",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "tests/models/test_url.py",
+              "line_start": 292,
+              "line_end": 296,
+              "summary": "test_param_does_not_require_encoding now asserts that '%' is encoded, so its name is misleading.",
+              "evidence": "The test is named 'does_not_require_encoding' but asserts str(url) == 'http://webservice?u=%25'. The name describes the old behaviour that this change reverses.",
+              "suggested_fix": "Rename it to something like test_param_percent_is_encoded.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "6853e1dc4377",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "httpx/_urlparse.py",
+              "line_start": 409,
+              "line_end": 410,
+              "summary": "The new helper PERCENT uses an uppercase function name, has no docstring, and drops the descriptive name percent_encode.",
+              "evidence": "def PERCENT(string: str) -> str: is a module-level function in a Python codebase where other helpers are lowercase snake_case. The removed percent_encode had a docstring describing its behaviour.",
+              "suggested_fix": "Rename to a lowercase name such as percent_encode_str and add a short docstring.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "602d1cd90f78",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/models/test_url.py",
+              "line_start": 286,
+              "line_end": 318,
+              "summary": "The same explanatory comments are repeated across several tests and the section header is duplicated.",
+              "evidence": "'# Params passed as form key-value pairs should be escaped.' appears in four tests, and the 'We want to match browser form behaviour here.' block is repeated in two. The 'Tests for query parameter percent encoding.' header appears twice with different subtitles.",
+              "suggested_fix": "Put the rationale once in the section header and drop the per-test copies.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-b43af721",
+      "score": {
+        "item_id": "httpx-clean-b43af721",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001239245,
+        "latency_s": 0.113,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5653,
+          "output_tokens": 1312,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001239245
+        },
+        "latency_s": 0.113,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-b8394786",
+      "score": {
+        "item_id": "httpx-clean-b8394786",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00048312,
+        "latency_s": 0.144,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2568,
+          "output_tokens": 571,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00048312
+        },
+        "latency_s": 0.144,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "a817f7d869fa",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.2,
+              "file": "tests/models/test_responses.py",
+              "line_start": 575,
+              "line_end": 575,
+              "summary": "`[line for line in response.iter_lines()]` is an identity comprehension; `list(response.iter_lines())` is the idiomatic equivalent.",
+              "evidence": "content = [line for line in response.iter_lines()] adds no filtering or transformation, so a linter such as ruff's C416 would flag it.",
+              "suggested_fix": "content = list(response.iter_lines())",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.20 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-db9072f9",
+      "score": {
+        "item_id": "httpx-clean-db9072f9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "58c60e137cbf",
+          "7dd43fb690bc"
+        ],
+        "cost_usd": 0.00922837,
+        "latency_s": 0.182,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "58c60e137cbf",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "httpx/_urlparse.py",
+            "line_start": 326,
+            "line_end": 330,
+            "summary": "encode_host now leaves '%', '\\', '|', '`', '{', '}' and '\"' unencoded in non-IDNA hosts, and an existing test was rewritten to hide the change.",
+            "evidence": "`WHATWG_SAFE = '\"`{}%|\\\\'` is added to `quote(host.lower(), safe=...)`. Previously `https://exam%le.com/` gave host `exam%25le.com`; the test in tests/models/test_url.py was changed to input `exam le.com` so the old expectation no longer applies. A malformed percent-escape in a host now passes through raw, and a backslash can survive in a host, which WHATWG treats as a failure.",
+            "suggested_fix": "Keep invalid percent-escapes in hosts encoded or rejected, and reject forbidden host code points. Do not edit an existing expectation to match the new output without calling it out.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "7dd43fb690bc",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "tests/models/test_whatwg.py",
+            "line_start": 26,
+            "line_end": 29,
+            "summary": "Two WHATWG cases are skipped by returning early, so pytest reports them as passed without exercising anything.",
+            "evidence": "`if test_case[\"href\"] in (\"a: foo.com\", \"lolscheme:x x#x%20x\"): return`. The skip is keyed on `href` rather than `input`, and the early return makes the test pass silently instead of being marked skipped or xfail.",
+            "suggested_fix": "Use `pytest.skip(...)` or `pytest.param(..., marks=pytest.mark.xfail(strict=True))` so the skipped cases are visible in the report.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 57034,
+          "output_tokens": 4445,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00922837
+        },
+        "latency_s": 0.182,
+        "dropped_findings": 7,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "4a12178c3fea",
+              "category": "weak_test",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "tests/models/test_whatwg.py",
+              "line_start": 12,
+              "line_end": 16,
+              "summary": "All `failure: true` cases are filtered out, so the WHATWG rejection behavior (InvalidURL raised) is never tested.",
+              "evidence": "The list comprehension drops every item with `item.get(\"failure\")`. The diff's own data includes many failure cases (e.g. `http://f:b/c`, `http://[1::2]:3:4`, `sc://a b/`), which exercise the host and port validation this change modifies, but none of them run.",
+              "suggested_fix": "Add a separate parametrized test that asserts `pytest.raises(InvalidURL)` for `failure` cases, or mark them xfail where the parser is known to differ.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "fbb36974453c",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.45,
+              "file": "httpx/_urlparse.py",
+              "line_start": 256,
+              "line_end": 257,
+              "summary": "normalize_path is now applied to every URL with a scheme, including opaque-path schemes, which changes their output.",
+              "evidence": "The condition changed from `if has_authority:` to `if has_scheme or has_authority:`. Opaque paths such as `mailto:/example.com/` or `urn:a/../b` now get dot-segment removal, which the WHATWG tests in the diff (e.g. `mailto:/../` -> `mailto:/`) also reflect. Existing callers of URL with scheme-only inputs could see different paths.",
+              "suggested_fix": "Confirm this matches the intended behavior for opaque paths and add a regression test. Otherwise restrict normalization to hierarchical URLs.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "fc30b66c85ae",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "tests/models/test_whatwg.py",
+              "line_start": 43,
+              "line_end": 49,
+              "summary": "The test checks only protocol, hostname, port, path, search and hash; href, origin, username and password are never asserted.",
+              "evidence": "The final assertions cover protocol, hostname, port, pathname, search and hash. `href`, `origin`, `username`, `password` and `host` appear in whatwg.json but are unchecked. The hostname comparison also lowercases both sides, which masks case differences the comment says are intentional.",
+              "suggested_fix": "Assert username and password, and compare `href` and `origin` where the parser supports them. Document any intentional gaps individually instead of with a blanket lowercase.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "44b49c080395",
+              "category": "duplication",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "httpx/_urlparse.py",
+              "line_start": 259,
+              "line_end": 260,
+              "summary": "WHATWG_SAFE is defined twice in different functions with different contents.",
+              "evidence": "In urlparse: `WHATWG_SAFE = '`{}%|^\\\\\"'`. In encode_host: `WHATWG_SAFE = '\"`{}%|\\\\'`. The two differ (`^` is present in one and absent in the other) and the name suggests they are the same set. The constant is also local to each function instead of module level.",
+              "suggested_fix": "Define one module-level constant with the intended set, or justify the difference in a comment.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "e93d1dd5b471",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "httpx/_urlparse.py",
+              "line_start": 378,
+              "line_end": 390,
+              "summary": "Public InvalidURL error messages were reworded, which may break callers or other tests matching the old text.",
+              "evidence": "The messages changed from \"URLs with no authority component cannot have a path starting with '//'\" to \"Relative URLs cannot have a path starting with '//'\", and similarly for ':'. The existing assertions in tests/models/test_url.py were rewritten to match.",
+              "suggested_fix": "Keep the original messages unless the rename is required, or call out the change in the PR description.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "409353fd5ca9",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/models/test_whatwg.py",
+              "line_start": 27,
+              "line_end": 33,
+              "summary": "Comments are informal or restate the code, and `hash` shadows a builtin.",
+              "evidence": "\"I have nothing to say about this one.\", \"Anyone know what's going on here?\", and the local variable `hash = ...` shadows the builtin.",
+              "suggested_fix": "Replace with a concrete reason for each skip, and rename `hash` to `fragment`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0cb3d5ffc5c3",
+              "category": "other",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "tests/models/test_whatwg.py",
+              "line_start": 9,
+              "line_end": 9,
+              "summary": "The fixture path is relative to the current working directory, so the test only works when pytest runs from the repo root.",
+              "evidence": "`with open(\"tests/models/whatwg.json\", \"r\") as input:` runs at import time with no dependence on `__file__`.",
+              "suggested_fix": "Resolve the path relative to `Path(__file__).parent`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-e65a33d3",
+      "score": {
+        "item_id": "httpx-clean-e65a33d3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00080637,
+        "latency_s": 0.118,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1938,
+          "output_tokens": 1375,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00080637
+        },
+        "latency_s": 0.118,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "4914f5e4a4a6",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "httpx/_client.py",
+              "line_start": 1151,
+              "line_end": 1152,
+              "summary": "The sync Client.__del__ now skips close() unless the state is OPENED, which changes cleanup behavior for a case the stated task ('Neater close logic') does not mention.",
+              "evidence": "Previously `Client.__del__` called `self.close()` unconditionally. The diff changes it to `if self._state == ClientState.OPENED: self.close()`. Any path that leaves the state at UNOPENED after creating transports or connections would now skip cleanup on garbage collection. Whether `send()` always moves the state to OPENED is not visible in this diff, so the regression risk is unverified.",
+              "suggested_fix": "Confirm that every path that opens transports or connections sets the state to OPENED before this guard is relied on, or keep the unconditional close() in the sync __del__ and limit this change to comments.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "httpx-clean-e9b0c85d",
+      "score": {
+        "item_id": "httpx-clean-e9b0c85d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001224495,
+        "latency_s": 0.128,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2423,
+          "output_tokens": 2090,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001224495
+        },
+        "latency_s": 0.128,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "e40c0a5b631b",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "httpx/_urls.py",
+              "line_start": 490,
+              "line_end": 493,
+              "summary": "The final `return URL(new_url)` wraps an object that is already a fresh URL, so the extra construction does nothing.",
+              "evidence": "`new_url = URL(self)` already creates a new URL, and `new_url._uri_reference` is reassigned on it. `return URL(new_url)` then builds a second URL object sharing the same `_uri_reference`, which adds no isolation.",
+              "suggested_fix": "Return `new_url` directly.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "7ef603b9a3de",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "httpx/_urls.py",
+              "line_start": 487,
+              "line_end": 492,
+              "summary": "`copy_with` now normalizes every absolute URL it returns, even when the caller only changed the query or path, which can alter the string form of URLs callers did not ask to change.",
+              "evidence": "Before: `URL(self._uri_reference.copy_with(**kwargs).unsplit())`. After: `if new_url.is_absolute_url: new_url._uri_reference = new_url._uri_reference.normalize()` runs unconditionally for absolute URLs, so `copy_with(params=...)` or `copy_with()` can now change host casing or percent-encoding relative to the input.",
+              "suggested_fix": "Confirm the normalization is intended for all copy_with calls. If the goal is only to stop authority/path injection, consider normalizing only when netloc or scheme changes, and document the behavior change in the tests.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-069b3000",
+      "score": {
+        "item_id": "more-itertools-clean-069b3000",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "145749143193"
+        ],
+        "cost_usd": 0.00104637,
+        "latency_s": 0.216,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "145749143193",
+            "category": "weak_test",
+            "severity": "minor",
+            "confidence": 0.7,
+            "file": "tests/test_more.py",
+            "line_start": 2752,
+            "line_end": 2752,
+            "summary": "The reflexivity check uses assertTrue(range_1, range_1), which only checks that range_1 is truthy and never tests equality.",
+            "evidence": "`self.assertTrue(range_1, range_1)` at tests/test_more.py:2752. The second argument is the failure message, so this passes for any non-empty range and does not exercise __eq__ at all.",
+            "suggested_fix": "Replace with `self.assertEqual(range_1, range_1)`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3562,
+          "output_tokens": 1449,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00104637
+        },
+        "latency_s": 0.216,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "9221e97d9025",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "tests/test_more.py",
+              "line_start": 2919,
+              "line_end": 2919,
+              "summary": "The specific hash-value test_hash was deleted rather than updated, so no test pins the expected hash values or the empty/len-1 hash shapes.",
+              "evidence": "The `test_hash` method with explicit `hash((1.0, 5.5, 1.5))`-style expectations is removed. The new assertions only check hash equality between pairs, so a regression in the hash tuple layout (e.g. dropping len) would not be caught.",
+              "suggested_fix": "Keep a value-based hash test updated to the new formula, e.g. assert hash(numeric_range(1.0, 6.0, 1.5)) == hash((4, 1.0, 1.5)) and the empty/single-element cases.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-2d7d14d7",
+      "score": {
+        "item_id": "more-itertools-clean-2d7d14d7",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00187337,
+        "latency_s": 0.211,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2034,
+          "output_tokens": 3485,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00187337
+        },
+        "latency_s": 0.211,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "9ef84cbab879",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 3317,
+              "line_end": 3317,
+              "summary": "Typo `inital_cache_len` (should be `initial_cache_len`) and `n = 1` uses spaces around the default, against PEP 8.",
+              "evidence": "`def materialize_next(n = 1):` and `inital_cache_len = len(cache)` in the new `_ichunk` helper.",
+              "suggested_fix": "Rename to `initial_cache_len` and write `def materialize_next(n=1):`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d394823fd86a",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 3317,
+              "line_end": 3317,
+              "summary": "Blank lines inside the new `materialize_next` and `ichunked` bodies contain trailing whitespace.",
+              "evidence": "The added lines after `return len(cache) - inital_cache_len` and after the `ValueError` check in `ichunked` contain indentation-only whitespace (flake8 W293).",
+              "suggested_fix": "Strip trailing whitespace on the blank lines.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "3ee99b6b8811",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 3352,
+              "line_end": 3356,
+              "summary": "`ichunked` now raises ValueError for n=0 and for n=None, where the old code silently looped forever yielding empty chunks; this is a behavior change that the task did not ask for and that should be called out.",
+              "evidence": "New check `if not n or n <= 0: raise ValueError(...)` runs before the loop. With n=0 the old code produced empty chunks indefinitely.",
+              "suggested_fix": "Keep the validation (it fixes an infinite loop) but mention it explicitly and add a test covering it.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "f194d8cdf91d",
+              "category": "over_abstraction",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 3307,
+              "line_end": 3321,
+              "summary": "`materialize_next` is a general-purpose closure with a `n` parameter, but it is only ever called with `1` or `None`; the ValueError branch for negative n is unreachable from `ichunked`.",
+              "evidence": "Calls in `ichunked` are `materialize_next()` and `materialize_next(None)`; the `n < 0` check is dead code given the validation in `ichunked`.",
+              "suggested_fix": "Write two straightforward operations (fetch one, drain rest) or inline them into `ichunked`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-3b80ba6c",
+      "score": {
+        "item_id": "more-itertools-clean-3b80ba6c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "2123f835c198"
+        ],
+        "cost_usd": 0.00096662,
+        "latency_s": 0.206,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2123f835c198",
+            "category": "weak_test",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 3291,
+            "line_end": 3296,
+            "summary": "New min_size/max_size behavior is added without any accompanying tests.",
+            "evidence": "The diff changes set_partitions to accept min_size and max_size and adds early-return and filtering logic, but touches no test file. Nothing verifies the bounds, the min_size > max_size early return, or the defaults.",
+            "suggested_fix": "Add tests covering min_size only, max_size only, both together, min_size > max_size (expects empty), and k combined with the bounds.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2008,
+          "output_tokens": 1678,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00096662
+        },
+        "latency_s": 0.206,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b21e48594909",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 3291,
+              "line_end": 3292,
+              "summary": "A line with only trailing whitespace was added, and the filter lines exceed the usual 79-column limit.",
+              "evidence": "The added line after 'return' is '    ' (trailing whitespace). The two 'yield from filter(lambda z: all(...), set_partitions_helper(L, k))' lines are over 100 characters.",
+              "suggested_fix": "Remove the trailing whitespace and wrap the filter expression. Consider a single named predicate to avoid duplicating it in both branches.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "3e2c0446d6f9",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "more_itertools/more.py",
+              "line_start": 3256,
+              "line_end": 3262,
+              "summary": "The docstring was not updated to describe the new min_size and max_size parameters.",
+              "evidence": "set_partitions gains two public parameters whose semantics (block-size bounds, inclusive, defaults 0 and len(iterable)) are not documented in the docstring.",
+              "suggested_fix": "Document min_size and max_size in the docstring, including that they bound the size of each block.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "96484078e910",
+              "category": "duplication",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "more_itertools/more.py",
+              "line_start": 3311,
+              "line_end": 3314,
+              "summary": "The same filter expression is duplicated in the k-is-None and k-given branches.",
+              "evidence": "Both branches contain identical 'filter(lambda z: all(min_size <= len(bk) <= max_size for bk in z), set_partitions_helper(L, k))' expressions.",
+              "suggested_fix": "Define the predicate once, or wrap the helper result in a single filter after choosing the k range.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4b868467",
+      "score": {
+        "item_id": "more-itertools-clean-4b868467",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "b846747df831"
+        ],
+        "cost_usd": 0.001424495,
+        "latency_s": 0.116,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b846747df831",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/recipes.py",
+            "line_start": 1024,
+            "line_end": 1044,
+            "summary": "factor() now silently returns an empty iterator for negative inputs, where the original raised ValueError.",
+            "evidence": "The new `todo = [n] if n > 1 else []` drops every n <= 1. The original code computed math.isqrt(n) for negative n and raised ValueError. factor(-5) now yields nothing instead of failing, and factor(0) changes from an infinite loop to an empty result.",
+            "suggested_fix": "Validate input explicitly, e.g. raise ValueError for n < 0, and add tests for 0, 1, and negative inputs.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2639,
+          "output_tokens": 2436,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001424495
+        },
+        "latency_s": 0.116,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "eea6af60bdf8",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1036,
+              "line_end": 1044,
+              "summary": "factor() is now eager and returns a sorted list iterator, so it no longer yields lazily.",
+              "evidence": "The original generator yielded small factors before finishing the rest of the computation. The new version fully factors n and sorts all factors before returning `iter(sorted(factors))`. Callers that stop early or rely on laziness now pay the full cost up front.",
+              "suggested_fix": "Document the eager behavior, or keep the generator form if laziness matters to callers.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "cab1afc9a898",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "tests/test_recipes.py",
+              "line_start": 1156,
+              "line_end": 1157,
+              "summary": "The expected factor 113797 was rewritten as the oddly grouped literal 1_137_97, which is hard to read and invites transcription errors.",
+              "evidence": "The change from `113797` to `1_137_97` keeps the same value but uses inconsistent digit grouping, while the neighbouring literals use `999_953` style grouping.",
+              "suggested_fix": "Write it as 113_797.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4e105c4c",
+      "score": {
+        "item_id": "more-itertools-clean-4e105c4c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "c91d4dc117a7"
+        ],
+        "cost_usd": 0.000701245,
+        "latency_s": 0.123,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c91d4dc117a7",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "more_itertools/recipes.py",
+            "line_start": 98,
+            "line_end": 104,
+            "summary": "Blanket `# pragma: no cover` markers hide branches from coverage instead of testing them, so the 100% figure no longer reflects tested behavior.",
+            "evidence": "Pragmas were added to the `except TypeError`/`else` pair for zip strict (lines 98-104), the sumprod `except ImportError` (line 108), the heapq import block (lines 114-118), the pairwise import block (lines 356-361), the `batched` else (line 1011), and the two `running_median` return statements (lines 1471, 1473). Several of these are live code paths that run on the test interpreter, so excluding them removes real uncovered-or-covered signal rather than testing it.",
+            "suggested_fix": "Add tests that exercise each branch (for example by mocking the import failure or the version check), and reserve `# pragma: no cover` for code that genuinely cannot run in the test environment, with a short reason.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2237,
+          "output_tokens": 1090,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000701245
+        },
+        "latency_s": 0.123,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "8dcc38274812",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_more.py",
+              "line_start": 4228,
+              "line_end": 4233,
+              "summary": "The new test is named `test_min_max` but only checks that an impossible min_size/max_size combination yields an empty result, and does not cover the other branches that the task presumably targets.",
+              "evidence": "test_min_max asserts `list(mi.set_partitions('abcdefg', min_size=4, max_size=3)) == []`. This exercises one early-return path but nothing about the pragma-excluded branches it coexists with.",
+              "suggested_fix": "Rename to describe the behavior (e.g. test_min_size_greater_than_max_size_yields_nothing) and check it covers the intended uncovered line.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4f399222",
+      "score": {
+        "item_id": "more-itertools-clean-4f399222",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00095212,
+        "latency_s": 0.121,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3540,
+          "output_tokens": 1266,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00095212
+        },
+        "latency_s": 0.121,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "c1d42efec50e",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "docs/api.rst",
+              "line_start": 265,
+              "line_end": 274,
+              "summary": "The docs change also reorders the existing `callback_iter` autoclass entry, which is unrelated to adding `serialize`.",
+              "evidence": "docs/api.rst moves `.. autoclass:: callback_iter` from the last line of the consumer section to above `countable`. README.rst similarly reorders `with_iter` and `iter_except` in the Iterators table.",
+              "suggested_fix": "Keep only the lines needed to add `serialize`, or split the reordering into a separate change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-5b79a636",
+      "score": {
+        "item_id": "more-itertools-clean-5b79a636",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.000555995,
+        "latency_s": 0.141,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1855,
+          "output_tokens": 895,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000555995
+        },
+        "latency_s": 0.141,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "004e25d8a678",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1368,
+              "line_end": 1372,
+              "summary": "The fold dropped the explanatory comment on the O(n) list insert/delete cost and memmove behavior, and added inline comments that mostly restate the code.",
+              "evidence": "The removed `_sorted_window` body documented why the list insertion and deletion are acceptable (C memmoves, low constant factor). The new body keeps no such note. The added `# data in arrival order` and `# data in sorted order` comments restate what `history` and `window` are.",
+              "suggested_fix": "Keep the performance rationale as a short comment above the loop, and drop the two inline comments that restate the variable names.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-c0780fbb",
+      "score": {
+        "item_id": "more-itertools-clean-c0780fbb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "cecf18611e5c",
+          "28ff8b45dd8c"
+        ],
+        "cost_usd": 0.00199037,
+        "latency_s": 0.155,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "cecf18611e5c",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "more_itertools/more.py",
+            "line_start": 3924,
+            "line_end": 3933,
+            "summary": "For n=2, the online path (iterables without __len__) yields singleton lists instead of pairs, violating the documented 'lists of length n' contract.",
+            "evidence": "With n=2, `maxbuf = n*(n-1) - 1 = 1`. After the first append, `len(buffer) == 1 == maxbuf`, so `yield buffer[:2]` emits `[x]` and `buffer = buffer[2:]` empties the buffer. Every item is therefore emitted as its own list. For example, `list(chunked_even(iter([1,2,3,4]), 2))` returns `[[1],[2],[3],[4]]` rather than `[[1,2],[3,4]]`. The sized path (`range`, list) is correct, so the bug only shows up for iterators.",
+            "suggested_fix": "Choose the buffer threshold so a full chunk of n items is always available before yielding, e.g. flush only when len(buffer) >= maxbuf and max(maxbuf, n) is used, or derive the threshold so that n=2 buffers at least 2 items. Add an iterator-based test for n=2 (and n=1, n=2 generally).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          },
+          {
+            "id": "28ff8b45dd8c",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "tests/test_more.py",
+            "line_start": 4540,
+            "line_end": 4591,
+            "summary": "The tests do not exercise the online (no __len__) path for small n, so the n=2 bug above goes undetected.",
+            "evidence": "`test_evenness` only uses `range(N)`, which has `__len__`, so it always takes `_chunked_even_finite`. `_test_finite` cases use n=1 and n=3 and 'ABCD' with n=3; none uses an iterator with n=2. The only iterator-based test with a large buffer is `test_infinite`, which checks just the first two lists with n=4.",
+            "suggested_fix": "Add an evenness test that wraps the input in a non-sized iterator (e.g. `iter(range(N))`) across the same N/n ranges, plus explicit n=2 cases.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3466,
+          "output_tokens": 3361,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00199037
+        },
+        "latency_s": 0.155,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "8da54b8acd03",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "more_itertools/more.py",
+              "line_start": 3929,
+              "line_end": 3929,
+              "summary": "The TODO admits the buffer bound is unproven and is chosen by trial, and the bound is not justified in the code.",
+              "evidence": "`# TODO: n*(n - 1) - 2 is not enough (tests fail), but this might be. Proof?` precedes `maxbuf = n*(n - 1) - 1`. The bound is an unverified guess, and the n=2 case above shows it can produce wrong output.",
+              "suggested_fix": "Either prove the bound and document it, or replace the trial-based constant with a derivation and remove the TODO.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "3201f45f076c",
+              "category": "other",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/more.py",
+              "line_start": 3961,
+              "line_end": 3961,
+              "summary": "A bare `assert` is used as a runtime invariant check in library code.",
+              "evidence": "`assert num_partial >= 0` inside `_chunked_even_finite`. Assertions are stripped under `python -O`, and the function would then silently over-produce lists if the invariant were violated.",
+              "suggested_fix": "Remove the assert or make the invariant explicit by construction; the loop structure already guarantees the count.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa60e38e",
+      "score": {
+        "item_id": "more-itertools-clean-fa60e38e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00212762,
+        "latency_s": 0.126,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3648,
+          "output_tokens": 3590,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00212762
+        },
+        "latency_s": 0.126,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "b23a71bfcfc4",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/recipes.py",
+              "line_start": 725,
+              "line_end": 727,
+              "summary": "convolve with an empty kernel no longer yields nothing; it now passes n=0 to sliding_window, which either yields spurious zeros or raises.",
+              "evidence": "The old code with n=0 gave deque([0], maxlen=0)*0 and repeat(0, -1), so the loop produced no output. The new code calls sliding_window(padded_signal, 0). Depending on the sliding_window implementation, this either yields one empty-tuple sum per signal element (0s) or hits islice(it, n - 1) with n - 1 = -1 and raises ValueError. Either way the empty-kernel contract changed and no test covers it.",
+              "suggested_fix": "Guard the empty-kernel case explicitly (for example, return early when n == 0) to preserve the original empty-output behavior, and add a test for it.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "c8c30649bbdd",
+              "category": "correctness",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "more_itertools/recipes.pyi",
+              "line_start": 121,
+              "line_end": 121,
+              "summary": "The stub types sum_of_squares as returning _T, but the result is the sum of squares of the elements, which is a different type in general.",
+              "evidence": "def sum_of_squares(it: Iterable[_T]) -> _T: ... The implementation returns _sumprod(*tee(it)), i.e. a numeric accumulation of x*x. Type checkers will accept mismatched types such as Iterable[Fraction] mapped to Fraction, but a more faithful signature would use a numeric TypeVar or a looser return type.",
+              "suggested_fix": "Use a numeric-oriented type for the return value, or match the typing used by dotproduct/polynomial_eval in the stub.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb33cf2c",
+      "score": {
+        "item_id": "more-itertools-clean-fb33cf2c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "4b5ac5387d7f"
+        ],
+        "cost_usd": 0.00074137,
+        "latency_s": 0.095,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [
+          {
+            "id": "4b5ac5387d7f",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 5076,
+            "line_end": 5076,
+            "summary": "The docstrings misspell 'occurence' as 'occurence' instead of 'occurrence'.",
+            "evidence": "Both argmin and argmax docstrings read 'Index of the first occurence of a ...' (more.py new lines around 5076 and 5086).",
+            "suggested_fix": "Change 'occurence' to 'occurrence' in both docstrings.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2726,
+          "output_tokens": 1048,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00074137
+        },
+        "latency_s": 0.095,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb95291e",
+      "score": {
+        "item_id": "more-itertools-clean-fb95291e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "2ad26700dc88"
+        ],
+        "cost_usd": 0.00136612,
+        "latency_s": 0.086,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2ad26700dc88",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 2991,
+            "line_end": 3018,
+            "summary": "circular_shifts changed from returning a list to returning a generator, which breaks existing callers that index, len(), or reuse the result.",
+            "evidence": "The original returned take(len(lst), windowed(...)), a list. The new body uses `yield`, so the function now returns a generator. The diff updates the existing tests to wrap calls in list(...), which shows the change breaks current call sites. The issue only asked for a steps argument.",
+            "suggested_fix": "Keep the list return type (e.g. return a list built from the generator body) or call out the breaking change explicitly and bump the API expectations.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": []
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2580,
+          "output_tokens": 2334,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00136612
+        },
+        "latency_s": 0.086,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "9f0af23e7fe8",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/more.py",
+              "line_start": 2994,
+              "line_end": 2996,
+              "summary": "The steps == 0 validation runs lazily inside the generator, so the ValueError is raised on first iteration instead of at call time.",
+              "evidence": "The function body contains `if steps == 0: raise ValueError(...)` and is a generator because of the `yield` on line 3018. Calling circular_shifts(x, 0) does not raise until next() is called.",
+              "suggested_fix": "Split into a regular function that validates and then returns an inner generator, so the error is raised eagerly.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "5c0786ab02c1",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 3018,
+              "line_end": 3018,
+              "summary": "`buffer.rotate(steps) or tuple(buffer)` relies on rotate() returning None to yield the tuple, which is hard to read.",
+              "evidence": "deque.rotate returns None, so the `or` expression always evaluates to tuple(buffer). The idiom obscures the intent of rotating and then yielding.",
+              "suggested_fix": "Write `buffer.rotate(steps)` on one line and `yield tuple(buffer)` on the next.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": []
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ]
+      }
+    }
+  ]
+}
