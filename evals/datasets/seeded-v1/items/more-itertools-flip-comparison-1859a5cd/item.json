@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-flip-comparison-1859a5cd",
+  "kind": "seeded",
+  "task": "Clean up meteralize_next method",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "f72385b8b90aaa308524427179943196cddf1c4f",
+    "upstream_commit": "1859a5cd32f2cff0ded27f7bcc39c4a4d5c7c026",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 3324,
+      "line_end": 3324,
+      "category": "correctness",
+      "description": "Boundary changed: `>` became `>=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Clean up meteralize_next method",
+    "date": "2024-01-11"
+  }
+}

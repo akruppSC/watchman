@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-fd7538f0",
+  "kind": "clean",
+  "task": "validators.in_ now transforms certain unhashable options to tuples",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "09161fc9181bf94aa3bbc5509c663d736a9553dc",
+    "upstream_commit": "fd7538f0e23a49ec34b636484de2d1b4b690c7fb",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "validators.in_ now transforms certain unhashable options to tuples (#1320)",
+    "date": "2024-08-03"
+  }
+}

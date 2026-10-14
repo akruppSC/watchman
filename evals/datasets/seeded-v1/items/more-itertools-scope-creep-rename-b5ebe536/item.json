@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-scope-creep-rename-b5ebe536",
+  "kind": "seeded",
+  "task": "Switch from itemgetter() to compress()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "45a9b5148598ad493e7ed53ee257f2208dbefbaf",
+    "upstream_commit": "b5ebe5364125b166606ae34d278ed6756bdae45e",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 920,
+      "line_end": 925,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `data` to `payload` in `sieve` (more_itertools/recipes.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Switch from itemgetter() to compress()",
+    "date": "2026-04-22"
+  }
+}

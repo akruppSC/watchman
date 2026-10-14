@@ -1,0 +1,24 @@
+diff --git a/src/click/shell_completion.py b/src/click/shell_completion.py
+index 6c39d5eb3889000b499d37262cc5f7de8b7a443e..cdb58222c5b0fd5fd6c4c328e940b29caab3a2fb 100644
+--- a/src/click/shell_completion.py
++++ b/src/click/shell_completion.py
+@@ -567,8 +567,8 @@ def _resolve_context(
+                     with cmd.make_context(
+                         name, args, parent=ctx, resilient_parsing=True
+                     ) as sub_ctx:
+-                        ctx = sub_ctx
+                         args = ctx._protected_args + ctx.args
++                        ctx = sub_ctx
+                 else:
+                     sub_ctx = ctx
+ 
+@@ -586,8 +586,8 @@ def _resolve_context(
+                             allow_interspersed_args=False,
+                             resilient_parsing=True,
+                         ) as sub_sub_ctx:
+-                            sub_ctx = sub_sub_ctx
+                             args = sub_ctx.args
++                            sub_ctx = sub_sub_ctx
+ 
+                     ctx = sub_ctx
+                     args = [*sub_ctx._protected_args, *sub_ctx.args]

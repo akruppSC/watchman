@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-144f3701",
+  "kind": "clean",
+  "task": "Option.show_default now overrides Context.show_default",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "08ecfd0e7c238a2444886d239de6d0e9d83530ec",
+    "upstream_commit": "144f3701b23186ac8b2277d8f224fd7090366db5",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Option.show_default now overrides Context.show_default",
+    "date": "2021-06-18"
+  }
+}

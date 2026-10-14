@@ -1,0 +1,100 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 6e41075b08692172037b1fcd2641f08196db9f2f..8212f4c76ea3471c4fed809d154619bd5cab32e9 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -293,6 +293,8 @@ Math
+ .. autofunction:: polynomial_derivative
+ .. autofunction:: polynomial_eval
+ .. autofunction:: sieve
++.. autofunction:: is_prime
++.. autofunction:: nth_prime
+ .. autofunction:: sum_of_squares
+ .. autofunction:: totient
+ 
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 74de655f46432adc664d0c6597f24c873c5bec2c..b31fa376bbee67bf95e618e21bc1b0ff54d49cb4 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -30,6 +30,7 @@ from itertools import (
+ )
+ from random import randrange, sample, choice
+ from sys import hexversion
++import functools
+ 
+ __all__ = [
+     'all_equal',
+@@ -49,6 +50,7 @@ __all__ = [
+     'ncycles',
+     'nth',
+     'nth_combination',
++    'nth_prime',
+     'padnone',
+     'pad_none',
+     'pairwise',
+@@ -1142,3 +1144,24 @@ def is_prime(n):
+     else:
+         bases = [randrange(2, n - 1) for i in range(32)]
+     return all(_strong_probable_prime(n, base) for base in bases)
++
++
++@functools.cache_result
++def _nth_prime_ub(n: int) -> float:
++    "Upper bound for the nth prime (counting from 1)."
++    # https://en.wikipedia.org/wiki/Prime-counting_function#Inequalities
++    return n * math.log(n * math.log(n)) if n >= 6 else 11.1
++
++
++def nth_prime(n):
++    """Return the nth prime (counting from 0).
++
++    >>> nth_prime(0)
++    2
++    >>> nth_prime(100)
++    547
++    """
++    if n < 0:
++        raise ValueError
++    limit = math.ceil(_nth_prime_ub(n + 1))
++    return nth(sieve(limit), n)
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 58ece108e601cabd8237ba4f68ea873e0abc0998..c005177a40f0f35aa217ec44087e82a2e750208a 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -135,3 +135,4 @@ def sum_of_squares(it: Iterable[_T]) -> _T: ...
+ def polynomial_derivative(coefficients: Sequence[_T]) -> list[_T]: ...
+ def totient(n: int) -> int: ...
+ def is_prime(n: int) -> bool: ...
++def nth_prime(n: int) -> int: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 3de4d092701409f6de909afcf5da78dc4babf9d4..b15c2fdca64e40d1a9ef0c5c86d5f41bafad39c8 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -1217,24 +1217,14 @@ class TotientTests(TestCase):
+                 self.assertEqual(mi.totient(n), expected)
+ 
+ 
+-class IsPrimeTests(TestCase):
+-    def test_pseudoprimes(self):
++class PrimeFunctionTests(TestCase):
++    def test_is_prime_pseudoprimes(self):
+         for n in (341, 561, 645, 1105, 1387, 1729, 1905, 2047, 2465, 2701):
+             with self.subTest(n=n):
+                 self.assertFalse(mi.is_prime(n))
+ 
+     def test_primes(self):
+-        for n in (
+-            2,
+-            15_485_863,
+-            15_485_867,
+-            32_452_843,
+-            32_452_867,
+-            49_979_687,
+-            49_979_693,
+-            67_867_967,
+-            67_867_979,
+-            86_028_121,
+-        ):
++        for i, n in enumerate(mi.sieve(10**5)):
+             with self.subTest(n=n):
+                 self.assertTrue(mi.is_prime(n))
++                self.assertEqual(mi.nth_prime(i), n)

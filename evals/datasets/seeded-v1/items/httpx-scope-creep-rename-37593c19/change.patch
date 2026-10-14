@@ -1,0 +1,45 @@
+diff --git a/httpx/_auth.py b/httpx/_auth.py
+index b03971ab4b311d60790dc22ca24d9966426ec0a4..581127bb83367c9d9e8c6c34083201c0e197c811 100644
+--- a/httpx/_auth.py
++++ b/httpx/_auth.py
+@@ -314,7 +314,7 @@ class DigestAuth(Auth):
+         NON_QUOTED_TEMPLATE = "{}={}"
+ 
+         header_value = ""
+-        for i, (field, value) in enumerate(header_fields.items()):
++        for i, (field, val) in enumerate(header_fields.items()):
+             if i > 0:
+                 header_value += ", "
+             template = (
+@@ -322,7 +322,7 @@ class DigestAuth(Auth):
+                 if field not in NON_QUOTED_FIELDS
+                 else NON_QUOTED_TEMPLATE
+             )
+-            header_value += template.format(field, to_str(value))
++            header_value += template.format(field, to_str(val))
+ 
+         return header_value
+ 
+diff --git a/httpx/_urlparse.py b/httpx/_urlparse.py
+index 883f0895d3e8356b69edbd1bf4f463fb107da88d..575e6d56248dc87bcf568572b9d15b7111f79f2c 100644
+--- a/httpx/_urlparse.py
++++ b/httpx/_urlparse.py
+@@ -392,8 +392,17 @@ def normalize_path(path: str) -> str:
+ 
+         normalize_path("/path/./to/somewhere/..") == "/path/to"
+     """
+-    # https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.4
++    # Fast return when no '.' characters in the path.
++    if "." not in path:
++        return path
++
+     components = path.split("/")
++
++    # Fast return when no '.' or '..' components in the path.
++    if "." not in components and ".." not in components:
++        return path
++
++    # https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.4
+     output: list[str] = []
+     for component in components:
+         if component == ".":

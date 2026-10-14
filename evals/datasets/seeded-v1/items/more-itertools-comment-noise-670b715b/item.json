@@ -1,0 +1,40 @@
+{
+  "id": "more-itertools-comment-noise-670b715b",
+  "kind": "seeded",
+  "task": "Validate running window sizes through the index protocol",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d634820be7a23b6a85441ee67051530fb0a8a960",
+    "upstream_commit": "670b715b307adfe5d2fca08a87ca562cb8bfea2c",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 1519,
+      "line_end": 1519,
+      "category": "comment_noise",
+      "description": "3 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/recipes.py",
+          "line_start": 1596,
+          "line_end": 1596
+        },
+        {
+          "file": "more_itertools/recipes.py",
+          "line_start": 1598,
+          "line_end": 1598
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "Validate running window sizes through the index protocol",
+    "date": "2026-09-07"
+  }
+}

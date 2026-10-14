@@ -1,0 +1,28 @@
+{
+  "id": "httpx-revert-b7dc0c3d",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `IteratorByteStream`, `AsyncIteratorByteStream`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "99ba25c3c569396d148d58d96176b8e458385ae0",
+    "upstream_commit": "b7dc0c3df68279ce89f016a69a41b27a2346d54d",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_content.py",
+      "line_start": 53,
+      "line_end": 78,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by b7dc0c3d: Fix for stream uploads that subclass SyncByteStream/AsyncByteStream (#2016)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix for stream uploads that subclass SyncByteStream/AsyncByteStream (#2016)",
+    "date": "2022-01-06"
+  }
+}

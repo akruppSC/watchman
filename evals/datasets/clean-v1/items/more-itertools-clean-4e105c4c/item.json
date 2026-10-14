@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-4e105c4c",
+  "kind": "clean",
+  "task": "Get coverage to 100%",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "21d3d88359437146a6d8882328df4bd73edd685c",
+    "upstream_commit": "4e105c4cd25e1998f31d0a803ce2d5c9429b6829",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Get coverage to 100%",
+    "date": "2025-08-26"
+  }
+}

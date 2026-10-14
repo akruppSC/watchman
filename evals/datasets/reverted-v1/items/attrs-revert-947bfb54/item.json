@@ -1,0 +1,44 @@
+{
+  "id": "attrs-revert-947bfb54",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `_compile_and_eval`, `_make_hash`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "976b8287703d781590d457dffc8b581a244b09d5",
+    "upstream_commit": "947bfb542104209a587280701d8cb389c813459d",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 325,
+      "line_end": 337,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 947bfb54: Fix hashing for custom `eq` objects (#909)",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 1680,
+          "line_end": 1685
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 1714,
+          "line_end": 1720
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 1734,
+          "line_end": 1740
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix hashing for custom `eq` objects (#909)",
+    "date": "2022-01-30"
+  }
+}

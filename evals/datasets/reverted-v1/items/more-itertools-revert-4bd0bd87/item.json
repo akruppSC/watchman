@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-4bd0bd87",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `distinct_permutations`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "17fd95a0c34763c34853f3a89048d60733815dc4",
+    "upstream_commit": "4bd0bd876273a8ff2171352c937b91a8c053d00b",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 669,
+      "line_end": 692,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 4bd0bd87: Merge fix for issue 832 (distinct_permutations)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Merge fix for issue 832 (distinct_permutations)",
+    "date": "2024-06-17"
+  }
+}

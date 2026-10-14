@@ -1,0 +1,29 @@
+{
+  "id": "click-swallow-exception-721c8b0d",
+  "kind": "seeded",
+  "task": "cleandoc for Command help, epilog, and short_help",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2c70a0c15a3c154c587e351062be66bb75cbf3f2",
+    "upstream_commit": "721c8b0d58c2b7124cedd33a779626f14cf1b1d2",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 1198,
+      "line_end": 1201,
+      "category": "swallowed_error",
+      "description": "`help = inspect.cleandoc(help)` wrapped in try/except Exception: help = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "cleandoc for Command help, epilog, and short_help",
+    "date": "2022-02-20"
+  }
+}

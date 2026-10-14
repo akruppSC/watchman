@@ -1,0 +1,55 @@
+{
+  "id": "click-duplicate-helper-6d64ca5d",
+  "kind": "seeded",
+  "task": "path type supports pathlib",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1472e3d697215039f499cb0b51d8bea6a9aa3144",
+    "upstream_commit": "6d64ca5d0eab6df9a66e1c732dc52d1b68a41ae4",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "src/click/types.py",
+      "line_start": 16,
+      "line_end": 21,
+      "category": "duplication",
+      "description": "Added `_filename_to_ui_impl`, a copy of existing `filename_to_ui` in src/click/_compat.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "src/click/types.py",
+          "line_start": 760,
+          "line_end": 760
+        },
+        {
+          "file": "src/click/types.py",
+          "line_start": 766,
+          "line_end": 766
+        },
+        {
+          "file": "src/click/types.py",
+          "line_start": 772,
+          "line_end": 772
+        },
+        {
+          "file": "src/click/types.py",
+          "line_start": 778,
+          "line_end": 778
+        },
+        {
+          "file": "src/click/types.py",
+          "line_start": 753,
+          "line_end": 753
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "path type supports pathlib",
+    "date": "2021-03-04"
+  }
+}

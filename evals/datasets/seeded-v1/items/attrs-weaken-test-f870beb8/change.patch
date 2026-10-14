@@ -1,0 +1,533 @@
+diff --git a/changelog.d/1010.change.rst b/changelog.d/1010.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..ac398e24d7dd41503cc426f059ecd59d07b79e11
+--- /dev/null
++++ b/changelog.d/1010.change.rst
+@@ -0,0 +1 @@
++Added ``attrs.validators.not_(wrapped_validator)`` to logically invert *wrapped_validator* by accepting only values where *wrapped_validator* rejects the value with a ``ValueError`` or ``TypeError`` (by default, exception types configurable).
+diff --git a/docs/api.rst b/docs/api.rst
+index f7298118b8a384eabf80131f3754708f7a5b2743..9dff7a54a4ccbf8ad3eeff1268946f20d94df2bc 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -596,6 +596,32 @@ All objects from ``attrs.validators`` are also available from ``attr.validators`
+       x = attrs.field(validator=attrs.validators.and_(v1, v2, v3))
+       x = attrs.field(validator=[v1, v2, v3])
+ 
++.. autofunction:: attrs.validators.not_
++
++   For example:
++
++   .. doctest::
++
++      >>> reserved_names = {"id", "time", "source"}
++      >>> @attrs.define
++      ... class Measurement:
++      ...     tags = attrs.field(
++      ...         validator=attrs.validators.deep_mapping(
++      ...             key_validator=attrs.validators.not_(
++      ...                 attrs.validators.in_(reserved_names),
++      ...                 msg="reserved tag key",
++      ...             ),
++      ...             value_validator=attrs.validators.instance_of((str, int)),
++      ...         )
++      ...     )
++      >>> Measurement(tags={"source": "universe"})
++      Traceback (most recent call last):
++         ...
++      ValueError: ("reserved tag key", Attribute(name='tags', default=NOTHING, validator=<not_ validator wrapping <in_ validator with options {'id', 'time', 'source'}>, capturing (<class 'ValueError'>, <class 'TypeError'>)>, type=None, kw_only=False), <in_ validator with options {'id', 'time', 'source'}>, {'source_': 'universe'}, (<class 'ValueError'>, <class 'TypeError'>))
++      >>> Measurement(tags={"source_": "universe"})
++      Measurement(tags={'source_': 'universe'})
++
++
+ .. autofunction:: attrs.validators.optional
+ 
+    For example:
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index f27049b3d88b245a99bcf927f00f1944d3c82fd9..f1f6f2475e895fdee75c9cb7968b3217c8900e7e 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -12,6 +12,7 @@ from contextlib import contextmanager
+ 
+ from ._config import get_run_validators, set_run_validators
+ from ._make import _AndValidator, and_, attrib, attrs
++from .converters import default_if_none
+ from .exceptions import NotCallableError
+ 
+ 
+@@ -37,6 +38,7 @@ __all__ = [
+     "matches_re",
+     "max_len",
+     "min_len",
++    "not_",
+     "optional",
+     "provides",
+     "set_disabled",
+@@ -592,3 +594,121 @@ def min_len(length):
+     .. versionadded:: 22.1.0
+     """
+     return _MinLengthValidator(length)
++
++
++@attrs(repr=False, slots=True, hash=True)
++class _SubclassOfValidator:
++    type = attrib()
++
++    def __call__(self, inst, attr, value):
++        """
++        We use a callable class to be able to change the ``__repr__``.
++        """
++        if not issubclass(value, self.type):
++            raise TypeError(
++                "'{name}' must be a subclass of {type!r} "
++                "(got {value!r}).".format(
++                    name=attr.name,
++                    type=self.type,
++                    value=value,
++                ),
++                attr,
++                self.type,
++                value,
++            )
++
++    def __repr__(self):
++        return "<subclass_of validator for type {type!r}>".format(
++            type=self.type
++        )
++
++
++def _subclass_of(type):
++    """
++    A validator that raises a `TypeError` if the initializer is called
++    with a wrong type for this particular attribute (checks are performed using
++    `issubclass` therefore it's also valid to pass a tuple of types).
++
++    :param type: The type to check for.
++    :type type: type or tuple of types
++
++    :raises TypeError: With a human readable error message, the attribute
++        (of type `attrs.Attribute`), the expected type, and the value it
++        got.
++    """
++    return _SubclassOfValidator(type)
++
++
++@attrs(repr=False, slots=True, hash=True)
++class _NotValidator:
++    validator = attrib()
++    msg = attrib(
++        converter=default_if_none(
++            "not_ validator child '{validator!r}' "
++            "did not raise a captured error"
++        )
++    )
++    exc_types = attrib(
++        validator=deep_iterable(
++            member_validator=_subclass_of(Exception),
++            iterable_validator=instance_of(tuple),
++        ),
++    )
++
++    def __call__(self, inst, attr, value):
++        try:
++            self.validator(inst, attr, value)
++        except self.exc_types:
++            pass  # suppress error to invert validity
++        else:
++            raise ValueError(
++                self.msg.format(
++                    validator=self.validator,
++                    exc_types=self.exc_types,
++                ),
++                attr,
++                self.validator,
++                value,
++                self.exc_types,
++            )
++
++    def __repr__(self):
++        return (
++            "<not_ validator wrapping {what!r}, " "capturing {exc_types!r}>"
++        ).format(
++            what=self.validator,
++            exc_types=self.exc_types,
++        )
++
++
++def not_(validator, *, msg=None, exc_types=(ValueError, TypeError)):
++    """
++    A validator that wraps and logically 'inverts' the validator passed to it.
++    It will raise a `ValueError` if the provided validator *doesn't* raise a
++    `ValueError` or `TypeError` (by default), and will suppress the exception
++    if the provided validator *does*.
++
++    Intended to be used with existing validators to compose logic without
++    needing to create inverted variants, for example, ``not_(in_(...))``.
++
++    :param validator: A validator to be logically inverted.
++    :param msg: Message to raise if validator fails.
++        Formatted with keys ``exc_types`` and ``validator``.
++    :type msg: str
++    :param exc_types: Exception type(s) to capture.
++        Other types raised by child validators will not be intercepted and
++        pass through.
++
++    :raises ValueError: With a human readable error message,
++        the attribute (of type `attrs.Attribute`),
++        the validator that failed to raise an exception,
++        the value it got,
++        and the expected exception types.
++
++    .. versionadded:: 22.2.0
++    """
++    try:
++        exc_types = tuple(exc_types)
++    except TypeError:
++        exc_types = (exc_types,)
++    return _NotValidator(validator, msg, exc_types)
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 54b9dba24ef86dadb626721e343f5217177f85b8..ae6c6f40e0c7ce64bb23f0f63dfae964f95add99 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -78,3 +78,12 @@ def ge(val: _T) -> _ValidatorType[_T]: ...
+ def gt(val: _T) -> _ValidatorType[_T]: ...
+ def max_len(length: int) -> _ValidatorType[_T]: ...
+ def min_len(length: int) -> _ValidatorType[_T]: ...
++def not_(
++    validator: _ValidatorType[_T],
++    *,
++    msg: Optional[str] = None,
++    exc_types: Union[Type[Exception], Iterable[Type[Exception]]] = (
++        ValueError,
++        TypeError,
++    )
++) -> _ValidatorType[_T]: ...
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index 51fe2f41e6242c81c108fa0c569019654180c0fe..218112e03fcb638c7378f1f0faf08cfcac235b2d 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -14,6 +14,7 @@ import attr
+ from attr import _config, fields, has
+ from attr import validators as validator_module
+ from attr.validators import (
++    _subclass_of,
+     and_,
+     deep_iterable,
+     deep_mapping,
+@@ -27,6 +28,7 @@ from attr.validators import (
+     matches_re,
+     max_len,
+     min_len,
++    not_,
+     optional,
+     provides,
+ )
+@@ -1064,3 +1066,278 @@ class TestMinLen:
+         __repr__ is meaningful.
+         """
+         assert repr(min_len(23)) == "<min_len validator for 23>"
++
++
++class TestSubclassOf:
++    """
++    Tests for `_subclass_of`.
++    """
++
++    def test_success(self):
++        """
++        Nothing happens if classes match.
++        """
++        v = _subclass_of(int)
++        v(None, simple_attr("test"), int)
++
++    def test_subclass(self):
++        """
++        Subclasses are accepted too.
++        """
++        v = _subclass_of(int)
++        # yep, bools are a subclass of int :(
++        v(None, simple_attr("test"), bool)
++
++    def test_fail(self):
++        """
++        Raises `TypeError` on wrong types.
++        """
++        v = _subclass_of(int)
++        a = simple_attr("test")
++        with pytest.raises(TypeError) as e:
++            v(None, a, str)
++        assert (
++            "'test' must be a subclass of <class 'int'> (got <class 'str'>).",
++            a,
++            int,
++            str,
++        ) == e.value.args
++
++    def test_repr(self):
++        """
++        Returned validator has a useful `__repr__`.
++        """
++        v = _subclass_of(int)
++        assert ("<subclass_of validator for type <class 'int'>>") == repr(v)
++
++
++class TestNot_:
++    """
++    Tests for `not_`.
++    """
++
++    DEFAULT_EXC_TYPES = (ValueError, TypeError)
++
++    def test_not_all(self):
++        """
++        The validator is in ``__all__``.
++        """
++        assert not_.__name__ is not None
++
++    def test_repr(self):
++        """
++        Returned validator has a useful `__repr__`.
++        """
++        wrapped = in_([3, 4, 5])
++
++        v = not_(wrapped)
++
++        assert (
++            (
++                "<not_ validator wrapping {wrapped!r}, "
++                "capturing {exc_types!r}>"
++            ).format(
++                wrapped=wrapped,
++                exc_types=v.exc_types,
++            )
++        ) == repr(v)
++
++    def test_success_because_fails(self):
++        """
++        If the wrapped validator fails, we're happy.
++        """
++
++        def always_fails(inst, attr, value):
++            raise ValueError("always fails")
++
++        v = not_(always_fails)
++        a = simple_attr("test")
++        input_value = 3
++
++        v(1, a, input_value)
++
++    def test_fails_because_success(self):
++        """
++        If the wrapped validator doesn't fail, not_ should fail.
++        """
++
++        def always_passes(inst, attr, value):
++            pass
++
++        v = not_(always_passes)
++        a = simple_attr("test")
++        input_value = 3
++
++        with pytest.raises(ValueError) as e:
++            v(1, a, input_value)
++
++        assert (
++            (
++                "not_ validator child '{!r}' did not raise a captured error"
++            ).format(always_passes),
++            a,
++            always_passes,
++            input_value,
++            self.DEFAULT_EXC_TYPES,
++        ) == e.value.args
++
++    def test_composable_with_in_pass(self):
++        """
++        Check something is ``not in`` something else.
++        """
++        v = not_(in_("abc"))
++        a = simple_attr("test")
++        input_value = "d"
++
++        v(None, a, input_value)
++
++    def test_composable_with_in_fail(self):
++        """
++        Check something is ``not in`` something else, but it is, so fail.
++        """
++        wrapped = in_("abc")
++        v = not_(wrapped)
++        a = simple_attr("test")
++        input_value = "b"
++
++        with pytest.raises(ValueError) as e:
++            v(None, a, input_value)
++
++        assert (
++            (
++                "not_ validator child '{!r}' did not raise a captured error"
++            ).format(in_("abc")),
++            a,
++            wrapped,
++            input_value,
++            self.DEFAULT_EXC_TYPES,
++        ) == e.value.args
++
++    def test_composable_with_matches_re_pass(self):
++        """
++        Check something does not match a regex.
++        """
++        v = not_(matches_re("[a-z]{3}"))
++        a = simple_attr("test")
++        input_value = "spam"
++
++        v(None, a, input_value)
++
++    def test_composable_with_matches_re_fail(self):
++        """
++        Check something does not match a regex, but it does, so fail.
++        """
++        wrapped = matches_re("[a-z]{3}")
++        v = not_(wrapped)
++        a = simple_attr("test")
++        input_value = "egg"
++
++        with pytest.raises(ValueError) as e:
++            v(None, a, input_value)
++
++        assert (
++            (
++                "not_ validator child '{!r}' did not raise a captured error"
++            ).format(wrapped),
++            a,
++            wrapped,
++            input_value,
++            self.DEFAULT_EXC_TYPES,
++        ) == e.value.args
++
++    def test_composable_with_instance_of_pass(self):
++        """
++        Check something is not a type. This validator raises a TypeError,
++        rather than a ValueError like the others.
++        """
++        v = not_(instance_of((int, float)))
++        a = simple_attr("test")
++
++        v(None, a, "spam")
++
++    def test_composable_with_instance_of_fail(self):
++        """
++        Check something is not a type, but it is, so fail.
++        """
++        wrapped = instance_of((int, float))
++        v = not_(wrapped)
++        a = simple_attr("test")
++        input_value = 2.718281828
++
++        with pytest.raises(ValueError) as e:
++            v(None, a, input_value)
++
++        assert (
++            (
++                "not_ validator child '{!r}' did not raise a captured error"
++            ).format(instance_of((int, float))),
++            a,
++            wrapped,
++            input_value,
++            self.DEFAULT_EXC_TYPES,
++        ) == e.value.args
++
++    def test_custom_capture_match(self):
++        """
++        Match a custom exception provided to `not_`
++        """
++        v = not_(in_("abc"), exc_types=ValueError)
++        a = simple_attr("test")
++
++        v(None, a, "d")
++
++    def test_custom_capture_miss(self):
++        """
++        If the exception doesn't match, the underlying raise comes through
++        """
++
++        class MyError(Exception):
++            """:("""
++
++        wrapped = in_("abc")
++        v = not_(wrapped, exc_types=MyError)
++        a = simple_attr("test")
++        input_value = "d"
++
++        with pytest.raises(ValueError) as e:
++            v(None, a, input_value)
++
++        # get the underlying exception to compare
++        with pytest.raises(Exception) as e_from_wrapped:
++            wrapped(None, a, input_value)
++        assert e_from_wrapped.value.args == e.value.args
++
++    def test_custom_msg(self):
++        """
++        If provided, use the custom message in the raised error
++        """
++        custom_msg = "custom message!"
++        wrapped = in_("abc")
++        v = not_(wrapped, msg=custom_msg)
++        a = simple_attr("test")
++        input_value = "a"
++
++        with pytest.raises(ValueError) as e:
++            v(None, a, input_value)
++
++        assert (
++            custom_msg,
++            a,
++            wrapped,
++            input_value,
++            self.DEFAULT_EXC_TYPES,
++        ) == e.value.args
++
++    def test_bad_exception_args(self):
++        """
++        Malformed exception arguments
++        """
++        wrapped = in_("abc")
++
++        with pytest.raises(TypeError) as e:
++            not_(wrapped, exc_types=(str, int))
++
++        assert (
++            "'exc_types' must be a subclass of <class 'Exception'> "
++            "(got <class 'str'>)."
++        ) == e.value.args[0]
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index a8228e5961a93ced98bfa693aad9b10d4baddb04..012a190ccc14a3949bdf9098338adf4d72e53536 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -206,6 +206,26 @@ class Validated:
+         validator=attrs.validators.instance_of((int, C, str))
+     )
+ 
++    l: Any = attr.ib(
++        validator=attr.validators.not_(attr.validators.in_("abc"))
++    )
++    m: Any = attr.ib(
++        validator=attr.validators.not_(
++            attr.validators.in_("abc"), exc_types=ValueError
++        )
++    )
++    n: Any = attr.ib(
++        validator=attr.validators.not_(
++            attr.validators.in_("abc"), exc_types=(ValueError,)
++        )
++    )
++    o: Any = attr.ib(
++        validator=attr.validators.not_(attr.validators.in_("abc"), msg="spam")
++    )
++    p: Any = attr.ib(
++        validator=attr.validators.not_(attr.validators.in_("abc"), msg=None)
++    )
++
+ 
+ @attr.define
+ class Validated2:

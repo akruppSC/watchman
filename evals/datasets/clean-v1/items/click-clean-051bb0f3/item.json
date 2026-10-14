@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-051bb0f3",
+  "kind": "clean",
+  "task": "Do not let the GC close a borrowed `stdout`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "cd9bdd96a9dcc8e4ecabd45b5c244dbc70034484",
+    "upstream_commit": "051bb0f30b545cf7426deef819811815297c2798",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Do not let the GC close a borrowed `stdout`",
+    "date": "2026-05-29"
+  }
+}

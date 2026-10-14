@@ -1,0 +1,35 @@
+{
+  "id": "click-comment-noise-becbde5c",
+  "kind": "seeded",
+  "task": "pager doesn't close std streams",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "a5f5aa6d4012d256ccca24638f2642fc371e9f77",
+    "upstream_commit": "becbde5cf416441627f779e8dd34e57738ee1c1f",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "src/click/_termui_impl.py",
+      "line_start": 614,
+      "line_end": 614,
+      "category": "comment_noise",
+      "description": "2 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "src/click/_termui_impl.py",
+          "line_start": 619,
+          "line_end": 619
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "pager doesn't close std streams",
+    "date": "2026-05-19"
+  }
+}

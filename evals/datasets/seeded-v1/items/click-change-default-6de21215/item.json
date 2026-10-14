@@ -1,0 +1,29 @@
+{
+  "id": "click-change-default-6de21215",
+  "kind": "seeded",
+  "task": "Treat `UNSET` in a `default_map` as absent",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1339fd3323357119a9c7a6326c788f80295954ce",
+    "upstream_commit": "6de212151893e4072ca21779b7b6f4cb82452f51",
+    "origin": "upstream commit + seeded defect (change_default)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 712,
+      "line_end": 712,
+      "category": "silent_behavior_change",
+      "description": "Default of a parameter of public `lookup_default` changed from True to False; existing callers silently get new behavior.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "change_default",
+    "upstream_subject": "Treat `UNSET` in a `default_map` as absent",
+    "date": "2026-03-02"
+  }
+}

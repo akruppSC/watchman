@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-c927f3e9",
+  "kind": "clean",
+  "task": "Code comments for URL model",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "e67b0dd15b97c6c522099544355d2a80068b9bbb",
+    "upstream_commit": "c927f3e9659a8f663afae69d8ac1d997f1dca4eb",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Code comments for URL model (#1602)",
+    "date": "2021-04-27"
+  }
+}

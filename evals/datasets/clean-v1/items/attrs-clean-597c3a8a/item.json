@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-597c3a8a",
+  "kind": "clean",
+  "task": "Add support for cached_properties to slotted attrs classes.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "01413df3db8e64437547f7fa6439a646fa116a98",
+    "upstream_commit": "597c3a8adb5abeda66e0f6e9aed7fcaec26ee1a0",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add support for cached_properties to slotted attrs classes. (#1200)",
+    "date": "2023-12-08"
+  }
+}

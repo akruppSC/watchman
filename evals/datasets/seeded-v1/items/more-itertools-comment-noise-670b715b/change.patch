@@ -1,0 +1,108 @@
+diff --git a/docs/versions.rst b/docs/versions.rst
+index b837f1bb39156240d80f4ac8acc8a6edcc4879d5..fc6f6861c1fede34dbac0419fcf168d77a71c96d 100644
+--- a/docs/versions.rst
++++ b/docs/versions.rst
+@@ -11,6 +11,7 @@ Unreleased
+ * Changes to existing functions:
+     * :func:`numeric_range` now preserves its original values and length when reversed, including floating-point ranges and ranges near datetime limits.
+     * :func:`constrained_batches` now raises ``ValueError`` for a nonpositive *max_count*.
++    * :func:`running_min`, :func:`running_max`, :func:`running_mean`, and :func:`running_statistics` now consistently validate *maxlen* as an integer and support the index protocol.
+     * :func:`iter_index` was fixed to accept negative *start* and *stop* with general iterables (thanks to gaoflow)
+     * :func:`split_before`, :func:`split_after`, and :func:`split_when` no longer yield an empty list for an empty *iterable* when *maxsplit* is ``0``
+     * :func:`one` and :func:`only` were fixed to raise a user-supplied *too_short*/*too_long* exception even when the exception object is falsy, and to no longer build the default error message (which reprs iterable items) when a custom exception is given (thanks to itzzdev09)
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index cad5f7e1f2d338503e614584f17a9fe26229c7e1..552dea91ddeb00a21425277d5582f3b0f608738e 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -1470,6 +1470,7 @@ def running_mean(iterable, *, maxlen=None):
+     if maxlen is None:
+         return map(truediv, accumulate(iterator), count(1))
+ 
++    maxlen = _index(maxlen)
+     if maxlen <= 0:
+         raise ValueError('Window size should be positive')
+ 
+@@ -1515,6 +1516,8 @@ def running_min(iterable, *, maxlen=None):
+     if maxlen is None:
+         return accumulate(iterator, func=min)
+ 
++    # Set maxlen
++    maxlen = _index(maxlen)
+     if maxlen <= 0:
+         raise ValueError('Window size should be positive')
+ 
+@@ -1560,6 +1563,7 @@ def running_max(iterable, *, maxlen=None):
+     if maxlen is None:
+         return accumulate(iterator, func=max)
+ 
++    maxlen = _index(maxlen)
+     if maxlen <= 0:
+         raise ValueError('Window size should be positive')
+ 
+@@ -1589,6 +1593,11 @@ def running_statistics(iterable, *, maxlen=None):
+     but not complex numbers which are unorderable.
+     """
+ 
++    # Check the condition
++    if maxlen is not None:
++        # Set maxlen
++        maxlen = _index(maxlen)
++
+     # fmt: off
+     t0, t1, t2, t3 = tee(iterable, 4)
+     return map(
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index e6a0a57f0ee0c98703b5648cb91d31ef14f52983..f3d065a3b43c1716b2317b5208eff5876570f4b9 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -1709,3 +1709,50 @@ class RunningMedianTests(TestCase):
+             list(
+                 running_median(['abc', 'def', 'ghi'])
+             )  # Input type that doesn't support division
++
++
++class RunningWindowSizeTests(TestCase):
++    functions = (
++        mi.running_min,
++        mi.running_max,
++        mi.running_mean,
++        mi.running_statistics,
++    )
++
++    def test_noninteger_window(self):
++        for function in self.functions:
++            for maxlen in (2.5, 2.0, float('nan'), float('inf')):
++                with self.subTest(function=function, maxlen=maxlen):
++                    with self.assertRaises(TypeError):
++                        list(function([1, 2, 3, 4], maxlen=maxlen))
++
++    def test_index_protocol(self):
++        class WindowSize:
++            def __index__(self):
++                return 2
++
++        for function in self.functions:
++            with self.subTest(function=function):
++                expected = list(function([1, 2, 3, 4], maxlen=2))
++                actual = list(function([1, 2, 3, 4], maxlen=WindowSize()))
++                self.assertEqual(actual, expected)
++        self.assertTrue(
++            all(
++                isinstance(stats.size, int)
++                for stats in mi.running_statistics(
++                    [1, 2, 3], maxlen=WindowSize()
++                )
++            )
++        )
++
++    def test_nonpositive_index(self):
++        class WindowSize:
++            def __index__(self):
++                return -1
++
++        for function in self.functions:
++            with (
++                self.subTest(function=function),
++                self.assertRaises(ValueError),
++            ):
++                list(function([1, 2, 3], maxlen=WindowSize()))

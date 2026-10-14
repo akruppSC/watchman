@@ -1,0 +1,54 @@
+{
+  "id": "attrs-revert-937b1e23",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `_attrs_to_init_script`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "94caa57142c057ce52504cdf239ae0ed3168f9b5",
+    "upstream_commit": "937b1e232803cc4ec9b9375ef525fc57c24ec498",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 2126,
+      "line_end": 2133,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 937b1e23: Fixes issue #1427 (#1428)",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2205,
+          "line_end": 2210
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2224,
+          "line_end": 2229
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2266,
+          "line_end": 2271
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2322,
+          "line_end": 2328
+        },
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 2337,
+          "line_end": 2343
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fixes issue #1427 (#1428)",
+    "date": "2025-07-27"
+  }
+}

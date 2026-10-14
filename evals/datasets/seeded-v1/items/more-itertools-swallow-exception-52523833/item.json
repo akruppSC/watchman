@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-swallow-exception-52523833",
+  "kind": "seeded",
+  "task": "Add dft and dft",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "86c21de02d842d91089f3e080f3b9f0162b6a330",
+    "upstream_commit": "5252383356e6c867f1148471adbeb1aecbe8d13c",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4740,
+      "line_end": 4743,
+      "category": "swallowed_error",
+      "description": "`i1 = chain((p.real for p in v1), (p.imag for p in v1))` wrapped in try/except Exception: i1 = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Add dft and dft",
+    "date": "2024-05-30"
+  }
+}

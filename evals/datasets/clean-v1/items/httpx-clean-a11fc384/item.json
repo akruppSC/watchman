@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-a11fc384",
+  "kind": "clean",
+  "task": "Cleanup URL percent-encoding behavior.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "3b9060ee1121b48669e0b30045c9344065f4f2ae",
+    "upstream_commit": "a11fc3849b94157274c98d99501acad05cbfb221",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Cleanup URL percent-encoding behavior. (#2990)",
+    "date": "2023-12-15"
+  }
+}

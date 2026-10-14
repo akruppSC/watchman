@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-5fc3423a",
+  "kind": "clean",
+  "task": "Hide UNSET values in Context.invoke",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "7d7183604158f064390539d83d4a19a978c6b08a",
+    "upstream_commit": "5fc3423ae54990cec5a8b41d2c7b489da41475b0",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Hide UNSET values in Context.invoke",
+    "date": "2025-09-19"
+  }
+}

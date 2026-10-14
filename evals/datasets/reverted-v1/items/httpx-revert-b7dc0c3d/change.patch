@@ -1,0 +1,26 @@
+diff --git a/httpx/_content.py b/httpx/_content.py
+index 4871a8de2df16cd3bf4655870d6c189e3fcc7ae8..f210c4a80c9f325cf834a8ef04f93252c8d81c98 100644
+--- a/httpx/_content.py
++++ b/httpx/_content.py
+@@ -50,9 +50,7 @@ class IteratorByteStream(SyncByteStream):
+             raise StreamConsumed()
+ 
+         self._is_stream_consumed = True
+-        if hasattr(self._stream, "read") and not isinstance(
+-            self._stream, SyncByteStream
+-        ):
++        if hasattr(self._stream, "read"):
+             # File-like interfaces should use 'read' directly.
+             chunk = self._stream.read(self.CHUNK_SIZE)  # type: ignore
+             while chunk:
+@@ -77,9 +75,7 @@ class AsyncIteratorByteStream(AsyncByteStream):
+             raise StreamConsumed()
+ 
+         self._is_stream_consumed = True
+-        if hasattr(self._stream, "aread") and not isinstance(
+-            self._stream, AsyncByteStream
+-        ):
++        if hasattr(self._stream, "aread"):
+             # File-like interfaces should use 'aread' directly.
+             chunk = await self._stream.aread(self.CHUNK_SIZE)  # type: ignore
+             while chunk:

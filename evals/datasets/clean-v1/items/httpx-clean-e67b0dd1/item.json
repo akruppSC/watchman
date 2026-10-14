@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-e67b0dd1",
+  "kind": "clean",
+  "task": "Expand URL interface",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2abb2f214a57f990d7f4cda0f51d476b47cef165",
+    "upstream_commit": "e67b0dd15b97c6c522099544355d2a80068b9bbb",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Expand URL interface (#1601)",
+    "date": "2021-04-27"
+  }
+}

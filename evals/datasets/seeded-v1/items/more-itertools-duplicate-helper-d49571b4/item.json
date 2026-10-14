@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-duplicate-helper-d49571b4",
+  "kind": "seeded",
+  "task": "Apply floor and ceil on separate code paths",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "277b6aa21af0ba0c5e6b5229748a56bbcecad98a",
+    "upstream_commit": "d49571b46cf5955af2bb2f5c9b3a3be188db3467",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 199,
+      "line_end": 209,
+      "category": "duplication",
+      "description": "Added `_nth_impl`, a copy of existing `nth` in more_itertools/recipes.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 5111,
+          "line_end": 5111
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "Apply floor and ceil on separate code paths",
+    "date": "2025-06-22"
+  }
+}

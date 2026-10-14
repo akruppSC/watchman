@@ -1,0 +1,69 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 6b5bd25ff25afd8c4f7997c00182b68217d92edd..c39cd908a47e073b81d64cc72a3bc6823d020d53 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -24,6 +24,7 @@ from itertools import (
+     product,
+ )
+ from math import comb, e, exp, factorial, floor, fsum, log, log1p, perm, tau
++from math import ceil
+ from queue import Empty, Queue
+ from random import random, randrange, shuffle, uniform
+ from operator import is_ as operator_is, itemgetter, mul, sub, gt, lt
+@@ -195,6 +196,19 @@ except ImportError:  # pragma: no cover
+         return fsum(chain.from_iterable(map(dl_mul, p, q)))
+ 
+ 
++def _nth_impl(iterable, n, default=None):
++    """Returns the nth item or a default value.
++
++    >>> l = range(10)
++    >>> _nth_impl(l, 3)
++    3
++    >>> _nth_impl(l, 20, "zebra")
++    'zebra'
++
++    """
++    return next(islice(iterable, n, None), default)
++
++
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -5091,17 +5105,17 @@ def nth_prime(n, *, approximate=False):
+     if n < 0:
+         raise ValueError
+ 
+-    limit = math.ceil(_nth_prime_ub(n + 1))
++    ub = _nth_prime_ub(n + 1)
+ 
+     if not approximate or n <= 1_000_000:
+-        return nth(sieve(limit), n)
++        return _nth_impl(sieve(ceil(ub)), n)
+ 
+     # Round to closest odd within the bounds
+-    ub = floor(limit)
+-    if not ub & 1:
+-        ub -= 1
++    odd = floor(ub)
++    if not odd & 1:
++        odd -= 1
+ 
+-    return first_true(count(ub, step=-2), pred=is_prime)
++    return first_true(count(odd, step=-2), pred=is_prime)
+ 
+ 
+ def argmin(iterable, *, key=None):
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index bce9bd81df87f00f91974db6acd71d7812291f02..c751ab26866e53a4ddfd9800acae57e1e7c29637 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -934,7 +934,7 @@ def doublestarmap(
+ def dft(xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def idft(Xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def _nth_prime_ub(n: int) -> float: ...
+-def nth_prime(n: int) -> int: ...
++def nth_prime(n: int, *, approximate=False) -> int: ...
+ def argmin(
+     iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
+ ) -> int: ...

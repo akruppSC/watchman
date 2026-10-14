@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-5b79a636",
+  "kind": "clean",
+  "task": "Fold _sorted_window into _running_median_windowed",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "fffcd7a1e8ad5d86fbad3a15b93998238be36fcc",
+    "upstream_commit": "5b79a6360de1173afc831a7c20bcaf3d10eafb1e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Fold _sorted_window into _running_median_windowed",
+    "date": "2025-08-02"
+  }
+}

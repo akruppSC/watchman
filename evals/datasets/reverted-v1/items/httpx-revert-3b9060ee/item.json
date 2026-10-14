@@ -1,0 +1,28 @@
+{
+  "id": "httpx-revert-3b9060ee",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `get_environment_proxies`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2318fd822cdb16435ccb5cabcba16c0b7969c1e4",
+    "upstream_commit": "3b9060ee1121b48669e0b30045c9344065f4f2ae",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_utils.py",
+      "line_start": 230,
+      "line_end": 230,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 3b9060ee: Fix environment proxies (#2741)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix environment proxies (#2741)",
+    "date": "2023-12-14"
+  }
+}

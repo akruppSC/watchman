@@ -1,0 +1,46 @@
+diff --git a/httpx/_decoders.py b/httpx/_decoders.py
+index 3f507c8e040c6e6d192bbd798556315fb0fcff68..57c649297af9984fe946cb77be7d3c73aab22e7a 100644
+--- a/httpx/_decoders.py
++++ b/httpx/_decoders.py
+@@ -212,7 +212,7 @@ class TextChunker:
+ 
+     def decode(self, content: str) -> typing.List[str]:
+         if self._chunk_size is None:
+-            return [content] if content else []
++            return [content]
+ 
+         self._buffer.write(content)
+         if self._buffer.tell() >= self._chunk_size:
+@@ -280,9 +280,7 @@ class LineDecoder:
+             text = text[:-1]
+ 
+         if not text:
+-            # NOTE: the edge case input of empty text doesn't occur in practice,
+-            # because other httpx internals filter out this value
+-            return []  # pragma: no cover
++            return []
+ 
+         trailing_newline = text[-1] in NEWLINE_CHARS
+         lines = text.splitlines()
+diff --git a/httpx/_models.py b/httpx/_models.py
+index b8617cdab56594c49904efdc666d8cd60ccf4459..dac177c4f6c4ad9a741c25508bf65689a0fcefa4 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -853,7 +853,7 @@ class Response:
+                     yield chunk
+             text_content = decoder.flush()
+             for chunk in chunker.decode(text_content):
+-                yield chunk  # pragma: no cover
++                yield chunk
+             for chunk in chunker.flush():
+                 yield chunk
+ 
+@@ -957,7 +957,7 @@ class Response:
+                     yield chunk
+             text_content = decoder.flush()
+             for chunk in chunker.decode(text_content):
+-                yield chunk  # pragma: no cover
++                yield chunk
+             for chunk in chunker.flush():
+                 yield chunk
+ 

@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-change-default-ae1e0ab3",
+  "kind": "seeded",
+  "task": "Adapt to only accept function on too_long/too_short.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "c1edeb8d417ca43c8e3c1de1879444cca647b44f",
+    "upstream_commit": "ae1e0ab3339f351a4efabcbad25ac12cb237e05d",
+    "origin": "upstream commit + seeded defect (change_default)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 594,
+      "line_end": 594,
+      "category": "silent_behavior_change",
+      "description": "Default of a parameter of public `nth_exactly` changed from 1 to 2; existing callers silently get new behavior.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "change_default",
+    "upstream_subject": "Adapt to only accept function on too_long/too_short.",
+    "date": "2021-09-22"
+  }
+}

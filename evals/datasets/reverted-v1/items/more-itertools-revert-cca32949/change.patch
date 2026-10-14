@@ -1,0 +1,13 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 44ec48353660de87943844d45f6864b94ae59b98..3cd42e81b92d80a6e380b62af1c063de34f148dd 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -283,7 +283,7 @@ def last(iterable, default=_marker):
+         if isinstance(iterable, Sequence):
+             return iterable[-1]
+         # Work around https://bugs.python.org/issue38525
+-        if getattr(iterable, '__reversed__', None):
++        if hasattr(iterable, '__reversed__'):
+             return next(reversed(iterable))
+         return deque(iterable, maxlen=1)[-1]
+     except (IndexError, TypeError, StopIteration):

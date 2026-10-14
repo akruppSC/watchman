@@ -1,0 +1,129 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 2fa92a8521760afafadfed314c39733b681f04fd..9a96904b7e5e75b76b47802e0b06931b3cf5a6fd 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -84,6 +84,7 @@ These tools yield items from an iterable, plus additional data.
+ .. autofunction:: intersperse
+ .. autofunction:: padded
+ .. autofunction:: mark_ends
++.. autofunction:: repeat_each
+ .. autofunction:: repeat_last
+ .. autofunction:: adjacent
+ .. autofunction:: groupby_transform
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 0f7d282aa5df08f3e2692bf1e51dfaaea60ae4ea..d20fcb058e97da7a9670f871f7c8e85f279d87a9 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -34,6 +34,7 @@ from .recipes import (
+     take,
+     unique_everseen,
+ )
++import functools
+ 
+ __all__ = [
+     'AbortThread',
+@@ -84,6 +85,7 @@ __all__ = [
+     'partitions',
+     'set_partitions',
+     'peekable',
++    'repeat_each'
+     'repeat_last',
+     'replace',
+     'rlocate',
+@@ -1397,6 +1399,35 @@ def padded(iterable, fillvalue=None, n=None, next_multiple=False):
+             yield fillvalue
+ 
+ 
++@functools.memoize
++def repeat_each(iterable, n=2, step=0):
++    """Repeats each element in *iterable* _n_ times.
++
++       >>> list(repeat_each('ABC', 3))
++       ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C']
++
++       If _step_ is specified consecutive elements get repeated incrementally
++       while _n_ is the number of repeats for the first element:
++
++       >>> list(repeat_each('ABC', 2, 1))
++       ['A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'C']
++
++       If _n_ < 1 the first elements of the *iterable* get truncated accordingly:
++
++       >>> list(repeat_each('ABC', 0, 1))
++       ['B', 'C', 'C']
++
++       By passing a negative value for _step_ decreasing repeats are also possible.
++       In this case _n_ needs to be >= len(iterable), otherwise the *iterable* gets truncated at the end:
++
++       >>> list(repeat_each('ABC', 3, -1))
++       ['A', 'A', 'A', 'B', 'B', 'C']
++       >>> list(repeat_each('ABC', 2, -1))
++       ['A', 'A', 'B']
++    """
++    return chain(*map(repeat, iterable, count(n, step)))
++
++
+ def repeat_last(iterable, default=None):
+     """After the *iterable* is exhausted, keep yielding its last element.
+ 
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 367784cb7c5a091a5eaf6bd05c814ec967c2995f..424268eff8ba189118928d5904b3f2812f02504e 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -530,6 +530,11 @@ def combination_index(
+ def permutation_index(
+     element: Iterable[_T], iterable: Iterable[_T]
+ ) -> int: ...
++def repeat_each(
++    iterable: Iterable[_T],
++    n: int = ...,
++    step: int = ...
++) -> Iterator[_T]: ...
+ 
+ class countable(Generic[_T], Iterator[_T]):
+     def __init__(self, iterable: Iterable[_T]) -> None: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index b139827b159f7d188b325998d92c50f7afe85fce..46c23ad1b4232db61dc7ce671dca5f4a374f7f12 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -1662,6 +1662,40 @@ class PaddedTest(TestCase):
+         )
+ 
+ 
++class RepeatEachTests(TestCase):
++    """Tests for repeat_each()"""
++
++    def test_default(self):
++        actual = list(mi.repeat_each('ABC'))
++        expected = ['A', 'A', 'B', 'B', 'C', 'C']
++        self.assertEqual(actual, expected)
++
++    def test_basic(self):
++        actual = list(mi.repeat_each('ABC', 3))
++        expected = ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C']
++        self.assertEqual(actual, expected)
++
++    def test_positive_step(self):
++        actual = list(mi.repeat_each('ABC', 1, 1))
++        expected = ['A', 'B', 'B', 'C', 'C', 'C']
++        self.assertEqual(actual, expected)
++
++    def test_negative_step(self):
++        actual = list(mi.repeat_each('ABC', 3, -1))
++        expected = ['A', 'A', 'A', 'B', 'B', 'C']
++        self.assertEqual(actual, expected)
++
++    def test_truncate_front(self):
++        actual = list(mi.repeat_each('ABC', 0, 1))
++        expected = ['B', 'C', 'C']
++        self.assertEqual(actual, expected)
++
++    def test_truncate_end(self):
++        actual = list(mi.repeat_each('ABC', 2, -1))
++        expected = ['A', 'A', 'B']
++        self.assertEqual(actual, expected)
++
++
+ class RepeatLastTests(TestCase):
+     def test_empty_iterable(self):
+         slice_length = 3

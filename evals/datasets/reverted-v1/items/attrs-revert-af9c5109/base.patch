@@ -1,0 +1,20 @@
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index 837e003b6c2e5ce485d0b1cd19bfa398f18a8d18..0b1a294432d294c4f154be2d9439d825c3ec0781 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -79,12 +79,14 @@ def disabled():
+         This context manager is not thread-safe!
+ 
+     .. versionadded:: 21.3.0
++    .. versionchanged:: 26.1.0 The contextmanager is nestable.
+     """
++    prev = get_run_validators()
+     set_run_validators(False)
+     try:
+         yield
+     finally:
+-        set_run_validators(True)
++        set_run_validators(prev)
+ 
+ 
+ @attrs(repr=False, slots=True, unsafe_hash=True)

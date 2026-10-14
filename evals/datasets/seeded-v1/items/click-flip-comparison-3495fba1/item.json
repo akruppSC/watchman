@@ -1,0 +1,29 @@
+{
+  "id": "click-flip-comparison-3495fba1",
+  "kind": "seeded",
+  "task": "Warn when an argument name collide with other parameters",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "8a4ce842564ae94ab050062db8525196ad476c19",
+    "upstream_commit": "3495fba163dd61dea837cd557095df6c21515ac8",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 1131,
+      "line_end": 1131,
+      "category": "correctness",
+      "description": "Boundary changed: `>` became `>=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Warn when an argument name collide with other parameters",
+    "date": "2026-07-07"
+  }
+}

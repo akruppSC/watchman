@@ -1,0 +1,35 @@
+{
+  "id": "httpx-hallucinated-package-ba2e5121",
+  "kind": "seeded",
+  "task": "Review urlescape percent-safe set, and use + behavior for form spaces.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "d293374b6603816420a2bb8e7f4fe5a5f09cbfcc",
+    "upstream_commit": "ba2e51215e4e619540f2a24282b84ed8a738e6fd",
+    "origin": "upstream commit + seeded defect (hallucinated_package)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_urlparse.py",
+      "line_start": 28,
+      "line_end": 28,
+      "category": "hallucinated_dependency",
+      "description": "`percent_encoded` decorated with `memoize` from `functools_ext`, a package that doesn't exist.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_urlparse.py",
+          "line_start": 483,
+          "line_end": 483
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_package",
+    "upstream_subject": "Review urlescape percent-safe set, and use + behavior for form spaces. (#3373)",
+    "date": "2024-10-28"
+  }
+}

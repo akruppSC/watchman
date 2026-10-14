@@ -1,0 +1,159 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index adb645e948390a046021ffe9069d75dd7e1b2dc0..a5211d9bb8c19f9df2d3a03daa546a98fa2f7720 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -26,6 +26,9 @@ Unreleased
+     via ``fileno()``, so that ``faulthandler``, ``subprocess``, and other
+     C-level consumers no longer crash with ``io.UnsupportedOperation``.
+     :issue:`2865`
++-   Change :class:`ParameterSource` to an :class:`~enum.IntEnum` and reorder
++    its members from most to least explicit, so values can be compared to
++    check whether a parameter was explicitly provided. :issue:`2879` :pr:`3248`
+ 
+ Version 8.3.2
+ -------------
+diff --git a/docs/commands-and-groups.md b/docs/commands-and-groups.md
+index b657d5b0047816c037bad5bbe4ec2fbea047fd95..8fc033bf7154eacd4c52a9d5731c6ef8f5150b7d 100644
+--- a/docs/commands-and-groups.md
++++ b/docs/commands-and-groups.md
+@@ -342,6 +342,35 @@ allowed to read from the context, but not to perform any modifications on
+ it.
+ 
+ 
++### Parameter Source Priority
++
++When a parameter's value is resolved, Click checks several sources
++in the following order of precedence:
++
++1.  **Prompt** (`PROMPT`): interactively provided by the user at a prompt.
++2.  **Command line** (`COMMANDLINE`): provided as a CLI argument or option.
++3.  **Environment variable** (`ENVIRONMENT`): read from an environment variable.
++4.  **Default map** (`DEFAULT_MAP`): looked up from {attr}`Context.default_map`.
++5.  **Default** (`DEFAULT`): the default value defined on the parameter.
++
++{class}`~click.core.ParameterSource` members are ordered from most
++explicit to least explicit. Because it is an {class}`~enum.IntEnum`,
++you can use comparison operators to check how explicitly a value was
++provided:
++
++```python
++source = ctx.get_parameter_source("port")
++
++# True if the value was explicitly set (command line, prompt, or env var).
++if source < click.ParameterSource.DEFAULT_MAP:
++    ...
++
++# True if the value came from any kind of default.
++if source >= click.ParameterSource.DEFAULT_MAP:
++    ...
++```
++
++
+ ### Detecting the Source of a Parameter
+ 
+ In some situations it's helpful to understand whether or not an option
+diff --git a/src/click/__init__.py b/src/click/__init__.py
+index 1aa547c57af68954b3bcd6012873881030e53d91..fa485a0715907a7046518c03d4b7d2b2b4961c91 100644
+--- a/src/click/__init__.py
++++ b/src/click/__init__.py
+@@ -14,6 +14,7 @@ from .core import Context as Context
+ from .core import Group as Group
+ from .core import Option as Option
+ from .core import Parameter as Parameter
++from .core import ParameterSource as ParameterSource
+ from .decorators import argument as argument
+ from .decorators import command as command
+ from .decorators import confirmation_option as confirmation_option
+diff --git a/src/click/core.py b/src/click/core.py
+index 6dc44f399bafbbe499c66c9416aea145ec5f0a71..634a99706d8ff089ffe572fd8a7d6614ba18e60f 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -140,13 +140,26 @@ def iter_params_for_processing(
+     return sorted(declaration_order, key=sort_key)
+ 
+ 
+-class ParameterSource(enum.Enum):
+-    """This is an :class:`~enum.Enum` that indicates the source of a
++class ParameterSource(enum.IntEnum):
++    """This is an :class:`~enum.IntEnum` that indicates the source of a
+     parameter's value.
+ 
+     Use :meth:`click.Context.get_parameter_source` to get the
+     source for a parameter by name.
+ 
++    Members are ordered from most explicit to least explicit source.
++    This allows comparison to check if a value was explicitly provided:
++
++    .. code-block:: python
++
++        source = ctx.get_parameter_source("port")
++        if source < click.ParameterSource.DEFAULT_MAP:
++            ...  # value was explicitly set
++
++    .. versionchanged:: 8.3.3
++        Use :class:`~enum.IntEnum` and reorder members from most to
++        least explicit. Supports comparison operators.
++
+     .. versionchanged:: 8.0
+         Use :class:`~enum.Enum` and drop the ``validate`` method.
+ 
+@@ -154,16 +167,16 @@ class ParameterSource(enum.Enum):
+         Added the ``PROMPT`` value.
+     """
+ 
++    PROMPT = enum.auto()
++    """Used a prompt to confirm a default or provide a value."""
+     COMMANDLINE = enum.auto()
+     """The value was provided by the command line args."""
+     ENVIRONMENT = enum.auto()
+     """The value was provided with an environment variable."""
+-    DEFAULT = enum.auto()
+-    """Used the default specified by the parameter."""
+     DEFAULT_MAP = enum.auto()
+     """Used a default provided by :attr:`Context.default_map`."""
+-    PROMPT = enum.auto()
+-    """Used a prompt to confirm a default or provide a value."""
++    DEFAULT = enum.auto()
++    """Used the default specified by the parameter."""
+ 
+ 
+ class Context:
+@@ -2563,7 +2576,7 @@ class Parameter:
+             if (
+                 self.deprecated
+                 and value is not UNSET
+-                and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
++                and source < ParameterSource.DEFAULT_MAP
+             ):
+                 extra_message = (
+                     f" {self.deprecated}" if isinstance(self.deprecated, str) else ""
+@@ -3285,7 +3298,7 @@ class Option(Parameter):
+             self.is_flag
+             and value is True
+             and not self.is_bool_flag
+-            and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
++            and source < ParameterSource.DEFAULT_MAP
+         ):
+             value = self.flag_value
+ 
+@@ -3295,7 +3308,7 @@ class Option(Parameter):
+         elif (
+             self.multiple
+             and value is not UNSET
+-            and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
++            and source < ParameterSource.DEFAULT_MAP
+             and any(v is FLAG_NEEDS_VALUE for v in value)
+         ):
+             value = [self.flag_value if v is FLAG_NEEDS_VALUE else v for v in value]
+@@ -3304,10 +3317,7 @@ class Option(Parameter):
+         # The value wasn't set, or used the param's default, prompt for one to the user
+         # if prompting is enabled.
+         elif (
+-            (
+-                value is UNSET
+-                or source in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
+-            )
++            (value is UNSET or source >= ParameterSource.DEFAULT_MAP)
+             and self.prompt is not None
+             and (self.required or self.prompt_required)
+             and not ctx.resilient_parsing

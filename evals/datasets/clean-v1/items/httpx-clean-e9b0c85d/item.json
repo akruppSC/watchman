@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-e9b0c85d",
+  "kind": "clean",
+  "task": "Patch `copy_with`",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b07fe7b0745e62be5ef9bce1bee9e7d7a8878552",
+    "upstream_commit": "e9b0c85dd4f4e4469c57c4b38e5101fd12081b5c",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Patch `copy_with` (#2185)",
+    "date": "2022-05-03"
+  }
+}

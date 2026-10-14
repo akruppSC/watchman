@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-e1b2c949",
+  "kind": "clean",
+  "task": "refactor: Only loop once on \"cached_properties\" when building slotted classes",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "b393d79aafbf4ee58740f19dd4ad28ed29f3205c",
+    "upstream_commit": "e1b2c9491bd7d73e6049d8ad54828cc785577103",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "refactor: Only loop once on \"cached_properties\" when building slotted classes (#1290)",
+    "date": "2024-06-26"
+  }
+}

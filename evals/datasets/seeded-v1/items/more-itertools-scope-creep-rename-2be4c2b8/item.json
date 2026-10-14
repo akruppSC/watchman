@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-scope-creep-rename-2be4c2b8",
+  "kind": "seeded",
+  "task": "Avoid calling next() one at a time.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "54f84c9c55180b927ce2d3a156413fd50589afb5",
+    "upstream_commit": "2be4c2b8044506acd691ae1ffe6eb378d5e4b576",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 720,
+      "line_end": 728,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `result` to `res` in `nth_combination` (more_itertools/recipes.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Avoid calling next() one at a time.",
+    "date": "2025-01-23"
+  }
+}

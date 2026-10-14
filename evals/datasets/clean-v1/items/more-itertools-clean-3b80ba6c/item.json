@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-3b80ba6c",
+  "kind": "clean",
+  "task": "add argument `min_size` and `max_size`",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "113b3816c6231e90e1de88f512264471bf83001f",
+    "upstream_commit": "3b80ba6c8a46939e807b3b25bfba3472d0327d2b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "add argument `min_size` and `max_size`",
+    "date": "2024-07-06"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "click-hallucinated-package-0b7a9acc",
+  "kind": "seeded",
+  "task": "Allow customization of help option right from its decorator.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "0bf333e1b77b4ae0e85d387531b38930fc657f12",
+    "upstream_commit": "0b7a9acc63dac907088de7d9238f7f4b2afe02ea",
+    "origin": "upstream commit + seeded defect (hallucinated_package)"
+  },
+  "defects": [
+    {
+      "file": "src/click/decorators.py",
+      "line_start": 16,
+      "line_end": 16,
+      "category": "hallucinated_dependency",
+      "description": "`help_option` decorated with `enforce_types` from `strictargs`, a package that doesn't exist.",
+      "alt_ranges": [
+        {
+          "file": "src/click/decorators.py",
+          "line_start": 528,
+          "line_end": 528
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_package",
+    "upstream_subject": "Allow customization of help option right from its decorator.",
+    "date": "2025-01-09"
+  }
+}

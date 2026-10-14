@@ -1,0 +1,39 @@
+{
+  "id": "click-revert-0d01686f",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `EchoingStdin`, `CliRunner`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "0dc6d74df5c984ff923f5d17e97bf94a21b3a3cd",
+    "upstream_commit": "0d01686fe6be5c335f50098a06b7e847a2753452",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/testing.py",
+      "line_start": 16,
+      "line_end": 32,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 0d01686f: fix output when using echo_stdin",
+      "alt_ranges": [
+        {
+          "file": "src/click/testing.py",
+          "line_start": 204,
+          "line_end": 213
+        },
+        {
+          "file": "src/click/testing.py",
+          "line_start": 228,
+          "line_end": 247
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "fix output when using echo_stdin",
+    "date": "2021-03-06"
+  }
+}

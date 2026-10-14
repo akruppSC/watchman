@@ -1,0 +1,28 @@
+{
+  "id": "httpx-revert-d5900cd4",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `QueryParams`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "3eee17e69e43f74df2c9bfaa442da2feac81363c",
+    "upstream_commit": "d5900cd40ec85e47800e21e77bc684b9f65325ed",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_urls.py",
+      "line_start": 543,
+      "line_end": 543,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by d5900cd4: Fix empty query params (#2354)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix empty query params (#2354)",
+    "date": "2022-09-02"
+  }
+}

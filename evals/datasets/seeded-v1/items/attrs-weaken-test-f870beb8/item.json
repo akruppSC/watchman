@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-f870beb8",
+  "kind": "seeded",
+  "task": "Add a not_ validator",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f7fa5a810c4c6919b6ce56228226c68bf4859e45",
+    "upstream_commit": "f870beb84a56daaf6b638301f8afb530ed903727",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_validators.py",
+      "line_start": 1125,
+      "line_end": 1125,
+      "category": "weak_test",
+      "description": "Every assertion in `test_not_all` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Add a not_ validator (#1010)",
+    "date": "2022-09-04"
+  }
+}

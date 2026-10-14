@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-05b795c9",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `style`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "01e4dac0b1f855a54eb923380d6af64171c66f22",
+    "upstream_commit": "05b795c917f4146edfe83b2d08c189886b301785",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/termui.py",
+      "line_start": 599,
+      "line_end": 601,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 05b795c9: Fix copy-paste errors in `click.style()`",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix copy-paste errors in `click.style()`",
+    "date": "2021-09-06"
+  }
+}

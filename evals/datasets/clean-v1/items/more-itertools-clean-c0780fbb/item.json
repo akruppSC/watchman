@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-c0780fbb",
+  "kind": "clean",
+  "task": "Add chunked_even",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "abc07390f17452b83c9f5e988f2cb362959bf059",
+    "upstream_commit": "c0780fbbba9655d36de09b872981ffd4a90eb120",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add chunked_even",
+    "date": "2021-07-31"
+  }
+}

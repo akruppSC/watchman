@@ -1,0 +1,223 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index af3a025bedbdd831ab6787a6cb5e372d5519458c..74b0e613df94522b983fcdcf605ea95c5f585a6e 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -40,6 +40,11 @@ Unreleased
+ -   Change :class:`ParameterSource` to an :class:`~enum.IntEnum` and reorder
+     its members from most to least explicit, so values can be compared to
+     check whether a parameter was explicitly provided. :issue:`2879` :pr:`3248`
++-   Auto-detect ``type=UNPROCESSED`` for ``flag_value`` of non-basic types
++    (not ``str``, ``int``, ``float``, or ``bool``), so programmer-provided
++    Python objects like classes and enum members are passed through unchanged
++    instead of being stringified. Previously ``type=click.UNPROCESSED`` had
++    to be set explicitly. :issue:`2012` :pr:`3363`
+ 
+ Version 8.3.2
+ -------------
+diff --git a/src/click/core.py b/src/click/core.py
+index d940dd80e1d21cc5ef9bbb5df51f908629229428..73a2441c7f56e739f95eaba1188868a17dcd8e0d 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2714,6 +2714,11 @@ class Option(Parameter):
+     :param hidden: hide this option from help outputs.
+     :param attrs: Other command arguments described in :class:`Parameter`.
+ 
++    .. versionchanged:: 8.4
++        Non-basic ``flag_value`` types (not ``str``, ``int``, ``float``, or
++        ``bool``) are passed through unchanged instead of being stringified.
++        Previously, ``type=click.UNPROCESSED`` was required to preserve them.
++
+     .. versionchanged:: 8.2
+         ``envvar`` used with ``flag_value`` will always use the ``flag_value``,
+         previously it would use the value of the environment variable.
+@@ -2731,7 +2736,8 @@ class Option(Parameter):
+         default value is ``False``.
+ 
+     .. versionchanged:: 8.0.1
+-        ``type`` is detected from ``flag_value`` if given.
++        ``type`` is detected from ``flag_value`` if given, for basic Python
++        types (``str``, ``int``, ``float``, ``bool``).
+     """
+ 
+     param_type_name = "option"
+@@ -2831,7 +2837,20 @@ class Option(Parameter):
+                     self.type = types.BoolParamType()
+                 # Otherwise, guess the type from the flag value.
+                 else:
+-                    self.type = types.convert_type(None, flag_value)
++                    guessed = types.convert_type(None, flag_value)
++                    if (
++                        isinstance(guessed, types.StringParamType)
++                        and not isinstance(flag_value, str)
++                        and flag_value is not None
++                    ):
++                        # The flag_value type couldn't be auto-detected
++                        # (not str, int, float, or bool). Since flag_value
++                        # is a programmer-provided Python object, not CLI
++                        # input, pass it through unchanged instead of
++                        # stringifying it.
++                        self.type = types.UNPROCESSED
++                    else:
++                        self.type = guessed
+ 
+         self.is_flag: bool = bool(is_flag)
+         self.is_bool_flag: bool = bool(
+diff --git a/tests/test_options.py b/tests/test_options.py
+index f6364b975bdee2ec54b1dd239fb30d46f89b1b2d..8b9a633087841a3faf0e6e7711bb79f5805ec4cf 100644
+--- a/tests/test_options.py
++++ b/tests/test_options.py
+@@ -1406,6 +1406,11 @@ def test_type_from_flag_value():
+     assert param.type is click.INT
+     param = click.Option(["-b", "x"], flag_value=8)
+     assert param.type is click.INT
++    # Non-basic types auto-detect as UNPROCESSED to avoid stringification.
++    param = click.Option(["-c", "x"], flag_value=EngineType.OSS)
++    assert param.type is click.UNPROCESSED
++    param = click.Option(["-d", "x"], flag_value=frozenset())
++    assert param.type is click.UNPROCESSED
+ 
+ 
+ @pytest.mark.parametrize(
+@@ -2127,13 +2132,13 @@ class Class2:
+             [],
+             EngineType.OSS,
+         ),
+-        # Type is not specified and default to string, so the default value is
+-        # returned as a string, even if it is a boolean. Also, defaults to the
+-        # flag_value instead of the default value to support legacy behavior.
++        # Type is not specified. For string flag_value, STRING type is used and
++        # the default value is converted to string. For non-basic types (like
++        # enums), UNPROCESSED is used and values pass through unchanged.
+         ({"flag_value": "1", "default": True}, [], "1"),
+         ({"flag_value": "1", "default": 42}, [], "42"),
+-        ({"flag_value": EngineType.OSS, "default": True}, [], "EngineType.OSS"),
+-        ({"flag_value": EngineType.OSS, "default": 42}, [], "42"),
++        ({"flag_value": EngineType.OSS, "default": True}, [], EngineType.OSS),
++        ({"flag_value": EngineType.OSS, "default": 42}, [], 42),
+         # See: the result is the same if we force the type to be str.
+         ({"type": str, "flag_value": 1, "default": True}, [], "1"),
+         ({"type": str, "flag_value": 1, "default": 42}, [], "42"),
+@@ -2199,28 +2204,29 @@ def test_custom_type_flag_value_standalone_option(runner, opt_params, args, expe
+             ["--opt2"],
+             EngineType.PRO,
+         ),
+-        # Check that passing exotic flag values like classes is supported, but are
+-        # rendered to strings when the type is not specified.
++        # Exotic flag values like classes are passed through unchanged when no
++        # explicit type is given (UNPROCESSED is auto-detected).
++        # https://github.com/pallets/click/issues/2012
+         # https://github.com/pallets/click/issues/3121
+         (
+             {"flag_value": Class1, "default": True},
+             {"flag_value": Class2},
+             [],
+-            "<class 'test_options.Class1'>",
++            Class1,
+         ),
+         (
+             {"flag_value": Class1, "default": True},
+             {"flag_value": Class2},
+             ["--opt1"],
+-            "<class 'test_options.Class1'>",
++            Class1,
+         ),
+         (
+             {"flag_value": Class1, "default": True},
+             {"flag_value": Class2},
+             ["--opt2"],
+-            "<class 'test_options.Class2'>",
++            Class2,
+         ),
+-        # Even the default is processed as a string.
++        # String and None defaults pass through unchanged.
+         ({"flag_value": Class1, "default": "True"}, {"flag_value": Class2}, [], "True"),
+         ({"flag_value": Class1, "default": None}, {"flag_value": Class2}, [], None),
+         # To get the classes as-is, we need to specify the type as UNPROCESSED.
+@@ -2245,18 +2251,18 @@ def test_custom_type_flag_value_standalone_option(runner, opt_params, args, expe
+         ),
+         # Setting the default to a class, an instance of the class is returned instead
+         # of the class itself, because the default is allowed to be callable (and
+-        # consummd). And this happens whatever the type is.
++        # consumed). And this happens whatever the type is.
+         (
+             {"flag_value": Class1, "default": Class1},
+             {"flag_value": Class2},
+             [],
+-            re.compile(r"'<test_options.Class1 object at 0x[0-9A-Fa-f]+>'"),
++            re.compile(r"<test_options.Class1 object at 0x[0-9A-Fa-f]+>"),
+         ),
+         (
+             {"flag_value": Class1, "default": Class2},
+             {"flag_value": Class2},
+             [],
+-            re.compile(r"'<test_options.Class2 object at 0x[0-9A-Fa-f]+>'"),
++            re.compile(r"<test_options.Class2 object at 0x[0-9A-Fa-f]+>"),
+         ),
+         (
+             {"flag_value": Class1, "type": UNPROCESSED, "default": Class1},
+@@ -2322,12 +2328,13 @@ def test_custom_type_flag_value_dual_options(
+             ["--opt"],
+             Class1,
+         ),
+-        # Without UNPROCESSED, the class is str()-ified by the default STRING type.
+-        ({"flag_value": Class1, "default": True}, [], "<class 'test_options.Class1'>"),
++        # Without explicit UNPROCESSED, the class still passes through unchanged
++        # because UNPROCESSED is auto-detected for non-basic flag_value types.
++        ({"flag_value": Class1, "default": True}, [], Class1),
+         (
+             {"flag_value": Class1, "default": True},
+             ["--opt"],
+-            "<class 'test_options.Class1'>",
++            Class1,
+         ),
+         # Explicit default=Class1 (not via default=True alignment): callable IS invoked,
+         # because the user explicitly set a callable as the default.
+@@ -2473,6 +2480,48 @@ def test_callable_flag_value_get_default_override(
+     assert opt.get_default(ctx, call=True) is expected_get_default
+ 
+ 
++def test_flag_value_not_stringified_for_custom_types(runner):
++    """Non-basic flag_value types are passed through unchanged without
++    requiring ``type=click.UNPROCESSED``.
++
++    Regression test for https://github.com/pallets/click/issues/2012
++    """
++
++    @click.command()
++    @click.option("--cls1", "config_cls", flag_value=Class1, default=True)
++    @click.option("--cls2", "config_cls", flag_value=Class2)
++    def cli(config_cls):
++        click.echo(repr(config_cls), nl=False)
++
++    # Default activates --cls1 (default=True resolves to flag_value).
++    result = runner.invoke(cli, [])
++    assert result.exit_code == 0
++    assert result.output == repr(Class1)
++
++    result = runner.invoke(cli, ["--cls1"])
++    assert result.exit_code == 0
++    assert result.output == repr(Class1)
++
++    result = runner.invoke(cli, ["--cls2"])
++    assert result.exit_code == 0
++    assert result.output == repr(Class2)
++
++    # Enum flag_value without explicit type is also preserved.
++    @click.command()
++    @click.option("--oss", "engine", flag_value=EngineType.OSS, default=True)
++    @click.option("--pro", "engine", flag_value=EngineType.PRO)
++    def cli2(engine):
++        click.echo(repr(engine), nl=False)
++
++    result = runner.invoke(cli2, [])
++    assert result.exit_code == 0
++    assert result.output == repr(EngineType.OSS)
++
++    result = runner.invoke(cli2, ["--pro"])
++    assert result.exit_code == 0
++    assert result.output == repr(EngineType.PRO)
++
++
+ def test_custom_type_frozenset_flag_value(runner):
+     """Check that frozenset is correctly handled as a type, a flag value and a default.
+ 

@@ -1,0 +1,50 @@
+{
+  "id": "attrs-duplicate-helper-5bab46de",
+  "kind": "seeded",
+  "task": "Allow deep_iterable and deep_mapping take lists/tuples",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "000c563473400aa086f6486a9c38ace0e77ea219",
+    "upstream_commit": "5bab46deb916520b153892d73400978ccb08ef96",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/validators.py",
+      "line_start": 42,
+      "line_end": 62,
+      "category": "duplication",
+      "description": "Added `_and_impl`, a copy of existing `and_` in src/attr/_make.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "src/attr/validators.py",
+          "line_start": 404,
+          "line_end": 404
+        },
+        {
+          "file": "src/attr/validators.py",
+          "line_start": 472,
+          "line_end": 472
+        },
+        {
+          "file": "src/attr/validators.py",
+          "line_start": 474,
+          "line_end": 474
+        },
+        {
+          "file": "src/attr/validators.py",
+          "line_start": 476,
+          "line_end": 476
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "Allow deep_iterable and deep_mapping take lists/tuples (#1449)",
+    "date": "2025-07-29"
+  }
+}

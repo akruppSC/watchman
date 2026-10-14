@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-cd0a3a87",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `iterate`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "7c1b6482a00cb9c1f76061c12be192ed5043e5ea",
+    "upstream_commit": "cd0a3a87d231033db06a3c222fe893025e398a86",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 478,
+      "line_end": 478,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by cd0a3a87: Issue #707: fix ``iterate()`` to enable ``func`` to raise StopIteration",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Issue #707: fix ``iterate()`` to enable ``func`` to raise StopIteration",
+    "date": "2023-04-19"
+  }
+}

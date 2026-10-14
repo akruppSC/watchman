@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-862696af",
+  "kind": "seeded",
+  "task": "Resolve field aliases before calling field_transformer",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f3bcc37c3d2dc3199715f825a86b748c3b3805f9",
+    "upstream_commit": "862696afb52fb7c0d47d45e05ec4feb844c11001",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_hooks.py",
+      "line_start": 357,
+      "line_end": 358,
+      "category": "weak_test",
+      "description": "Every assertion in `test_hook_explicit_alias_matching_default` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Resolve field aliases before calling field_transformer (#1509)",
+    "date": "2026-03-07"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "httpx-duplicate-helper-1526048c",
+  "kind": "seeded",
+  "task": "allow setting an explicit multipart boundary via headers",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2434e650eeeedd0652ab73c02bcb09417edc7914",
+    "upstream_commit": "1526048c9417ac3c715592cbc9b5947d5779824e",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_models.py",
+      "line_start": 54,
+      "line_end": 65,
+      "category": "duplication",
+      "description": "Added `_get_multipart_boundary_from_content_type_impl`, a copy of existing `get_multipart_boundary_from_content_type` in httpx/_multipart.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_models.py",
+          "line_start": 356,
+          "line_end": 356
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "allow setting an explicit multipart boundary via headers (#2278)",
+    "date": "2022-08-15"
+  }
+}

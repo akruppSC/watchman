@@ -1,0 +1,29 @@
+{
+  "id": "httpx-raise-to-return-83a85189",
+  "kind": "seeded",
+  "task": "Move normalize header functions from _utils.py to _models.py",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "66225539796d819b5114ead2fd5e4d61865ab708",
+    "upstream_commit": "83a85189c79708b732d04e7b906e388fb0fbde94",
+    "origin": "upstream commit + seeded defect (raise_to_return)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_models.py",
+      "line_start": 71,
+      "line_end": 71,
+      "category": "silent_behavior_change",
+      "description": "`raise TypeError(f\"Header value must be str or bytes, not {type(value)}\")` replaced by `return None`: callers get None instead of an error.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "raise_to_return",
+    "upstream_subject": "Move normalize header functions from _utils.py to _models.py (#3382)",
+    "date": "2024-10-30"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-b8394786",
+  "kind": "clean",
+  "task": "Replace for loops with comprehensions",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b16901311568a8bdb90e69cc3f83b593749976bc",
+    "upstream_commit": "b839478661beef4c3a10b4b306efc3e07d5fb78b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Replace for loops with comprehensions (#1759)",
+    "date": "2021-07-21"
+  }
+}

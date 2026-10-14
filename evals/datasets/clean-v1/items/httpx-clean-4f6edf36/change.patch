@@ -1,0 +1,52 @@
+diff --git a/httpx/_models.py b/httpx/_models.py
+index b8617cdab56594c49904efdc666d8cd60ccf4459..e08248a8d4110274494312f467df3f4f13b3619f 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -774,13 +774,13 @@ class Response:
+         Returns the parsed header links of the response, if any
+         """
+         header = self.headers.get("link")
+-        ldict = {}
+-        if header:
+-            links = parse_header_links(header)
+-            for link in links:
+-                key = link.get("rel") or link.get("url")
+-                ldict[key] = link
+-        return ldict
++        if header is None:
++            return {}
++
++        return {
++            (link.get("rel") or link.get("url")): link
++            for link in parse_header_links(header)
++        }
+ 
+     @property
+     def num_bytes_downloaded(self) -> int:
+diff --git a/tests/test_utils.py b/tests/test_utils.py
+index 2f5b2e13cf98ffe588126921f8ce4ad34df98276..0ef87d18d82f80b06a644d26601edd4ae0a1b860 100644
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -12,7 +12,6 @@ from httpx._utils import (
+     get_ca_bundle_from_env,
+     get_environment_proxies,
+     is_https_redirect,
+-    parse_header_links,
+     same_origin,
+ )
+ 
+@@ -80,7 +79,13 @@ def test_guess_by_bom(encoding, expected):
+     ),
+ )
+ def test_parse_header_links(value, expected):
+-    assert parse_header_links(value) == expected
++    all_links = httpx.Response(200, headers={"link": value}).links.values()
++    assert all(link in all_links for link in expected)
++
++
++def test_parse_header_links_no_link():
++    all_links = httpx.Response(200).links
++    assert all_links == {}
+ 
+ 
+ def test_logging_request(server, caplog):

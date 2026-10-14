@@ -1,0 +1,35 @@
+{
+  "id": "click-hallucinated-stdlib-attr-74e7f707",
+  "kind": "seeded",
+  "task": "command and group decorator parentheses are optional",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "77961478cdaf9cf55c8b15fd1db0681ff75ffcfb",
+    "upstream_commit": "74e7f7079cb31578fa2578f219d93a33cfeb46f8",
+    "origin": "upstream commit + seeded defect (hallucinated_stdlib_attr)"
+  },
+  "defects": [
+    {
+      "file": "src/click/decorators.py",
+      "line_start": 175,
+      "line_end": 175,
+      "category": "hallucinated_dependency",
+      "description": "`command` decorated with `functools.memoize`, which doesn't exist in the stdlib.",
+      "alt_ranges": [
+        {
+          "file": "src/click/decorators.py",
+          "line_start": 15,
+          "line_end": 15
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_stdlib_attr",
+    "upstream_subject": "command and group decorator parentheses are optional",
+    "date": "2021-05-14"
+  }
+}

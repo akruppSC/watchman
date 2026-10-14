@@ -1,0 +1,29 @@
+{
+  "id": "click-swallow-exception-c7c21790",
+  "kind": "seeded",
+  "task": "strip win32 path prefixes from resolved absolute symlinks",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b4581b47748adb982a05f88897c3f3205094eb76",
+    "upstream_commit": "c7c217901d7a68d695b074d9759a272b886e8da1",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/click/types.py",
+      "line_start": 855,
+      "line_end": 858,
+      "category": "swallowed_error",
+      "description": "`rv = os.path.join(stripped_rv_drive, rv_path)` wrapped in try/except Exception: rv = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "strip win32 path prefixes from resolved absolute symlinks",
+    "date": "2021-08-12"
+  }
+}

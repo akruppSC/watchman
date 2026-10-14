@@ -1,0 +1,15 @@
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 255cf1a97fc6a6af4d92a6e1757b963842bda49d..09a41b15d7b3f8eeecee04cb8af4fdf53836856f 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -795,6 +795,10 @@ class _ClassBuilder(object):
+                 # Class- and staticmethods hide their functions inside.
+                 # These might need to be rewritten as well.
+                 closure_cells = getattr(item.__func__, "__closure__", None)
++            elif isinstance(item, property):
++                # Workaround for property `super()` shortcut (PY3-only).
++                # There is no universal way for other descriptors.
++                closure_cells = getattr(item.fget, "__closure__", None)
+             else:
+                 closure_cells = getattr(item, "__closure__", None)
+ 

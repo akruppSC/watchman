@@ -1,0 +1,238 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index a24f35d5a4e0e6ad8346bdb6248babd86cd6d04c..ca01f99589fa33f095e59e1fbe251bb1bf70e15d 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -129,8 +129,6 @@ These tools combine multiple iterables.
+ 
+ **Itertools recipes**
+ 
+-.. autofunction:: dotproduct
+-.. autofunction:: convolve
+ .. autofunction:: flatten
+ .. autofunction:: roundrobin
+ .. autofunction:: prepend
+@@ -275,6 +273,29 @@ consume iterables.
+ .. autofunction:: iter_except
+ 
+ 
++Math
++====
++**New itertools**
++
++.. autofunction:: dft
++.. autofunction:: idft
++
++----
++
++**Itertools recipes**
++
++.. autofunction:: convolve
++.. autofunction:: dotproduct
++.. autofunction:: factor
++.. autofunction:: matmul
++.. autofunction:: polynomial_from_roots
++.. autofunction:: polynomial_derivative
++.. autofunction:: polynomial_eval
++.. autofunction:: sieve
++.. autofunction:: sum_of_squares
++.. autofunction:: totient
++
++
+ Others
+ ======
+ 
+@@ -302,12 +323,4 @@ Others
+ .. autofunction:: consume
+ .. autofunction:: tabulate
+ .. autofunction:: repeatfunc
+-.. autofunction:: polynomial_from_roots
+-.. autofunction:: polynomial_eval
+-.. autofunction:: polynomial_derivative
+-.. autofunction:: sieve
+-.. autofunction:: factor
+-.. autofunction:: matmul
+-.. autofunction:: sum_of_squares
+-.. autofunction:: totient
+ .. autofunction:: reshape
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 6598435ad0008bcfc79d78a9a1a5ad17351caec8..a475f02de302a608db89a74be2ea484a4d2cc3fd 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -20,7 +20,7 @@ from itertools import (
+     zip_longest,
+     product,
+ )
+-from math import exp, factorial, floor, log, perm, comb
++from math import comb, e, exp, factorial, floor, log, perm, tau
+ from queue import Empty, Queue
+ from random import random, randrange, uniform
+ from operator import itemgetter, mul, sub, gt, lt, ge, le
+@@ -29,6 +29,7 @@ from time import monotonic
+ 
+ from .recipes import (
+     _marker,
++    _sumprod,
+     _zip_equal,
+     UnequalIterablesError,
+     consume,
+@@ -62,6 +63,7 @@ __all__ = [
+     'consumer',
+     'count_cycle',
+     'countable',
++    'dft',
+     'difference',
+     'distinct_combinations',
+     'distinct_permutations',
+@@ -78,6 +80,7 @@ __all__ = [
+     'groupby_transform',
+     'ichunked',
+     'iequals',
++    'idft',
+     'ilen',
+     'interleave',
+     'interleave_evenly',
+@@ -553,10 +556,10 @@ def one(iterable, too_short=None, too_long=None):
+ 
+     try:
+         first_value = next(it)
+-    except StopIteration as e:
++    except StopIteration as exc:
+         raise (
+             too_short or ValueError('too few items in iterable (expected 1)')
+-        ) from e
++        ) from exc
+ 
+     try:
+         second_value = next(it)
+@@ -1159,8 +1162,8 @@ def interleave_evenly(iterables, lengths=None):
+ 
+         # those iterables for which the error is negative are yielded
+         # ("diagonal step" in Bresenham)
+-        for i, e in enumerate(errors):
+-            if e < 0:
++        for i, e_ in enumerate(errors):
++            if e_ < 0:
+                 yield next(iters_secondary[i])
+                 to_yield -= 1
+                 errors[i] += delta_primary
+@@ -4457,12 +4460,12 @@ def minmax(iterable_or_value, *others, key=None, default=_marker):
+ 
+     try:
+         lo = hi = next(it)
+-    except StopIteration as e:
++    except StopIteration as exc:
+         if default is _marker:
+             raise ValueError(
+                 '`minmax()` argument is an empty iterable. '
+                 'Provide a `default` value to suppress this error.'
+-            ) from e
++            ) from exc
+         return default
+ 
+     # Different branches depending on the presence of key. This saves a lot
+@@ -4726,3 +4729,56 @@ def join_mappings(**field_to_map):
+             ret[key][field_name] = value
+ 
+     return dict(ret)
++
++
++def _complex_sumprod(v1, v2):
++    """High precision sumprod() for complex numbers.
++    Used by :func:`dft` and :func:`idft`.
++    """
++    r1 = chain((p.real for p in v1), (-p.imag for p in v1))
++    r2 = chain((q.real for q in v2), (q.imag for q in v2))
++    try:
++        i1 = chain((p.real for p in v1), (p.imag for p in v1))
++    except Exception:
++        i1 = None
++    i2 = chain((q.imag for q in v2), (q.real for q in v2))
++    return complex(_sumprod(r1, r2), _sumprod(i1, i2))
++
++
++def dft(xarr):
++    """Discrete Fourier Tranform. *xarr* is a sequence of complex numbers.
++    Yields the components of the corresponding transformed output vector.
++
++    >>> from cmath import isclose
++    >>> xarr = [1, 2-1j, -1j, -1+2j]
++    >>> Xarr = [2, -2-2j, -2j, 4+4j]
++    >>> all(map(isclose, dft(xarr), Xarr))
++    True
++
++    See :func:`idft` for the inverse Discrete Fourier Transform.
++    """
++    N = len(xarr)
++    roots_of_unity = [e ** (n / N * tau * -1j) for n in range(N)]
++    for k in range(N):
++        coeffs = [roots_of_unity[k * n % N] for n in range(N)]
++        yield _complex_sumprod(xarr, coeffs)
++
++
++def idft(Xarr):
++    """Inverse Discrete Fourier Tranform. *Xarr* is a sequence of
++    complex numbers. Yields the components of the corresponding
++    inverse-transformed output vector.
++
++    >>> from cmath import isclose
++    >>> xarr = [1, 2-1j, -1j, -1+2j]
++    >>> Xarr = [2, -2-2j, -2j, 4+4j]
++    >>> all(map(isclose, idft(Xarr), xarr))
++    True
++
++    See :func:`dft` for the Discrete Fourier Transform.
++    """
++    N = len(Xarr)
++    roots_of_unity = [e ** (n / N * tau * 1j) for n in range(N)]
++    for k in range(N):
++        coeffs = [roots_of_unity[k * n % N] for n in range(N)]
++        yield _complex_sumprod(Xarr, coeffs) / N
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index dc559ebcb2bb2f5fe073ee4634decf6a22040230..012c3d360770ef25d59cc74eb1b4f40d3f04225c 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -700,3 +700,5 @@ def powerset_of_sets(iterable: Iterable[_T]) -> Iterator[set[_T]]: ...
+ def join_mappings(
+     **field_to_map: Mapping[_T, _V]
+ ) -> dict[_T, dict[str, _V]]: ...
++def dft(xarr: Sequence[complex]) -> Iterator[complex]: ...
++def idft(Xarr: Sequence[complex]) -> Iterator[complex]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index b3e2ade936a73d002deae25afcb9af053d22a378..66f08fc024396c93fce63922eee92eaff3e960ed 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -1,5 +1,6 @@
+ import warnings
+ 
++from cmath import isclose
+ from collections import Counter, abc
+ from collections.abc import Set
+ from datetime import datetime, timedelta
+@@ -23,7 +24,7 @@ from itertools import (
+ )
+ from operator import add, mul, itemgetter
+ from pickle import loads, dumps
+-from random import seed, Random
++from random import Random, random, randrange, seed
+ from statistics import mean
+ from string import ascii_letters
+ from sys import version_info
+@@ -5803,3 +5804,18 @@ class JoinMappingTests(TestCase):
+ 
+     def test_empty(self):
+         self.assertEqual(dict(mi.join_mappings()), {})
++
++
++class DiscreteFourierTransformTests(TestCase):
++    def test_basic(self):
++        xarr = [1, 2 - 1j, -1j, -1 + 2j]
++        Xarr = [2, -2 - 2j, -2j, 4 + 4j]
++        self.assertTrue(all(map(isclose, mi.dft(xarr), Xarr)))
++        self.assertTrue(all(map(isclose, mi.idft(Xarr), xarr)))
++
++    def test_roundtrip(self):
++        for _ in range(1_000):
++            N = randrange(35)
++            xarr = [complex(random(), random()) for i in range(N)]
++            Xarr = list(mi.dft(xarr))
++            assert all(map(isclose, mi.idft(Xarr), xarr))

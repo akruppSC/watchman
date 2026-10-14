@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-edcaf04a",
+  "kind": "clean",
+  "task": "make_class(): Add \"__annotations_\" to generated class",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "c83de6ae90d43280df63baa729d50d06826b3462",
+    "upstream_commit": "edcaf04a4d6b1b92996de668af9f6fea266efba2",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "make_class(): Add \"__annotations_\" to generated class (#1285)",
+    "date": "2024-07-13"
+  }
+}

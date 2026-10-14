@@ -1,0 +1,29 @@
+{
+  "id": "httpx-broaden-except-40670031",
+  "kind": "seeded",
+  "task": "HTTP/2 support for tunnelled proxy cases.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "9d543750b97107a94ee88a19432f1c28db4fae3e",
+    "upstream_commit": "406700317bfd83a65d78094e4ce8e9261c284399",
+    "origin": "upstream commit + seeded defect (broaden_except)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_transports/default.py",
+      "line_start": 157,
+      "line_end": 170,
+      "category": "swallowed_error",
+      "description": "`except TypeError` broadened to `except Exception`, hiding unrelated errors.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "broaden_except",
+    "upstream_subject": "HTTP/2 support for tunnelled proxy cases. (#2009)",
+    "date": "2022-01-05"
+  }
+}

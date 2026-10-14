@@ -1,0 +1,171 @@
+diff --git a/docs/advanced.md b/docs/advanced.md
+index cf8cc51311320fe2f1ec46ce42fe61355f72bcff..ea012bd94259d1b26028b16101146c7ef0fcba96 100644
+--- a/docs/advanced.md
++++ b/docs/advanced.md
+@@ -255,12 +255,19 @@ def raise_on_4xx_5xx(response):
+ client = httpx.Client(event_hooks={'response': [raise_on_4xx_5xx]})
+ ```
+ 
++!!! note
++    Response event hooks are called before determining if the response body
++    should be read or not.
++
++    If you need access to the response body inside an event hook, you'll
++    need to call `response.read()`.
++
+ The hooks are also allowed to modify `request` and `response` objects.
+ 
+ ```python
+ def add_timestamp(request):
+     request.headers['x-request-timestamp'] = datetime.now(tz=datetime.utc).isoformat()
+-    
++
+ client = httpx.Client(event_hooks={'request': [add_timestamp]})
+ ```
+ 
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 212222a2f6c2fdaff4c2700d3b933aa0a3e16dec..077f2b6f3d66ed180fbe5c48c85b8efc2a9b279c 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -886,9 +886,6 @@ class Client(BaseClient):
+             if not stream:
+                 response.read()
+ 
+-            for hook in self._event_hooks["response"]:
+-                hook(response)
+-
+             return response
+ 
+         except Exception as exc:
+@@ -907,9 +904,6 @@ class Client(BaseClient):
+         try:
+             request = next(auth_flow)
+ 
+-            for hook in self._event_hooks["request"]:
+-                hook(request)
+-
+             while True:
+                 response = self._send_handling_redirects(
+                     request,
+@@ -947,8 +941,14 @@ class Client(BaseClient):
+                     "Exceeded maximum allowed redirects.", request=request
+                 )
+ 
++            for hook in self._event_hooks["request"]:
++                hook(request)
++
+             response = self._send_single_request(request, timeout)
+             try:
++                # Loop over the items
++                for hook in self._event_hooks["response"]:
++                    hook(response)
+                 response.history = list(history)
+ 
+                 if not response.is_redirect:
+@@ -1595,12 +1595,9 @@ class AsyncClient(BaseClient):
+             if not stream:
+                 await response.aread()
+ 
+-            for hook in self._event_hooks["response"]:
+-                await hook(response)
+-
+             return response
+ 
+-        except Exception as exc:
++        except Exception as exc:  # pragma: no cover
+             await response.aclose()
+             raise exc
+ 
+@@ -1616,9 +1613,6 @@ class AsyncClient(BaseClient):
+         try:
+             request = await auth_flow.__anext__()
+ 
+-            for hook in self._event_hooks["request"]:
+-                await hook(request)
+-
+             while True:
+                 response = await self._send_handling_redirects(
+                     request,
+@@ -1656,8 +1650,16 @@ class AsyncClient(BaseClient):
+                     "Exceeded maximum allowed redirects.", request=request
+                 )
+ 
++            # Loop over the items
++            for hook in self._event_hooks["request"]:
++                await hook(request)
++
+             response = await self._send_single_request(request, timeout)
+             try:
++                # Loop over the items
++                for hook in self._event_hooks["response"]:
++                    await hook(response)
++
+                 response.history = list(history)
+ 
+                 if not response.is_redirect:
+diff --git a/tests/client/test_event_hooks.py b/tests/client/test_event_hooks.py
+index 24dc8dd70bccb07d80ee2367fcbc004c29136980..e73c0d9dace011ea4e7a1cf30f58cc75a1d8c497 100644
+--- a/tests/client/test_event_hooks.py
++++ b/tests/client/test_event_hooks.py
+@@ -117,7 +117,7 @@ async def test_async_event_hooks_raising_exception():
+ 
+ def test_event_hooks_with_redirect():
+     """
+-    A redirect request should not trigger a second 'request' event hook.
++    A redirect request should trigger additional 'request' and 'response' event hooks.
+     """
+ 
+     events = []
+@@ -136,6 +136,21 @@ def test_event_hooks_with_redirect():
+         http.get("http://127.0.0.1:8000/redirect", auth=("username", "password"))
+ 
+     assert events == [
++        {
++            "event": "request",
++            "headers": {
++                "host": "127.0.0.1:8000",
++                "user-agent": f"python-httpx/{httpx.__version__}",
++                "accept": "*/*",
++                "accept-encoding": "gzip, deflate, br",
++                "connection": "keep-alive",
++                "authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
++            },
++        },
++        {
++            "event": "response",
++            "headers": {"location": "/", "server": "testserver"},
++        },
+         {
+             "event": "request",
+             "headers": {
+@@ -157,7 +172,7 @@ def test_event_hooks_with_redirect():
+ @pytest.mark.usefixtures("async_environment")
+ async def test_async_event_hooks_with_redirect():
+     """
+-    A redirect request should not trigger a second 'request' event hook.
++    A redirect request should trigger additional 'request' and 'response' event hooks.
+     """
+ 
+     events = []
+@@ -176,6 +191,21 @@ async def test_async_event_hooks_with_redirect():
+         await http.get("http://127.0.0.1:8000/redirect", auth=("username", "password"))
+ 
+     assert events == [
++        {
++            "event": "request",
++            "headers": {
++                "host": "127.0.0.1:8000",
++                "user-agent": f"python-httpx/{httpx.__version__}",
++                "accept": "*/*",
++                "accept-encoding": "gzip, deflate, br",
++                "connection": "keep-alive",
++                "authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
++            },
++        },
++        {
++            "event": "response",
++            "headers": {"location": "/", "server": "testserver"},
++        },
+         {
+             "event": "request",
+             "headers": {

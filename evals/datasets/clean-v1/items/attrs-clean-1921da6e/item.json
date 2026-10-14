@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-1921da6e",
+  "kind": "clean",
+  "task": "allow __suppress_context__ and __notes__ to be mutated on frozen exceptions",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "58cd3ae112abf36fcd8c1cdf2a55e21b3a5734d3",
+    "upstream_commit": "1921da6eac6231b7bc058b076c0648b2d1b5c042",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "allow __suppress_context__ and __notes__ to be mutated on frozen exceptions (#1365)",
+    "date": "2024-10-26"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-flip-comparison-fc5773f4",
+  "kind": "seeded",
+  "task": "sliding_window optimizations and improvements",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "612a009deeaebb36e34cfe5ace1b7f67c4f3af41",
+    "upstream_commit": "fc5773f42805fa315e7f7500623f8765a847ccb8",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 832,
+      "line_end": 832,
+      "category": "correctness",
+      "description": "Boundary changed: `>` became `>=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "sliding_window optimizations and improvements",
+    "date": "2024-07-15"
+  }
+}

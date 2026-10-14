@@ -1,0 +1,29 @@
+{
+  "id": "attrs-negate-condition-20c2d4fc",
+  "kind": "seeded",
+  "task": "Optimize the case of on_setattr=validate & no validators",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "8ae2d6f1c3c067c941fd9d212e52972c7d3382cc",
+    "upstream_commit": "20c2d4fc0c72a844e12899d5d5e0adbc4741ce2c",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 715,
+      "line_end": 715,
+      "category": "correctness",
+      "description": "Condition inverted: `if a.validator is not None` became `if a.validator is None`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "Optimize the case of on_setattr=validate & no validators (#817)",
+    "date": "2021-05-17"
+  }
+}

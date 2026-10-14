@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-04351129",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Context`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "6c7624491911f0b18f869e5d0a989506e7b416f8",
+    "upstream_commit": "043511294a9eec59d08e64c351621e790ae74b76",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 678,
+      "line_end": 709,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 04351129: Fixed inconsistency in forwarding params",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fixed inconsistency in forwarding params",
+    "date": "2021-04-09"
+  }
+}

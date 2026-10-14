@@ -1,0 +1,29 @@
+{
+  "id": "httpx-raise-to-return-ce7e14da",
+  "kind": "seeded",
+  "task": "Error on verify as str.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "47f4a96ffaaaa07dca1614409549b5d7a6e7af49",
+    "upstream_commit": "ce7e14da27abba6574be9b3ea7cd5990556a9343",
+    "origin": "upstream commit + seeded defect (raise_to_return)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_config.py",
+      "line_start": 41,
+      "line_end": 41,
+      "category": "silent_behavior_change",
+      "description": "`raise RuntimeError(msg)` replaced by `return None`: callers get None instead of an error.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "raise_to_return",
+    "upstream_subject": "Error on verify as str. (#3418)",
+    "date": "2024-11-28"
+  }
+}

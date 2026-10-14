@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-db9072f9",
+  "kind": "clean",
+  "task": "Add URL parsing tests from WHATWG",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "92e9dfb3997ab07353bbe98f9b5a6e69b7701c70",
+    "upstream_commit": "db9072f998b53ff66d50778bf5edee8e2cc8ede1",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add URL parsing tests from WHATWG (#3188)",
+    "date": "2024-06-13"
+  }
+}

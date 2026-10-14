@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-ba5240aa",
+  "kind": "clean",
+  "task": "Incorporate strictly_n",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "e624378e9fb04bbd6aa83f816ecf1a302e41dec6",
+    "upstream_commit": "ba5240aa7864eaf1d4e7ecd15818aea66ba1925c",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Incorporate strictly_n",
+    "date": "2021-10-03"
+  }
+}

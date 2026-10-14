@@ -1,0 +1,117 @@
+diff --git a/changelog.d/1001.change.rst b/changelog.d/1001.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..262babd4da568dde7b725eb918f8c9808e7561f2
+--- /dev/null
++++ b/changelog.d/1001.change.rst
+@@ -0,0 +1,3 @@
++On Python 3.10 and later, call `abc.update_abstractmethods() <https://docs.pytho.
++org/3.10/library/abc.html#abc.update_abstractmethods>`_ on dict classes after creation.
++This improves the detection of abstractness.
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 730ed60ccc830ac5f0828bd81f8ceaa1fac66870..bc296c6486a1596bd172f4941fe69be34fccbd15 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -717,15 +717,33 @@ class _ClassBuilder:
+     def __repr__(self):
+         return f"<_ClassBuilder(cls={self._cls.__name__})>"
+ 
+-    def build_class(self):
+-        """
+-        Finalize class based on the accumulated configuration.
++    if PY310:
++        import abc
++
++        def build_class(self):
++            """
++            Finalize class based on the accumulated configuration.
++
++            Builder cannot be used after calling this method.
++            """
++            if self._slots is True:
++                return self._create_slots_class()
++
++            return self.abc.update_abstractmethods(
++                self._patch_original_class()
++            )
++
++    else:
++
++        def build_class(self):
++            """
++            Finalize class based on the accumulated configuration.
++
++            Builder cannot be used after calling this method.
++            """
++            if self._slots is True:
++                return self._create_slots_class()
+ 
+-        Builder cannot be used after calling this method.
+-        """
+-        if self._slots is True:
+-            return self._create_slots_class()
+-        else:
+             return self._patch_original_class()
+ 
+     def _patch_original_class(self):
+diff --git a/tests/test_abc.py b/tests/test_abc.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..d5682b46aee75452211df38a8a8acfe74e0b04fb
+--- /dev/null
++++ b/tests/test_abc.py
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: MIT
++
++import abc
++import inspect
++
++import pytest
++
++import attrs
++
++from attr._compat import PY310
++
++
++@pytest.mark.skipif(not PY310, reason="abc.update_abstractmethods is 3.10+")
++class TestUpdateAbstractMethods:
++    def test_abc_implementation(self, slots):
++        """
++        If an attrs class implements an abstract method, it stops being
++        abstract.
++        """
++
++        class Ordered(abc.ABC):
++            @abc.abstractmethod
++            def __lt__(self, other):
++                pass
++
++            @abc.abstractmethod
++            def __le__(self, other):
++                pass
++
++        @attrs.define(order=True, slots=slots)
++        class Concrete(Ordered):
++            x: int
++
++        assert not inspect.isabstract(Concrete)
++        assert Concrete(2) > Concrete(1)
++
++    def test_remain_abstract(self, slots):
++        """
++        If an attrs class inherits from an abstract class but doesn't implement
++        abstract methods, it remains abstract.
++        """
++
++        class A(abc.ABC):
++            @abc.abstractmethod
++            def foo(self):
++                pass
++
++        @attrs.define(slots=slots)
++        class StillAbstract(A):
++            pass
++
++        assert inspect.isabstract(StillAbstract)
++        with pytest.raises(
++            TypeError, match="class StillAbstract with abstract method foo"
++        ):
++            StillAbstract()

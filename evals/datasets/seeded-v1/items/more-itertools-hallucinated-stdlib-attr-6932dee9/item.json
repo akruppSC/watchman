@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-hallucinated-stdlib-attr-6932dee9",
+  "kind": "seeded",
+  "task": "Add nth_prime also",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "a7236314cdb977d154d90a27cd7d5ddc3f86c851",
+    "upstream_commit": "6932dee9f1a219401a14255a2b620f774229768f",
+    "origin": "upstream commit + seeded defect (hallucinated_stdlib_attr)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 1149,
+      "line_end": 1149,
+      "category": "hallucinated_dependency",
+      "description": "`_nth_prime_ub` decorated with `functools.cache_result`, which doesn't exist in the stdlib.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/recipes.py",
+          "line_start": 33,
+          "line_end": 33
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_stdlib_attr",
+    "upstream_subject": "Add nth_prime also",
+    "date": "2024-12-02"
+  }
+}

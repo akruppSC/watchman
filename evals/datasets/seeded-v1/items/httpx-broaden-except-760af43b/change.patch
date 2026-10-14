@@ -1,0 +1,183 @@
+diff --git a/README.md b/README.md
+index e85a0142c95574c155ba4e628097d9235c6ea0bb..1bae5926b47d82ee27ad6da0b1eaff55cbe35b8a 100644
+--- a/README.md
++++ b/README.md
+@@ -123,7 +123,7 @@ The HTTPX project relies on these excellent libraries:
+   * `idna` - Internationalized domain name support.
+ * `sniffio` - Async library autodetection.
+ * `async_generator` - Backport support for `contextlib.asynccontextmanager`. *(Only required for Python 3.6)*
+-* `brotlipy` - Decoding for "brotli" compressed responses. *(Optional)*
++* `brotlicffi` - Decoding for "brotli" compressed responses. *(Optional)*
+ 
+ A huge amount of credit is due to `requests` for the API layout that
+ much of this work follows, as well as to `urllib3` for plenty of design
+diff --git a/docs/index.md b/docs/index.md
+index 8a41dca3b128b01e187cc86d6094e5a89969705c..a550f7859df47f41faf8612ab8e266e00d57301c 100644
+--- a/docs/index.md
++++ b/docs/index.md
+@@ -115,7 +115,7 @@ The HTTPX project relies on these excellent libraries:
+   * `idna` - Internationalized domain name support.
+ * `sniffio` - Async library autodetection.
+ * `async_generator` - Backport support for `contextlib.asynccontextmanager`. *(Only required for Python 3.6)*
+-* `brotlipy` - Decoding for "brotli" compressed responses. *(Optional)*
++* `brotlicffi` - Decoding for "brotli" compressed responses. *(Optional)*
+ 
+ A huge amount of credit is due to `requests` for the API layout that
+ much of this work follows, as well as to `urllib3` for plenty of design
+diff --git a/httpx/_decoders.py b/httpx/_decoders.py
+index c0d51a4cdc8ed099423e3d763cde56d15d0269c9..8f818cd04e1e4c0b4f4aefa13ee44db68b1bad74 100644
+--- a/httpx/_decoders.py
++++ b/httpx/_decoders.py
+@@ -11,9 +11,9 @@ import zlib
+ from ._exceptions import DecodingError
+ 
+ try:
+-    import brotli
++    import brotlicffi
+ except ImportError:  # pragma: nocover
+-    brotli = None
++    brotlicffi = None
+ 
+ 
+ class ContentDecoder:
+@@ -99,14 +99,14 @@ class BrotliDecoder(ContentDecoder):
+     """
+ 
+     def __init__(self) -> None:
+-        if brotli is None:  # pragma: nocover
++        if brotlicffi is None:  # pragma: nocover
+             raise ImportError(
+-                "Using 'BrotliDecoder', but the 'brotlipy' or 'brotli' library "
++                "Using 'BrotliDecoder', but the 'brotlicffi' library "
+                 "is not installed."
+                 "Make sure to install httpx using `pip install httpx[brotli]`."
+             ) from None
+ 
+-        self.decompressor = brotli.Decompressor()
++        self.decompressor = brotlicffi.Decompressor()
+         self.seen_data = False
+         if hasattr(self.decompressor, "decompress"):
+             self._decompress = self.decompressor.decompress
+@@ -118,8 +118,8 @@ class BrotliDecoder(ContentDecoder):
+             return b""
+         self.seen_data = True
+         try:
+-            return self._decompress(data)
+-        except brotli.error as exc:
++            return self.decompressor.decompress(data)
++        except brotlicffi.Error as exc:
+             raise DecodingError(str(exc)) from exc
+ 
+     def flush(self) -> bytes:
+@@ -129,7 +129,7 @@ class BrotliDecoder(ContentDecoder):
+             if hasattr(self.decompressor, "finish"):
+                 self.decompressor.finish()
+             return b""
+-        except brotli.error as exc:  # pragma: nocover
++        except Exception as exc:  # pragma: nocover
+             raise DecodingError(str(exc)) from exc
+ 
+ 
+@@ -365,5 +365,5 @@ SUPPORTED_DECODERS = {
+ }
+ 
+ 
+-if brotli is None:
++if brotlicffi is None:
+     SUPPORTED_DECODERS.pop("br")  # pragma: nocover
+diff --git a/requirements.txt b/requirements.txt
+index 725811da98504465254d2568c365ea3b60cfb66d..f34bdeaac66d993655704b6fe34666e8e6f8e04b 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,7 +1,4 @@
+--e .[http2]
+-
+-# Optional
+-brotlipy==0.7.*
++-e .[http2,brotli]
+ 
+ # Documentation
+ mkdocs
+diff --git a/setup.py b/setup.py
+index 1ddae87a9b96de97d7add2c8be1fe972fee06620..e27cda8e1636d47ea9446243fb35b1d1a9f3647b 100644
+--- a/setup.py
++++ b/setup.py
+@@ -64,7 +64,7 @@ setup(
+     ],
+     extras_require={
+         "http2": "h2==3.*",
+-        "brotli": "brotlipy==0.7.*",
++        "brotli": "brotlicffi==1.*",
+     },
+     classifiers=[
+         "Development Status :: 4 - Beta",
+diff --git a/tests/models/test_responses.py b/tests/models/test_responses.py
+index 5e2afc1bf300c9b7e6ae29af16c4a8b9d9cca611..742a15bea7e66d93a6719619d5ffe04e046ff90c 100644
+--- a/tests/models/test_responses.py
++++ b/tests/models/test_responses.py
+@@ -2,7 +2,7 @@ import json
+ import pickle
+ from unittest import mock
+ 
+-import brotli
++import brotlicffi
+ import pytest
+ 
+ import httpx
+@@ -788,7 +788,7 @@ def test_link_headers(headers, expected):
+ def test_decode_error_with_request(header_value):
+     headers = [(b"Content-Encoding", header_value)]
+     body = b"test 123"
+-    compressed_body = brotli.compress(body)[3:]
++    compressed_body = brotlicffi.compress(body)[3:]
+     with pytest.raises(httpx.DecodingError):
+         httpx.Response(
+             200,
+@@ -809,7 +809,7 @@ def test_decode_error_with_request(header_value):
+ def test_value_error_without_request(header_value):
+     headers = [(b"Content-Encoding", header_value)]
+     body = b"test 123"
+-    compressed_body = brotli.compress(body)[3:]
++    compressed_body = brotlicffi.compress(body)[3:]
+     with pytest.raises(httpx.DecodingError):
+         httpx.Response(200, headers=headers, content=compressed_body)
+ 
+diff --git a/tests/test_decoders.py b/tests/test_decoders.py
+index faaf71d2fb9461b08e2e5cb50767c284a4d7f7e8..f681a57a7ffb67ed814713af5dff347d582423ee 100644
+--- a/tests/test_decoders.py
++++ b/tests/test_decoders.py
+@@ -1,6 +1,6 @@
+ import zlib
+ 
+-import brotli
++import brotlicffi
+ import pytest
+ 
+ import httpx
+@@ -69,7 +69,7 @@ def test_gzip():
+ 
+ def test_brotli():
+     body = b"test 123"
+-    compressed_body = brotli.compress(body)
++    compressed_body = brotlicffi.compress(body)
+ 
+     headers = [(b"Content-Encoding", b"br")]
+     response = httpx.Response(
+@@ -102,7 +102,7 @@ def test_multi():
+ 
+ def test_multi_with_identity():
+     body = b"test 123"
+-    compressed_body = brotli.compress(body)
++    compressed_body = brotlicffi.compress(body)
+ 
+     headers = [(b"Content-Encoding", b"br, identity")]
+     response = httpx.Response(
+@@ -165,7 +165,7 @@ def test_decoders_empty_cases(decoder):
+ def test_decoding_errors(header_value):
+     headers = [(b"Content-Encoding", header_value)]
+     body = b"test 123"
+-    compressed_body = brotli.compress(body)[3:]
++    compressed_body = brotlicffi.compress(body)[3:]
+     with pytest.raises(httpx.DecodingError):
+         request = httpx.Request("GET", "https://example.org")
+         httpx.Response(200, headers=headers, content=compressed_body, request=request)

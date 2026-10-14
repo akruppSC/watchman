@@ -1,0 +1,29 @@
+{
+  "id": "click-swallow-exception-986f322e",
+  "kind": "seeded",
+  "task": "resolve relative symlinks to the containing directory",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "76cc18d1f0bd5854f14526e3ccbce631d8344cce",
+    "upstream_commit": "986f322e435fac5e1fb8505d3683c8a224c18b06",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/click/types.py",
+      "line_start": 852,
+      "line_end": 855,
+      "category": "swallowed_error",
+      "description": "`rv = os.path.join(dir_, rv)` wrapped in try/except Exception: rv = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "resolve relative symlinks to the containing directory",
+    "date": "2021-07-15"
+  }
+}

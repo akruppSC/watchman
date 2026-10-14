@@ -1,0 +1,29 @@
+{
+  "id": "attrs-raise-to-return-e84b57ea",
+  "kind": "seeded",
+  "task": "Inline distutils.util.strtobool in tests (closes #813)",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "2ca7aada707167cda9b3c8bbc2fd195e4f1aa422",
+    "upstream_commit": "e84b57ea687942e5344badfe41a2728e24037431",
+    "origin": "upstream commit + seeded defect (raise_to_return)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/converters.py",
+      "line_start": 152,
+      "line_end": 152,
+      "category": "silent_behavior_change",
+      "description": "`raise ValueError(\"Cannot convert value to bool: {}\".format(val))` replaced by `return None`: callers get None instead of an error.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "raise_to_return",
+    "upstream_subject": "Inline distutils.util.strtobool in tests (closes #813) (#830)",
+    "date": "2021-08-10"
+  }
+}

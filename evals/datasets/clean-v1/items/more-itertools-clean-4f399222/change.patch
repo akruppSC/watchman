@@ -1,0 +1,156 @@
+diff --git a/README.rst b/README.rst
+index 2fd6e8acf0c509b16ace45d1aa1a0d075558fa8e..1c6d63480c57bb56646be8cb0cf98208f2c3477d 100644
+--- a/README.rst
++++ b/README.rst
+@@ -165,8 +165,9 @@ Python iterables.
+ |                        | `always_reversible <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.always_reversible>`_,                                                           |
+ |                        | `countable <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.countable>`_,                                                                           |
+ |                        | `consumer <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.consumer>`_,                                                                             |
+-|                        | `with_iter <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.with_iter>`_,                                                                           |
+-|                        | `iter_except <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.iter_except>`_                                                                        |
++|                        | `iter_except <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.iter_except>`_,                                                                       |
++|                        | `serialize <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.serialize>`_,                                                                           |
++|                        | `with_iter <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.with_iter>`_                                                                            |
+ +------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+ | Others                 | `locate <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.locate>`_,                                                                                 |
+ |                        | `rlocate <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.rlocate>`_,                                                                               |
+diff --git a/docs/api.rst b/docs/api.rst
+index 65c25c55f783a5263ad1e1c19de5db904d779663..20202e7b1a3ddea2e4f6db7d8ac31bfc972bbb39 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -265,10 +265,11 @@ consume iterables.
+ 
+ .. autofunction:: always_iterable
+ .. autofunction:: always_reversible
++.. autoclass:: callback_iter
+ .. autofunction:: countable
+ .. autofunction:: consumer
++.. autoclass:: serialize
+ .. autofunction:: with_iter
+-.. autoclass:: callback_iter
+ 
+ ----
+ 
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 4914241596c219f885edbf399d7a16558777e006..6986b6008176ca706ceb5811c96b0f1244db2da2 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -39,6 +39,7 @@ from operator import (
+ )
+ from sys import maxsize
+ from time import monotonic
++from threading import Lock
+ 
+ from .recipes import (
+     _marker,
+@@ -144,6 +145,7 @@ __all__ = [
+     'run_length',
+     'sample',
+     'seekable',
++    'serialize',
+     'set_partitions',
+     'side_effect',
+     'sliced',
+@@ -5289,3 +5291,25 @@ def extract(iterable, indices):
+         while next_to_emit in buffer:
+             yield buffer.pop(next_to_emit)
+             next_to_emit += 1
++
++
++class serialize:
++    """Wrap a non-concurrent iterator with a lock to enforce sequential access.
++
++    Applies a non-reentrant lock around calls to ``__next__``, allowing
++    iterator and generator instances to be shared by multiple consumer
++    threads.
++    """
++
++    __slots__ = ('iterator', 'lock')
++
++    def __init__(self, iterable):
++        self.iterator = iter(iterable)
++        self.lock = Lock()
++
++    def __iter__(self):
++        return self
++
++    def __next__(self):
++        with self.lock:
++            return next(self.iterator)
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 9ef1ddfec10ea986a2b3d83bbb01947f8eaca171..2daa456ca3d01842944949d61e7ffdea08eba589 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -16,6 +16,7 @@ from collections.abc import (
+     Sized,
+ )
+ from contextlib import AbstractContextManager
++from threading import Lock
+ from typing import (
+     Any,
+     Callable,
+@@ -115,6 +116,7 @@ __all__ = [
+     'run_length',
+     'sample',
+     'seekable',
++    'serialize',
+     'set_partitions',
+     'side_effect',
+     'sliced',
+@@ -907,3 +909,10 @@ def argmax(
+ def extract(
+     iterable: Iterable[_T], indices: Iterable[int]
+ ) -> Iterator[_T]: ...
++
++class serialize(Generic[_T], Iterator[_T]):
++    iterator: Iterator[_T]
++    lock: Lock
++    def __init__(self, iterable: Iterable[_T]) -> None: ...
++    def __iter__(self) -> serialize[_T]: ...
++    def __next__(self) -> _T: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 2e9c7dc04205bf0a593927d7c03b3f9d5081b619..6452dcf78cd08a9a94cca4a544c19baba3ee948f 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -31,6 +31,7 @@ from pickle import loads, dumps
+ from random import Random, random, randrange, seed
+ from statistics import mean
+ from string import ascii_letters
++from threading import Thread, Lock
+ from time import sleep
+ from typing import NamedTuple
+ from unittest import TestCase, mock
+@@ -6391,3 +6392,33 @@ class ExtractTests(TestCase):
+         self.assertEqual(
+             list(extract(count(), [5, 7, 3, 9, 4])), [5, 7, 3, 9, 4]
+         )
++
++
++class TestSerialize(TestCase):
++    def test_concurrent_calls(self):
++        result = 0
++        result_lock = Lock()
++
++        def producer(limit):
++            'Non-concurrent producer. A generator version of range(limit).'
++            for x in range(limit):
++                yield x
++
++        def consumer(counter):
++            'Concurrent data consumer'
++            nonlocal result
++            total = 0
++            for x in counter:
++                total += x
++            with result_lock:
++                result += total
++
++        limit = 10**6
++        counter = mi.serialize(producer(limit))
++        workers = [Thread(target=consumer, args=[counter]) for _ in range(10)]
++        for worker in workers:
++            worker.start()
++        for worker in workers:
++            worker.join()
++
++        self.assertEqual(result, limit * (limit - 1) // 2)

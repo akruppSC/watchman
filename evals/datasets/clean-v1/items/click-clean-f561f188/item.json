@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-f561f188",
+  "kind": "clean",
+  "task": "Do not mention UNSET and keep the change entry small",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b39590fd8560e3ee6bec411ddd575761bdb1a113",
+    "upstream_commit": "f561f1880e6bbc8f2d199d50f08dfa2002090596",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Do not mention UNSET and keep the change entry small",
+    "date": "2025-08-21"
+  }
+}

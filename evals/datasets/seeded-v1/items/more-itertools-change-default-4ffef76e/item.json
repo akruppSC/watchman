@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-change-default-4ffef76e",
+  "kind": "seeded",
+  "task": "Simplify zip_broadcast",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "756e4c11ac69719921a706717152d5aa7683829d",
+    "upstream_commit": "4ffef76ed7a13ec850cd4c076663330ba31a762d",
+    "origin": "upstream commit + seeded defect (change_default)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4193,
+      "line_end": 4193,
+      "category": "silent_behavior_change",
+      "description": "Default of a parameter of public `zip_broadcast` changed from False to True; existing callers silently get new behavior.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "change_default",
+    "upstream_subject": "Simplify zip_broadcast",
+    "date": "2023-07-30"
+  }
+}

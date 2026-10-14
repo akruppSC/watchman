@@ -1,0 +1,113 @@
+diff --git a/httpx/_exceptions.py b/httpx/_exceptions.py
+index 092dbcf04eb2ebeeb01481980d0d368df64c8824..04779d114d8ec77fe126d8cccb990badb6a8d4b9 100644
+--- a/httpx/_exceptions.py
++++ b/httpx/_exceptions.py
+@@ -294,25 +294,23 @@ class StreamConsumed(StreamError):
+ 
+ class ResponseNotRead(StreamError):
+     """
+-    Attempted to access response content, without having called `read()`
+-    after a streaming response.
++    Attempted to access streaming response content, without having called `read()`.
+     """
+ 
+     def __init__(self) -> None:
+-        message = (
+-            "Attempted to access response content, without having called `read()` "
+-            "after a streaming response."
+-        )
++        # Set message
++        message = "Attempted to access streaming response content, without having called `read()`."
+         super().__init__(message)
+ 
+ 
+ class RequestNotRead(StreamError):
+     """
+-    Attempted to access request content, without having called `read()`.
++    Attempted to access streaming request content, without having called `read()`.
+     """
+ 
+     def __init__(self) -> None:
+-        message = "Attempted to access request content, without having called `read()`."
++        # Set message
++        message = "Attempted to access streaming request content, without having called `read()`."
+         super().__init__(message)
+ 
+ 
+diff --git a/httpx/_models.py b/httpx/_models.py
+index bf3ac24e13695a2fd98cea08680fe7dc6963d317..1bb0d7fcd6b06e9e48b882cc066a079ea4df7f29 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -829,6 +829,9 @@ class Request:
+             headers, stream = encode_request(content, data, files, json)
+             self._prepare(headers)
+             self.stream = stream
++            # Load the request body, except for streaming content.
++            if isinstance(stream, ByteStream):
++                self.read()
+ 
+     def _prepare(self, default_headers: typing.Dict[str, str]) -> None:
+         for key, value in default_headers.items():
+@@ -869,10 +872,11 @@ class Request:
+         if not hasattr(self, "_content"):
+             assert isinstance(self.stream, typing.Iterable)
+             self._content = b"".join(self.stream)
+-            # If a streaming request has been read entirely into memory, then
+-            # we can replace the stream with a raw bytes implementation,
+-            # to ensure that any non-replayable streams can still be used.
+-            self.stream = ByteStream(self._content)
++            if not isinstance(self.stream, ByteStream):
++                # If a streaming request has been read entirely into memory, then
++                # we can replace the stream with a raw bytes implementation,
++                # to ensure that any non-replayable streams can still be used.
++                self.stream = ByteStream(self._content)
+         return self._content
+ 
+     async def aread(self) -> bytes:
+@@ -882,10 +886,11 @@ class Request:
+         if not hasattr(self, "_content"):
+             assert isinstance(self.stream, typing.AsyncIterable)
+             self._content = b"".join([part async for part in self.stream])
+-            # If a streaming request has been read entirely into memory, then
+-            # we can replace the stream with a raw bytes implementation,
+-            # to ensure that any non-replayable streams can still be used.
+-            self.stream = ByteStream(self._content)
++            if not isinstance(self.stream, ByteStream):
++                # If a streaming request has been read entirely into memory, then
++                # we can replace the stream with a raw bytes implementation,
++                # to ensure that any non-replayable streams can still be used.
++                self.stream = ByteStream(self._content)
+         return self._content
+ 
+     def __repr__(self) -> str:
+@@ -941,7 +946,7 @@ class Response:
+             headers, stream = encode_response(content, text, html, json)
+             self._prepare(headers)
+             self.stream = stream
+-            if content is None or isinstance(content, (bytes, str)):
++            if isinstance(stream, ByteStream):
+                 # Load the response body, except for streaming content.
+                 self.read()
+ 
+diff --git a/tests/models/test_requests.py b/tests/models/test_requests.py
+index fc55791cef5c314e528a690be821a95ddfcaf751..cfc53e0b593751f04dfe4eadcab77045ed8a0cca 100644
+--- a/tests/models/test_requests.py
++++ b/tests/models/test_requests.py
+@@ -97,11 +97,12 @@ async def test_aread_and_stream_data():
+     assert content == request.content
+ 
+ 
+-@pytest.mark.asyncio
+-async def test_cannot_access_content_without_read():
+-    # Ensure a request may still be streamed if it has been read.
+-    # Needed for cases such as authentication classes that read the request body.
+-    request = httpx.Request("POST", "http://example.org", json={"test": 123})
++def test_cannot_access_streaming_content_without_read():
++    # Ensure that streaming requests
++    def streaming_body():  # pragma: nocover
++        yield ""
++
++    request = httpx.Request("POST", "http://example.org", content=streaming_body())
+     with pytest.raises(httpx.RequestNotRead):
+         request.content
+ 

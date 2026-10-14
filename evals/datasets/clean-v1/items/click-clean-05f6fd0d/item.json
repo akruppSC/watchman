@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-05f6fd0d",
+  "kind": "clean",
+  "task": "Always return a help record for an `Argument`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "f25f697a439acc2b0d84aa8f5413330f4e2e75cf",
+    "upstream_commit": "05f6fd0df4ecbd104eb7a229f9f185c2484dee69",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Always return a help record for an `Argument`",
+    "date": "2026-09-10"
+  }
+}

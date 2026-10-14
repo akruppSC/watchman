@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-2129a978",
+  "kind": "clean",
+  "task": "Prefer `Content-Length` over `Transfer-Encoding: chunked` for `content=<file-like>` cases.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "54f4194c387e1817f958ba8c25710d551cec278a",
+    "upstream_commit": "2129a9789ad6a9ffb8655644fbe43a5b3e908db9",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Prefer `Content-Length` over `Transfer-Encoding: chunked` for `content=<file-like>` cases. (#1619)",
+    "date": "2021-04-30"
+  }
+}

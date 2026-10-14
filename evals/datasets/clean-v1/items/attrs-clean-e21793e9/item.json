@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-e21793e9",
+  "kind": "clean",
+  "task": "Allow converter.optional to take a Converter such as converter.pipe as its argument",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "ee0f19b696c60064c58cdc08b3265aef56d49ff8",
+    "upstream_commit": "e21793e90a25c7ea47a9c0369150067cc8322de0",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Allow converter.optional to take a Converter such as converter.pipe as its argument (#1372)",
+    "date": "2024-11-17"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "click-revert-955ca492",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Option`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "91de59c6c8abc8251e7af551cd4546cc964288af",
+    "upstream_commit": "955ca492a6b9e8de0660dae1c415568ca6f9c4b3",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2684,
+      "line_end": 2693,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 955ca492: Cleanup changes to fix flag_value bug",
+      "alt_ranges": [
+        {
+          "file": "src/click/core.py",
+          "line_start": 2782,
+          "line_end": 2791
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Cleanup changes to fix flag_value bug",
+    "date": "2025-11-19"
+  }
+}

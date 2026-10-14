@@ -1,0 +1,29 @@
+{
+  "id": "attrs-negate-condition-028797bd",
+  "kind": "seeded",
+  "task": "Switching to tuples removed this case",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "1967be0eb6a4ff59b2216c2bb4fe02e3d4e16b95",
+    "upstream_commit": "028797bd240005936dbd6337b7c1e84f059178fd",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/converters.py",
+      "line_start": 135,
+      "line_end": 135,
+      "category": "correctness",
+      "description": "Condition inverted: `if val in (True, \"true\", \"t\", \"yes\", \"y\", \"on\", \"1\", 1)` became `if val not in (True, 'true', 't', 'yes', 'y', 'on', '1', 1)`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "Switching to tuples removed this case",
+    "date": "2024-03-17"
+  }
+}

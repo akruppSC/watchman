@@ -1,0 +1,105 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 98ea518c047d2932e4248a4d1a3851ec94040b2f..3b442e4415e0823b2142513b1b5639d8f35ede3b 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -27,8 +27,10 @@ Version 8.1.0
+ -   Parameter decorators and ``@group`` handles ``cls=None`` the same as
+     not passing ``cls``. ``@option`` handles ``help=None`` the same as
+     not passing ``help``. :issue:`#1959`
+--   Help text passed to ``Option`` is processed the same way as using
+-    the ``@option`` decorator. :issue:`1985`
++-   Indentation in help text passed to ``Option`` and ``Command`` is
++    cleaned the same as using the ``@option`` and ``@command``
++    decorators does. A command's ``epilog`` and ``short_help`` are also
++    processed. :issue:`1985`
+ 
+ 
+ Version 8.0.4
+diff --git a/src/click/core.py b/src/click/core.py
+index 59af7ce40fd12dba73a9187ac9cd1b492d5fd720..dc80b0d44d7bdc5b35bcf176729a71ef6f4ba150 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -1133,13 +1133,6 @@ class Command(BaseCommand):
+     Click.  A basic command handles command line parsing and might dispatch
+     more parsing to commands nested below it.
+ 
+-    .. versionchanged:: 2.0
+-       Added the `context_settings` parameter.
+-    .. versionchanged:: 8.0
+-       Added repr showing the command name
+-    .. versionchanged:: 7.1
+-       Added the `no_args_is_help` parameter.
+-
+     :param name: the name of the command to use unless a group overrides it.
+     :param context_settings: an optional dictionary with defaults that are
+                              passed to the context object.
+@@ -1161,6 +1154,20 @@ class Command(BaseCommand):
+ 
+     :param deprecated: issues a message indicating that
+                              the command is deprecated.
++
++    .. versionchanged:: 8.1
++        Indentation in ``help`` is cleaned here instead of only in the
++        ``@command`` decorator. ``epilog`` and ``short_help`` are also
++        cleaned.
++
++    .. versionchanged:: 8.0
++        Added a ``repr`` showing the command name.
++
++    .. versionchanged:: 7.1
++        Added the ``no_args_is_help`` parameter.
++
++    .. versionchanged:: 2.0
++        Added the ``context_settings`` parameter.
+     """
+ 
+     def __init__(
+@@ -1187,10 +1194,23 @@ class Command(BaseCommand):
+         #: will automatically be handled before non eager ones.
+         self.params: t.List["Parameter"] = params or []
+ 
+-        # if a form feed (page break) is found in the help text, truncate help
+-        # text to the content preceding the first form feed
+-        if help and "\f" in help:
+-            help = help.split("\f", 1)[0]
++        if help:
++            try:
++                help = inspect.cleandoc(help)
++            except Exception:
++                help = None
++
++            # Discard help text after a first form feed (page break)
++            # character, to allow writing longer documentation in
++            # docstrings that does not show in help output.
++            if "\f" in help:
++                help = help.partition("\f")[0]
++
++        if epilog:
++            epilog = inspect.cleandoc(epilog)
++
++        if short_help:
++            short_help = inspect.cleandoc(short_help)
+ 
+         self.help = help
+         self.epilog = epilog
+diff --git a/src/click/decorators.py b/src/click/decorators.py
+index 4c00e9deaf6f7db018dc02e03b4da9fb51b76b7e..0a019251c0e8ceb9d04805ae06d1d294b65868cf 100644
+--- a/src/click/decorators.py
++++ b/src/click/decorators.py
+@@ -137,14 +137,9 @@ def _make_command(
+     except AttributeError:
+         params = []
+ 
+-    help = attrs.get("help")
++    if attrs.get("help") is None:
++        attrs["help"] = inspect.getdoc(f)
+ 
+-    if help is None:
+-        help = inspect.getdoc(f)
+-    else:
+-        help = inspect.cleandoc(help)
+-
+-    attrs["help"] = help
+     return cls(
+         name=name or f.__name__.lower().replace("_", "-"),
+         callback=f,

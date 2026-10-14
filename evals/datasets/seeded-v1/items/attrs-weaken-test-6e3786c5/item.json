@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-6e3786c5",
+  "kind": "seeded",
+  "task": "Make `kw_only=True` behavior consistent with dataclasses",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "af349876f4fb5df2b71a3f4878239b775bc89230",
+    "upstream_commit": "6e3786c599279f24e91b0d57ef448f7a85d7a69f",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_make.py",
+      "line_start": 1191,
+      "line_end": 1214,
+      "category": "weak_test",
+      "description": "Every assertion in `test_kw_only_inheritance` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Make `kw_only=True` behavior consistent with dataclasses (#1457)",
+    "date": "2025-08-03"
+  }
+}

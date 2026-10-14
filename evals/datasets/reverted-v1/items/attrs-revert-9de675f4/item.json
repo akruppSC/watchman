@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-9de675f4",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `_ClassBuilder`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "72f94a3b03d5c2f8211f499c1c3fc72413d3fd4e",
+    "upstream_commit": "9de675f4b4289b218913bd642c1c59ac376df34f",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 795,
+      "line_end": 795,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 9de675f4: Fix: TypeError when using properties, super(), and slots=True (#652) (#747)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix: TypeError when using properties, super(), and slots=True (#652) (#747)",
+    "date": "2021-01-11"
+  }
+}

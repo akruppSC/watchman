@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-e65a33d3",
+  "kind": "clean",
+  "task": "Neater close logic",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c26425aa58574f31491f46b7c757f9f374fabf46",
+    "upstream_commit": "e65a33d3cff0323a15d894ded16cb3c501a8f717",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Neater close logic (#1541)",
+    "date": "2021-03-26"
+  }
+}

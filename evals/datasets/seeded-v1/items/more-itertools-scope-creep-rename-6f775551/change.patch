@@ -1,0 +1,141 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 4cb207190bfec419074cf184150b74cbb6fcb1a8..7e224fb5e07abf1335ad5f11f6e066e744d10313 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -612,17 +612,18 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
+         >>> list(strictly_n('ab', 3))  # doctest: +IGNORE_EXCEPTION_DETAIL
+         Traceback (most recent call last):
+         ...
+-        ValueError: too few items in iterable'
++        ValueError: too few items in iterable (got 2)
+ 
+         >>> list(strictly_n('abc', 2))  # doctest: +IGNORE_EXCEPTION_DETAIL
+         Traceback (most recent call last):
+         ...
+-        ValueError: too many items in iterable'
++        ValueError: too many items in iterable (got at least 3)
+ 
+-    You can instead supply functions (that don't take any arguments) that
+-    do something else:
++    You can instead supply functions that do something else.
++    *too_short* will be called with the number of items in *iterable*.
++    *too_long will be called with ``n + 1``.
+ 
+-        >>> def too_short():
++        >>> def too_short(item_count):
+         ...     raise RuntimeError
+         >>> it = strictly_n('abcd', 6, too_short=too_short)
+         >>> list(it)  # doctest: +IGNORE_EXCEPTION_DETAIL
+@@ -630,7 +631,7 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
+         ...
+         RuntimeError
+ 
+-        >>> def too_long():
++        >>> def too_long(item_count):
+         ...     print('The boss is going to hear about this')
+         >>> it = strictly_n('abcdef', 4, too_long=too_long)
+         >>> list(it)
+@@ -639,15 +640,15 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
+ 
+     """
+     if too_short is None:
+-        too_short = lambda: raise_(
++        too_short = lambda item_count: raise_(
+             ValueError,
+-            'Too few items in iterable',
++            f'Too few items in iterable (got {item_count})',
+         )
+ 
+     if too_long is None:
+-        too_long = lambda: raise_(
++        too_long = lambda item_count: raise_(
+             ValueError,
+-            'Too many items in iterable',
++            f'Too many items in iterable (got at least {item_count})',
+         )
+ 
+     it = iter(iterable)
+@@ -655,7 +656,7 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
+         try:
+             item = next(it)
+         except StopIteration:
+-            too_short()
++            too_short(i)
+             return
+         else:
+             yield item
+@@ -665,7 +666,7 @@ def strictly_n(iterable, n, too_short=None, too_long=None):
+     except StopIteration:
+         pass
+     else:
+-        too_long()
++        too_long(n + 1)
+ 
+ 
+ def distinct_permutations(iterable, r=None):
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index a2596423a4c3dbd15a357241477a0af0a531f9ec..a5841675f55c1409612d2d92e6c71b63aa847210 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -587,15 +587,15 @@ def nth_combination(iterable, r, index):
+     if (index < 0) or (index >= c):
+         raise IndexError
+ 
+-    result = []
++    res = []
+     while r:
+         c, n, r = c * r // n, n - 1, r - 1
+         while index >= c:
+             index -= c
+             c, n = c * (n - r) // n, n - 1
+-        result.append(pool[-1 - n])
++        res.append(pool[-1 - n])
+ 
+-    return tuple(result)
++    return tuple(res)
+ 
+ 
+ def prepend(value, iterator):
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 82dc4ad8975eb4b1c1184f8c263cede4fc5f7aaf..691847b9526928d1b2db40b109916a6138d41784 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -4795,7 +4795,9 @@ class StrictlyNTests(TestCase):
+         with self.assertRaises(ValueError) as exc:
+             list(mi.strictly_n(iter(iterable), n))
+ 
+-        self.assertEqual('Too few items in iterable', exc.exception.args[0])
++        self.assertEqual(
++            'Too few items in iterable (got 4)', exc.exception.args[0]
++        )
+ 
+     def test_too_long_default(self):
+         iterable = ['a', 'b', 'c', 'd']
+@@ -4804,14 +4806,14 @@ class StrictlyNTests(TestCase):
+             list(mi.strictly_n(iter(iterable), n))
+ 
+         self.assertEqual(
+-            'Too many items in iterable',
++            'Too many items in iterable (got at least 4)',
+             cm.exception.args[0],
+         )
+ 
+     def test_too_short_custom(self):
+         call_count = 0
+ 
+-        def too_short():
++        def too_short(item_count):
+             nonlocal call_count
+             call_count += 1
+ 
+@@ -4829,7 +4831,9 @@ class StrictlyNTests(TestCase):
+ 
+         iterable = ['a', 'b', 'c', 'd']
+         n = 2
+-        too_long = lambda: logging.warning('Picked the first %s items', n)
++        too_long = lambda item_count: logging.warning(
++            'Picked the first %s items', n
++        )
+ 
+         with self.assertLogs(level='WARNING') as cm:
+             actual = list(mi.strictly_n(iter(iterable), n, too_long=too_long))

@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-4e4c7a69",
+  "kind": "clean",
+  "task": "Auto-detect `type=UNPROCESSED` when `flag_value` has non-basic types",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "f1f191ecd2c790b161187c78e7c88440e9524e5c",
+    "upstream_commit": "4e4c7a69b7953ccb8c14e92368ca65d9525f1d2b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Auto-detect `type=UNPROCESSED` when `flag_value` has non-basic types",
+    "date": "2026-04-21"
+  }
+}

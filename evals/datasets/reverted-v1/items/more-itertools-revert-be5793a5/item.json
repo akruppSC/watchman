@@ -1,0 +1,34 @@
+{
+  "id": "more-itertools-revert-be5793a5",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `gray_product`, `partial_product`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "fdbd43c569feb4388302ddee0551d18edd39fadc",
+    "upstream_commit": "be5793a55f58ee29521d8cbc9f14019f5833454e",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4897,
+      "line_end": 4903,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by be5793a5: Two fixes for repeat with iterator arguments",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 4939,
+          "line_end": 4945
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Two fixes for repeat with iterator arguments",
+    "date": "2026-02-02"
+  }
+}

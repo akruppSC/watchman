@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-39e3a2d5",
+  "kind": "clean",
+  "task": "Add subslices recipe",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d971c866359105cb608462745db3f9bf91011af1",
+    "upstream_commit": "39e3a2d5fb530c8fd523701356305c268b2a34aa",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add subslices recipe",
+    "date": "2022-04-18"
+  }
+}

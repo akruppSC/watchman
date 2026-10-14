@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-555fa9bb",
+  "kind": "clean",
+  "task": "#2447 Forward exception data to exit stack when calling `__exit__`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "16fe802a3f96c4c8fa3cd382f1a7577fda0c5321",
+    "upstream_commit": "555fa9bb37770a6845a98be60b0c84876775552e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "#2447 Forward exception data to exit stack when calling `__exit__`",
+    "date": "2025-09-11"
+  }
+}

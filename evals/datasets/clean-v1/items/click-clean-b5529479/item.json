@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-b5529479",
+  "kind": "clean",
+  "task": "Add path normalization edge-cases, verify `shlex.split` behavior",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1339fd3323357119a9c7a6326c788f80295954ce",
+    "upstream_commit": "b55294797ef32e22eb41e7d9657edb8faefa4976",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add path normalization edge-cases, verify `shlex.split` behavior",
+    "date": "2026-04-10"
+  }
+}

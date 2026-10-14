@@ -1,0 +1,104 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 1bf48ba62f2cb6d417fb5e3799a2cf5c4e61071b..ae3ab920709b5f46de6b4998c7ee85ab7d9901d6 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -53,6 +53,8 @@ __all__ = [
+     'all_unique',
+     'always_iterable',
+     'always_reversible',
++    'argmax',
++    'argmin',
+     'bucket',
+     'callback_iter',
+     'chunked',
+@@ -5067,3 +5069,31 @@ def nth_prime(n):
+         raise ValueError
+     limit = math.ceil(_nth_prime_ub(n + 1))
+     return nth(sieve(limit), n)
++
++
++def argmin(iterable, *, key=None):
++    """
++    Index of the first occurence of a minimum value in an iterable.
++
++    >>> argmin('efghabcdijkl')
++    4
++    >>> argmin([3, 2, 1, 0, 4, 2, 1, 0])
++    3
++    """
++    if key is not None:
++        iterable = map(key, iterable)
++    return min(enumerate(iterable), key=itemgetter(1))[0]
++
++
++def argmax(iterable, *, key=None):
++    """
++    Index of the first occurence of a maximum value in an iterable.
++
++    >>> argmax('abcdefghabcd')
++    7
++    >>> argmax([0, 1, 2, 3, 3, 2, 1, 0])
++    3
++    """
++    if key is not None:
++        iterable = map(key, iterable)
++    return max(enumerate(iterable), key=itemgetter(1))[0]
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index f06b35dac25276a95481392b0fee577f9cb103ca..bce9bd81df87f00f91974db6acd71d7812291f02 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -34,6 +34,8 @@ __all__ = [
+     'all_unique',
+     'always_iterable',
+     'always_reversible',
++    'argmax',
++    'argmin',
+     'bucket',
+     'callback_iter',
+     'chunked',
+@@ -933,3 +935,9 @@ def dft(xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def idft(Xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def _nth_prime_ub(n: int) -> float: ...
+ def nth_prime(n: int) -> int: ...
++def argmin(
++    iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
++) -> int: ...
++def argmax(
++    iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
++) -> int: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 5e45f7e8684b87de4e3ea2f7d76ff08debe171b7..d3717b5be9b8998e3f29201d48c59edac010fddb 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -6051,3 +6051,31 @@ class DoubleStarMapTests(TestCase):
+         actual = list(mi.doublestarmap(lambda x: x, []))
+         expected = []
+         self.assertEqual(actual, expected)
++
++
++class ArgMinArgMaxTests(TestCase):
++    def test_basic(self):
++        for i, iterable, expected_min, expected_max in (
++            (1, [10, 2, 20, 5, 17, 4], 1, 2),
++            (2, [10, -2, -20, 5, 17, 4], 2, 4),
++            (3, [10, 10, 20, 10], 0, 2),
++            (4, [30, 30, 20, 30], 2, 0),
++        ):
++            with self.subTest(i=i):
++                self.assertEqual(mi.argmin(iterable), expected_min)
++                self.assertEqual(mi.argmax(iterable), expected_max)
++
++    def test_key(self):
++        for i, iterable, key, expected_min, expected_max in (
++            (1, [10, -2, -20, 5, 17, 4], abs, 1, 2),
++            (
++                2,
++                [[0] * 10, [0] * 5, [0] * 3, [0] * 12, [0] * 2, [0] * 3],
++                len,
++                4,
++                3,
++            ),
++        ):
++            with self.subTest(i=i):
++                self.assertEqual(mi.argmin(iterable, key=key), expected_min)
++                self.assertEqual(mi.argmax(iterable, key=key), expected_max)

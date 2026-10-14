@@ -1,0 +1,63 @@
+diff --git a/httpx/_auth.py b/httpx/_auth.py
+index 343f9cdd16a5f56c0867c9db9305ebae25af0213..7ae21a388dabb47b51e307860ab8bf08b980ddbf 100644
+--- a/httpx/_auth.py
++++ b/httpx/_auth.py
+@@ -191,8 +191,8 @@ class DigestAuth(Auth):
+ 
+         header_dict: typing.Dict[str, str] = {}
+         for field in parse_http_list(fields):
+-            key, value = field.strip().split("=", 1)
+-            header_dict[key] = unquote(value)
++            key, val = field.strip().split("=", 1)
++            header_dict[key] = unquote(val)
+ 
+         try:
+             realm = header_dict["realm"].encode()
+diff --git a/httpx/_transports/mock.py b/httpx/_transports/mock.py
+index 6f9ebc1e0f380e0b6fc31e533cd064253660c92f..a55a88b7a2705191a67c0e21a67fcc773a0c98a5 100644
+--- a/httpx/_transports/mock.py
++++ b/httpx/_transports/mock.py
+@@ -1,3 +1,4 @@
++import asyncio
+ from typing import Callable, List, Optional, Tuple
+ 
+ import httpcore
+@@ -47,7 +48,17 @@ class MockTransport(httpcore.SyncHTTPTransport, httpcore.AsyncHTTPTransport):
+             stream=stream,
+         )
+         await request.aread()
++
+         response = self.handler(request)
++
++        # Allow handler to *optionally* be an `async` function.
++        # If it is, then the `response` variable need to be awaited to actually
++        # return the result.
++
++        # https://simonwillison.net/2020/Sep/2/await-me-maybe/
++        if asyncio.iscoroutine(response):
++            response = await response
++
+         return (
+             response.status_code,
+             response.headers.raw,
+diff --git a/tests/client/test_async_client.py b/tests/client/test_async_client.py
+index 0cc9d8a4ff1458f9949948c4e5e52ae7ebeadf79..62464865e20cf3696465d5daba51a9e3a1cdc1c3 100644
+--- a/tests/client/test_async_client.py
++++ b/tests/client/test_async_client.py
+@@ -301,3 +301,16 @@ async def test_mounted_transport():
+         response = await client.get("custom://www.example.com")
+         assert response.status_code == 200
+         assert response.json() == {"app": "mounted"}
++
++
++@pytest.mark.usefixtures("async_environment")
++async def test_async_mock_transport():
++    async def hello_world(request):
++        return httpx.Response(200, text="Hello, world!")
++
++    transport = httpx.MockTransport(hello_world)
++
++    async with httpx.AsyncClient(transport=transport) as client:
++        response = await client.get("https://www.example.com")
++        assert response.status_code == 200
++        assert response.text == "Hello, world!"

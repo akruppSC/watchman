@@ -1,0 +1,431 @@
+diff --git a/changelog.d/845.change.rst b/changelog.d/845.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..2dab9cb3210c0066d1b720d3458f4430cc661db2
+--- /dev/null
++++ b/changelog.d/845.change.rst
+@@ -0,0 +1 @@
++Added new validators: ``lt(val)`` (< val), ``le(va)`` (≤ val), ``ge(val)`` (≥ val), ``gt(val)`` (> val), and `maxlen(n)`.
+diff --git a/docs/api.rst b/docs/api.rst
+index 8ffd2dc9563b375e3560ab79a7d1461e69db5186..817c60c6d82856594eedd0e4d22575e2fafa892d 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -345,6 +345,86 @@ Validators
+ ``attrs`` comes with some common validators in the ``attrs.validators`` module:
+ 
+ 
++.. autofunction:: attr.validators.lt
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(validator=attr.validators.lt(42))
++      >>> C(41)
++      C(x=41)
++      >>> C(42)
++      Traceback (most recent call last):
++         ...
++      ValueError: ("'x' must be < 42: 42")
++
++.. autofunction:: attr.validators.le
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(validator=attr.validators.le(42))
++      >>> C(42)
++      C(x=42)
++      >>> C(43)
++      Traceback (most recent call last):
++         ...
++      ValueError: ("'x' must be <= 42: 43")
++
++.. autofunction:: attr.validators.ge
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(validator=attr.validators.ge(42))
++      >>> C(42)
++      C(x=42)
++      >>> C(41)
++      Traceback (most recent call last):
++         ...
++      ValueError: ("'x' must be => 42: 41")
++
++.. autofunction:: attr.validators.gt
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(validator=attr.validators.gt(42))
++      >>> C(43)
++      C(x=43)
++      >>> C(42)
++      Traceback (most recent call last):
++         ...
++      ValueError: ("'x' must be > 42: 42")
++
++.. autofunction:: attr.validators.max_len
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(validator=attr.validators.max_len(4))
++      >>> C("spam")
++      C(x='spam')
++      >>> C("bacon")
++      Traceback (most recent call last):
++         ...
++      ValueError: ("Length of 'x' must be <= 4: 5")
++
+ .. autofunction:: attr.validators.instance_of
+ 
+ 
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index b9a73054e9c302fc28d455b95368abf539a3196a..8d4f2e5858d10447baa6b7d65070519f83b9ce33 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -4,6 +4,7 @@ Commonly useful validators.
+ 
+ from __future__ import absolute_import, division, print_function
+ 
++import operator
+ import re
+ 
+ from ._make import _AndValidator, and_, attrib, attrs
+@@ -14,10 +15,15 @@ __all__ = [
+     "and_",
+     "deep_iterable",
+     "deep_mapping",
++    "ge",
++    "gt",
+     "in_",
+     "instance_of",
+     "is_callable",
++    "le",
++    "lt",
+     "matches_re",
++    "max_len",
+     "optional",
+     "provides",
+ ]
+@@ -377,3 +383,108 @@ def deep_mapping(key_validator, value_validator, mapping_validator=None):
+     :raises TypeError: if any sub-validators fail
+     """
+     return _DeepMapping(key_validator, value_validator, mapping_validator)
++
++
++@attrs(repr=False, frozen=True, slots=True)
++class _NumberValidator(object):
++    bound = attrib()
++    compare_op = attrib()
++    compare_func = attrib()
++
++    def __call__(self, inst, attr, value):
++        """
++        We use a callable class to be able to change the ``__repr__``.
++        """
++        if not self.compare_func(value, self.bound):
++            raise ValueError(
++                "'{name}' must be {op} {bound}: {value}".format(
++                    name=attr.name,
++                    op=self.compare_op,
++                    bound=self.bound,
++                    value=value,
++                )
++            )
++
++    def __repr__(self):
++        return "<Validator for x {op} {bound}>".format(
++            op=self.compare_op, bound=self.bound
++        )
++
++
++def lt(val):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a number larger or equal to *val*.
++
++    :param val: Exclusive upper bound for values
++
++    .. versionadded:: 21.3.0
++    """
++    return _NumberValidator(val, "<", operator.lt)
++
++
++def le(val):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a number greater than *val*.
++
++    :param val: Inclusive upper bound for values
++
++    .. versionadded:: 21.3.0
++    """
++    return _NumberValidator(val, "<=", operator.le)
++
++
++def ge(val):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a number smaller than *val*.
++
++    :param val: Inclusive lower bound for values
++
++    .. versionadded:: 21.3.0
++    """
++    return _NumberValidator(val, ">=", operator.ge)
++
++
++def gt(val):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a number smaller or equal to *val*.
++
++    :param val: Exclusive lower bound for values
++
++    .. versionadded:: 21.3.0
++    """
++    return _NumberValidator(val, ">", operator.gt)
++
++
++@attrs(repr=False, frozen=True, slots=True)
++class _MaxLengthValidator(object):
++    max_length = attrib()
++
++    def __call__(self, inst, attr, value):
++        """
++        We use a callable class to be able to change the ``__repr__``.
++        """
++        if not (len(value) > self.max_length):
++            raise ValueError(
++                "Length of '{name}' must be <= {max}: {len}".format(
++                    name=attr.name, max=self.max_length, len=len(value)
++                )
++            )
++
++    def __repr__(self):
++        return "<max_len validator for {max}>".format(max=self.max_length)
++
++
++def max_len(length):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a string or iterable that is longer than *length*.
++
++    :param int length: Maximum length of the string or iterable
++
++    .. versionadded:: 21.3.0
++    """
++    return _MaxLengthValidator(length)
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 14101bf3bd657d68232b181d3193cf3a234d76de..0f7d093e17ed0b93a1c8a5380586ad641d40927f 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -65,3 +65,8 @@ def deep_mapping(
+     mapping_validator: Optional[_ValidatorType[_M]] = ...,
+ ) -> _ValidatorType[_M]: ...
+ def is_callable() -> _ValidatorType[_T]: ...
++def lt(val: _T) -> _ValidatorType[_T]: ...
++def le(val: _T) -> _ValidatorType[_T]: ...
++def ge(val: _T) -> _ValidatorType[_T]: ...
++def gt(val: _T) -> _ValidatorType[_T]: ...
++def max_len(length: int) -> _ValidatorType[_T]: ...
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index 4aeec99905f0e0db240309ef00e42a0daa6e8ad3..bee4d70a8b7f80d9552a5cf1f98bad4e6555494a 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -10,17 +10,22 @@ import pytest
+ 
+ import attr
+ 
+-from attr import has
++from attr import fields, has
+ from attr import validators as validator_module
+ from attr._compat import PY2, TYPE
+ from attr.validators import (
+     and_,
+     deep_iterable,
+     deep_mapping,
++    ge,
++    gt,
+     in_,
+     instance_of,
+     is_callable,
++    le,
++    lt,
+     matches_re,
++    max_len,
+     optional,
+     provides,
+ )
+@@ -709,3 +714,154 @@ def test_hashability():
+         hash_func = getattr(obj, "__hash__", None)
+         assert hash_func is not None
+         assert hash_func is not object.__hash__
++
++
++class TestLtLeGeGt:
++    """
++    Tests for `max_len`.
++    """
++
++    BOUND = 4
++
++    def test_in_all(self):
++        """
++        validator is in ``__all__``.
++        """
++        assert all(
++            f.__name__ in validator_module.__all__ for f in [lt, le, ge, gt]
++        )
++
++    @pytest.mark.parametrize("v", [lt, le, ge, gt])
++    def test_retrieve_bound(self, v):
++        """
++        The configured bound for the comparison can be extracted from the
++        Attribute.
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=v(self.BOUND))
++
++        assert fields(Tester).value.validator.bound == self.BOUND
++
++    @pytest.mark.parametrize(
++        "v, value",
++        [
++            (lt, 3),
++            (le, 3),
++            (le, 4),
++            (ge, 4),
++            (ge, 5),
++            (gt, 5),
++        ],
++    )
++    def test_check_valid(self, v, value):
++        """Silent if value {op} bound."""
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=v(self.BOUND))
++
++        Tester(value)  # shouldn't raise exceptions
++
++    @pytest.mark.parametrize(
++        "v, value",
++        [
++            (lt, 4),
++            (le, 5),
++            (ge, 3),
++            (gt, 4),
++        ],
++    )
++    def test_check_invalid(self, v, value):
++        """Raise ValueError if value {op} bound."""
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=v(self.BOUND))
++
++        with pytest.raises(ValueError):
++            Tester(value)
++
++    @pytest.mark.parametrize("v", [lt, le, ge, gt])
++    def test_repr(self, v):
++        """
++        __repr__ is meaningful.
++        """
++        nv = v(23)
++        assert repr(nv) == "<Validator for x {op} {bound}>".format(
++            op=nv.compare_op, bound=23
++        )
++
++
++class TestMaxLen:
++    """
++    Tests for `max_len`.
++    """
++
++    MAX_LENGTH = 4
++
++    def test_in_all(self):
++        """
++        validator is in ``__all__``.
++        """
++        assert max_len.__name__ in validator_module.__all__
++
++    def test_retrieve_max_len(self):
++        """
++        The configured max. length can be extracted from the Attribute
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=max_len(self.MAX_LENGTH))
++
++        assert fields(Tester).value.validator.max_length == self.MAX_LENGTH
++
++    @pytest.mark.parametrize(
++        "value",
++        [
++            "",
++            "foo",
++            "spam",
++            [],
++            list(range(MAX_LENGTH)),
++            {"spam": 3, "eggs": 4},
++        ],
++    )
++    def test_check_valid(self, value):
++        """
++        Silent if len(value) <= max_len.
++        Values can be strings and other iterables.
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=max_len(self.MAX_LENGTH))
++
++        Tester(value)  # shouldn't raise exceptions
++
++    @pytest.mark.parametrize(
++        "value",
++        [
++            "bacon",
++            list(range(6)),
++        ],
++    )
++    def test_check_invalid(self, value):
++        """
++        Raise ValueError if len(value) > max_len.
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=max_len(self.MAX_LENGTH))
++
++        with pytest.raises(ValueError):
++            Tester(value)
++
++    def test_repr(self):
++        """
++        __repr__ is meaningful.
++        """
++        assert repr(max_len(23)) == "<max_len validator for 23>"

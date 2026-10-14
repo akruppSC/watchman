@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-ce89f5d1",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `FrozenError`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "eccd966d80aff5196efc959316961cfa780439f9",
+    "upstream_commit": "ce89f5d11feb0805da9ed10bb165238cc959f1bb",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/exceptions.py",
+      "line_start": 5,
+      "line_end": 20,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by ce89f5d1: Fix message passing in frozen errors",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix message passing in frozen errors",
+    "date": "2026-03-14"
+  }
+}

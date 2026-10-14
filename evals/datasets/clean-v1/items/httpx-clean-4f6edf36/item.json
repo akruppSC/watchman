@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-4f6edf36",
+  "kind": "clean",
+  "task": "test `parse_header_links` via public api",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c7cd6aa5bdcf9f9d63e7dcea33cb78d6920aeed8",
+    "upstream_commit": "4f6edf36e93fd9f83ff95b065718fd6bd0c4d3c5",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "test `parse_header_links` via public api (#3061)",
+    "date": "2024-01-16"
+  }
+}

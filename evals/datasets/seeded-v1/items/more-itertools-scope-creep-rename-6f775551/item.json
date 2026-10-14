@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-scope-creep-rename-6f775551",
+  "kind": "seeded",
+  "task": "too_short and too_long get item counts",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "0d5262795d9deed97ccc2a3449d34890bde5c511",
+    "upstream_commit": "6f775551a9067be9fb2686dcc7d4e1d9d8edf08b",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 590,
+      "line_end": 598,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `result` to `res` in `nth_combination` (more_itertools/recipes.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "too_short and too_long get item counts",
+    "date": "2021-10-23"
+  }
+}

@@ -1,0 +1,164 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index c1649ce81b01396d6d2720ae69da98143e4541f9..d3795e173c2f9736ec240dd32e5bafeb558375c8 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -180,6 +180,8 @@ Unreleased
+     seconds. :issue:`1648`
+ -   Progress bar ``item_show_func`` shows the current item, not the
+     previous item. :issue:`1353`
++-   The ``Path`` param type can be passed ``path_type=pathlib.Path`` to
++    return a path object instead of a string. :issue:`405`
+ 
+ 
+ Version 7.1.2
+diff --git a/src/click/types.py b/src/click/types.py
+index 6ca72c9dbac8c2720bdbc1b918bf8b35717fea58..4b1b725030caac7d42c9d05d4f99f787002681a4 100644
+--- a/src/click/types.py
++++ b/src/click/types.py
+@@ -13,6 +13,14 @@ from .utils import LazyFile
+ from .utils import safecall
+ 
+ 
++def _filename_to_ui_impl(value):
++    if isinstance(value, bytes):
++        value = value.decode(get_filesystem_encoding(), "replace")
++    else:
++        value = value.encode("utf-8", "surrogateescape").decode("utf-8", "replace")
++    return value
++
++
+ class ParamType:
+     """Represents the type of a parameter. Validates and converts values
+     from the command line or Python into the correct type.
+@@ -649,9 +657,6 @@ class Path(ParamType):
+     handle it returns just the filename.  Secondly, it can perform various
+     basic checks about what the file or directory should be.
+ 
+-    .. versionchanged:: 6.0
+-       `allow_dash` was added.
+-
+     :param exists: if set to true, the file or directory needs to exist for
+                    this value to be valid.  If this is not required and a
+                    file does indeed not exist, then all further checks are
+@@ -667,11 +672,15 @@ class Path(ParamType):
+                          supposed to be done by the shell only.
+     :param allow_dash: If this is set to `True`, a single dash to indicate
+                        standard streams is permitted.
+-    :param path_type: optionally a string type that should be used to
+-                      represent the path.  The default is `None` which
+-                      means the return value will be either bytes or
+-                      unicode depending on what makes most sense given the
+-                      input data Click deals with.
++    :param path_type: Convert the incoming path value to this type. If
++        ``None``, keep Python's default, which is ``str``. Useful to
++        convert to :class:`pathlib.Path`.
++
++    .. versionchanged:: 8.0
++        Allow passing ``type=pathlib.Path``.
++
++    .. versionchanged:: 6.0
++        Added the ``allow_dash`` parameter.
+     """
+ 
+     envvar_list_splitter = os.path.pathsep
+@@ -698,13 +707,10 @@ class Path(ParamType):
+ 
+         if self.file_okay and not self.dir_okay:
+             self.name = "file"
+-            self.path_type = "File"
+         elif self.dir_okay and not self.file_okay:
+             self.name = "directory"
+-            self.path_type = "Directory"
+         else:
+             self.name = "path"
+-            self.path_type = "Path"
+ 
+     def to_info_dict(self):
+         info_dict = super().to_info_dict()
+@@ -721,9 +727,12 @@ class Path(ParamType):
+     def coerce_path_result(self, rv):
+         if self.type is not None and not isinstance(rv, self.type):
+             if self.type is str:
+-                rv = rv.decode(get_filesystem_encoding())
++                rv = os.fsdecode(rv)
++            elif self.type is bytes:
++                rv = os.fsencode(rv)
+             else:
+-                rv = rv.encode(get_filesystem_encoding())
++                rv = self.type(rv)
++
+         return rv
+ 
+     def convert(self, value, param, ctx):
+@@ -741,32 +750,32 @@ class Path(ParamType):
+                 if not self.exists:
+                     return self.coerce_path_result(rv)
+                 self.fail(
+-                    f"{self.path_type} {filename_to_ui(value)!r} does not exist.",
++                    f"{self.name.title()} {_filename_to_ui_impl(value)!r} does not exist.",
+                     param,
+                     ctx,
+                 )
+ 
+             if not self.file_okay and stat.S_ISREG(st.st_mode):
+                 self.fail(
+-                    f"{self.path_type} {filename_to_ui(value)!r} is a file.",
++                    f"{self.name.title()} {_filename_to_ui_impl(value)!r} is a file.",
+                     param,
+                     ctx,
+                 )
+             if not self.dir_okay and stat.S_ISDIR(st.st_mode):
+                 self.fail(
+-                    f"{self.path_type} {filename_to_ui(value)!r} is a directory.",
++                    f"{self.name.title()} {_filename_to_ui_impl(value)!r} is a directory.",
+                     param,
+                     ctx,
+                 )
+             if self.writable and not os.access(value, os.W_OK):
+                 self.fail(
+-                    f"{self.path_type} {filename_to_ui(value)!r} is not writable.",
++                    f"{self.name.title()} {_filename_to_ui_impl(value)!r} is not writable.",
+                     param,
+                     ctx,
+                 )
+             if self.readable and not os.access(value, os.R_OK):
+                 self.fail(
+-                    f"{self.path_type} {filename_to_ui(value)!r} is not readable.",
++                    f"{self.name.title()} {_filename_to_ui_impl(value)!r} is not readable.",
+                     param,
+                     ctx,
+                 )
+diff --git a/tests/test_types.py b/tests/test_types.py
+index 4e995f12344aad92f47e7ee8873784381453e0bd..e7e531e4a4a1bd8d6cefbcef7268e39dbb527c30 100644
+--- a/tests/test_types.py
++++ b/tests/test_types.py
+@@ -1,3 +1,5 @@
++import pathlib
++
+ import pytest
+ 
+ import click
+@@ -78,3 +80,23 @@ def test_cast_multi_default(runner, nargs, multiple, default, expect):
+     result = runner.invoke(cli, standalone_mode=False)
+     assert result.exception is None
+     assert result.return_value == expect
++
++
++@pytest.mark.parametrize(
++    ("cls", "expect"),
++    [
++        (None, "a/b/c.txt"),
++        (str, "a/b/c.txt"),
++        (bytes, b"a/b/c.txt"),
++        (pathlib.Path, pathlib.Path("a", "b", "c.txt")),
++    ],
++)
++def test_path_type(runner, cls, expect):
++    cli = click.Command(
++        "cli",
++        params=[click.Argument(["p"], type=click.Path(path_type=cls))],
++        callback=lambda p: p,
++    )
++    result = runner.invoke(cli, ["a/b/c.txt"], standalone_mode=False)
++    assert result.exception is None
++    assert result.return_value == expect

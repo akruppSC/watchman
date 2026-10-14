@@ -1,0 +1,103 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 6b0360e00fe92b78ba89db49f64ebff1b75901f3..bb5a5c6487fcc5dda017664c9f3d2d16a446abd4 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -215,6 +215,26 @@ except ImportError:  # pragma: no cover
+         return fsum(chain.from_iterable(map(dl_mul, p, q)))
+ 
+ 
++def _first_true_impl(iterable, default=None, predicate=None):
++    """
++    Returns the first true value in the iterable.
++
++    If no true value is found, returns *default*
++
++    If *pred* is not None, returns the first item for which
++    ``pred(item) == True`` .
++
++        >>> _first_true_impl(range(10))
++        1
++        >>> _first_true_impl(range(10), predicate=lambda x: x > 5)
++        6
++        >>> _first_true_impl(range(10), default='missing', predicate=lambda x: x > 9)
++        'missing'
++
++    """
++    return next(filter(predicate, iterable), default)
++
++
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -5227,7 +5247,7 @@ def nth_prime(n, *, approximate=False):
+ 
+     # Search from the midpoint and return the first odd prime
+     odd = floor((lb + ub) / 2) | 1
+-    return first_true(count(odd, step=2), pred=is_prime)
++    return _first_true_impl(count(odd, step=2), predicate=is_prime)
+ 
+ 
+ def argmin(iterable, *, key=None):
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 7548fc3119a1cd0ef58566753c2a0ff048667146..acab086e1ef30058ab20cb63fe3fae2ff670ba72 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -557,7 +557,7 @@ def iter_except(func, exception, first=None):
+             yield func()
+ 
+ 
+-def first_true(iterable, default=None, pred=None):
++def first_true(iterable, default=None, predicate=None):
+     """
+     Returns the first true value in the iterable.
+ 
+@@ -568,13 +568,13 @@ def first_true(iterable, default=None, pred=None):
+ 
+         >>> first_true(range(10))
+         1
+-        >>> first_true(range(10), pred=lambda x: x > 5)
++        >>> first_true(range(10), predicate=lambda x: x > 5)
+         6
+-        >>> first_true(range(10), default='missing', pred=lambda x: x > 9)
++        >>> first_true(range(10), default='missing', predicate=lambda x: x > 9)
+         'missing'
+ 
+     """
+-    return next(filter(pred, iterable), default)
++    return next(filter(predicate, iterable), default)
+ 
+ 
+ def random_product(*iterables, repeat=1):
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 50263d4b0dc6dfc12d8ff98e5b3235065579bcd3..b77f90d30fa09d3df3c0c089eeaf320dd8e9b57d 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -133,13 +133,13 @@ def iter_except(
+ ) -> Iterator[_T | _U]: ...
+ @overload
+ def first_true(
+-    iterable: Iterable[_T], *, pred: Callable[[_T], object] | None = ...
++    iterable: Iterable[_T], *, predicate: Callable[[_T], object] | None = ...
+ ) -> _T | None: ...
+ @overload
+ def first_true(
+     iterable: Iterable[_T],
+     default: _U,
+-    pred: Callable[[_T], object] | None = ...,
++    predicate: Callable[[_T], object] | None = ...,
+ ) -> _T | _U: ...
+ def random_product(
+     *iterables: Iterable[_T], repeat: int = ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 814b63fd3113888a490001982ec055357668e979..dcbdde886fb2ec3588191ae15866466bad6d6efd 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -522,7 +522,7 @@ class FirstTrueTests(TestCase):
+     def test_pred(self):
+         """Test with a custom predicate"""
+         self.assertEqual(
+-            mi.first_true([2, 4, 6], pred=lambda x: x % 3 == 0), 6
++            mi.first_true([2, 4, 6], predicate=lambda x: x % 3 == 0), 6
+         )
+ 
+ 

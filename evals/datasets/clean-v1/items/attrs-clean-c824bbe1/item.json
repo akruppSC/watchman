@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-c824bbe1",
+  "kind": "clean",
+  "task": "Allow subclassing of AttrsInstance and Protocol at once",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "8f4e7e921bbe68e938989385a563a9af28b71f38",
+    "upstream_commit": "c824bbe103881db59d1f8f45d7cef1f8497d8147",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Allow subclassing of AttrsInstance and Protocol at once (#1172)",
+    "date": "2023-08-06"
+  }
+}

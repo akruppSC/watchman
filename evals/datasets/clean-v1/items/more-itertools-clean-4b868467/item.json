@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-4b868467",
+  "kind": "clean",
+  "task": "Optimize factor recipe",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "1777a2d648d371bf9778c503bded277a4697eb0a",
+    "upstream_commit": "4b868467290f409c73ccf678d6354e49b14a9a18",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Optimize factor recipe",
+    "date": "2024-12-19"
+  }
+}

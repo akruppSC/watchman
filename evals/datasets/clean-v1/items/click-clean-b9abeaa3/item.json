@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-b9abeaa3",
+  "kind": "clean",
+  "task": "Hint at the concepts carried by default",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "029bbeda76aa824149f110408d56de7b402a87ed",
+    "upstream_commit": "b9abeaa315939122abf6bb35b636445b1a44dd65",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Hint at the concepts carried by default",
+    "date": "2025-08-23"
+  }
+}

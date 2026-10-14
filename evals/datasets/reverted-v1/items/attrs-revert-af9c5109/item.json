@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-af9c5109",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `disabled`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "ab7f8b2f4c0f747d5b1575247ce35e5adaad182e",
+    "upstream_commit": "af9c510912ce604a94896cc35c27368d5baf6ae6",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/validators.py",
+      "line_start": 87,
+      "line_end": 87,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by af9c5109: Fix validators.disabled() to save/restore state on nesting (#1513)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix validators.disabled() to save/restore state on nesting (#1513)",
+    "date": "2026-03-14"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-7c9b31ea",
+  "kind": "clean",
+  "task": "Add `attrs.validators.or_` validator",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "37ac3ef0888bbd9235d17cbc6d284856f5276b44",
+    "upstream_commit": "7c9b31ea7b5565f2ef4a582999dfa6afd7e0f16b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add `attrs.validators.or_` validator (#1303)",
+    "date": "2024-07-17"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-f53fc544",
+  "kind": "clean",
+  "task": "Stop evolve dunders from being modified",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f38b8a3f1625060aa4245930822c34c11c252f83",
+    "upstream_commit": "f53fc5440d7f86aac4328aec7a563eb48634177f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Stop evolve dunders from being modified (#1606)",
+    "date": "2026-08-02"
+  }
+}

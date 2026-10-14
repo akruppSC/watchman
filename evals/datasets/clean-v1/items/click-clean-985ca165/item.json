@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-985ca165",
+  "kind": "clean",
+  "task": "show help text with invalid default",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "1b4915931c1b32ad1bcd043132a0831d71be3aa4",
+    "upstream_commit": "985ca1651be08747ce713eb52568f8c8a932131f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "show help text with invalid default",
+    "date": "2021-05-19"
+  }
+}

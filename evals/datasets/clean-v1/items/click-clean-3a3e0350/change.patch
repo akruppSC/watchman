@@ -1,0 +1,130 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 5068775906015ad60047b6756b1d78dd3d2f3164..a2e2089d29868e719b9975055f04590a07ca4458 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -40,6 +40,9 @@ Released 2026-04-20
+ -   Change :class:`ParameterSource` to an :class:`~enum.IntEnum` and reorder
+     its members from most to least explicit, so values can be compared to
+     check whether a parameter was explicitly provided. :issue:`2879` :pr:`3248`
++-   Split string values from ``default_map`` for parameters with ``nargs > 1``
++    or :class:`Tuple` type, matching environment variable behavior.
++    :issue:`2745` :pr:`3364`
+ 
+ Version 8.3.2
+ -------------
+diff --git a/docs/commands.md b/docs/commands.md
+index 9f4c6e8f9ed82e07d5cf220b8383559a95549cad..ba064f515afa3092c53de958633f394b378f6011 100644
+--- a/docs/commands.md
++++ b/docs/commands.md
+@@ -351,6 +351,35 @@ And in action:
+     })
+ ```
+ 
++### Multi-value parameters
++
++When a `default_map` value is a string for a parameter with `nargs > 1` or a
++{class}`Tuple` type, the string is split automatically, the same way an
++environment variable would be. By default, values are split on whitespace. See
++[Multiple Options from Environment
++Values](options.md#multiple-options-from-environment-values) for details on
++splitting behavior.
++
++```python
++default_map = {
++    "draw": {
++        "point": "3 4",  # split into ("3", "4") for nargs=2
++        "color": "red",  # passed as-is for nargs=1
++    }
++}
++```
++
++You can also pass an already-structured tuple or list, which will be used as-is
++without splitting:
++
++```python
++default_map = {
++    "draw": {
++        "point": (3, 4),  # used directly
++    }
++}
++```
++
+ ## Context Defaults
+ 
+ ```{versionadded} 2.0
+diff --git a/docs/conf.py b/docs/conf.py
+index 2b223ab42264487f3f490e10f5039cfb4b373a80..d04b783274f5dabeabfbddfcebb0fceea57b7211 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -31,6 +31,7 @@ extlinks = {
+ intersphinx_mapping = {
+     "python": ("https://docs.python.org/3/", None),
+ }
++myst_heading_anchors = 3
+ 
+ # HTML -----------------------------------------------------------------
+ 
+diff --git a/src/click/core.py b/src/click/core.py
+index 65bdac5253d0a7e5df5bd3c875b467edeb444368..1cc9474d229b2b5a6da627aa42ecf52ae89afb4c 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2356,6 +2356,11 @@ class Parameter:
+                 value = default_map_value
+                 source = ParameterSource.DEFAULT_MAP
+ 
++                # A string from default_map must be split for multi-value
++                # parameters, matching value_from_envvar behavior.
++                if isinstance(value, str) and self.nargs != 1:
++                    value = self.type.split_envvar_value(value)
++
+         if value is UNSET:
+             default_value = self.get_default(ctx)
+             if default_value is not UNSET:
+diff --git a/tests/test_defaults.py b/tests/test_defaults.py
+index cec051c67abc4d8f9a2df6efacd0e39fb2299f27..49f0ac6ed0bd2d5f749e7f78d0e99e0c35a82c39 100644
+--- a/tests/test_defaults.py
++++ b/tests/test_defaults.py
+@@ -357,6 +357,43 @@ def test_default_map_with_callable_flag_value(runner, default_map, args, expecte
+     assert result.output == repr(expected)
+ 
+ 
++@pytest.mark.parametrize(
++    ("default_map", "option_kwargs", "cli_args", "expected"),
++    [
++        # String is split for nargs=2 option.
++        ({"point": "3 4"}, {"nargs": 2, "type": int}, [], (3, 4)),
++        # String is split for explicit Tuple type.
++        ({"point": "hello world"}, {"type": (str, str)}, [], ("hello", "world")),
++        # Already-structured tuple passes through unchanged.
++        ({"point": ("a", "b")}, {"nargs": 2}, [], ("a", "b")),
++        # Already-structured list passes through unchanged.
++        ({"point": [5, 6]}, {"nargs": 2, "type": int}, [], (5, 6)),
++        # CLI args override default_map for nargs > 1.
++        (
++            {"point": "3 4"},
++            {"nargs": 2, "type": int},
++            ["--point", "10", "20"],
++            (10, 20),
++        ),
++    ],
++)
++def test_default_map_nargs(runner, default_map, option_kwargs, cli_args, expected):
++    """A string in ``default_map`` for an option with ``nargs > 1`` should be
++    split the same way an environment variable string is split.
++
++    Regression test for https://github.com/pallets/click/issues/2745.
++    """
++
++    @click.command()
++    @click.option("--point", **option_kwargs)
++    def cli(point):
++        click.echo(repr(point))
++
++    result = runner.invoke(cli, cli_args, default_map=default_map)
++    assert result.exit_code == 0
++    assert result.output.strip() == repr(expected)
++
++
+ def test_unset_in_default_map(runner):
+     """An ``UNSET`` value in ``default_map`` should be treated as if
+     the key is absent, and so fallback to the parameter's own default.

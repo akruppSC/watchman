@@ -1,0 +1,159 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 7ce276ac417426a419e84d31fe73e4681e81f973..7c3670a76853e00d747ed63c1dcf31e2c4f59308 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -2338,20 +2338,30 @@ class numeric_range(Sequence):
+         return False
+ 
+     def __eq__(self, other):
+-        if isinstance(other, numeric_range):
+-            empty_self = not bool(self)
+-            empty_other = not bool(other)
+-            if empty_self or empty_other:
+-                return empty_self and empty_other  # True if both empty
+-            else:
+-                return (
+-                    self._start == other._start
+-                    and self._step == other._step
+-                    and self._get_by_index(-1) == other._get_by_index(-1)
+-                )
+-        else:
++        # numeric_range object equality is intended to mirror the built-in range
++        # object's equality.
++        # https://github.com/python/cpython/blob/f5c4880151b609e0a0a0b05c292d36b18038c061/Objects/rangeobject.c#L499
++        if not isinstance(other, numeric_range):
++            return False
++
++        if self is other:
++            return True
++
++        len_self = len(self)
++        if len_self != len(other):
+             return False
+ 
++        if not len_self:
++            return True
++
++        if self._start != other._start:
++            return False
++
++        if len_self == 1:
++            return True
++
++        return self._step == other._step
++
+     def __getitem__(self, key):
+         if isinstance(key, int):
+             return self._get_by_index(key)
+@@ -2369,10 +2379,15 @@ class numeric_range(Sequence):
+             )
+ 
+     def __hash__(self):
+-        if self:
+-            return hash((self._start, self._get_by_index(-1), self._step))
+-        else:
+-            return self._EMPTY_HASH
++        # numeric_range hashing is intended to mirror the built-in range object's
++        # hashing.
++        # https://github.com/python/cpython/blob/f5c4880151b609e0a0a0b05c292d36b18038c061/Objects/rangeobject.c#L570
++        len_self = len(self)
++        if not len_self:
++            return hash((len_self, None, None))
++        if len_self == 1:
++            return hash((len_self, self._start, None))
++        return hash((len_self, self._start, self._step))
+ 
+     def __iter__(self):
+         values = (self._start + (n * self._step) for n in count())
+diff --git a/tests/test_more.py b/tests/test_more.py
+index a59448bc063479808a04e08c72857f765a68d7ad..1f8d10cd235ba8e0026a66ff9cfe62b637486246 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -2749,6 +2749,14 @@ class NumericRangeTests(TestCase):
+                 self.assertTrue(v not in r)
+ 
+     def test_eq(self):
++        # numeric_range objects are equal to themselves
++        range_1 = mi.numeric_range(2, 4, 1)
++        self.assertTrue(range_1, range_1)
++
++        # numeric_range objects are not equal other types of objects
++        self.assertNotEqual(mi.numeric_range(7.0), 1)
++        self.assertNotEqual(mi.numeric_range(7.0), "abc")
++
+         for args1, args2 in [
+             ((0, 5, 2), (0, 6, 2)),
+             ((1.0, 9.9, 1.5), (1.0, 8.6, 1.5)),
+@@ -2774,10 +2782,12 @@ class NumericRangeTests(TestCase):
+                     timedelta(hours=10),
+                 ),
+             ),
++            ((2, 3, 1), (2, 3, 5)),
+         ]:
+-            self.assertEqual(
+-                mi.numeric_range(*args1), mi.numeric_range(*args2)
+-            )
++            range1 = mi.numeric_range(*args1)
++            range2 = mi.numeric_range(*args2)
++            self.assertEqual(range1, range2)
++            self.assertEqual(hash(range1), hash(range2))
+ 
+         for args1, args2 in [
+             ((0, 5, 2), (0, 7, 2)),
+@@ -2809,12 +2819,10 @@ class NumericRangeTests(TestCase):
+                 ),
+             ),
+         ]:
+-            self.assertNotEqual(
+-                mi.numeric_range(*args1), mi.numeric_range(*args2)
+-            )
+-
+-        self.assertNotEqual(mi.numeric_range(7.0), 1)
+-        self.assertNotEqual(mi.numeric_range(7.0), "abc")
++            range1 = mi.numeric_range(*args1)
++            range2 = mi.numeric_range(*args2)
++            self.assertNotEqual(range1, range2)
++            self.assertNotEqual(hash(range1), hash(range2))
+ 
+     def test_get_item_by_index(self):
+         for args, index, expected in [
+@@ -2911,39 +2919,6 @@ class NumericRangeTests(TestCase):
+                 mi.numeric_range(*expected_args), mi.numeric_range(*args)[sl]
+             )
+ 
+-    def test_hash(self):
+-        for args, expected in [
+-            ((1.0, 6.0, 1.5), hash((1.0, 5.5, 1.5))),
+-            ((1.0, 7.0, 1.5), hash((1.0, 5.5, 1.5))),
+-            ((1.0, 7.5, 1.5), hash((1.0, 7.0, 1.5))),
+-            ((1.0, 1.5, 1.5), hash((1.0, 1.0, 1.5))),
+-            ((1.5, 1.0, 1.5), hash(range(0, 0))),
+-            ((1.5, 1.5, 1.5), hash(range(0, 0))),
+-            (
+-                (Decimal("1.0"), Decimal("9.0"), Decimal("1.5")),
+-                hash((Decimal("1.0"), Decimal("8.5"), Decimal("1.5"))),
+-            ),
+-            (
+-                (Fraction(1, 1), Fraction(5, 1), Fraction(3, 2)),
+-                hash((Fraction(1, 1), Fraction(4, 1), Fraction(3, 2))),
+-            ),
+-            (
+-                (
+-                    datetime(2019, 3, 29),
+-                    datetime(2019, 3, 30),
+-                    timedelta(hours=10),
+-                ),
+-                hash(
+-                    (
+-                        datetime(2019, 3, 29),
+-                        datetime(2019, 3, 29, 20),
+-                        timedelta(hours=10),
+-                    )
+-                ),
+-            ),
+-        ]:
+-            self.assertEqual(expected, hash(mi.numeric_range(*args)))
+-
+     def test_iter_twice(self):
+         r1 = mi.numeric_range(1.0, 9.9, 1.5)
+         r2 = mi.numeric_range(8.5, 0.0, -1.5)

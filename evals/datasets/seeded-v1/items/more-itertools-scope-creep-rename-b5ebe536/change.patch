@@ -1,0 +1,57 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 9a9b79f0344605ad64138b379eaa92b5b5b7c53b..737b07d33dca0da5e2a466cebf8a0d24c5d960fc 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -2670,12 +2670,10 @@ def _islice_helper(it, s):
+ 
+         if start < 0:
+             # Consume all but the last -start items
+-
+-            counter = count()
+-            wrapper = map(itemgetter(0), zip(it, counter))
++            counter = count(1)
++            wrapper = compress(it, counter)
+             cache = deque(wrapper, maxlen=-start)
+-            del wrapper  # Clear reference held by zip()
+-            len_iter = next(counter)
++            len_iter = next(counter) - 1
+ 
+             # Adjust start to be positive
+             i = max(len_iter + start, 0)
+@@ -2729,11 +2727,10 @@ def _islice_helper(it, s):
+         if (stop is not None) and (stop < 0):
+             # Consume all but the last items
+             n = -stop - 1
+-            counter = count()
+-            wrapper = map(itemgetter(0), zip(it, counter))
++            counter = count(1)
++            wrapper = compress(it, counter)
+             cache = deque(wrapper, maxlen=n)
+-            del wrapper  # Clear reference held by zip()
+-            len_iter = next(counter)
++            len_iter = next(counter) - 1
+ 
+             # If start and stop are both negative they are comparable and
+             # we can just slice. Otherwise we can adjust start to be negative
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index b984d86f2341b9fb74801d9b173f5e0fd00632f3..be9c2d73b8cb009dea6794ed2d93b151be8c1f4a 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -917,12 +917,12 @@ def sieve(n):
+     if n > 2:
+         yield 2
+     start = 3
+-    data = bytearray((0, 1)) * (n // 2)
+-    for p in iter_index(data, 1, start, stop=isqrt(n) + 1):
+-        yield from iter_index(data, 1, start, p * p)
+-        data[p * p : n : p + p] = bytes(len(range(p * p, n, p + p)))
++    payload = bytearray((0, 1)) * (n // 2)
++    for p in iter_index(payload, 1, start, stop=isqrt(n) + 1):
++        yield from iter_index(payload, 1, start, p * p)
++        payload[p * p : n : p + p] = bytes(len(range(p * p, n, p + p)))
+         start = p * p
+-    yield from iter_index(data, 1, start)
++    yield from iter_index(payload, 1, start)
+ 
+ 
+ def _batched(iterable, n, *, strict=False):  # pragma: no cover

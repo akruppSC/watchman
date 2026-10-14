@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-4b5a92e8",
+  "kind": "clean",
+  "task": "set logging request lines to INFO level for async method also",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "579a3f2fb8e1ebd151b8f3a6c1e9bc6dedf5f5bd",
+    "upstream_commit": "4b5a92e88e03443c2619f0905d756b159f9f0222",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "set logging request lines to INFO level for async method also (#2656)",
+    "date": "2023-04-12"
+  }
+}

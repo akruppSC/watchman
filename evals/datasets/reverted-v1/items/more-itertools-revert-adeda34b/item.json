@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-adeda34b",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `exactly_n`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "f75535b5ed95394a3a24c1495e1f8508a06d56ab",
+    "upstream_commit": "adeda34bd11ff636f5f19238cf422a73e1455483",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 3083,
+      "line_end": 3083,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by adeda34b: Fix bug for negative inputs to exactly_n(). Optimize code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix bug for negative inputs to exactly_n(). Optimize code.",
+    "date": "2025-10-28"
+  }
+}

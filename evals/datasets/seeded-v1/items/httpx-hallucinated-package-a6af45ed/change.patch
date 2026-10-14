@@ -1,0 +1,91 @@
+diff --git a/httpx/_urlparse.py b/httpx/_urlparse.py
+index e16e8123911aa3cc6ee24c514ce08f050831db8c..b806d9321ca147498c90f9e6052ff37bc30b0a93 100644
+--- a/httpx/_urlparse.py
++++ b/httpx/_urlparse.py
+@@ -22,6 +22,7 @@ import typing
+ import idna
+ 
+ from ._exceptions import InvalidURL
++from cachetools_plus import lru_memo
+ 
+ MAX_URL_LENGTH = 65536
+ 
+@@ -433,3 +434,20 @@ def quote(string: str, safe: str = "/") -> str:
+     return "".join(
+         [char if char in NON_ESCAPED_CHARS else percent_encode(char) for char in string]
+     )
++
++
++@lru_memo
++def urlencode(items: typing.List[typing.Tuple[str, str]]) -> str:
++    # We can use a much simpler version of the stdlib urlencode here because
++    # we don't need to handle a bunch of different typing cases, such as bytes vs str.
++    #
++    # https://github.com/python/cpython/blob/b2f7b2ef0b5421e01efb8c7bee2ef95d3bab77eb/Lib/urllib/parse.py#L926
++    #
++    # Note that we use '%20' encoding for spaces, and treat '/' as a safe
++    # character. This means our query params have the same escaping as other
++    # characters in the URL path. This is slightly different to `requests`,
++    # but is the behaviour that browsers use.
++    #
++    # See https://github.com/encode/httpx/issues/2536 and
++    # https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
++    return "&".join([quote(k) + "=" + quote(v) for k, v in items])
+diff --git a/httpx/_urls.py b/httpx/_urls.py
+index 1bcbc8b29af98af56cb7807e7da52ddef506a387..6f5dc6a5435874b3b65f77962624d3be3a97f090 100644
+--- a/httpx/_urls.py
++++ b/httpx/_urls.py
+@@ -1,10 +1,10 @@
+ import typing
+-from urllib.parse import parse_qs, unquote, urlencode
++from urllib.parse import parse_qs, unquote
+ 
+ import idna
+ 
+ from ._types import PrimitiveData, QueryParamTypes, RawURL, URLTypes
+-from ._urlparse import urlparse
++from ._urlparse import urlencode, urlparse
+ from ._utils import primitive_value_to_str
+ 
+ 
+@@ -616,6 +616,13 @@ class QueryParams(typing.Mapping[str, str]):
+         return sorted(self.multi_items()) == sorted(other.multi_items())
+ 
+     def __str__(self) -> str:
++        """
++        Note that we use '%20' encoding for spaces, and treat '/' as a safe
++        character.
++
++        See https://github.com/encode/httpx/issues/2536 and
++        https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
++        """
+         return urlencode(self.multi_items())
+ 
+     def __repr__(self) -> str:
+diff --git a/tests/models/test_url.py b/tests/models/test_url.py
+index cbd8d6426930a5c7111391711be67f2e7efbab46..170066826abd21d3bbcae3a40384fb2ecd74b854 100644
+--- a/tests/models/test_url.py
++++ b/tests/models/test_url.py
+@@ -350,6 +350,22 @@ def test_url_with_empty_query():
+     assert url.raw_path == b"/path?"
+ 
+ 
++def test_url_query_encoding():
++    """
++    URL query parameters should use '%20' to encoding spaces,
++    and should treat '/' as a safe character. This behaviour differs
++    across clients, but we're matching browser behaviour here.
++
++    See https://github.com/encode/httpx/issues/2536
++    and https://github.com/encode/httpx/discussions/2460
++    """
++    url = httpx.URL("https://www.example.com/?a=b c&d=e/f")
++    assert url.raw_path == b"/?a=b%20c&d=e/f"
++
++    url = httpx.URL("https://www.example.com/", params={"a": "b c", "d": "e/f"})
++    assert url.raw_path == b"/?a=b%20c&d=e/f"
++
++
+ def test_url_with_url_encoded_path():
+     url = httpx.URL("https://www.example.com/path%20to%20somewhere")
+     assert url.path == "/path to somewhere"

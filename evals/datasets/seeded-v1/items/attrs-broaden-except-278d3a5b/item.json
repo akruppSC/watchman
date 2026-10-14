@@ -1,0 +1,29 @@
+{
+  "id": "attrs-broaden-except-278d3a5b",
+  "kind": "seeded",
+  "task": "evolve: remove support for passing instances per kw",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "09e35d448ef99f55b516f1440b4548c64fb2e6cf",
+    "upstream_commit": "278d3a5bc6b271baccd0244b20b8a4016a6e35c4",
+    "origin": "upstream commit + seeded defect (broaden_except)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_funcs.py",
+      "line_start": 396,
+      "line_end": 400,
+      "category": "swallowed_error",
+      "description": "`except ValueError` broadened to `except Exception`, hiding unrelated errors.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "broaden_except",
+    "upstream_subject": "evolve: remove support for passing instances per kw (#1264)",
+    "date": "2024-03-16"
+  }
+}

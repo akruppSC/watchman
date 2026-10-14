@@ -1,0 +1,23 @@
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 1bb0f5089595455a2738827879843342ecd7dd8b..014b7bc230d3f33bb971b7512000e05e5f929af7 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -934,9 +934,15 @@ class _ClassBuilder:
+             Automatically created by attrs.
+             """
+             __bound_setattr = _obj_setattr.__get__(self)
+-            for name in state_attr_names:
+-                if name in state:
+-                    __bound_setattr(name, state[name])
++            if isinstance(state, tuple):
++                # Backward compatibility with attrs instances pickled with
++                # attrs versions before v22.2.0 which stored tuples.
++                for name, value in zip(state_attr_names, state):
++                    __bound_setattr(name, value)
++            else:
++                for name in state_attr_names:
++                    if name in state:
++                        __bound_setattr(name, state[name])
+ 
+             # The hash code cache is not included when the object is
+             # serialized, but it still needs to be initialized to None to

@@ -1,0 +1,174 @@
+diff --git a/changelog.d/1329.change.md b/changelog.d/1329.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..f4ca2f9a1c9819877d2bb3a6cc130297b4505cc2
+--- /dev/null
++++ b/changelog.d/1329.change.md
+@@ -0,0 +1 @@
++Restored support for PEP [649](https://peps.python.org/pep-0649/) / [749](https://peps.python.org/pep-0749/)-implementing Pythons -- currently 3.14-dev.
+diff --git a/src/attr/_compat.py b/src/attr/_compat.py
+index b7d7a4b8669f8c9d1af0e661ada3ad906d310618..4c515d22eeaba2ed2cd1e15e1f0814c252b76320 100644
+--- a/src/attr/_compat.py
++++ b/src/attr/_compat.py
+@@ -15,6 +15,7 @@ PY_3_9_PLUS = sys.version_info[:2] >= (3, 9)
+ PY_3_10_PLUS = sys.version_info[:2] >= (3, 10)
+ PY_3_12_PLUS = sys.version_info[:2] >= (3, 12)
+ PY_3_13_PLUS = sys.version_info[:2] >= (3, 13)
++PY_3_14_PLUS = sys.version_info[:2] >= (3, 14)
+ 
+ 
+ if sys.version_info < (3, 8):
+@@ -25,6 +26,19 @@ if sys.version_info < (3, 8):
+ else:
+     from typing import Protocol  # noqa: F401
+ 
++if PY_3_14_PLUS:  # pragma: no cover
++    import annotationlib
++
++    _get_annotations = annotationlib.get_annotations
++
++else:
++
++    def _get_annotations(cls):
++        """
++        Get annotations for *cls*.
++        """
++        return cls.__dict__.get("__annotations__", {})
++
+ 
+ class _AnnotationExtractor:
+     """
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index a4af824c5df312e98834adc3cd01927ddff7c759..e251e0c6ced47be109528f36f486f3099c860512 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -23,6 +23,7 @@ from ._compat import (
+     PY_3_8_PLUS,
+     PY_3_10_PLUS,
+     _AnnotationExtractor,
++    _get_annotations,
+     get_generic_base,
+ )
+ from .exceptions import (
+@@ -308,13 +309,6 @@ def _has_own_attribute(cls, attrib_name):
+     return attrib_name in cls.__dict__
+ 
+ 
+-def _get_annotations(cls):
+-    """
+-    Get annotations for *cls*.
+-    """
+-    return cls.__dict__.get("__annotations__", {})
+-
+-
+ def _collect_base_attrs(cls, taken_attr_names):
+     """
+     Collect attr.ibs from base classes of *cls*, except *taken_attr_names*.
+diff --git a/tests/test_3rd_party.py b/tests/test_3rd_party.py
+index b2ce06c293bfbddc8dd2f6ce4323515963079dd5..96ef8dc0d392fbfb3a36bbada7f62e7ce68c0ad2 100644
+--- a/tests/test_3rd_party.py
++++ b/tests/test_3rd_party.py
+@@ -8,12 +8,17 @@ import pytest
+ 
+ from hypothesis import given
+ 
++from attr._compat import PY_3_14_PLUS
++
+ from .strategies import simple_classes
+ 
+ 
+ cloudpickle = pytest.importorskip("cloudpickle")
+ 
+ 
++@pytest.mark.xfail(
++    PY_3_14_PLUS, reason="cloudpickle is currently broken on 3.14."
++)
+ class TestCloudpickleCompat:
+     """
+     Tests for compatibility with ``cloudpickle``.
+diff --git a/tests/test_annotations.py b/tests/test_annotations.py
+index b3f7b095637fbae8f73ef143d7fce054329f5af1..cd09a8c7eb5e1588a72bd2e325ebe353f3f4f53b 100644
+--- a/tests/test_annotations.py
++++ b/tests/test_annotations.py
+@@ -12,6 +12,7 @@ import pytest
+ 
+ import attr
+ 
++from attr._compat import PY_3_14_PLUS
+ from attr._make import _is_class_var
+ from attr.exceptions import UnannotatedAttributeError
+ 
+@@ -588,6 +589,8 @@ class TestAnnotations:
+         """
+         References to self class using quotes can be resolved.
+         """
++        if PY_3_14_PLUS and not slots:
++            pytest.xfail("References are changing a lot in 3.14.")
+ 
+         @attr.s(slots=slots, auto_attribs=True)
+         class A:
+@@ -603,6 +606,8 @@ class TestAnnotations:
+         """
+         Forward references can be resolved.
+         """
++        if PY_3_14_PLUS and not slots:
++            pytest.xfail("Forward references are changing a lot in 3.14.")
+ 
+         @attr.s(slots=slots, auto_attribs=True)
+         class A:
+diff --git a/tests/test_make.py b/tests/test_make.py
+index 2a93c3b9715c859c19eac3646bcc3e35a4df03b5..7ef8071386a57a1aabcac2cf3d0b4a8d56bad56c 100644
+--- a/tests/test_make.py
++++ b/tests/test_make.py
+@@ -21,7 +21,7 @@ from hypothesis.strategies import booleans, integers, lists, sampled_from, text
+ import attr
+ 
+ from attr import _config
+-from attr._compat import PY_3_8_PLUS, PY_3_10_PLUS
++from attr._compat import PY_3_8_PLUS, PY_3_10_PLUS, PY_3_14_PLUS
+ from attr._make import (
+     Attribute,
+     Factory,
+@@ -1838,9 +1838,11 @@ class TestClassBuilder:
+         assert [C2] == C.__subclasses__()
+ 
+     @pytest.mark.skipif(not PY_3_8_PLUS, reason="cached_property is 3.8+")
++    @pytest.mark.xfail(PY_3_14_PLUS, reason="Currently broken on nightly.")
+     def test_no_references_to_original_when_using_cached_property(self):
+         """
+-        When subclassing a slotted class and using cached property, there are no stray references to the original class.
++        When subclassing a slotted class and using cached property, there are
++        no stray references to the original class.
+         """
+ 
+         @attr.s(slots=True)
+diff --git a/tests/test_slots.py b/tests/test_slots.py
+index 57b7fdb029a30954f83bd6cb04d9528e5a0137b3..66e54f36c5f9061b074dff4ede96ac736ba7d1a3 100644
+--- a/tests/test_slots.py
++++ b/tests/test_slots.py
+@@ -3,6 +3,7 @@
+ """
+ Unit tests for slots-related functionality.
+ """
++
+ import functools
+ import pickle
+ import weakref
+@@ -14,7 +15,7 @@ import pytest
+ import attr
+ import attrs
+ 
+-from attr._compat import PY_3_8_PLUS, PYPY
++from attr._compat import PY_3_8_PLUS, PY_3_14_PLUS, PYPY
+ 
+ 
+ # Pympler doesn't work on PyPy.
+@@ -774,6 +775,9 @@ def test_slots_cached_property_works_on_frozen_isntances():
+ 
+ 
+ @pytest.mark.skipif(not PY_3_8_PLUS, reason="cached_property is 3.8+")
++@pytest.mark.xfail(
++    PY_3_14_PLUS, reason="3.14 returns weird annotation for cached_properies"
++)
+ def test_slots_cached_property_infers_type():
+     """
+     Infers type of cached property.

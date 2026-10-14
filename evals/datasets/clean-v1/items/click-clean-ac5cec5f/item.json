@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-ac5cec5f",
+  "kind": "clean",
+  "task": "Reorder ParameterSource from most to least explicit",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "60cad4ad6583bf885c62d6f4597f3555d1ee1a0f",
+    "upstream_commit": "ac5cec5fe54e5a691e7bac17f441ce9498e0744c",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Reorder ParameterSource from most to least explicit",
+    "date": "2026-03-05"
+  }
+}

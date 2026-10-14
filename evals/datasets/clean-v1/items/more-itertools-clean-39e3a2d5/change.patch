@@ -1,0 +1,75 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 8b9711296866d1124c3e3e601a7fe4df34081874..07ce46cbb79bd1cb79fc3612a03be739a16da289 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -52,6 +52,7 @@ __all__ = [
+     'repeatfunc',
+     'roundrobin',
+     'sliding_window',
++    'subslices',
+     'tabulate',
+     'tail',
+     'take',
+@@ -767,3 +768,16 @@ def sliding_window(iterable, n):
+     for x in it:
+         window.append(x)
+         yield tuple(window)
++
++
++def subslices(iterable):
++    """Return all contiguous non-empty subslices of *iterable*.
++
++        >>> list(subslices('ABC'))
++        [['A'], ['A', 'B'], ['A', 'B', 'C'], ['B'], ['B', 'C'], ['C']]
++
++    This is similar to :func:`substrings`, but emits items in a different order.
++    """
++    seq = list(iterable)
++    slices = starmap(slice, combinations(range(len(seq) + 1), 2))
++    return map(operator.getitem, repeat(seq), slices)
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 885e53a46605dbd95cf762cd2637b5a48a58b310..c536fc390b50fa82e49937d29689b8117174dcab 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -108,3 +108,4 @@ def triplewise(iterable: Iterable[_T]) -> Iterator[Tuple[_T, _T, _T]]: ...
+ def sliding_window(
+     iterable: Iterable[_T], n: int
+ ) -> Iterator[Tuple[_T, ...]]: ...
++def subslices(iterable: Iterable[_T]) -> Iterator[List[_T]]: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index ad948f966830a8c8dc8cc31a5fe1f53228f22141..4e13930babb5546c0ad8e484b77e7b66981b3e2f 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -806,3 +806,32 @@ class SlidingWindowTests(TestCase):
+             with self.subTest(expected=expected):
+                 actual = list(mi.sliding_window(iterable, n))
+                 self.assertEqual(actual, expected)
++
++
++class SubslicesTests(TestCase):
++    def test_basic(self):
++        for iterable, expected in [
++            ([], []),
++            ([1], [[1]]),
++            ([1, 2], [[1], [1, 2], [2]]),
++            (iter([1, 2]), [[1], [1, 2], [2]]),
++            ([2, 1], [[2], [2, 1], [1]]),
++            (
++                'ABCD',
++                [
++                    ['A'],
++                    ['A', 'B'],
++                    ['A', 'B', 'C'],
++                    ['A', 'B', 'C', 'D'],
++                    ['B'],
++                    ['B', 'C'],
++                    ['B', 'C', 'D'],
++                    ['C'],
++                    ['C', 'D'],
++                    ['D'],
++                ],
++            ),
++        ]:
++            with self.subTest(expected=expected):
++                actual = list(mi.subslices(iterable))
++                self.assertEqual(actual, expected)

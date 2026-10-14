@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-b43af721",
+  "kind": "clean",
+  "task": "Treat warnings as errors",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "47d712c01cdde6574b2a94e43a94e5ae6e4f2faf",
+    "upstream_commit": "b43af721cd7804214396b5511e4f68d144a9b6a6",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Treat warnings as errors (#1687)",
+    "date": "2021-06-16"
+  }
+}

@@ -1,0 +1,138 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index e5876af0584a3ec695f80ae1b6c0fee9f18403b6..2193f965ea8aaf3cb66cdd9e31a860d0f361fc7c 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -12,6 +12,8 @@ Unreleased
+     :issue:`1969`
+ -   Fix shell completion for arguments that start with a forward slash
+     such as absolute file paths. :issue:`1929`
++-   ``Path`` type with ``resolve_path=True`` resolves relative symlinks
++    to be relative to the containing directory. :issue:`1921`
+ 
+ 
+ Version 8.0.1
+diff --git a/src/click/types.py b/src/click/types.py
+index 21f0e4f772d6d03f9e611a831205b660115338c2..be096b7bdb4c853ec62f09e3afeb7f6d5fdfc7e5 100644
+--- a/src/click/types.py
++++ b/src/click/types.py
+@@ -836,11 +836,23 @@ class Path(ParamType):
+ 
+         if not is_dash:
+             if self.resolve_path:
+-                # realpath on Windows Python < 3.8 doesn't resolve symlinks
++                # Get the absolute directory containing the path.
++                dir_ = os.path.dirname(os.path.abspath(rv))
++
++                # Resolve a symlink. realpath on Windows Python < 3.9
++                # doesn't resolve symlinks. This might return a relative
++                # path even if the path to the link is absolute.
+                 if os.path.islink(rv):
+                     rv = os.readlink(rv)
+ 
+-                rv = os.path.realpath(rv)
++                # Join dir_ with the resolved symlink. If the resolved
++                # path is relative, this will make it relative to the
++                # original containing directory. If it is absolute, this
++                # has no effect.
++                try:
++                    rv = os.path.join(dir_, rv)
++                except Exception:
++                    rv = None
+ 
+             try:
+                 st = os.stat(rv)
+@@ -871,7 +883,7 @@ class Path(ParamType):
+                     param,
+                     ctx,
+                 )
+-            if self.writable and not os.access(value, os.W_OK):
++            if self.writable and not os.access(rv, os.W_OK):
+                 self.fail(
+                     _("{name} {filename!r} is not writable.").format(
+                         name=self.name.title(), filename=os.fsdecode(value)
+@@ -879,7 +891,7 @@ class Path(ParamType):
+                     param,
+                     ctx,
+                 )
+-            if self.readable and not os.access(value, os.R_OK):
++            if self.readable and not os.access(rv, os.R_OK):
+                 self.fail(
+                     _("{name} {filename!r} is not readable.").format(
+                         name=self.name.title(), filename=os.fsdecode(value)
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 9440804feb3b22cb4a28f1f9eaa7f6e1fb0ce049..d33df110e2f723d5854b72fb2de4e2e53f268518 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -1,3 +1,7 @@
++import os
++import shutil
++import tempfile
++
+ import pytest
+ 
+ from click.testing import CliRunner
+@@ -6,3 +10,22 @@ from click.testing import CliRunner
+ @pytest.fixture(scope="function")
+ def runner(request):
+     return CliRunner()
++
++
++def check_symlink_impl():
++    """This function checks if using symlinks is allowed
++    on the host machine"""
++    tempdir = tempfile.mkdtemp(prefix="click-")
++    test_pth = os.path.join(tempdir, "check_sym_impl")
++    sym_pth = os.path.join(tempdir, "link")
++    open(test_pth, "w").close()
++    rv = True
++    try:
++        os.symlink(test_pth, sym_pth)
++    except (NotImplementedError, OSError):
++        # Creating symlinks on Windows require elevated access.
++        # OSError is thrown if the function is called without it.
++        rv = False
++    finally:
++        shutil.rmtree(tempdir, ignore_errors=True)
++    return rv
+diff --git a/tests/test_types.py b/tests/test_types.py
+index e7e531e4a4a1bd8d6cefbcef7268e39dbb527c30..58d1b68c66f1d46926096c7e3376fc0882f4f71a 100644
+--- a/tests/test_types.py
++++ b/tests/test_types.py
+@@ -1,6 +1,8 @@
++import os.path
+ import pathlib
+ 
+ import pytest
++from conftest import check_symlink_impl
+ 
+ import click
+ 
+@@ -100,3 +102,28 @@ def test_path_type(runner, cls, expect):
+     result = runner.invoke(cli, ["a/b/c.txt"], standalone_mode=False)
+     assert result.exception is None
+     assert result.return_value == expect
++
++
++@pytest.mark.skipif(not check_symlink_impl(), reason="symlink not allowed on device")
++@pytest.mark.parametrize(
++    ("sym_file", "abs_fun"),
++    [
++        (("relative_symlink",), os.path.basename),
++        (("test", "absolute_symlink"), lambda x: x),
++    ],
++)
++def test_symlink_resolution(tmpdir, sym_file, abs_fun):
++    """This test ensures symlinks are properly resolved by click"""
++    tempdir = str(tmpdir)
++    real_path = os.path.join(tempdir, "test_file")
++    sym_path = os.path.join(tempdir, *sym_file)
++
++    # create dirs and files
++    os.makedirs(os.path.join(tempdir, "test"), exist_ok=True)
++    open(real_path, "w").close()
++    os.symlink(abs_fun(real_path), sym_path)
++
++    # test
++    ctx = click.Context(click.Command("do_stuff"))
++    rv = click.Path(resolve_path=True).convert(sym_path, None, ctx)
++    assert rv == real_path

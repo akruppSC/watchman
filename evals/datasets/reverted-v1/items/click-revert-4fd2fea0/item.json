@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-4fd2fea0",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Option`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "9ce34f20d2370f2e298268227edf0ffce6b9725f",
+    "upstream_commit": "4fd2fea0db423d242aedcae0a5f664efe0a93484",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2615,
+      "line_end": 2616,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 4fd2fea0: Fix condition for setting flag value when type is provided",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix condition for setting flag value when type is provided",
+    "date": "2025-05-20"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "click-revert-c326df95",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `Context`.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "a8c05427602d12842c53ce48b03b5d6b5c0c6693",
+    "upstream_commit": "c326df95e9e3da0425360e030413f6a3ee25fdee",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 702,
+      "line_end": 702,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by c326df95: Fix closing of callbacks on CLI exit (#2680)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix closing of callbacks on CLI exit (#2680)",
+    "date": "2024-11-03"
+  }
+}

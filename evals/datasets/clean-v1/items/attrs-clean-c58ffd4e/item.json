@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-c58ffd4e",
+  "kind": "clean",
+  "task": "Call abc.update_abstractmethods on 3.10+",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "536ddc57e25228655e78634db91d6ebd23dbb5d1",
+    "upstream_commit": "c58ffd4e4cba5d5e58356722b985fc362358c48e",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Call abc.update_abstractmethods on 3.10+ (#1001)",
+    "date": "2022-08-11"
+  }
+}

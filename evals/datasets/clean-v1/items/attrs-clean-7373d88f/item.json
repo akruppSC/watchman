@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-7373d88f",
+  "kind": "clean",
+  "task": "Restore basic functionality on 3.14[sic]",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f520d9a89f1fde6fdc5310ffe6c5d4c7467fb10b",
+    "upstream_commit": "7373d88f9bef8a2ff70972f81e8d8b9dfb7c5653",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Restore basic functionality on 3.14[sic] (#1329)",
+    "date": "2024-08-06"
+  }
+}

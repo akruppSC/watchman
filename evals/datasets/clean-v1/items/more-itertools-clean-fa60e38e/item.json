@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-fa60e38e",
+  "kind": "clean",
+  "task": "Add sum_of_squares, sync various recipes with itertools",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "2316537230952773e8f7d9e0ebaba8ddd5394425",
+    "upstream_commit": "fa60e38e7e63791f98c5dd41db011112781b7d08",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add sum_of_squares, sync various recipes with itertools",
+    "date": "2023-04-10"
+  }
+}

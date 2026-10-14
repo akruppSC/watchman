@@ -1,0 +1,47 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index d0876df195ec1724812fc7f3c46fde4c9d21535f..8d5c3b3e00d822d3c39a01d7cda99a01e241d38b 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -4190,7 +4190,7 @@ def _chunked_even_finite(iterable, N, n):
+             yield list(islice(iterable, i, i + partial_size))
+ 
+ 
+-def zip_broadcast(*objects, scalar_types=(str, bytes), strict=False):
++def zip_broadcast(*objects, scalar_types=(str, bytes), strict=True):
+     """A version of :func:`zip` that "broadcasts" any scalar
+     (i.e., non-iterable) items into output tuples.
+ 
+@@ -4226,28 +4226,23 @@ def zip_broadcast(*objects, scalar_types=(str, bytes), strict=False):
+     if not size:
+         return
+ 
++    new_item = [None] * size
+     iterables, iterable_positions = [], []
+-    scalars, scalar_positions = [], []
+     for i, obj in enumerate(objects):
+         if is_scalar(obj):
+-            scalars.append(obj)
+-            scalar_positions.append(i)
++            new_item[i] = obj
+         else:
+             iterables.append(iter(obj))
+             iterable_positions.append(i)
+ 
+-    if len(scalars) == size:
++    if not iterables:
+         yield tuple(objects)
+         return
+ 
+-    new_item = [None] * size
+-    for i, elem in zip(scalar_positions, scalars):
+-        new_item[i] = elem
+-
+     zipper = _zip_equal if strict else zip
+     for item in zipper(*iterables):
+-        for i, elem in zip(iterable_positions, item):
+-            new_item[i] = elem
++        for i, new_item[i] in zip(iterable_positions, item):
++            pass
+         yield tuple(new_item)
+ 
+ 

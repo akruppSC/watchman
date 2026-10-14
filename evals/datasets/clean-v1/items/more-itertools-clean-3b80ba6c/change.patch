@@ -1,0 +1,50 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 3b1196f3bdfa73189d60213cb1c5118a8a7de275..3d2fdf067fe8af8ea58afca4f103970009f111fc 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -3253,7 +3253,7 @@ def partitions(iterable):
+         yield [sequence[i:j] for i, j in zip((0,) + i, i + (n,))]
+ 
+ 
+-def set_partitions(iterable, k=None):
++def set_partitions(iterable, k=None, min_size=None, max_size=None):
+     """
+     Yield the set partitions of *iterable* into *k* parts. Set partitions are
+     not order-preserving.
+@@ -3288,6 +3288,11 @@ def set_partitions(iterable, k=None):
+         elif k > n:
+             return
+ 
++    min_size = min_size if min_size is not None else 0
++    max_size = max_size if max_size is not None else n
++    if min_size > max_size:
++        return
++    
+     def set_partitions_helper(L, k):
+         n = len(L)
+         if k == 1:
+@@ -3304,9 +3309,9 @@ def set_partitions(iterable, k=None):
+ 
+     if k is None:
+         for k in range(1, n + 1):
+-            yield from set_partitions_helper(L, k)
++            yield from filter(lambda z: all(min_size <= len(bk) <= max_size for bk in z), set_partitions_helper(L, k))
+     else:
+-        yield from set_partitions_helper(L, k)
++        yield from filter(lambda z: all(min_size <= len(bk) <= max_size for bk in z), set_partitions_helper(L, k))
+ 
+ 
+ class time_limited:
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 7ddca59fc52e38d3428a0297c9b204fa329ef61f..f23647fe477ff22e356addad16f18425dab186b1 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -500,7 +500,7 @@ def replace(
+ ) -> Iterator[_T | _U]: ...
+ def partitions(iterable: Iterable[_T]) -> Iterator[list[list[_T]]]: ...
+ def set_partitions(
+-    iterable: Iterable[_T], k: int | None = ...
++    iterable: Iterable[_T], k: int | None = ..., min_size: int | None = ..., max_size: int | None = ...
+ ) -> Iterator[list[list[_T]]]: ...
+ 
+ class time_limited(Generic[_T], Iterator[_T]):

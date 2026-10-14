@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-fa05e903",
+  "kind": "clean",
+  "task": "Use loops",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "b4f7911d154d3613c587ecbb9d91b20e06ba330f",
+    "upstream_commit": "fa05e903f93e8a2b46fab3d002d7c79f55a93dfe",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Use loops",
+    "date": "2024-08-15"
+  }
+}

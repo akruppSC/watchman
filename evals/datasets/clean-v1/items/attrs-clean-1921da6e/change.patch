@@ -1,0 +1,70 @@
+diff --git a/changelog.d/1365.change.md b/changelog.d/1365.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..24fa6cf87306ca70958991e55d6d33663a7202e5
+--- /dev/null
++++ b/changelog.d/1365.change.md
+@@ -0,0 +1 @@
++Allow mutating `__suppress_context__` and `__notes__` on frozen exceptions.
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 274d4121be45b16e1bc05a6bbd38f956c4a02b28..f137772a8667680b7f07a04f5e87f95526da1629 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -543,6 +543,8 @@ def _frozen_setattrs(self, name, value):
+         "__cause__",
+         "__context__",
+         "__traceback__",
++        "__suppress_context__",
++        "__notes__",
+     ):
+         BaseException.__setattr__(self, name, value)
+         return
+@@ -554,6 +556,10 @@ def _frozen_delattrs(self, name):
+     """
+     Attached to frozen classes as __delattr__.
+     """
++    if isinstance(self, BaseException) and name in ("__notes__",):
++        BaseException.__delattr__(self, name)
++        return
++
+     raise FrozenInstanceError
+ 
+ 
+diff --git a/tests/test_next_gen.py b/tests/test_next_gen.py
+index a171749ab41ec2f0672e3133cfbc6932d44ec154..41e534df0ce29aa144482ddeec71ca41aaea9323 100644
+--- a/tests/test_next_gen.py
++++ b/tests/test_next_gen.py
+@@ -14,6 +14,8 @@ import pytest
+ import attr as _attr  # don't use it by accident
+ import attrs
+ 
++from attr._compat import PY_3_11_PLUS
++
+ 
+ @attrs.define
+ class C:
+@@ -332,7 +334,7 @@ class TestNextGen:
+             attrs.mutable,
+         ],
+     )
+-    def test_setting_traceback_on_exception(self, decorator):
++    def test_setting_exception_mutable_attributes(self, decorator):
+         """
+         contextlib.contextlib (re-)sets __traceback__ on raised exceptions.
+ 
+@@ -354,6 +356,16 @@ class TestNextGen:
+ 
+         # this should not raise an exception either
+         ei.value.__traceback__ = ei.value.__traceback__
++        ei.value.__cause__ = ValueError("cause")
++        ei.value.__context__ = TypeError("context")
++        ei.value.__suppress_context__ = True
++        ei.value.__suppress_context__ = False
++        ei.value.__notes__ = []
++        del ei.value.__notes__
++
++        if PY_3_11_PLUS:
++            ei.value.add_note("note")
++            del ei.value.__notes__
+ 
+     def test_converts_and_validates_by_default(self):
+         """

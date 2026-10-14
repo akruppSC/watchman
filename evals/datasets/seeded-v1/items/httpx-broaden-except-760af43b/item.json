@@ -1,0 +1,29 @@
+{
+  "id": "httpx-broaden-except-760af43b",
+  "kind": "seeded",
+  "task": "Update brotli support to use the brotlicffi package",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "0c2cb240dfd6b6648ea1dbaf1d195dd90bf25767",
+    "upstream_commit": "760af43b4f555a2e7927420c3fbfeb8e0b386d8c",
+    "origin": "upstream commit + seeded defect (broaden_except)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_decoders.py",
+      "line_start": 132,
+      "line_end": 133,
+      "category": "swallowed_error",
+      "description": "`except brotlicffi.Error` broadened to `except Exception`, hiding unrelated errors.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "broaden_except",
+    "upstream_subject": "Update brotli support to use the brotlicffi package (#1605)",
+    "date": "2021-04-28"
+  }
+}

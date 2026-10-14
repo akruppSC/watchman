@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-duplicate-helper-d63a26e5",
+  "kind": "seeded",
+  "task": "first_true: pred -> predicate",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "d0c20f594667738b714a1f7786da82e0de70fbf5",
+    "upstream_commit": "d63a26e56eac21ef874d243d2230123464539ed5",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 218,
+      "line_end": 235,
+      "category": "duplication",
+      "description": "Added `_first_true_impl`, a copy of existing `first_true` in more_itertools/recipes.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 5250,
+          "line_end": 5250
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "first_true: pred -> predicate",
+    "date": "2026-03-31"
+  }
+}

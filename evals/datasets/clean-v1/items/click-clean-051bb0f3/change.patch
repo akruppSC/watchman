@@ -1,0 +1,251 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index a39471f94415a5850aac963331ec92d00e0c17d7..0ce6353a25cc4e1d6933b59aab371aff94a0242d 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -17,6 +17,10 @@ Unreleased
+ -   ``echo_via_pager`` flushes after each write, so passing a generator streams
+     output to the pager incrementally instead of staying hidden until the pipe
+     buffer fills. :issue:`3242` :issue:`2542` :pr:`3534`
++-   ``echo_via_pager`` and ``get_pager_file`` no longer close a borrowed stdout
++    stream when no external pager runs, completing the partial
++    ``I/O operation on closed file`` fix from :pr:`3482`. :issue:`3449`
++    :pr:`3533`
+ 
+ 
+ Version 8.4.1
+diff --git a/src/click/_termui_impl.py b/src/click/_termui_impl.py
+index 3336c37c3fe5ddc5a57bcb5e325316c22aa678ad..fadae940625f8275fed17833d527c19e2422ef4e 100644
+--- a/src/click/_termui_impl.py
++++ b/src/click/_termui_impl.py
+@@ -29,6 +29,7 @@ from ._compat import term_len
+ from ._compat import WIN
+ from .exceptions import ClickException
+ from .utils import echo
++from .utils import KeepOpenFile
+ 
+ V = t.TypeVar("V")
+ 
+@@ -441,17 +442,28 @@ def get_pager_file(color: bool | None = None) -> t.Generator[t.TextIO, None, Non
+     with _pager_contextmanager(color=color) as (stream, encoding, color):
+         # Split streams by capabilities rather than the abstract TextIO /
+         # BinaryIO annotations: buffered text streams can be unwrapped to bytes,
+-        # while text-only streams are yielded as-is.
++        # while other streams are yielded as-is.
++        wrapper: MaybeStripAnsi | None = None
+         if _has_binary_buffer(stream):
+             # Text stream backed by a binary buffer.
+-            stream = MaybeStripAnsi(stream.buffer, color=color, encoding=encoding)
+-        elif isinstance(stream, t.BinaryIO):
+-            # Binary stream
+-            stream = MaybeStripAnsi(stream, color=color, encoding=encoding)
++            wrapper = MaybeStripAnsi(stream.buffer, color=color, encoding=encoding)
++            stream = wrapper
+         try:
+-            yield stream
++            # Narrow the BinaryIO | TextIO union that _pager_contextmanager
++            # yields; the caller writes text to the pager.
++            yield t.cast(t.TextIO, stream)
+         finally:
+-            stream.flush()
++            try:
++                stream.flush()
++            finally:
++                # Hand the binary buffer back to the pager that produced it
++                # rather than letting this TextIOWrapper close it on garbage
++                # collection. The pager owns the buffer's lifecycle: subprocess
++                # pipes and temp files are closed by their own helpers, while a
++                # borrowed stdout must stay open for the caller. detach() runs
++                # even if flush() raised, so the buffer is never closed here.
++                if wrapper is not None:
++                    wrapper.detach()
+ 
+ 
+ @contextlib.contextmanager
+@@ -471,8 +483,11 @@ def _pipepager(
+     """
+     # Split the command into the invoked CLI and its parameters.
+     if not cmd_parts:
++        # No usable pager: fall back to stdout through _nullpager so it gets the
++        # same borrowed-stream handling and the caller's stream is not closed.
+         stdout = _default_text_stdout() or StringIO()
+-        yield stdout, "utf-8", False
++        with _nullpager(stdout, color) as rv:
++            yield rv
+         return
+ 
+     import shutil
+@@ -482,8 +497,11 @@ def _pipepager(
+ 
+     cmd_filepath = shutil.which(cmd)
+     if not cmd_filepath:
++        # No usable pager: fall back to stdout through _nullpager so it gets the
++        # same borrowed-stream handling and the caller's stream is not closed.
+         stdout = _default_text_stdout() or StringIO()
+-        yield stdout, "utf-8", False
++        with _nullpager(stdout, color) as rv:
++            yield rv
+         return
+ 
+     # Produces a normalized absolute path string.
+@@ -571,8 +589,11 @@ def _tempfilepager(
+     """
+     # Split the command into the invoked CLI and its parameters.
+     if not cmd_parts:
++        # No usable pager: fall back to stdout through _nullpager so it gets the
++        # same borrowed-stream handling and the caller's stream is not closed.
+         stdout = _default_text_stdout() or StringIO()
+-        yield stdout, "utf-8", False
++        with _nullpager(stdout, color) as rv:
++            yield rv
+         return
+ 
+     import shutil
+@@ -582,8 +603,11 @@ def _tempfilepager(
+ 
+     cmd_filepath = shutil.which(cmd)
+     if not cmd_filepath:
++        # No usable pager: fall back to stdout through _nullpager so it gets the
++        # same borrowed-stream handling and the caller's stream is not closed.
+         stdout = _default_text_stdout() or StringIO()
+-        yield stdout, "utf-8", False
++        with _nullpager(stdout, color) as rv:
++            yield rv
+         return
+ 
+     # Produces a normalized absolute path string.
+@@ -609,21 +633,6 @@ def _tempfilepager(
+         os.unlink(f.name)
+ 
+ 
+-class _SkipClose:
+-    def __init__(self, stream: t.IO[t.Any]) -> None:
+-        self.stream = stream
+-
+-    def __getattr__(self, name: str) -> t.Any:
+-        return getattr(self.stream, name)
+-
+-    @property
+-    def buffer(self) -> t.BinaryIO:
+-        return _SkipClose(self.stream.buffer)  # type: ignore[attr-defined, return-value]
+-
+-    def close(self) -> None:
+-        pass
+-
+-
+ @contextlib.contextmanager
+ def _nullpager(
+     stream: t.TextIO, color: bool | None = None
+@@ -631,13 +640,17 @@ def _nullpager(
+     """Simply print unformatted text. This is the ultimate fallback. Don't close the
+     output stream in this case, since it's coming from elsewhere rather than our
+     internal helpers.
++
++    The stream is wrapped in :class:`~click.utils.KeepOpenFile` so that, as a
++    borrowed stream, it is not closed by a ``with`` block. The wrapper that
++    :func:`get_pager_file` builds around it is detached rather than closed.
+     """
+     encoding = get_best_encoding(stream)
+ 
+     if color is None:
+         color = False
+ 
+-    yield _SkipClose(stream), encoding, color  # type: ignore[misc]
++    yield KeepOpenFile(stream), encoding, color  # type: ignore[misc]
+ 
+ 
+ class Editor:
+diff --git a/src/click/utils.py b/src/click/utils.py
+index 67922b894075a35bb5c76e3c7ac2514c76f74b02..c0cb22d683b4ea2ff3b035efdf1e6ef392b08367 100644
+--- a/src/click/utils.py
++++ b/src/click/utils.py
+@@ -205,6 +205,18 @@ class LazyFile:
+ 
+ 
+ class KeepOpenFile:
++    """Proxy a file object but keep it open across a ``with`` block.
++
++    Wraps a borrowed file (such as ``sys.stdin`` or ``sys.stdout``) so that
++    leaving a ``with`` block does not close it, as used by :func:`open_file`
++    for the ``-`` filename. The caller stays responsible for the file: an
++    explicit :meth:`close` still passes through to the wrapped object.
++
++    Dunder methods are proxied explicitly: implicit special-method lookups
++    bypass :meth:`__getattr__`, because Python resolves them on the type rather
++    than the instance.
++    """
++
+     _file: t.IO[t.Any]
+ 
+     def __init__(self, file: t.IO[t.Any]) -> None:
+diff --git a/tests/test_termui.py b/tests/test_termui.py
+index b228b21b967d4e5d02f8b28eb8fa6d739be11687..ce974f0cb3a56ab68ccf7fde3f78bf70b0087b6e 100644
+--- a/tests/test_termui.py
++++ b/tests/test_termui.py
+@@ -1,4 +1,5 @@
+ import contextlib
++import gc
+ import io
+ import platform
+ import shlex
+@@ -806,6 +807,61 @@ def test_get_pager_file_pager_unset_falls_back_when_no_default(monkeypatch, tmp_
+     assert pager_out.read_text(encoding="utf-8") == "hello\n"
+ 
+ 
++def test_get_pager_file_missing_pager_keeps_borrowed_stream_open(monkeypatch):
++    """A missing ``PAGER`` must not close the borrowed stdout (issue #3449).
++
++    The ``8.4.0`` regression was only fixed for the no-tty ``_nullpager`` path;
++    the ``_pipepager``/``_tempfilepager`` fallbacks (reached in a tty when
++    ``PAGER`` resolves to nothing) used to close the borrowed stream too.
++    """
++    buffer = io.BytesIO()
++    stream = io.TextIOWrapper(buffer, encoding="utf-8")
++
++    monkeypatch.setitem(
++        click._termui_impl.os.environ,
++        "PAGER",
++        "click-tests-nonexistent-pager-9b3f2",
++    )
++    monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
++    monkeypatch.setattr(click._termui_impl, "_default_text_stdout", lambda: stream)
++
++    with click.get_pager_file() as pager:
++        pager.write("hello\n")
++
++    # Drop the wrapper reference and force finalization: the old bug closed the
++    # borrowed buffer when the TextIOWrapper built by get_pager_file was
++    # garbage-collected.
++    del pager
++    gc.collect()
++
++    assert not buffer.closed
++    assert not stream.closed
++    assert buffer.getvalue().replace(b"\r\n", b"\n") == b"hello\n"
++
++
++def test_echo_via_pager_tty_pager_missing(runner, monkeypatch):
++    """``echo_via_pager`` through the tty fallback keeps ``CliRunner`` working.
++
++    Regression for issue #3449 via the pager fallback: a tty with ``PAGER``
++    pointing at a missing binary used to close the runner's stdout, breaking
++    ``CliRunner.invoke``.
++    """
++    monkeypatch.setattr(click._termui_impl, "isatty", lambda _: True)
++    monkeypatch.setitem(
++        click._termui_impl.os.environ,
++        "PAGER",
++        "click-tests-nonexistent-pager-9b3f2",
++    )
++
++    @click.command()
++    def cli():
++        click.echo_via_pager("Hello, Click!")
++
++    result = runner.invoke(cli)
++    assert not result.exception
++    assert result.output == "Hello, Click!\n"
++
++
+ @pytest.mark.parametrize(
+     ("color", "expected"),
+     [

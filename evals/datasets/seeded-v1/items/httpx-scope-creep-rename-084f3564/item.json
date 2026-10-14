@@ -1,0 +1,29 @@
+{
+  "id": "httpx-scope-creep-rename-084f3564",
+  "kind": "seeded",
+  "task": "Allow handler to optionally be async when MockTransport is used with AsyncClient",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "645ae4ed9c5fe35788ca13b9bd9d264b2dfb2784",
+    "upstream_commit": "084f35648b64b70f7a8255faa196b09d432622fe",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_auth.py",
+      "line_start": 194,
+      "line_end": 195,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `value` to `val` in `_parse_challenge` (httpx/_auth.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Allow handler to optionally be async when MockTransport is used with AsyncClient (#1449)",
+    "date": "2021-02-17"
+  }
+}

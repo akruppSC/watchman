@@ -1,0 +1,29 @@
+{
+  "id": "attrs-negate-condition-7b02220b",
+  "kind": "seeded",
+  "task": "Serialize keys as tuples in asdict",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "17067930128e78a9c3c7c5280b5417b7bce82657",
+    "upstream_commit": "7b02220bd337754e38f8c64abfe10e073fd028de",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_funcs.py",
+      "line_start": 139,
+      "line_end": 139,
+      "category": "correctness",
+      "description": "Condition inverted: `if retain_collection_types is True` became `if retain_collection_types is not True`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "Serialize keys as tuples in asdict (#888)",
+    "date": "2021-12-16"
+  }
+}

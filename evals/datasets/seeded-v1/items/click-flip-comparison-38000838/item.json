@@ -1,0 +1,29 @@
+{
+  "id": "click-flip-comparison-38000838",
+  "kind": "seeded",
+  "task": "Give a UserWarning when Parameter is overriden by name",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "fcd85032cff78aa536a6d2b455fb83bfcc02b228",
+    "upstream_commit": "380008389b32ca2b7de7c73f670a9eee1562004e",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 972,
+      "line_end": 972,
+      "category": "correctness",
+      "description": "Boundary changed: `>` became `>=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Give a UserWarning when Parameter is overriden by name (#2397)",
+    "date": "2024-11-03"
+  }
+}

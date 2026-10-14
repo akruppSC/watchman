@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-8327e134",
+  "kind": "clean",
+  "task": "reuse the digest auth state to avoid unnecessary requests",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "69e13cbc393ee13624d0e4aa4b6f861a95e3f91c",
+    "upstream_commit": "8327e1345476ca38bd058545585d14890823aeb8",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "reuse the digest auth state to avoid unnecessary requests (#2463)",
+    "date": "2022-11-29"
+  }
+}

@@ -1,0 +1,142 @@
+diff --git a/.github/CONTRIBUTING.md b/.github/CONTRIBUTING.md
+index bbdc20f19324257c85e92350873ee6cf8b77b612..6c9e25c29e64b5729c0871416db3795c8bf2f8bd 100644
+--- a/.github/CONTRIBUTING.md
++++ b/.github/CONTRIBUTING.md
+@@ -39,7 +39,7 @@ The official tag is `python-attrs` and helping out in support frees us up to imp
+ 
+ ## Code
+ 
+-- Obey [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [PEP 257](https://www.python.org/dev/peps/pep-0257/).
++- Obey [PEP 8](https://peps.python.org/pep-0008/) and [PEP 257](https://peps.python.org/pep-0257/).
+   We use the `"""`-on-separate-lines style for docstrings:
+ 
+   ```python
+diff --git a/CHANGELOG.rst b/CHANGELOG.rst
+index 8ed9bf7e68b538e64d43425b5d35d300bc364db6..74b57558de5715d6bfbeb9188cc9a3710a190226 100644
+--- a/CHANGELOG.rst
++++ b/CHANGELOG.rst
+@@ -542,7 +542,7 @@ Deprecations
+ Changes
+ ^^^^^^^
+ 
+-- ``attrs`` now ships its own `PEP 484 <https://www.python.org/dev/peps/pep-0484/>`_ type hints.
++- ``attrs`` now ships its own `PEP 484 <https://peps.python.org/pep-0484/>`_ type hints.
+   Together with `mypy <http://mypy-lang.org>`_'s ``attrs`` plugin, you've got all you need for writing statically typed code in both Python 2 and 3!
+ 
+   At that occasion, we've also added `narrative docs <https://www.attrs.org/en/stable/types.html>`_ about type annotations in ``attrs``.
+@@ -748,7 +748,7 @@ Changes
+ 
+   This change paves the way for automatic type checking and serialization (though as of this release ``attrs`` does not make use of it).
+   In Python 3.6 or higher, the value of ``attr.Attribute.type`` can alternately be set using variable type annotations
+-  (see `PEP 526 <https://www.python.org/dev/peps/pep-0526/>`_).
++  (see `PEP 526 <https://peps.python.org/pep-0526/>`_).
+   (`#151 <https://github.com/python-attrs/attrs/issues/151>`_, `#214 <https://github.com/python-attrs/attrs/issues/214>`_, `#215 <https://github.com/python-attrs/attrs/issues/215>`_, `#239 <https://github.com/python-attrs/attrs/issues/239>`_)
+ - The combination of ``str=True`` and ``slots=True`` now works on Python 2.
+   (`#198 <https://github.com/python-attrs/attrs/issues/198>`_)
+diff --git a/docs/examples.rst b/docs/examples.rst
+index 08bc528381d7ded048b66bf47683b3c08a739bec..7b868e2db1bd8c2d626581c51d5305763d91b26c 100644
+--- a/docs/examples.rst
++++ b/docs/examples.rst
+@@ -471,7 +471,7 @@ If you're the author of a third-party library with ``attrs`` integration, please
+ Types
+ -----
+ 
+-``attrs`` also allows you to associate a type with an attribute using either the *type* argument to `attr.ib` or -- as of Python 3.6 -- using `PEP 526 <https://www.python.org/dev/peps/pep-0526/>`_-annotations:
++``attrs`` also allows you to associate a type with an attribute using either the *type* argument to `attr.ib` or -- as of Python 3.6 -- using :pep:`526`-annotations:
+ 
+ 
+ .. doctest::
+diff --git a/docs/extending.rst b/docs/extending.rst
+index faf71afd913d8c51a79c793b8d2c4ff770efce69..2fb2aa0b99b3edbf0e694b4a5b9edf42a543f43e 100644
+--- a/docs/extending.rst
++++ b/docs/extending.rst
+@@ -124,7 +124,7 @@ Types
+ 
+ ``attrs`` offers two ways of attaching type information to attributes:
+ 
+-- `PEP 526 <https://www.python.org/dev/peps/pep-0526/>`_ annotations on Python 3.6 and later,
++- :pep:`526` annotations on Python 3.6 and later,
+ - and the *type* argument to `attr.ib`.
+ 
+ This information is available to you:
+diff --git a/docs/names.rst b/docs/names.rst
+index 1db82fb42ded35ba5ee2777d10c286460f97511d..ae321913e718128051e1c3e01a3b2dee6784da88 100644
+--- a/docs/names.rst
++++ b/docs/names.rst
+@@ -33,7 +33,7 @@ A Short History Lesson
+ 
+ At this point, ``attrs`` is an old project.
+ It had its first release in April 2015 -- back when most Python code was on Python 2.7 and Python 3.4 was the first Python 3 release that showed promise.
+-``attrs`` was always Python 3-first, but `type annotations <https://www.python.org/dev/peps/pep-0484/>`_ came only into Python 3.5 that was released in September 2015 and were largely ignored until years later.
++``attrs`` was always Python 3-first, but `type annotations <https://peps.python.org/pep-0484/>`_ came only into Python 3.5 that was released in September 2015 and were largely ignored until years later.
+ 
+ At this time, if you didn't want to implement all the :term:`dunder methods`, the most common way to create a class with some attributes on it was to subclass a `collections.namedtuple`, or one of the many hacks that allowed you to access dictionary keys using attribute lookup.
+ 
+@@ -69,8 +69,8 @@ Dataclasses Enter The Arena
+ 
+ A big change happened in May 2017 when Hynek sat down with `Guido van Rossum <https://en.wikipedia.org/wiki/Guido_van_Rossum>`_ and `Eric V. Smith <https://github.com/ericvsmith>`_ at PyCon US 2017.
+ 
+-Type annotations for class attributes have `just landed <https://www.python.org/dev/peps/pep-0526/>`_ in Python 3.6 and Guido felt like it would be a good mechanic to introduce something similar to ``attrs`` to the Python standard library.
+-The result, of course, was `PEP 557 <https://www.python.org/dev/peps/pep-0557/>`_\ [#stdlib]_ which eventually became the `dataclasses` module in Python 3.7.
++Type annotations for class attributes have `just landed <https://peps.python.org/pep-0526/>`_ in Python 3.6 and Guido felt like it would be a good mechanic to introduce something similar to ``attrs`` to the Python standard library.
++The result, of course, was :pep:`557`\ [#stdlib]_ which eventually became the `dataclasses` module in Python 3.7.
+ 
+ ``attrs`` at this point was lucky to have several people on board who were also very excited about type annotations and helped implement it; including a `Mypy plugin <https://medium.com/@Pilot-EPD-Blog/mypy-and-attrs-e1b0225e9ac6>`_.
+ And so it happened that ``attrs`` `shipped <https://www.attrs.org/en/17.3.0.post2/changelog.html>`_ the new method of defining classes more than half a year before Python 3.7 -- and thus `dataclasses` -- were released.
+diff --git a/docs/why.rst b/docs/why.rst
+index 40f2f1b5b4633082e4aa5bef73f4f9016ce72692..8489959f1d977bddc385e20bec5e241501f347ea 100644
+--- a/docs/why.rst
++++ b/docs/why.rst
+@@ -30,7 +30,7 @@ Whether they're relevant to *you* depends on your circumstances:
+ - ``attrs`` can and will move faster.
+   We are not bound to any release schedules and we have a clear deprecation policy.
+ 
+-  One of the `reasons <https://www.python.org/dev/peps/pep-0557/#why-not-just-use-attrs>`_ to not vendor ``attrs`` in the standard library was to not impede ``attrs``'s future development.
++  One of the `reasons <https://peps.python.org/pep-0557/#why-not-just-use-attrs>`_ to not vendor ``attrs`` in the standard library was to not impede ``attrs``'s future development.
+ 
+ One way to think about ``attrs`` vs Data Classes is that ``attrs`` is a fully-fledged toolkit to write powerful classes while Data Classes are an easy way to get a class with some attributes.
+ Basically what ``attrs`` was in 2015.
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index d573a5c32188a3fd74b8ff2df30e5fc6150c2c31..de1b7e18c7a5705c2a533ccddc680e357bcf1f66 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -226,7 +226,7 @@ def attrib(
+         components.  See `extending_metadata`.
+     :param type: The type of the attribute.  In Python 3.6 or greater, the
+         preferred method to specify the type is using a variable annotation
+-        (see `PEP 526 <https://www.python.org/dev/peps/pep-0526/>`_).
++        (see :pep:`526`).
+         This argument is provided for backward compatibility.
+         Regardless of the approach used, the type will be stored on
+         ``Attribute.type``.
+@@ -1362,7 +1362,7 @@ def attrs(
+ 
+     :param bool weakref_slot: Make instances weak-referenceable.  This has no
+         effect unless ``slots`` is also enabled.
+-    :param bool auto_attribs: If ``True``, collect `PEP 526`_-annotated
++    :param bool auto_attribs: If ``True``, collect :pep:`526`-annotated
+         attributes (Python 3.6 and later only) from the class body.
+ 
+         In this case, you **must** annotate every field.  If ``attrs``
+@@ -1388,7 +1388,6 @@ def attrs(
+            These errors can be quite confusing and probably the most common bug
+            report on our bug tracker.
+ 
+-        .. _`PEP 526`: https://www.python.org/dev/peps/pep-0526/
+     :param bool kw_only: Make all attributes keyword-only (Python 3+)
+         in the generated ``__init__`` (if ``init`` is ``False``, this
+         parameter is ignored).
+@@ -1457,10 +1456,9 @@ def attrs(
+ 
+     :param bool match_args:
+         If `True` (default), set ``__match_args__`` on the class to support
+-        `PEP 634 <https://www.python.org/dev/peps/pep-0634/>`_ (Structural
+-        Pattern Matching). It is a tuple of all non-keyword-only ``__init__``
+-        parameter names on Python 3.10 and later. Ignored on older Python
+-        versions.
++        :pep:`634` (Structural Pattern Matching). It is a tuple of all
++        non-keyword-only ``__init__`` parameter names on Python 3.10 and later.
++        Ignored on older Python versions.
+ 
+     .. versionadded:: 16.0.0 *slots*
+     .. versionadded:: 16.1.0 *frozen*

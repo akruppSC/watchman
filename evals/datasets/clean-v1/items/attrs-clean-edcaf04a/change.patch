@@ -1,0 +1,64 @@
+diff --git a/changelog.d/1285.change.md b/changelog.d/1285.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..5f5a2997ae627750fd05d2517a93e892e0ef3c4b
+--- /dev/null
++++ b/changelog.d/1285.change.md
+@@ -0,0 +1 @@
++`attrs.make_class()` now populates the `__annotations__` dict of the generated class, so that `attrs.resolve_types()` can resolve them.
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index d1c08dea4aea6db2ec377b836d640140adf0db99..097534fbbc43fb39420b2f574236631bad8e2f92 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -3056,7 +3056,12 @@ def make_class(
+         True,
+     )
+ 
+-    return _attrs(these=cls_dict, **attributes_arguments)(type_)
++    cls = _attrs(these=cls_dict, **attributes_arguments)(type_)
++    # Only add type annotations now or "_attrs()" will complain:
++    cls.__annotations__ = {
++        k: v.type for k, v in cls_dict.items() if v.type is not None
++    }
++    return cls
+ 
+ 
+ # These are required by within this module so we define them here and merely
+diff --git a/tests/test_make.py b/tests/test_make.py
+index a5490f9e5c4dacf30fe3d2a02cda2046cd3366ba..364dee1708b41f0b6c3348a7bc527c7b11caa08a 100644
+--- a/tests/test_make.py
++++ b/tests/test_make.py
+@@ -1164,6 +1164,34 @@ class TestMakeClass:
+ 
+         attr.make_class("test", {"id": attr.ib(type=str)}, (MyParent[int],))
+ 
++    def test_annotations(self):
++        """
++        make_class fills the __annotations__ dict for attributes with a known
++        type.
++        """
++        a = attr.ib(type=bool)
++        b = attr.ib(
++            type=None
++        )  # Won't be added to ann. b/c of unfavorable default
++        c = attr.ib()
++
++        C = attr.make_class("C", {"a": a, "b": b, "c": c})
++        C = attr.resolve_types(C)
++
++        assert {"a": bool} == C.__annotations__
++
++    def test_annotations_resolve(self):
++        """
++        resolve_types() resolves the annotations added by make_class().
++        """
++        a = attr.ib(type="bool")
++
++        C = attr.make_class("C", {"a": a})
++        C = attr.resolve_types(C)
++
++        assert attr.fields(C).a.type is bool
++        assert {"a": "bool"} == C.__annotations__
++
+ 
+ class TestFields:
+     """

@@ -1,0 +1,19 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index 968a10e77085cc6d7b969ece7ba07a0591c3c601..f17a8a818eba871b07ddd4230fc8a1d97a4f065f 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -699,13 +699,7 @@ class Context:
+         raise Abort()
+ 
+     def exit(self, code: int = 0) -> t.NoReturn:
+-        """Exits the application with a given exit code.
+-
+-        .. versionchanged:: 8.2
+-            Force closing of callbacks registered with
+-            :meth:`call_on_close` before exiting the CLI.
+-        """
+-        self.close()
++        """Exits the application with a given exit code."""
+         raise Exit(code)
+ 
+     def get_usage(self) -> str:

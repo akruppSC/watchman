@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-541a0afe",
+  "kind": "clean",
+  "task": "Add Client(allow_redirect=<...>)",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "ee24e6718035e048ec86f3490a964b08fd49031c",
+    "upstream_commit": "541a0afe5636248e5251894903b86ef17aaf5ebc",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Add Client(allow_redirect=<...>) (#1790)",
+    "date": "2021-08-10"
+  }
+}

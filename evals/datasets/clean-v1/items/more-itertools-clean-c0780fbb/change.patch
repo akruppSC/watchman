@@ -1,0 +1,165 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 9db20f3aa282b938b9bddc9e58b2aedf2823d973..f699db4336c88bbf4a0bc56700fa826d86d286cf 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -15,6 +15,7 @@ These tools yield groups of items from a source iterable.
+ 
+ .. autofunction:: chunked
+ .. autofunction:: ichunked
++.. autofunction:: chunked_even
+ .. autofunction:: sliced
+ .. autofunction:: distribute
+ .. autofunction:: divide
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 7b4164dfd76692603f493db5a90e7f3566fb25ef..29cec8f309abd804574634d0c67fc93b2de1f166 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -19,7 +19,7 @@ from itertools import (
+     tee,
+     zip_longest,
+ )
+-from math import exp, factorial, floor, log
++from math import exp, factorial, floor, log, ceil
+ from queue import Empty, Queue
+ from random import random, randrange, uniform
+ from operator import itemgetter, mul, sub, gt, lt
+@@ -43,6 +43,7 @@ __all__ = [
+     'bucket',
+     'callback_iter',
+     'chunked',
++    'chunked_even',
+     'circular_shifts',
+     'collapse',
+     'collate',
+@@ -3900,3 +3901,71 @@ class countable:
+         self.items_seen += 1
+ 
+         return item
++
++
++def chunked_even(iterable, n):
++    """Break *iterable* into lists of length *n*, but in contrast with `chunked`,
++        items are distributed as evenly as possible so that all lists' lengths
++        are within 1 of each other:
++
++            >>> list(chunked_even([1, 2, 3, 4, 5, 6, 7], 3))
++            [[1, 2, 3], [4, 5], [6, 7]]
++
++        If *iterable* has `__len__`, O(n) space is used, with O(n) time per list.
++        Otherwise, O(n^2) space is needed, and O(n^2) time per list.
++    """
++    
++    len_method = getattr(iterable, '__len__', None)
++    
++    if len_method is None:
++        return _chunked_even_online(iterable, n)
++    else:
++        return _chunked_even_finite(iterable, len_method(), n)
++
++
++def _chunked_even_online(iterable, n):
++    buffer = []
++    # TODO: n*(n - 1) - 2 is not enough (tests fail), but this might be. Proof?
++    maxbuf = n*(n - 1) - 1
++    for x in iterable:
++        buffer.append(x)
++        if len(buffer) == maxbuf:
++            yield buffer[:n]
++            buffer = buffer[n:]
++    yield from _chunked_even_finite(buffer, len(buffer), n)
++
++
++def _chunked_even_finite(iterable, N, n):
++    if N < 1:
++        return
++    
++    # Every list is either size `full_size <= n` or `partial_size = full_size - 1`
++    num_lists = ceil(N / n)
++    q, r = divmod(N, num_lists)
++    full_size = q + (1 if r > 0 else 0)
++    partial_size = full_size - 1
++    num_full = N - partial_size * num_lists
++    num_partial = num_lists - num_full
++    
++    buffer = []
++    
++    iterator = iter(iterable)
++    
++    # Yield num_full lists of full_size
++    for x in iterator:
++        buffer.append(x)
++        if len(buffer) == full_size:
++            yield buffer
++            buffer = []
++            num_full -= 1
++            if num_full <= 0:
++                break
++    
++    # Yield num_partial lists of partial_size
++    for x in iterator:
++        buffer.append(x)
++        if len(buffer) == partial_size:
++            yield buffer
++            buffer = []
++            num_partial -= 1
++            assert num_partial >= 0
+diff --git a/tests/test_more.py b/tests/test_more.py
+index a4c979614da601d7feef6cb5687f78df5fd434ba..6fd03dfba2a457dd93a7ea93b499c241e6216297 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -4537,3 +4537,55 @@ class CountableTests(TestCase):
+         self.assertEqual(it.items_seen, 1)
+         self.assertEqual(''.join(it), '123456789')
+         self.assertEqual(it.items_seen, 10)
++
++
++class ChunkedEvenTests(TestCase):
++    """Tests for ``chunked_even()``"""
++
++    def test_0(self):
++        self._test_finite('', 3, [])
++
++    def test_1(self):
++        self._test_finite('A', 1, [['A']])
++
++    def test_4(self):
++        self._test_finite('ABCD', 3, [['A', 'B'], ['C', 'D']])
++
++    def test_5(self):
++        self._test_finite('ABCDE', 3, [['A', 'B', 'C'], ['D', 'E']])
++
++    def test_6(self):
++        self._test_finite('ABCDEF', 3, [['A', 'B', 'C'], ['D', 'E', 'F']])
++
++    def test_7(self):
++        self._test_finite('ABCDEFG', 3, [['A', 'B', 'C'], ['D', 'E'], ['F', 'G']])
++
++    def _test_finite(self, seq, n, expected):
++        # Check with and without `len()`
++        self.assertEqual(list(mi.chunked_even(seq, n)), expected)
++        self.assertEqual(list(mi.chunked_even(iter(seq), n)), expected)
++
++    def test_infinite(self):
++        n = 4
++        def limited_count():
++            for i in count():
++                # To generate list `k`, it should not look ahead more than n^2
++                self.assertLessEqual(i, n*k + n*n)
++                yield i
++        ls = mi.chunked_even(limited_count(), n)
++        for k in range(2):
++            self.assertEqual(next(ls), list(range(k*n, (k+1)*n)))
++
++    def test_evenness(self):
++        for N in range(1, 1000):
++            for n in range(1, N + 2):
++                lengths = []
++                items = []
++                for l in mi.chunked_even(range(N), n):
++                    L = len(l)
++                    self.assertLessEqual(L, n)
++                    self.assertGreaterEqual(L, 1)
++                    lengths.append(L)
++                    items.extend(l)
++                self.assertEqual(items, list(range(N)))
++                self.assertLessEqual(max(lengths) - min(lengths), 1)

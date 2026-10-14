@@ -1,0 +1,29 @@
+{
+  "id": "attrs-flip-comparison-c2824ac3",
+  "kind": "seeded",
+  "task": "Pass args from `__init__` to `__attrs_pre_init__` if requested",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "46a03dcef6d2698aa5934a1ee00d9523564dcd8c",
+    "upstream_commit": "c2824ac30f315bfbc7398960c6831d68ecc9edb4",
+    "origin": "upstream commit + seeded defect (flip_comparison)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 681,
+      "line_end": 681,
+      "category": "correctness",
+      "description": "Boundary changed: `>` became `>=` (off-by-one).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "flip_comparison",
+    "upstream_subject": "Pass args from `__init__` to `__attrs_pre_init__` if requested (#1187)",
+    "date": "2023-09-29"
+  }
+}

@@ -1,0 +1,32 @@
+diff --git a/src/click/types.py b/src/click/types.py
+index cd394698247dc43af6fbb559c7dd82b59d9bf43b..6ac5358c76ebbdb1227e40b500ca57f5b400bb83 100644
+--- a/src/click/types.py
++++ b/src/click/types.py
+@@ -845,11 +845,22 @@ class Path(ParamType):
+                 if os.path.islink(rv):
+                     rv = os.readlink(rv)
+ 
+-                # Join dir_ with the resolved symlink. If the resolved
+-                # path is relative, this will make it relative to the
+-                # original containing directory. If it is absolute, this
+-                # has no effect.
+-                rv = os.path.join(dir_, rv)
++                    # absolute links
++                    if os.path.isabs(rv):
++                        # os.readlink prepends path prefixes to absolute links
++                        # in windows.
++                        # Here we strip prefix from the resolved path
++                        rv_drive, rv_path = os.path.splitdrive(rv)
++                        stripped_rv_drive = rv_drive.split(os.path.sep)[-1]
++                        try:
++                            rv = os.path.join(stripped_rv_drive, rv_path)
++                        except Exception:
++                            rv = None
++                    else:
++                        # For relative symlinks we join dir_ to the resolved
++                        # symlink. This will make it relative to the original
++                        # containing directory.
++                        rv = os.path.join(dir_, rv)
+ 
+             try:
+                 st = os.stat(rv)

@@ -1,0 +1,79 @@
+diff --git a/CHANGES.md b/CHANGES.md
+index bcc12c358b64700ecc571a40e464822962a979a8..75ee42de173f32be0ce0bd6757bbc37123a3c733 100644
+--- a/CHANGES.md
++++ b/CHANGES.md
+@@ -12,6 +12,8 @@ Unreleased
+ - The `Positional arguments` help section lists every argument of the command,
+   not only the documented ones. An argument with no `help` gets an empty
+   description, the same way an option with no `help` does. {pr}`3860`
++- {meth}`Argument.get_help_record` always returns a tuple. It used to return
++  `None` for an argument with no `help`. {pr}`3860`
+ - Document which types are inferred from `default`, and what an unrecognized
+   `type` callable does to a command-line value. {issue}`3036` {pr}`3808`
+ - `path_type` narrows the converted value's type for `convert` and `prompt`.
+diff --git a/src/click/core.py b/src/click/core.py
+index 7af4bd809c31ab1796c58778c1816a88d0d7f32b..b58df687cda6794783469ab845fbd30ae042ca24 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -1319,11 +1319,8 @@ class Command:
+         args = [param for param in self.get_params(ctx) if isinstance(param, Argument)]
+ 
+         if any(arg.help is not None for arg in args):
+-            records = [
+-                arg.get_help_record(ctx) or (arg.make_metavar(ctx), "") for arg in args
+-            ]
+             with formatter.section(_("Positional arguments")):
+-                formatter.write_dl(records)
++                formatter.write_dl([arg.get_help_record(ctx) for arg in args])
+ 
+     def format_epilog(self, ctx: Context, formatter: HelpFormatter) -> None:
+         """Writes the epilog into the formatter if it exists."""
+@@ -3803,11 +3800,18 @@ class Argument(Parameter):
+     def get_usage_pieces(self, ctx: Context) -> list[str]:
+         return [self.make_metavar(ctx)]
+ 
+-    def get_help_record(self, ctx: Context) -> tuple[str, str] | None:
+-        if self.help is None:
+-            return None
++    def get_help_record(self, ctx: Context) -> tuple[str, str]:
++        """Returns the argument's help row: its metavar and its help text.
+ 
+-        return self.make_metavar(ctx), self.help
++        Unlike :meth:`Option.get_help_record`, this never returns ``None``. An
++        argument cannot be hidden, so an undocumented one still gets a row, with
++        an empty description.
++
++        .. versionchanged:: 8.5.1
++            Always returns a tuple. It used to return ``None`` when ``help`` was
++            not set.
++        """
++        return self.make_metavar(ctx), self.help or ""
+ 
+     def get_error_hint(self, ctx: Context | None) -> str:
+         if ctx is not None:
+diff --git a/tests/test_arguments.py b/tests/test_arguments.py
+index ea7a11825eb9c1497e1289ec34dbd07469242a96..ab4e2293127f5706a61d8f2cddd6f9af5f535118 100644
+--- a/tests/test_arguments.py
++++ b/tests/test_arguments.py
+@@ -402,6 +402,21 @@ def test_argument_help_empty_string_lists_all(runner):
+     ]
+ 
+ 
++@pytest.mark.parametrize(
++    ("help_text", "expected"),
++    [
++        pytest.param(None, ("SRC", ""), id="None"),
++        pytest.param("", ("SRC", ""), id="empty"),
++        pytest.param("Source path", ("SRC", "Source path"), id="documented"),
++    ],
++)
++def test_argument_get_help_record_never_none(help_text, expected):
++    """Every argument gets a row, even an undocumented one."""
++    arg = click.Argument(["src"], help=help_text)
++    ctx = click.Context(click.Command("cli"))
++    assert arg.get_help_record(ctx) == expected
++
++
+ def test_argument_help_optional_metavar(runner):
+     @click.command()
+     @click.argument("name", required=False, default="", help="The name to print")

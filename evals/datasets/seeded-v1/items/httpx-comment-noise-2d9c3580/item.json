@@ -1,0 +1,40 @@
+{
+  "id": "httpx-comment-noise-2d9c3580",
+  "kind": "seeded",
+  "task": "Switch event hooks to also run on redirects.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "4986743b3d09a13ea1dda72f6cdc5bf0dacb98b1",
+    "upstream_commit": "2d9c3580e0776252405e9566161d5520c4b96210",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_client.py",
+      "line_start": 949,
+      "line_end": 949,
+      "category": "comment_noise",
+      "description": "3 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_client.py",
+          "line_start": 1653,
+          "line_end": 1653
+        },
+        {
+          "file": "httpx/_client.py",
+          "line_start": 1659,
+          "line_end": 1659
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "Switch event hooks to also run on redirects. (#1806)",
+    "date": "2021-08-18"
+  }
+}

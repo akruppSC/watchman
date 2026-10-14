@@ -1,0 +1,35 @@
+{
+  "id": "httpx-comment-noise-966550b3",
+  "kind": "seeded",
+  "task": "For non-streaming cases, populate `request.content` automatically.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "8fd5b71016c10dd266a058966f3ff3843e3ce9c6",
+    "upstream_commit": "966550b342b5fca28ab515016a77d31a5ab06c4c",
+    "origin": "upstream commit + seeded defect (comment_noise)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_exceptions.py",
+      "line_start": 301,
+      "line_end": 301,
+      "category": "comment_noise",
+      "description": "2 comments added that only restate the next line.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_exceptions.py",
+          "line_start": 312,
+          "line_end": 312
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "comment_noise",
+    "upstream_subject": "For non-streaming cases, populate `request.content` automatically. (#1583)",
+    "date": "2021-04-19"
+  }
+}

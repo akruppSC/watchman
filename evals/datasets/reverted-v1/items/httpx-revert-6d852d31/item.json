@@ -1,0 +1,39 @@
+{
+  "id": "httpx-revert-6d852d31",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `BaseClient`, `Client`, `AsyncClient`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "df5345140e09ac6c2de0d9589bcd6f3e31c6aa3f",
+    "upstream_commit": "6d852d319acd5d97caf14037dff15ede04b37542",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_client.py",
+      "line_start": 562,
+      "line_end": 567,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 6d852d31: Fix client.send() timeout new Request instance (#3116)",
+      "alt_ranges": [
+        {
+          "file": "httpx/_client.py",
+          "line_start": 911,
+          "line_end": 916
+        },
+        {
+          "file": "httpx/_client.py",
+          "line_start": 1658,
+          "line_end": 1663
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix client.send() timeout new Request instance (#3116)",
+    "date": "2024-02-26"
+  }
+}

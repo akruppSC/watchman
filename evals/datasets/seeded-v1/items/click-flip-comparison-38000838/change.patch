@@ -1,0 +1,140 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index e6032649ae6caa9f283c213a8447998c96ccde6c..7bb07628520cc2cc2399cba7a937b1149485fa33 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -49,6 +49,8 @@ Unreleased
+     ``Context.call_on_close`` callbacks and context managers added via
+     ``Context.with_resource`` to be closed on exit as well. :pr:`2680`
+ -   Add ``ProgressBar(hidden: bool)`` to allow hiding the progressbar. :issue:`2609`
++-   A ``UserWarning`` will be shown when multiple parameters attempt to use the
++    same name. :issue:`2396``
+ 
+ 
+ Version 8.1.8
+diff --git a/src/click/core.py b/src/click/core.py
+index 968a10e77085cc6d7b969ece7ba07a0591c3c601..083b47307624865f1cbc93464611af895deffee8 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -8,6 +8,7 @@ import os
+ import sys
+ import typing as t
+ from collections import abc
++from collections import Counter
+ from contextlib import AbstractContextManager
+ from contextlib import contextmanager
+ from contextlib import ExitStack
+@@ -957,13 +958,29 @@ class Command:
+         return formatter.getvalue().rstrip("\n")
+ 
+     def get_params(self, ctx: Context) -> list[Parameter]:
+-        rv = self.params
++        params = self.params
+         help_option = self.get_help_option(ctx)
+ 
+         if help_option is not None:
+-            rv = [*rv, help_option]
++            params = [*params, help_option]
+ 
+-        return rv
++        if __debug__:
++            import warnings
++
++            opts = [opt for param in params for opt in param.opts]
++            opts_counter = Counter(opts)
++            duplicate_opts = (opt for opt, count in opts_counter.items() if count >= 1)
++
++            for duplicate_opt in duplicate_opts:
++                warnings.warn(
++                    (
++                        f"The parameter {duplicate_opt} is used more than once. "
++                        "Remove its duplicate as parameters should be unique."
++                    ),
++                    stacklevel=3,
++                )
++
++        return params
+ 
+     def format_usage(self, ctx: Context, formatter: HelpFormatter) -> None:
+         """Writes the usage line into the formatter.
+@@ -1973,6 +1990,10 @@ class Parameter:
+         of :class:`~click.shell_completion.CompletionItem` or a list of
+         strings.
+ 
++    .. versionchanged:: 8.2
++        Adding duplicate parameter names to a :class:`~click.core.Command` will
++        result in a ``UserWarning`` being shown.
++
+     .. versionchanged:: 8.0
+         ``process_value`` validates required parameters and bounded
+         ``nargs``, and invokes the parameter callback before returning
+@@ -2974,7 +2995,7 @@ class Argument(Parameter):
+         else:
+             raise TypeError(
+                 "Arguments take exactly one parameter declaration, got"
+-                f" {len(decls)}."
++                f" {len(decls)}: {decls}."
+             )
+         return name, [arg], []
+ 
+diff --git a/tests/test_arguments.py b/tests/test_arguments.py
+index 7f6629fbae38ad31e6f3b45b3433bc3dc49cc7ae..825bcc487c02bb34c7a965d30ba61fb2ce261d09 100644
+--- a/tests/test_arguments.py
++++ b/tests/test_arguments.py
+@@ -401,3 +401,23 @@ def test_when_argument_decorator_is_used_multiple_times_cls_is_preserved():
+ 
+     assert isinstance(foo.params[0], CustomArgument)
+     assert isinstance(bar.params[0], CustomArgument)
++
++
++@pytest.mark.parametrize(
++    "args_one,args_two",
++    [
++        (
++            ("aardvark",),
++            ("aardvark",),
++        ),
++    ],
++)
++def test_duplicate_names_warning(runner, args_one, args_two):
++    @click.command()
++    @click.argument(*args_one)
++    @click.argument(*args_two)
++    def cli(one, two):
++        pass
++
++    with pytest.warns(UserWarning):
++        runner.invoke(cli, [])
+diff --git a/tests/test_options.py b/tests/test_options.py
+index 74ccc5ff940ffa231bfeb2a075bf1b3c3befbb80..2a3b69287554642271452f12e093b28711a60eda 100644
+--- a/tests/test_options.py
++++ b/tests/test_options.py
+@@ -989,3 +989,29 @@ def test_usage_show_choices(runner, choices, metavars):
+ 
+     result = runner.invoke(cli_without_choices, ["--help"])
+     assert metavars in result.output
++
++
++@pytest.mark.parametrize(
++    "opts_one,opts_two",
++    [
++        # No duplicate shortnames
++        (
++            ("-a", "--aardvark"),
++            ("-a", "--avocado"),
++        ),
++        # No duplicate long names
++        (
++            ("-a", "--aardvark"),
++            ("-b", "--aardvark"),
++        ),
++    ],
++)
++def test_duplicate_names_warning(runner, opts_one, opts_two):
++    @click.command()
++    @click.option(*opts_one)
++    @click.option(*opts_two)
++    def cli(one, two):
++        pass
++
++    with pytest.warns(UserWarning):
++        runner.invoke(cli, [])

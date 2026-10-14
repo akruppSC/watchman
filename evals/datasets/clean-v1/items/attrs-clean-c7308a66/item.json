@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-c7308a66",
+  "kind": "clean",
+  "task": "Flesh out resolve_types",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "5d9753a3b11228c72e8068f5e5daeeb728c6fc83",
+    "upstream_commit": "c7308a66ef1f4e60f7dbfa75177634666817d861",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Flesh out resolve_types (#1099)",
+    "date": "2023-03-18"
+  }
+}

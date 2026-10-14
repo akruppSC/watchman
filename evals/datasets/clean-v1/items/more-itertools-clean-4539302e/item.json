@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-4539302e",
+  "kind": "clean",
+  "task": "Improve `mark_ends`",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "89172166167a5323c19ecb45fee49f191ea49bcd",
+    "upstream_commit": "4539302eeecf254e6b1f1ea0d370443a86eee606",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Improve `mark_ends`",
+    "date": "2025-07-22"
+  }
+}

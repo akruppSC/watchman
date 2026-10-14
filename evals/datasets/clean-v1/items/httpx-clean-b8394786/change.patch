@@ -1,0 +1,107 @@
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 06ebb92c42ad391ce100d8351510c68efe0640c2..e2e577b3f53df73e68657b40c6944c29b2057c10 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -977,10 +977,11 @@ class Headers(typing.MutableMapping[str, str]):
+         """
+         normalized_key = key.lower().encode(self.encoding)
+ 
+-        items = []
+-        for _, header_key, header_value in self._list:
+-            if header_key == normalized_key:
+-                items.append(header_value.decode(self.encoding))
++        items = [
++            header_value.decode(self.encoding)
++            for _, header_key, header_value in self._list
++            if header_key == normalized_key
++        ]
+ 
+         if items:
+             return ", ".join(items)
+@@ -996,10 +997,11 @@ class Headers(typing.MutableMapping[str, str]):
+         set_value = value.encode(self._encoding or "utf-8")
+         lookup_key = set_key.lower()
+ 
+-        found_indexes = []
+-        for idx, (_, item_key, _) in enumerate(self._list):
+-            if item_key == lookup_key:
+-                found_indexes.append(idx)
++        found_indexes = [
++            idx
++            for idx, (_, item_key, _) in enumerate(self._list)
++            if item_key == lookup_key
++        ]
+ 
+         for idx in reversed(found_indexes[1:]):
+             del self._list[idx]
+@@ -1016,10 +1018,11 @@ class Headers(typing.MutableMapping[str, str]):
+         """
+         del_key = key.lower().encode(self.encoding)
+ 
+-        pop_indexes = []
+-        for idx, (_, item_key, _) in enumerate(self._list):
+-            if item_key.lower() == del_key:
+-                pop_indexes.append(idx)
++        pop_indexes = [
++            idx
++            for idx, (_, item_key, _) in enumerate(self._list)
++            if item_key.lower() == del_key
++        ]
+ 
+         if not pop_indexes:
+             raise KeyError(key)
+@@ -1745,12 +1748,13 @@ class Cookies(MutableMapping):
+         if domain is not None and path is not None:
+             return self.jar.clear(domain, path, name)
+ 
+-        remove = []
+-        for cookie in self.jar:
+-            if cookie.name == name:
+-                if domain is None or cookie.domain == domain:
+-                    if path is None or cookie.path == path:
+-                        remove.append(cookie)
++        remove = [
++            cookie
++            for cookie in self.jar
++            if cookie.name == name
++            and (domain is None or cookie.domain == domain)
++            and (path is None or cookie.path == path)
++        ]
+ 
+         for cookie in remove:
+             self.jar.clear(cookie.domain, cookie.path, cookie.name)
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 3ac7167e7eab2fe104483c6cf8af9bbad86d1f19..e2b980185e05d11228e1b10a1204229c2eed1c8c 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -144,10 +144,10 @@ async def echo_body(scope, receive, send):
+ 
+ 
+ async def echo_headers(scope, receive, send):
+-    body = {}
+-    for name, value in scope.get("headers", []):
+-        body[name.capitalize().decode()] = value.decode()
+-
++    body = {
++        name.capitalize().decode(): value.decode()
++        for name, value in scope.get("headers", [])
++    }
+     await send(
+         {
+             "type": "http.response.start",
+diff --git a/tests/models/test_responses.py b/tests/models/test_responses.py
+index 742a15bea7e66d93a6719619d5ffe04e046ff90c..f1815dcad525a31a1cad20935623ad73ca92a39c 100644
+--- a/tests/models/test_responses.py
++++ b/tests/models/test_responses.py
+@@ -572,10 +572,7 @@ def test_iter_lines():
+         200,
+         content=b"Hello,\nworld!",
+     )
+-
+-    content = []
+-    for line in response.iter_lines():
+-        content.append(line)
++    content = [line for line in response.iter_lines()]
+     assert content == ["Hello,\n", "world!"]
+ 
+ 

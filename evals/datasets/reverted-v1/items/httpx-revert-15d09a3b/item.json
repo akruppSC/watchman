@@ -1,0 +1,28 @@
+{
+  "id": "httpx-revert-15d09a3b",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `get_environment_proxies`, `URLPattern`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "7d7c4f15b8784e4a550d974139acfa64193b32c2",
+    "upstream_commit": "15d09a3bbc20372cd87e48f17f7c9381c8220a0f",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_utils.py",
+      "line_start": 262,
+      "line_end": 262,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 15d09a3b: fix: NO_PROXY should support IPv4, IPv6 and localhost (#2659)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "fix: NO_PROXY should support IPv4, IPv6 and localhost (#2659)",
+    "date": "2023-04-19"
+  }
+}

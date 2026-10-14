@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-fb95291e",
+  "kind": "clean",
+  "task": "Issue 869: Add a steps argument to circular_shifts",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "9df92dae3887383f053cf548ca21a89850699c9a",
+    "upstream_commit": "fb95291e8f9ac590a88b99252eba5488ef984b4c",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Issue 869: Add a steps argument to circular_shifts",
+    "date": "2024-07-08"
+  }
+}

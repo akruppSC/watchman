@@ -1,0 +1,177 @@
+diff --git a/changelog.d/916.change.rst b/changelog.d/916.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a5ccd22bb7c88808181d64c7b71328522307514
+--- /dev/null
++++ b/changelog.d/916.change.rst
+@@ -0,0 +1 @@
++Added ``attrs.validators.min_len()``.
+diff --git a/docs/api.rst b/docs/api.rst
+index 06c5a8093ec39d0c6071a020fae898d1ffbd67e6..a60a6e0822d7f676d9c4866f75b034d11f75ed92 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -524,6 +524,22 @@ All objects from ``attrs.validators`` are also available from ``attr.validators`
+          ...
+       ValueError: ("Length of 'x' must be <= 4: 5")
+ 
++.. autofunction:: attrs.validators.min_len
++
++   For example:
++
++   .. doctest::
++
++      >>> @attrs.define
++      ... class C:
++      ...     x = attrs.field(validator=attrs.validators.min_len(1))
++      >>> C("bacon")
++      C(x='bacon')
++      >>> C("")
++      Traceback (most recent call last):
++         ...
++      ValueError: ("Length of 'x' must be => 1: 0")
++
+ .. autofunction:: attrs.validators.instance_of
+ 
+    For example:
+diff --git a/src/attr/validators.py b/src/attr/validators.py
+index 0b0c8342f2528678c1ab84b027abb12175f59fc7..7e3ff163573f8287cc98d3bd28facc5bfc8f50bf 100644
+--- a/src/attr/validators.py
++++ b/src/attr/validators.py
+@@ -37,6 +37,7 @@ __all__ = [
+     "lt",
+     "matches_re",
+     "max_len",
++    "min_len",
+     "optional",
+     "provides",
+     "set_disabled",
+@@ -559,3 +560,34 @@ def max_len(length):
+     .. versionadded:: 21.3.0
+     """
+     return _MaxLengthValidator(length)
++
++
++@attrs(repr=False, frozen=True, slots=True)
++class _MinLengthValidator(object):
++    min_length = attrib()
++
++    def __call__(self, inst, attr, value):
++        """
++        We use a callable class to be able to change the ``__repr__``.
++        """
++        if len(value) < self.min_length:
++            raise ValueError(
++                "Length of '{name}' must be => {min}: {len}".format(
++                    name=attr.name, min=self.min_length, len=len(value)
++                )
++            )
++
++    def __repr__(self):
++        return "<min_len validator for {min}>".format(min=self.min_length)
++
++
++def min_len(length):
++    """
++    A validator that raises `ValueError` if the initializer is called
++    with a string or iterable that is shorter than *length*.
++
++    :param int length: Minimum length of the string or iterable
++
++    .. versionadded:: 22.1.0
++    """
++    return _MinLengthValidator(length)
+diff --git a/src/attr/validators.pyi b/src/attr/validators.pyi
+index 5e00b8543397f8c9c353d7b7129db3dda13af469..81b9910f5511419ef8170ea29843fc529599d92c 100644
+--- a/src/attr/validators.pyi
++++ b/src/attr/validators.pyi
+@@ -76,3 +76,4 @@ def le(val: _T) -> _ValidatorType[_T]: ...
+ def ge(val: _T) -> _ValidatorType[_T]: ...
+ def gt(val: _T) -> _ValidatorType[_T]: ...
+ def max_len(length: int) -> _ValidatorType[_T]: ...
++def min_len(length: int) -> _ValidatorType[_T]: ...
+diff --git a/tests/test_validators.py b/tests/test_validators.py
+index 38c39f34842c4a7f510f5a475bdce91156a3d984..69ec164562d5211886ac36e621df39882b40a6ad 100644
+--- a/tests/test_validators.py
++++ b/tests/test_validators.py
+@@ -28,6 +28,7 @@ from attr.validators import (
+     lt,
+     matches_re,
+     max_len,
++    min_len,
+     optional,
+     provides,
+ )
+@@ -950,3 +951,74 @@ class TestMaxLen:
+         __repr__ is meaningful.
+         """
+         assert repr(max_len(23)) == "<max_len validator for 23>"
++
++
++class TestMinLen:
++    """
++    Tests for `min_len`.
++    """
++
++    MIN_LENGTH = 2
++
++    def test_in_all(self):
++        """
++        validator is in ``__all__``.
++        """
++        assert min_len.__name__ in validator_module.__all__
++
++    def test_retrieve_min_len(self):
++        """
++        The configured min. length can be extracted from the Attribute
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=min_len(self.MIN_LENGTH))
++
++        assert fields(Tester).value.validator.min_length == self.MIN_LENGTH
++
++    @pytest.mark.parametrize(
++        "value",
++        [
++            "foo",
++            "spam",
++            list(range(MIN_LENGTH)),
++            {"spam": 3, "eggs": 4},
++        ],
++    )
++    def test_check_valid(self, value):
++        """
++        Silent if len(value) => min_len.
++        Values can be strings and other iterables.
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=min_len(self.MIN_LENGTH))
++
++        Tester(value)  # shouldn't raise exceptions
++
++    @pytest.mark.parametrize(
++        "value",
++        [
++            "",
++            list(range(1)),
++        ],
++    )
++    def test_check_invalid(self, value):
++        """
++        Raise ValueError if len(value) < min_len.
++        """
++
++        @attr.s
++        class Tester(object):
++            value = attr.ib(validator=min_len(self.MIN_LENGTH))
++
++        with pytest.raises(ValueError):
++            Tester(value)
++
++    def test_repr(self):
++        """
++        __repr__ is meaningful.
++        """
++        assert repr(min_len(23)) == "<min_len validator for 23>"

@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-2d7d14d7",
+  "kind": "clean",
+  "task": "Speed up ichunked",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "1e0e6621ec8726dc7a21110e2e37985d5e051981",
+    "upstream_commit": "2d7d14d7786ca427a2fe0a0640080c354f000aad",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Speed up ichunked",
+    "date": "2024-01-08"
+  }
+}

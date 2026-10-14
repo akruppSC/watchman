@@ -1,0 +1,234 @@
+diff --git a/changelog.d/646.change.rst b/changelog.d/646.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa3e3893d75fe49b98d6c92a67e726abc7633819
+--- /dev/null
++++ b/changelog.d/646.change.rst
+@@ -0,0 +1 @@
++``attr.asdict(retain_collection_types=False)`` (default) dumps collection-esque keys as tuples.
+diff --git a/changelog.d/888.change.rst b/changelog.d/888.change.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa3e3893d75fe49b98d6c92a67e726abc7633819
+--- /dev/null
++++ b/changelog.d/888.change.rst
+@@ -0,0 +1 @@
++``attr.asdict(retain_collection_types=False)`` (default) dumps collection-esque keys as tuples.
+diff --git a/src/attr/__init__.pyi b/src/attr/__init__.pyi
+index a2b23dcc68008c807958ef7b95c6931cb47b329a..2af76b7a8d1211503995571f8958aabd38def79d 100644
+--- a/src/attr/__init__.pyi
++++ b/src/attr/__init__.pyi
+@@ -456,6 +456,7 @@ def asdict(
+     value_serializer: Optional[
+         Callable[[type, Attribute[Any], Any], Any]
+     ] = ...,
++    tuple_keys: Optional[bool] = ...,
+ ) -> Dict[str, Any]: ...
+ 
+ # TODO: add support for returning NamedTuple from the mypy plugin
+diff --git a/src/attr/_funcs.py b/src/attr/_funcs.py
+index 73271c5d558b96e0f6956794922df476d7071800..e6b0430227328ff91819935375a9380d18992b52 100644
+--- a/src/attr/_funcs.py
++++ b/src/attr/_funcs.py
+@@ -46,6 +46,8 @@ def asdict(
+     ..  versionadded:: 16.0.0 *dict_factory*
+     ..  versionadded:: 16.1.0 *retain_collection_types*
+     ..  versionadded:: 20.3.0 *value_serializer*
++    ..  versionadded:: 21.3.0 If a dict has a collection for a key, it is
++        serialized as a tuple.
+     """
+     attrs = fields(inst.__class__)
+     rv = dict_factory()
+@@ -61,11 +63,11 @@ def asdict(
+             if has(v.__class__):
+                 rv[a.name] = asdict(
+                     v,
+-                    True,
+-                    filter,
+-                    dict_factory,
+-                    retain_collection_types,
+-                    value_serializer,
++                    recurse=True,
++                    filter=filter,
++                    dict_factory=dict_factory,
++                    retain_collection_types=retain_collection_types,
++                    value_serializer=value_serializer,
+                 )
+             elif isinstance(v, (tuple, list, set, frozenset)):
+                 cf = v.__class__ if retain_collection_types is True else list
+@@ -73,10 +75,11 @@ def asdict(
+                     [
+                         _asdict_anything(
+                             i,
+-                            filter,
+-                            dict_factory,
+-                            retain_collection_types,
+-                            value_serializer,
++                            is_key=False,
++                            filter=filter,
++                            dict_factory=dict_factory,
++                            retain_collection_types=retain_collection_types,
++                            value_serializer=value_serializer,
+                         )
+                         for i in v
+                     ]
+@@ -87,17 +90,19 @@ def asdict(
+                     (
+                         _asdict_anything(
+                             kk,
+-                            filter,
+-                            df,
+-                            retain_collection_types,
+-                            value_serializer,
++                            is_key=True,
++                            filter=filter,
++                            dict_factory=df,
++                            retain_collection_types=retain_collection_types,
++                            value_serializer=value_serializer,
+                         ),
+                         _asdict_anything(
+                             vv,
+-                            filter,
+-                            df,
+-                            retain_collection_types,
+-                            value_serializer,
++                            is_key=False,
++                            filter=filter,
++                            dict_factory=df,
++                            retain_collection_types=retain_collection_types,
++                            value_serializer=value_serializer,
+                         ),
+                     )
+                     for kk, vv in iteritems(v)
+@@ -111,6 +116,7 @@ def asdict(
+ 
+ def _asdict_anything(
+     val,
++    is_key,
+     filter,
+     dict_factory,
+     retain_collection_types,
+@@ -123,22 +129,29 @@ def _asdict_anything(
+         # Attrs class.
+         rv = asdict(
+             val,
+-            True,
+-            filter,
+-            dict_factory,
+-            retain_collection_types,
+-            value_serializer,
++            recurse=True,
++            filter=filter,
++            dict_factory=dict_factory,
++            retain_collection_types=retain_collection_types,
++            value_serializer=value_serializer,
+         )
+     elif isinstance(val, (tuple, list, set, frozenset)):
+-        cf = val.__class__ if retain_collection_types is True else list
++        if retain_collection_types is not True:
++            cf = val.__class__
++        elif is_key:
++            cf = tuple
++        else:
++            cf = list
++
+         rv = cf(
+             [
+                 _asdict_anything(
+                     i,
+-                    filter,
+-                    dict_factory,
+-                    retain_collection_types,
+-                    value_serializer,
++                    is_key=False,
++                    filter=filter,
++                    dict_factory=dict_factory,
++                    retain_collection_types=retain_collection_types,
++                    value_serializer=value_serializer,
+                 )
+                 for i in val
+             ]
+@@ -148,10 +161,20 @@ def _asdict_anything(
+         rv = df(
+             (
+                 _asdict_anything(
+-                    kk, filter, df, retain_collection_types, value_serializer
++                    kk,
++                    is_key=True,
++                    filter=filter,
++                    dict_factory=df,
++                    retain_collection_types=retain_collection_types,
++                    value_serializer=value_serializer,
+                 ),
+                 _asdict_anything(
+-                    vv, filter, df, retain_collection_types, value_serializer
++                    vv,
++                    is_key=False,
++                    filter=filter,
++                    dict_factory=df,
++                    retain_collection_types=retain_collection_types,
++                    value_serializer=value_serializer,
+                 ),
+             )
+             for kk, vv in iteritems(val)
+diff --git a/tests/test_funcs.py b/tests/test_funcs.py
+index e957d0e380aeae43d771d47588c4271a9810e70a..79dfdffe2e6c866469ee51c4385f78ac67e7761c 100644
+--- a/tests/test_funcs.py
++++ b/tests/test_funcs.py
+@@ -26,7 +26,7 @@ SEQUENCE_TYPES = (list, tuple)
+ 
+ 
+ @pytest.fixture(scope="session", name="C")
+-def fixture_C():
++def _C():
+     """
+     Return a simple but fully featured attrs class with an x and a y attribute.
+     """
+@@ -199,6 +199,37 @@ class TestAsDict(object):
+ 
+         assert [a.name for a in fields(cls)] == list(dict_instance.keys())
+ 
++    def test_retain_keys_are_tuples(self):
++        """
++        retain_collect_types also retains keys.
++        """
++
++        @attr.s
++        class A(object):
++            a = attr.ib()
++
++        instance = A({(1,): 1})
++
++        assert {"a": {(1,): 1}} == attr.asdict(
++            instance, retain_collection_types=True
++        )
++
++    def test_tuple_keys(self):
++        """
++        If a key is collection type, retain_collection_types is False,
++         the key is serialized as a tuple.
++
++        See #646
++        """
++
++        @attr.s
++        class A(object):
++            a = attr.ib()
++
++        instance = A({(1,): 1})
++
++        assert {"a": {(1,): 1}} == attr.asdict(instance)
++
+ 
+ class TestAsTuple(object):
+     """
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index 75b41b89d7c0e3e6f89720528bb971ce1d3d7d94..3fced27eeabc32fda3753e0d7b601fa6771fa0ee 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -293,3 +293,7 @@ class FactoryTest:
+ class MatchArgs:
+     a: int = attr.ib()
+     b: int = attr.ib()
++
++
++attr.asdict(FactoryTest())
++attr.asdict(FactoryTest(), retain_collection_types=False)

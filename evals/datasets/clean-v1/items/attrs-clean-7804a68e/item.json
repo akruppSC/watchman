@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-7804a68e",
+  "kind": "clean",
+  "task": "Added attrs.validators.min_len()",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "a080e54e025d4554e87a23058172406b81b09706",
+    "upstream_commit": "7804a68ee3dd2c2a0302d482237c51ce975ef17f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Added attrs.validators.min_len() (#916)",
+    "date": "2022-02-02"
+  }
+}

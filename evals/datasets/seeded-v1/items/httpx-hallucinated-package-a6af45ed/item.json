@@ -1,0 +1,35 @@
+{
+  "id": "httpx-hallucinated-package-a6af45ed",
+  "kind": "seeded",
+  "task": "Use '%20' for encoding spaces in query parameters.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "57daabf673705954afa94686c0002801c93d31f3",
+    "upstream_commit": "a6af45edac51dce888e1e1f0ebf344f126a1c66c",
+    "origin": "upstream commit + seeded defect (hallucinated_package)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_urlparse.py",
+      "line_start": 25,
+      "line_end": 25,
+      "category": "hallucinated_dependency",
+      "description": "`urlencode` decorated with `lru_memo` from `cachetools_plus`, a package that doesn't exist.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_urlparse.py",
+          "line_start": 439,
+          "line_end": 439
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_package",
+    "upstream_subject": "Use '%20' for encoding spaces in query parameters. (#2543)",
+    "date": "2023-01-10"
+  }
+}

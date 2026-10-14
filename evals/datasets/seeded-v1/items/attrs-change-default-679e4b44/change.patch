@@ -1,0 +1,284 @@
+diff --git a/changelog.d/835.breaking.rst b/changelog.d/835.breaking.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..8cdf0412dbaf6e891a16dd9e66358cd6cd450923
+--- /dev/null
++++ b/changelog.d/835.breaking.rst
+@@ -0,0 +1,4 @@
++When using ``@attr.define``, converters are now run by default when setting an attribute on an instance -- additionally to validators.
++I.e. the new default is ``on_setattr=[attr.setters.convert, attr.setters.validate]``.
++
++This is unfortunately a breaking change, but it was an oversight, impossible to raise a ``DeprecationWarning`` about, and it's better to fix it now while the APIs are very fresh with few users.
+diff --git a/changelog.d/886.breaking.rst b/changelog.d/886.breaking.rst
+new file mode 100644
+index 0000000000000000000000000000000000000000..8cdf0412dbaf6e891a16dd9e66358cd6cd450923
+--- /dev/null
++++ b/changelog.d/886.breaking.rst
+@@ -0,0 +1,4 @@
++When using ``@attr.define``, converters are now run by default when setting an attribute on an instance -- additionally to validators.
++I.e. the new default is ``on_setattr=[attr.setters.convert, attr.setters.validate]``.
++
++This is unfortunately a breaking change, but it was an oversight, impossible to raise a ``DeprecationWarning`` about, and it's better to fix it now while the APIs are very fresh with few users.
+diff --git a/docs/api.rst b/docs/api.rst
+index afbc870255750e65d3205132d0d3d646cbcbde06..1dcaf978ef26d6cb652a280f73e1e9875e62237a 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -707,13 +707,15 @@ The most notable differences are:
+ - *auto_exc=True*
+ - *auto_detect=True*
+ - *eq=True*, but *order=False*
+-- Validators run when you set an attribute (*on_setattr=attr.setters.validate*).
++- Converters and validators are run when you set an attribute (*on_setattr=[attr.setters.convert, attr.setters.validate*]).
+ - Some options that aren't relevant to Python 3 have been dropped.
+ 
+ Please note that these are *defaults* and you're free to override them, just like before.
+ 
+ Since the Python ecosystem has settled on the term ``field`` for defining attributes, we have also added `attr.field` as a substitute for `attr.ib`.
+ 
++.. versionchanged:: 21.3.0 Converters are also run ``on_setattr``.
++
+ .. note::
+ 
+    `attr.s` and `attr.ib` (and their serious business cousins) aren't going anywhere.
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 7f22b273bbc5bba342f56a7b5a5b97d0d6647471..990786954c20154f4b63cc4d5e2377fd1502d251 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -59,6 +59,8 @@ _empty_metadata_singleton = metadata_proxy({})
+ # Unique object for unequivocal getattr() defaults.
+ _sentinel = object()
+ 
++_ng_default_on_setattr = setters.pipe(setters.convert, setters.validate)
++
+ 
+ class _Nothing(object):
+     """
+@@ -722,13 +724,31 @@ class _ClassBuilder(object):
+             self._cls_dict["__delattr__"] = _frozen_delattrs
+ 
+             self._wrote_own_setattr = True
+-        elif on_setattr == setters.validate:
++        elif on_setattr in (
++            _ng_default_on_setattr,
++            setters.validate,
++            setters.convert,
++        ):
++            has_validator = has_converter = False
+             for a in attrs:
+                 if a.validator is not None:
++                    has_validator = True
++                if a.converter is not None:
++                    has_converter = True
++
++                if has_validator and has_converter:
+                     break
+-            else:
+-                # If class-level on_setattr is set to validating, but there's
+-                # no field to validate, pretend like there's no on_setattr.
++            if (
++                (
++                    on_setattr == _ng_default_on_setattr
++                    and not (has_validator or has_converter)
++                )
++                or (on_setattr == setters.validate and not has_validator)
++                or (on_setattr == setters.convert and not has_converter)
++            ):
++                # If class-level on_setattr is set to convert + validate, but
++                # there's no field to convert or validate, pretend like there's
++                # no on_setattr.
+                 self._on_setattr = None
+ 
+         if getstate_setstate:
+@@ -2123,9 +2143,7 @@ def _make_init(
+                 raise ValueError("Frozen classes can't use on_setattr.")
+ 
+             needs_cached_setattr = True
+-        elif (
+-            has_cls_on_setattr and a.on_setattr is not setters.NO_OP
+-        ) or _is_slot_attr(a.name, base_attr_map):
++        elif has_cls_on_setattr and a.on_setattr is not setters.NO_OP:
+             needs_cached_setattr = True
+ 
+     unique_filename = _generate_unique_filename(cls, "init")
+diff --git a/src/attr/_next_gen.py b/src/attr/_next_gen.py
+index 1d8acac366f7e2d1c3521cdc553ab82fc5a47320..90b92e607d84561c4eb576223a2079b815f7cb30 100644
+--- a/src/attr/_next_gen.py
++++ b/src/attr/_next_gen.py
+@@ -8,7 +8,13 @@ from functools import partial
+ from attr.exceptions import UnannotatedAttributeError
+ 
+ from . import setters
+-from ._make import NOTHING, _frozen_setattrs, attrib, attrs
++from ._make import (
++    NOTHING,
++    _frozen_setattrs,
++    _ng_default_on_setattr,
++    attrib,
++    attrs,
++)
+ 
+ 
+ def define(
+@@ -25,7 +31,7 @@ def define(
+     auto_attribs=None,
+     kw_only=False,
+     cache_hash=False,
+-    auto_exc=True,
++    auto_exc=False,
+     eq=None,
+     order=False,
+     auto_detect=True,
+@@ -35,8 +41,10 @@ def define(
+     match_args=True,
+ ):
+     r"""
+-    The only behavioral differences are the handling of the *auto_attribs*
+-    option:
++    Define an ``attrs`` class.
++
++    The behavioral differences to `attr.s` are the handling of the
++    *auto_attribs* option:
+ 
+     :param Optional[bool] auto_attribs: If set to `True` or `False`, it behaves
+        exactly like `attr.s`. If left `None`, `attr.s` will try to guess:
+@@ -46,9 +54,11 @@ def define(
+        2. Otherwise it assumes *auto_attribs=False* and tries to collect
+           `attr.ib`\ s.
+ 
+-    and that mutable classes (``frozen=False``) validate on ``__setattr__``.
++    and that mutable classes (``frozen=False``) convert and validate on
++    ``__setattr__``.
+ 
+     .. versionadded:: 20.1.0
++    .. versionchanged:: 21.3.0 Converters are also run ``on_setattr``.
+     """
+ 
+     def do_it(cls, auto_attribs):
+@@ -86,9 +96,9 @@ def define(
+ 
+         had_on_setattr = on_setattr not in (None, setters.NO_OP)
+ 
+-        # By default, mutable classes validate on setattr.
++        # By default, mutable classes convert & validate on setattr.
+         if frozen is False and on_setattr is None:
+-            on_setattr = setters.validate
++            on_setattr = _ng_default_on_setattr
+ 
+         # However, if we subclass a frozen class, we inherit the immutability
+         # and disable on_setattr.
+diff --git a/tests/test_functional.py b/tests/test_functional.py
+index e9aa3c267546933557072826102356885b881ab2..c616f8c1f74d6ce6ced2260e602e0468312267ec 100644
+--- a/tests/test_functional.py
++++ b/tests/test_functional.py
+@@ -17,7 +17,7 @@ from hypothesis.strategies import booleans
+ 
+ import attr
+ 
+-from attr._compat import PY2, TYPE
++from attr._compat import PY2, PY36, TYPE
+ from attr._make import NOTHING, Attribute
+ from attr.exceptions import FrozenInstanceError
+ 
+@@ -692,8 +692,9 @@ class TestFunctional(object):
+     @pytest.mark.parametrize("slots", [True, False])
+     def test_no_setattr_if_validate_without_validators(self, slots):
+         """
+-        If a class has on_setattr=attr.setters.validate (default in NG APIs)
+-        but sets no validators, don't use the (slower) setattr in __init__.
++        If a class has on_setattr=attr.setters.validate (former default in NG
++        APIs) but sets no validators, don't use the (slower) setattr in
++        __init__.
+ 
+         Regression test for #816.
+         """
+@@ -713,6 +714,58 @@ class TestFunctional(object):
+         assert "self.y = y" in src
+         assert object.__setattr__ == D.__setattr__
+ 
++    @pytest.mark.parametrize("slots", [True, False])
++    def test_no_setattr_if_convert_without_converters(self, slots):
++        """
++        If a class has on_setattr=attr.setters.convert but sets no validators,
++        don't use the (slower) setattr in __init__.
++        """
++
++        @attr.s(on_setattr=attr.setters.convert)
++        class C(object):
++            x = attr.ib()
++
++        @attr.s(on_setattr=attr.setters.convert)
++        class D(C):
++            y = attr.ib()
++
++        src = inspect.getsource(D.__init__)
++
++        assert "setattr" not in src
++        assert "self.x = x" in src
++        assert "self.y = y" in src
++        assert object.__setattr__ == D.__setattr__
++
++    @pytest.mark.skipif(not PY36, reason="NG APIs are 3.6+")
++    @pytest.mark.parametrize("slots", [True, False])
++    def test_no_setattr_with_ng_defaults(self, slots):
++        """
++        If a class has the NG default on_setattr=[convert, validate] but sets
++        no validators or converters, don't use the (slower) setattr in
++        __init__.
++        """
++
++        @attr.define
++        class C(object):
++            x = attr.ib()
++
++        src = inspect.getsource(C.__init__)
++
++        assert "setattr" not in src
++        assert "self.x = x" in src
++        assert object.__setattr__ == C.__setattr__
++
++        @attr.define
++        class D(C):
++            y = attr.ib()
++
++        src = inspect.getsource(D.__init__)
++
++        assert "setattr" not in src
++        assert "self.x = x" in src
++        assert "self.y = y" in src
++        assert object.__setattr__ == D.__setattr__
++
+     def test_on_setattr_detect_inherited_validators(self):
+         """
+         _make_init detects the presence of a validator even if the field is
+diff --git a/tests/test_next_gen.py b/tests/test_next_gen.py
+index fce01ad45a0b1815324c0f2313102b9a850720a6..fdc06b7192b1d467f1239566b51fa435b91c2b61 100644
+--- a/tests/test_next_gen.py
++++ b/tests/test_next_gen.py
+@@ -308,3 +308,28 @@ class TestNextGen:
+ 
+         assert "foo" == ei.value.x
+         assert ei.value.__cause__ is None
++
++    def test_converts_and_validates_by_default(self):
++        """
++        If no on_setattr is set, assume setters.convert, setters.validate.
++        """
++
++        @attr.define
++        class C:
++            x: int = attr.field(converter=int)
++
++            @x.validator
++            def _v(self, _, value):
++                if value < 10:
++                    raise ValueError("must be >=10")
++
++        inst = C(10)
++
++        # Converts
++        inst.x = "11"
++
++        assert 11 == inst.x
++
++        # Validates
++        with pytest.raises(ValueError, match="must be >=10"):
++            inst.x = "9"

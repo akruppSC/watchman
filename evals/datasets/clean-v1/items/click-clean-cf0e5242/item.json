@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-cf0e5242",
+  "kind": "clean",
+  "task": "Keep the change entry concise",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "44c2bea54ef1f4d153138be2db9537a7f442d461",
+    "upstream_commit": "cf0e5242b3adfbfbeaff64b24a398b57d15ae94b",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Keep the change entry concise",
+    "date": "2025-08-21"
+  }
+}

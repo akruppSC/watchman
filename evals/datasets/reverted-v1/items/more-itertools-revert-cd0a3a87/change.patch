@@ -1,0 +1,16 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 1facd8eac34c52658d32ceba0b04f467a4e24632..41a2fd8cf6d6d54b994824f2209d32df5e842f21 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -475,10 +475,7 @@ def iterate(func, start):
+     """
+     while True:
+         yield start
+-        try:
+-            start = func(start)
+-        except StopIteration:
+-            break
++        start = func(start)
+ 
+ 
+ def with_iter(context_manager):

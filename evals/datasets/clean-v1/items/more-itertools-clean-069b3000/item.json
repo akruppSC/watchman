@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-069b3000",
+  "kind": "clean",
+  "task": "Issue 1214: Update __eq__ and __hash__ for numeric_range",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "da37f9de442b69fbcaa9f54fb042c2a6999473a6",
+    "upstream_commit": "069b30002a985c02f1ab18409290a699fd649376",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Issue 1214: Update __eq__ and __hash__ for numeric_range",
+    "date": "2026-07-16"
+  }
+}

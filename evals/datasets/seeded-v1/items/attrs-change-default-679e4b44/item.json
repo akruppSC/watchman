@@ -1,0 +1,29 @@
+{
+  "id": "attrs-change-default-679e4b44",
+  "kind": "seeded",
+  "task": "NG: convert on setattr by default",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "8ae0bd904d6147ce37750fa7ec336f951c14495c",
+    "upstream_commit": "679e4b443d5558d5e64133ec9047e7a4e737426b",
+    "origin": "upstream commit + seeded defect (change_default)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_next_gen.py",
+      "line_start": 34,
+      "line_end": 34,
+      "category": "silent_behavior_change",
+      "description": "Default of a parameter of public `define` changed from True to False; existing callers silently get new behavior.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "change_default",
+    "upstream_subject": "NG: convert on setattr by default (#886)",
+    "date": "2021-12-14"
+  }
+}

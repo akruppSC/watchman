@@ -1,0 +1,96 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index cf61fc60eb15bb172452c229cd66544dfff35037..ce8c2cf7d84ac18cd485cb4fde8e22e683f64359 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -1009,12 +1009,8 @@ def matmul(m1, m2):
+     return batched(starmap(_sumprod, product(m1, transpose(m2))), n)
+ 
+ 
+-def factor(n):
+-    """Yield the prime factors of n.
+-
+-    >>> list(factor(360))
+-    [2, 2, 2, 3, 3, 5]
+-    """
++def _factor_trial(n):
++    # Factor using trial division, used for small inputs
+     for prime in sieve(math.isqrt(n) + 1):
+         while not n % prime:
+             yield prime
+@@ -1025,6 +1021,44 @@ def factor(n):
+         yield n
+ 
+ 
++def _factor_pollard(n):
++    # Return a factor of n using Pollard's rho algorithm
++    for b in range(1, n - 2):
++        x = y = 2
++        d = 1
++        while d == 1:
++            x = (x * x + b) % n
++            y = (y * y + b) % n
++            y = (y * y + b) % n
++            d = math.gcd(x - y, n)
++        if d != n:
++            return d
++    raise ValueError('prime or under 5')
++
++
++def factor(n):
++    """Yield the prime factors of n.
++
++    >>> list(factor(360))
++    [2, 2, 2, 3, 3, 5]
++
++    This function uses trial division for when *n* is less than 1000 and
++    Pollard's rho algorithm for larger inputs.
++    """
++    todo = [n] if n > 1 else []
++    factors = []
++    while todo:
++        n = todo.pop()
++        if is_prime(n):
++            factors += [n]
++        elif n < 1000:
++            factors += _factor_trial(n)
++        else:
++            fact = _factor_pollard(n)
++            todo += (n // fact, fact)
++    return iter(sorted(factors))
++
++
+ def polynomial_eval(coefficients, x):
+     """Evaluate a polynomial at a specific value.
+ 
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 1f73af91851efb001ee440228581cb71c2e402bc..63f641ac5dd07a582daea7b3ef533e335d7b8a0a 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -129,6 +129,8 @@ def reshape(
+     matrix: Iterable[Iterable[_T]], cols: int
+ ) -> Iterator[tuple[_T, ...]]: ...
+ def matmul(m1: Sequence[_T], m2: Sequence[_T]) -> Iterator[tuple[_T]]: ...
++def _factor_trial(n: int) -> Iterator[int]: ...
++def _factor_pollard(n: int) -> int: ...
+ def factor(n: int) -> Iterator[int]: ...
+ def polynomial_eval(coefficients: Sequence[_T], x: _U) -> _U: ...
+ def sum_of_squares(it: Iterable[_T]) -> _T: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 6f8bfafe2672340eb70f13b95910b7e4bc458676..c31d2b15fb96b42d4be94fa64d297f953770438f 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -1153,8 +1153,12 @@ class FactorTests(TestCase):
+             (6, [2, 3]),
+             (360, [2, 2, 2, 3, 3, 5]),
+             (128_884_753_939, [128_884_753_939]),
+-            (999953 * 999983, [999953, 999983]),
+-            (909_909_090_909, [3, 3, 7, 13, 13, 751, 113797]),
++            (999_953 * 999_983, [999_953, 999_983]),
++            (909_909_090_909, [3, 3, 7, 13, 13, 751, 1_137_97]),
++            (
++                1_647_403_876_764_101_672_307_088,
++                [2, 2, 2, 2, 19, 23, 109471, 13571009, 158594251],
++            ),
+         ):
+             with self.subTest(n=n):
+                 actual = list(mi.factor(n))

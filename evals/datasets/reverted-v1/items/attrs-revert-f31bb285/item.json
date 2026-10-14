@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-f31bb285",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `resolve_types`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "7c99a4953085186790a28dd441a93dc665f61269",
+    "upstream_commit": "f31bb2850a520993396ebdae598056fb3e3af6f8",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_funcs.py",
+      "line_start": 380,
+      "line_end": 392,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by f31bb285: Fix bug in resolve_types with subclasses (#843)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix bug in resolve_types with subclasses (#843)",
+    "date": "2021-09-19"
+  }
+}

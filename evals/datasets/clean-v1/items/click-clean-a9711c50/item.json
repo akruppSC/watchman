@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-a9711c50",
+  "kind": "clean",
+  "task": "custom temp directory with CLIRunner.isolated_filesystem",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "90a6c78ae574de35d3783e0d575b688a12f09a3d",
+    "upstream_commit": "a9711c50be5ee37104068b309431c5ab02968b8f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "custom temp directory with CLIRunner.isolated_filesystem",
+    "date": "2020-11-23"
+  }
+}

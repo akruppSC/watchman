@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-4f399222",
+  "kind": "clean",
+  "task": "Issue 1093: Add serialize()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "130d1ac88eff33084b14759402a4f8ba1d02c6d7",
+    "upstream_commit": "4f399222d0b7953856db06d7f269bd3ede9e32e7",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Issue 1093: Add serialize()",
+    "date": "2025-11-05"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "attrs-revert-c9150d27",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `_ClassBuilder`.",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "882805e173ba970f381ed8f162b650eb7fbc1160",
+    "upstream_commit": "c9150d278ced32056d73c239ff64034e5056bcb6",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 937,
+      "line_end": 939,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by c9150d27: Fix backward compatibility with pickles before v22.2.0 (#1085)",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix backward compatibility with pickles before v22.2.0 (#1085)",
+    "date": "2023-01-25"
+  }
+}

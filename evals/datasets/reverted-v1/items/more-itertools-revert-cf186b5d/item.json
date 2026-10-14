@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-cf186b5d",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `product_index`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "aa8c480086052d4c2a64490d3214e67b7c6e674b",
+    "upstream_commit": "cf186b5de4797602fef76c3391da2d110b88a954",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4334,
+      "line_end": 4340,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by cf186b5d: Fix product_index() with iterator input",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fix product_index() with iterator input",
+    "date": "2025-10-10"
+  }
+}

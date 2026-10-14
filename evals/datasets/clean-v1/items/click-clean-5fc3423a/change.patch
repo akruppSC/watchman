@@ -1,0 +1,105 @@
+diff --git a/CHANGES.rst b/CHANGES.rst
+index 82251066449911e331507e6066a688e04dc59ce1..602aa22c05c33710a21e39b0f70f44d4cd6d8621 100644
+--- a/CHANGES.rst
++++ b/CHANGES.rst
+@@ -6,8 +6,8 @@ Version 8.3.x
+ Unreleased
+ 
+ -   Don't discard pager arguments by correctly using subprocess.Popen. :issue:`3039` :pr:`3055`
+-
+-
++-   Replace ``Sentinel.UNSET`` default values by ``None`` as they're passed through
++    the ``Context.invoke()`` method. :issue:`3066` :issue:`3065` :pr:`3068`
+ 
+ Version 8.3.0
+ --------------
+diff --git a/src/click/core.py b/src/click/core.py
+index ff2f74ad5dc3879b258f6137c8928e586a28ea4b..cd8052f7d3cd1b1668f17800c221d1e69e863604 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -799,8 +799,18 @@ class Context:
+ 
+             for param in other_cmd.params:
+                 if param.name not in kwargs and param.expose_value:
++                    default_value = param.get_default(ctx)
++                    # We explicitly hide the :attr:`UNSET` value to the user, as we
++                    # choose to make it an implementation detail. And because ``invoke``
++                    # has been designed as part of Click public API, we return ``None``
++                    # instead. Refs:
++                    # https://github.com/pallets/click/issues/3066
++                    # https://github.com/pallets/click/issues/3065
++                    # https://github.com/pallets/click/pull/3068
++                    if default_value is UNSET:
++                        default_value = None
+                     kwargs[param.name] = param.type_cast_value(  # type: ignore
+-                        ctx, param.get_default(ctx)
++                        ctx, default_value
+                     )
+ 
+             # Track all kwargs as params, so that forward() will pass
+diff --git a/tests/test_commands.py b/tests/test_commands.py
+index a5aa43f8a6878ec9d792990291d1337d3aa6a45e..f26529a5425293546152faff273dec5770430c91 100644
+--- a/tests/test_commands.py
++++ b/tests/test_commands.py
+@@ -228,24 +228,52 @@ def test_object_propagation(runner):
+         assert result.output == "Debug is off\n"
+ 
+ 
+-def test_other_command_invoke_with_defaults(runner):
++@pytest.mark.parametrize(
++    ("opt_params", "expected"),
++    (
++        # Original tests.
++        ({"type": click.INT, "default": 42}, 42),
++        ({"type": click.INT, "default": "15"}, 15),
++        ({"multiple": True}, ()),
++        # SENTINEL value tests.
++        ({"default": None}, None),
++        ({"type": click.STRING}, None),  # No default specified, should be None.
++        ({"type": click.BOOL, "default": False}, False),
++        ({"type": click.BOOL, "default": True}, True),
++        ({"type": click.FLOAT, "default": 3.14}, 3.14),
++        # Multiple with default.
++        ({"multiple": True, "default": [1, 2, 3]}, (1, 2, 3)),
++        ({"multiple": True, "default": ()}, ()),
++        # Required option without value should use SENTINEL behavior.
++        ({"required": False}, None),
++        # Choice type with default.
++        ({"type": click.Choice(["a", "b", "c"]), "default": "b"}, "b"),
++        # Path type with default.
++        ({"type": click.Path(), "default": "/tmp"}, "/tmp"),
++        # Flag options.
++        ({"is_flag": True, "default": False}, False),
++        ({"is_flag": True, "default": True}, True),
++        # Count option.
++        ({"count": True}, 0),
++        # Hidden option.
++        ({"hidden": True, "default": "secret"}, "secret"),
++    ),
++)
++def test_other_command_invoke_with_defaults(runner, opt_params, expected):
+     @click.command()
+     @click.pass_context
+     def cli(ctx):
+         return ctx.invoke(other_cmd)
+ 
+     @click.command()
+-    @click.option("-a", type=click.INT, default=42)
+-    @click.option("-b", type=click.INT, default="15")
+-    @click.option("-c", multiple=True)
++    @click.option("-a", **opt_params)
+     @click.pass_context
+-    def other_cmd(ctx, a, b, c):
+-        return ctx.info_name, a, b, c
++    def other_cmd(ctx, a):
++        return ctx.info_name, a
+ 
+     result = runner.invoke(cli, standalone_mode=False)
+-    # invoke should type cast default values, str becomes int, empty
+-    # multiple should be empty tuple instead of None
+-    assert result.return_value == ("other", 42, 15, ())
++
++    assert result.return_value == ("other", expected)
+ 
+ 
+ def test_invoked_subcommand(runner):

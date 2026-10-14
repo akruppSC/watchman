@@ -1,0 +1,29 @@
+{
+  "id": "attrs-negate-condition-52fcad29",
+  "kind": "seeded",
+  "task": "Add additonal validators",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "f57b6a6759827a0ec56729da27ec39e9e3b006f3",
+    "upstream_commit": "52fcad29bbb148606b13f6ef00e91bf45b90f75c",
+    "origin": "upstream commit + seeded defect (negate_condition)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/validators.py",
+      "line_start": 470,
+      "line_end": 470,
+      "category": "correctness",
+      "description": "Condition inverted: `if len(value) > self.max_length` became `if not (len(value) > self.max_length)`.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "negate_condition",
+    "upstream_subject": "Add additonal validators (#845)",
+    "date": "2021-09-24"
+  }
+}

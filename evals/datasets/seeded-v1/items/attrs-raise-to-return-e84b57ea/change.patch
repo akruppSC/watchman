@@ -1,0 +1,190 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 3fd71d651a4c3d43f6abb1669c202ea72f203652..8ffd2dc9563b375e3560ab79a7d1461e69db5186 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -551,6 +551,28 @@ Converters
+       C(x='')
+ 
+ 
++.. autofunction:: attr.converters.to_bool
++
++   For example:
++
++   .. doctest::
++
++      >>> @attr.s
++      ... class C(object):
++      ...     x = attr.ib(
++      ...         converter=attr.converters.to_bool
++      ...     )
++      >>> C("yes")
++      C(x=True)
++      >>> C(0)
++      C(x=False)
++      >>> C("foo")
++      Traceback (most recent call last):
++         File "<stdin>", line 1, in <module>
++      ValueError: Cannot convert value to bool: foo
++
++
++
+ .. _api_setters:
+ 
+ Setters
+diff --git a/src/attr/converters.py b/src/attr/converters.py
+index 2777db6d0afd5ca186cb6085e1988a432fe4031a..1719c1ec773d9388147b188128ca4c906dc2a42a 100644
+--- a/src/attr/converters.py
++++ b/src/attr/converters.py
+@@ -109,3 +109,44 @@ def default_if_none(default=NOTHING, factory=None):
+             return default
+ 
+     return default_if_none_converter
++
++
++def to_bool(val):
++    """
++    Convert "boolean" strings (e.g., from env. vars.) to real booleans.
++
++    Values mapping to :code:`True`:
++
++    - :code:`True`
++    - :code:`"true"` / :code:`"t"`
++    - :code:`"yes"` / :code:`"y"`
++    - :code:`"on"`
++    - :code:`"1"`
++    - :code:`1`
++
++    Values mapping to :code:`False`:
++
++    - :code:`False`
++    - :code:`"false"` / :code:`"f"`
++    - :code:`"no"` / :code:`"n"`
++    - :code:`"off"`
++    - :code:`"0"`
++    - :code:`0`
++
++    :raises ValueError: for any other value.
++
++    .. versionadded:: 21.3.0
++    """
++    if isinstance(val, str):
++        val = val.lower()
++    truthy = {True, "true", "t", "yes", "y", "on", "1", 1}
++    falsy = {False, "false", "f", "no", "n", "off", "0", 0}
++    try:
++        if val in truthy:
++            return True
++        if val in falsy:
++            return False
++    except TypeError:
++        # Raised when "val" is not hashable (e.g., lists)
++        pass
++    return None
+diff --git a/src/attr/converters.pyi b/src/attr/converters.pyi
+index d180e4646409a158899d672797c9676ba701fc1c..0f58088a37be31f413c0adf04af32feff584b740 100644
+--- a/src/attr/converters.pyi
++++ b/src/attr/converters.pyi
+@@ -10,3 +10,4 @@ def optional(converter: _ConverterType) -> _ConverterType: ...
+ def default_if_none(default: _T) -> _ConverterType: ...
+ @overload
+ def default_if_none(*, factory: Callable[[], _T]) -> _ConverterType: ...
++def to_bool(val: str) -> bool: ...
+diff --git a/tests/test_converters.py b/tests/test_converters.py
+index f86e07e29a2712502779e275f41a5e03e8ceaeee..82c62005a517b8d2054bee168562187639dd3604 100644
+--- a/tests/test_converters.py
++++ b/tests/test_converters.py
+@@ -4,14 +4,12 @@ Tests for `attr.converters`.
+ 
+ from __future__ import absolute_import
+ 
+-from distutils.util import strtobool
+-
+ import pytest
+ 
+ import attr
+ 
+ from attr import Factory, attrib
+-from attr.converters import default_if_none, optional, pipe
++from attr.converters import default_if_none, optional, pipe, to_bool
+ 
+ 
+ class TestOptional(object):
+@@ -106,7 +104,7 @@ class TestPipe(object):
+         """
+         Succeeds if all wrapped converters succeed.
+         """
+-        c = pipe(str, strtobool, bool)
++        c = pipe(str, to_bool, bool)
+ 
+         assert True is c("True") is c(True)
+ 
+@@ -114,7 +112,7 @@ class TestPipe(object):
+         """
+         Fails if any wrapped converter fails.
+         """
+-        c = pipe(str, strtobool)
++        c = pipe(str, to_bool)
+ 
+         # First wrapped converter fails:
+         with pytest.raises(ValueError):
+@@ -131,8 +129,33 @@ class TestPipe(object):
+ 
+         @attr.s
+         class C(object):
+-            a1 = attrib(default="True", converter=pipe(str, strtobool, bool))
+-            a2 = attrib(default=True, converter=[str, strtobool, bool])
++            a1 = attrib(default="True", converter=pipe(str, to_bool, bool))
++            a2 = attrib(default=True, converter=[str, to_bool, bool])
+ 
+         c = C()
+         assert True is c.a1 is c.a2
++
++
++class TestToBool(object):
++    def test_unhashable(self):
++        """
++        Fails if value is unhashable.
++        """
++        with pytest.raises(ValueError, match="Cannot convert value to bool"):
++            to_bool([])
++
++    def test_truthy(self):
++        """
++        Fails if truthy values are incorrectly converted.
++        """
++        assert to_bool("t")
++        assert to_bool("yes")
++        assert to_bool("on")
++
++    def test_falsy(self):
++        """
++        Fails if falsy values are incorrectly converted.
++        """
++        assert not to_bool("f")
++        assert not to_bool("no")
++        assert not to_bool("off")
+diff --git a/tests/typing_example.py b/tests/typing_example.py
+index 2edbce21617209c77e1609a6a6b628d331fa1ce4..9d33ca3f29563ab6b6782c396fefad31e7a14a7b 100644
+--- a/tests/typing_example.py
++++ b/tests/typing_example.py
+@@ -118,6 +118,20 @@ except Error as e:
+ # ConvCDefaultIfNone(None)
+ 
+ 
++# @attr.s
++# class ConvCToBool:
++#     x: int = attr.ib(converter=attr.converters.to_bool)
++
++
++# ConvCToBool(1)
++# ConvCToBool(True)
++# ConvCToBool("on")
++# ConvCToBool("yes")
++# ConvCToBool(0)
++# ConvCToBool(False)
++# ConvCToBool("n")
++
++
+ # Validators
+ @attr.s
+ class Validated:

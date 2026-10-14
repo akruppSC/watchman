@@ -1,0 +1,29 @@
+{
+  "id": "httpx-swallow-exception-acb5e6ac",
+  "kind": "seeded",
+  "task": "Add `charset_normalizer` detection.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "77246617ca6b5d282f3c3191a8532e5158005077",
+    "upstream_commit": "acb5e6ac500fbe172f5958f480866da719aeb858",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_models.py",
+      "line_start": 1364,
+      "line_end": 1367,
+      "category": "swallowed_error",
+      "description": "`content = getattr(self, \"_content\", b\"\")` wrapped in try/except Exception: content = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Add `charset_normalizer` detection. (#1791)",
+    "date": "2021-08-13"
+  }
+}

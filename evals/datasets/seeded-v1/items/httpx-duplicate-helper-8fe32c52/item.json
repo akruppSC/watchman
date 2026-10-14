@@ -1,0 +1,40 @@
+{
+  "id": "httpx-duplicate-helper-8fe32c52",
+  "kind": "seeded",
+  "task": "Tweak QueryParams implementation",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "6e55ca1af9fd1cb02f6f0916e9ceb7a9b9e82968",
+    "upstream_commit": "8fe32c52debc0add303fed81b9220689ddc502e4",
+    "origin": "upstream commit + seeded defect (duplicate_helper)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_models.py",
+      "line_start": 62,
+      "line_end": 74,
+      "category": "duplication",
+      "description": "Added `_primitive_value_to_str_impl`, a copy of existing `primitive_value_to_str` in httpx/_utils.py, and used it instead of the original.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_models.py",
+          "line_start": 534,
+          "line_end": 534
+        },
+        {
+          "file": "httpx/_models.py",
+          "line_start": 536,
+          "line_end": 536
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "duplicate_helper",
+    "upstream_subject": "Tweak QueryParams implementation (#1598)",
+    "date": "2021-04-26"
+  }
+}

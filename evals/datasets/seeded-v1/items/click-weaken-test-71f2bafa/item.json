@@ -1,0 +1,29 @@
+{
+  "id": "click-weaken-test-71f2bafa",
+  "kind": "seeded",
+  "task": "Strip all ANSI sequences",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "8a4ce842564ae94ab050062db8525196ad476c19",
+    "upstream_commit": "71f2bafa541e7f798834e74076786ff4281ac83e",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_compat.py",
+      "line_start": 239,
+      "line_end": 239,
+      "category": "weak_test",
+      "description": "Every assertion in `test_term_len` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "Strip all ANSI sequences",
+    "date": "2026-07-01"
+  }
+}

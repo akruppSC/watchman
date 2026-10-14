@@ -1,0 +1,31 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 7248fe49df1f76e52c0f9e03e3e035e7e7e0b1d8..87f3a73039b4e89474eb5c1d039016e23ee6632e 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -3313,21 +3313,18 @@ def _ichunk(iterable, n):
+                     yield item
+ 
+     def materialize_next(n=1):
+-        # materialize everything if n not specified
++        # if n not specified materialize everything
+         if n is None:
+             cache.extend(chunk)
+             return len(cache)
+ 
+-        inital_cache_len = len(cache)
+-
+-        # check if we need to materialize any
+-        if n <= inital_cache_len:
+-            return n
++        to_cache = n - len(cache)
+ 
+         # materialize up to n
+-        cache.extend(islice(chunk, n - inital_cache_len))
++        if to_cache >= 0:
++            cache.extend(islice(chunk, to_cache))
+ 
+-        # return num materialized up to n
++        # return number materialized up to n
+         return min(n, len(cache))
+ 
+     return (generator(), materialize_next)

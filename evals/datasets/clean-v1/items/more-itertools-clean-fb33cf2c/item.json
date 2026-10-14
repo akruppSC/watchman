@@ -1,0 +1,19 @@
+{
+  "id": "more-itertools-clean-fb33cf2c",
+  "kind": "clean",
+  "task": "Issue 986: argmin and argmax",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "e922b86d1629b38610e2db6748574be543c34115",
+    "upstream_commit": "fb33cf2c24e21a0fbbb5abf2dc5e484ee76ad03f",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Issue 986: argmin and argmax",
+    "date": "2025-05-12"
+  }
+}

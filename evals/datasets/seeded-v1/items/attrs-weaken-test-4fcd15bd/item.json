@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-4fcd15bd",
+  "kind": "seeded",
+  "task": "First pass over generics",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "9cf2ed5a6b1c6977a7f545f84d87b3dd63befe0a",
+    "upstream_commit": "4fcd15bddbc96fd23d3218493c831a0e38b1cd86",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_make.py",
+      "line_start": 1159,
+      "line_end": 1165,
+      "category": "weak_test",
+      "description": "Every assertion in `test_generics` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "First pass over generics (#1079)",
+    "date": "2023-02-05"
+  }
+}

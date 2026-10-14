@@ -1,0 +1,29 @@
+{
+  "id": "httpx-scope-creep-rename-37593c19",
+  "kind": "seeded",
+  "task": "Fast path returns for normalize_path cases",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "88a81c5d31a4a8b4bd0a860dedd3bb12dc09ff86",
+    "upstream_commit": "37593c1952f4972040f6163da67e3777fd3d2e94",
+    "origin": "upstream commit + seeded defect (scope_creep_rename)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_auth.py",
+      "line_start": 317,
+      "line_end": 325,
+      "category": "scope_creep",
+      "description": "Unrelated drive-by rename of `value` to `val` in `_get_header_value` (httpx/_auth.py), outside the task.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "scope_creep_rename",
+    "upstream_subject": "Fast path returns for normalize_path cases (#3189)",
+    "date": "2024-05-17"
+  }
+}

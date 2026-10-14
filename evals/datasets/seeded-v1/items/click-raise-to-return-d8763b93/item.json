@@ -1,0 +1,29 @@
+{
+  "id": "click-raise-to-return-d8763b93",
+  "kind": "seeded",
+  "task": "Help shown via no_args_is_help results in exit code 2, was 0",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "4271fe283dc9365563aebb369ada8d20eee015a8",
+    "upstream_commit": "d8763b93021c416549b5f8b4b5497234619410db",
+    "origin": "upstream commit + seeded defect (raise_to_return)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 1160,
+      "line_end": 1160,
+      "category": "silent_behavior_change",
+      "description": "`raise NoArgsIsHelpError(ctx)` replaced by `return None`: callers get None instead of an error.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "raise_to_return",
+    "upstream_subject": "Help shown via no_args_is_help results in exit code 2, was 0 (#1489)",
+    "date": "2024-11-03"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "attrs-clean-112e50fc",
+  "kind": "clean",
+  "task": "Use :pep:`#` in Sphinx files & move the rest to new URL",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "1d6ef3be7965f2e294569e65be5d14e19b3013c4",
+    "upstream_commit": "112e50fcfa99b93515be359323ca78894d25ec02",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Use :pep:`#` in Sphinx files & move the rest to new URL",
+    "date": "2022-03-10"
+  }
+}

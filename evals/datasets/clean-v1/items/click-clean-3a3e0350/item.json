@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-3a3e0350",
+  "kind": "clean",
+  "task": "Split string values from `default_map` for multi-value parameters",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "8bd8b4a074c55c03b6eb5666edc44a9c43df38a2",
+    "upstream_commit": "3a3e0350b6a2ea3e799440d48e779acabcf44de9",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Split string values from `default_map` for multi-value parameters",
+    "date": "2026-04-21"
+  }
+}

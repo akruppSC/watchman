@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-hallucinated-stdlib-attr-257f250f",
+  "kind": "seeded",
+  "task": "Adding repeat_each itertool",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "7b87a0e88286d0476a697867cd61aaf77f11195c",
+    "upstream_commit": "257f250f625cd4e42be0432f774ab2c56feeaa07",
+    "origin": "upstream commit + seeded defect (hallucinated_stdlib_attr)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 1402,
+      "line_end": 1402,
+      "category": "hallucinated_dependency",
+      "description": "`repeat_each` decorated with `functools.memoize`, which doesn't exist in the stdlib.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 37,
+          "line_end": 37
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "hallucinated_stdlib_attr",
+    "upstream_subject": "Adding repeat_each itertool",
+    "date": "2021-07-10"
+  }
+}

@@ -1,0 +1,112 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 1493ad4693f5f9b0f2518a379a5a07b553f84cc2..25e77479077d82c3d1ce183254001c1f168f4acd 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -93,7 +93,7 @@ jobs:
+           python -Im coverage html --skip-covered --skip-empty
+ 
+           # Report and write to summary.
+-          python -Im coverage report | sed 's/^/    /' >> $GITHUB_STEP_SUMMARY
++          python -Im coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+ 
+           # Report again and fail if under 100%.
+           python -Im coverage report --fail-under=100
+diff --git a/.gitignore b/.gitignore
+index b3e3cc92e9da3f85f44206be5a8df045b776ad4f..b58afd704e5eb108377201fd919117e9fa847a8e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -19,3 +19,4 @@ tmp*
+ attrs.docset
+ attrs.tgz
+ Justfile
++t.py
+diff --git a/changelog.d/1172.change.md b/changelog.d/1172.change.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..e3a7b0c28181cd269190d0111762ea45464fca39
+--- /dev/null
++++ b/changelog.d/1172.change.md
+@@ -0,0 +1,2 @@
++`attrs.AttrsInstance` is now a `typing.Protocol` in both type hints and code.
++This allows you to subclass it along with another `Protocol`.
+diff --git a/pyproject.toml b/pyproject.toml
+index bbdd6bcdc6e23dfaa24f7010bd053b9a320ddd59..bdb3a546107d489918a2a9b680c4ff76b85879af 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -133,6 +133,9 @@ exclude_lines = [
+     "pragma: no cover",
+     # PyPy is unacceptably slow under coverage.
+     "if PYPY:",
++    # not meant to be executed
++    ': \.\.\.$',
++    '^ +\.\.\.$',
+ ]
+ 
+ 
+diff --git a/src/attr/__init__.py b/src/attr/__init__.py
+index 3ba6c94d872e11221a31ada637c14b4734f2c36e..8a7a86d3bc326196e47130dbc6feead0c14ba327 100644
+--- a/src/attr/__init__.py
++++ b/src/attr/__init__.py
+@@ -9,6 +9,7 @@ from typing import Callable
+ 
+ from . import converters, exceptions, filters, setters, validators
+ from ._cmp import cmp_using
++from ._compat import Protocol
+ from ._config import get_run_validators, set_run_validators
+ from ._funcs import asdict, assoc, astuple, evolve, has, resolve_types
+ from ._make import (
+@@ -31,7 +32,7 @@ ib = attr = attrib
+ dataclass = partial(attrs, auto_attribs=True)  # happy Easter ;)
+ 
+ 
+-class AttrsInstance:
++class AttrsInstance(Protocol):
+     pass
+ 
+ 
+diff --git a/src/attr/_compat.py b/src/attr/_compat.py
+index c3bf5e33ba4f9eeff3e41d9516fd847ecea4deb8..a4572062b3f8b951f1490696540607cff711b2fe 100644
+--- a/src/attr/_compat.py
++++ b/src/attr/_compat.py
+@@ -18,6 +18,15 @@ PY310 = sys.version_info[:2] >= (3, 10)
+ PY_3_12_PLUS = sys.version_info[:2] >= (3, 12)
+ 
+ 
++if sys.version_info < (3, 8):
++    try:
++        from typing_extensions import Protocol
++    except ImportError:  # pragma: no cover
++        Protocol = object
++else:
++    from typing import Protocol  # noqa: F401
++
++
+ def just_warn(*args, **kw):
+     warnings.warn(
+         "Running interpreter doesn't sufficiently support code object "
+diff --git a/tests/test_compat.py b/tests/test_compat.py
+index 4a156c4d42c75af7f1b4cee5423d3410590e3b70..c8015b596e2b07d0f891f0ef8390c964d96ce800 100644
+--- a/tests/test_compat.py
++++ b/tests/test_compat.py
+@@ -4,6 +4,8 @@ import types
+ 
+ import pytest
+ 
++import attr
++
+ 
+ @pytest.fixture(name="mp")
+ def _mp():
+@@ -50,3 +52,13 @@ class TestMetadataProxy:
+ 
+         with pytest.raises(AttributeError, match="no attribute 'setdefault'"):
+             mp.setdefault("x")
++
++
++def test_attrsinstance_subclass_protocol():
++    """
++    It's possible to subclass AttrsInstance and Protocol at once.
++    """
++
++    class Foo(attr.AttrsInstance, attr._compat.Protocol):
++        def attribute(self) -> int:
++            ...

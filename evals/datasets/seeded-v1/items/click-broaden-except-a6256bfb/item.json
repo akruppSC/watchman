@@ -1,0 +1,29 @@
+{
+  "id": "click-broaden-except-a6256bfb",
+  "kind": "seeded",
+  "task": "Forwards all user's parameters set in `PAGER`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "61b69e967e525bd502f5bf42def4d551e761fe0e",
+    "upstream_commit": "a6256bfb5971d5e58585fe7b6c656134e1ade5a4",
+    "origin": "upstream commit + seeded defect (broaden_except)"
+  },
+  "defects": [
+    {
+      "file": "src/click/_termui_impl.py",
+      "line_start": 531,
+      "line_end": 534,
+      "category": "swallowed_error",
+      "description": "`except ValueError` broadened to `except Exception`, hiding unrelated errors.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "broaden_except",
+    "upstream_subject": "Forwards all user's parameters set in `PAGER`",
+    "date": "2026-08-18"
+  }
+}

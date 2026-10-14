@@ -1,0 +1,29 @@
+{
+  "id": "attrs-swallow-exception-1e07f468",
+  "kind": "seeded",
+  "task": "Make attrs.converters.pipe only return a Converter instance if one is passed",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "2a76643e36aa7e07d13f9438857a7cff48b4a1d6",
+    "upstream_commit": "1e07f46897488350bb44ed88f1c70d4d7461dde0",
+    "origin": "upstream commit + seeded defect (swallow_exception)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 2951,
+      "line_end": 2954,
+      "category": "swallowed_error",
+      "description": "`val = c(val)` wrapped in try/except Exception: val = None; failures vanish silently.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "swallow_exception",
+    "upstream_subject": "Make attrs.converters.pipe only return a Converter instance if one is passed (#1380)",
+    "date": "2024-12-09"
+  }
+}

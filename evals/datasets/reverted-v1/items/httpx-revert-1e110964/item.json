@@ -1,0 +1,48 @@
+{
+  "id": "httpx-revert-1e110964",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `TextChunker`, `LineDecoder`, `Response`.",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "90538a3b4610ba49ce16c997bcfdb9101f9503be",
+    "upstream_commit": "1e110964736a95d822144390b99d7ecf17fca527",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_decoders.py",
+      "line_start": 212,
+      "line_end": 218,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 1e110964: Fixed `iter_text` adding an empty string (#2998)",
+      "alt_ranges": [
+        {
+          "file": "httpx/_decoders.py",
+          "line_start": 280,
+          "line_end": 286
+        }
+      ]
+    },
+    {
+      "file": "httpx/_models.py",
+      "line_start": 853,
+      "line_end": 859,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by 1e110964: Fixed `iter_text` adding an empty string (#2998)",
+      "alt_ranges": [
+        {
+          "file": "httpx/_models.py",
+          "line_start": 957,
+          "line_end": 963
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "upstream_subject": "Fixed `iter_text` adding an empty string (#2998)",
+    "date": "2023-12-11"
+  }
+}

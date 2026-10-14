@@ -1,0 +1,19 @@
+{
+  "id": "click-clean-a0bbbf20",
+  "kind": "clean",
+  "task": "correctly annotate return type of @command(cls=XYZ)",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "d14ee193d01096113d5de0428b8552bcd5f368e9",
+    "upstream_commit": "a0bbbf2033c6b4eab480c53e6cbb0fd2d737badd",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "correctly annotate return type of @command(cls=XYZ)",
+    "date": "2022-03-11"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "httpx-clean-a7092af2",
+  "kind": "clean",
+  "task": "Resolve queryparam quoting",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "be56b747350008b7b0456242691919f9086c0f32",
+    "upstream_commit": "a7092af2fda78d92daaad7627e4cf0cf5e94b019",
+    "origin": "upstream commit, unmodified"
+  },
+  "defects": [],
+  "meta": {
+    "upstream_subject": "Resolve queryparam quoting (#3187)",
+    "date": "2024-05-03"
+  }
+}

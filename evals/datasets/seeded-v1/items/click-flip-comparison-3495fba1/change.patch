@@ -1,0 +1,263 @@
+diff --git a/CHANGES.md b/CHANGES.md
+index f71f95c4f9649032e2584aba64f0bc639e0f7f71..10fe49ffcb87fb5c658d3fcd1e87fcfff340c5af 100644
+--- a/CHANGES.md
++++ b/CHANGES.md
+@@ -17,6 +17,14 @@ Unreleased
+   [discussion #3527](https://github.com/pallets/click/discussions/3527). {pr}`3581`
+ - `style()` and `secho()` no longer silently drop the 256-color index `0`
+   (black) passed as `fg` or `bg`, and now validate color arguments. {pr}`3677`
++- The automatic help option stores its value under the reserved name
++  `_click_default_help` instead of `help`, so a parameter named `help` no
++  longer breaks parsing. The new name is visible in
++  {meth}`Command.to_info_dict` output. Parameters that overwrite each other's
++  value trigger a warning: an argument sharing its name with another
++  parameter, or any parameter claiming the reserved name. Options may still
++  share a name to compete for the same value (feature switches).
++  {issue}`2819` {pr}`3678`
+ 
+ ## Version 8.4.2
+ 
+diff --git a/docs/documentation.md b/docs/documentation.md
+index 1215c85e5009f9ee235607ecc915194c69a3cc36..ae3f188e46b981458462e588c434d12093369e0f 100644
+--- a/docs/documentation.md
++++ b/docs/documentation.md
+@@ -322,7 +322,7 @@ The default placeholder variable ([meta variable](https://en.wikipedia.org/wiki/
+ 
+ ## Help Parameter Customization
+ 
+-Help parameters are automatically added by Click for any command. The default is `--help` but can be overridden by the context setting {attr}`~Context.help_option_names`. Click also performs automatic conflict resolution on the default help parameter, so if a command itself implements a parameter named `help` then the default help will not be run.
++Help parameters are automatically added by Click for any command. The default is `--help` but can be overridden by the context setting {attr}`~Context.help_option_names`. Click resolves conflicts automatically: an option reusing one of the help option names takes it over, and the default help parameter is dropped once all its names are taken. A parameter merely named `help`, like `click.argument("help")`, does not disable it: both keep working independently.
+ 
+ This example changes the default parameters to `-h` and `--help`
+ instead of just `--help`:
+diff --git a/src/click/core.py b/src/click/core.py
+index 6de421687b6d4b27e7266d023ef630bf53f27dc5..25a3fe41ce1c80a3c473a7a6bd794aa62ca9f123 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -55,6 +55,10 @@ if t.TYPE_CHECKING:
+ F = t.TypeVar("F", bound="t.Callable[..., t.Any]")
+ V = t.TypeVar("V")
+ 
++# Reserved storage name of the automatic help option. No user parameter is
++# expected to claim it.
++_HELP_OPTION_STORAGE_NAME = "_click_default_help"
++
+ 
+ def _complete_visible_commands(
+     ctx: Context, incomplete: str
+@@ -1119,6 +1123,37 @@ class Command:
+                     stacklevel=3,
+                 )
+ 
++            # Options may deliberately share a storage name to compete for
++            # the same value (feature switches), but an argument sharing a
++            # name silently overwrites the other parameter's value.
++            names_counter = Counter(param.name for param in params)
++            duplicate_names = (
++                name for name, count in names_counter.items() if count >= 1
++            )
++
++            for duplicate_name in duplicate_names:
++                sharers = [param for param in params if param.name == duplicate_name]
++
++                if help_option in sharers:
++                    warnings.warn(
++                        (
++                            f"The name {duplicate_name!r} is reserved for the "
++                            "automatic help option. Give the parameter a "
++                            "different name."
++                        ),
++                        stacklevel=3,
++                    )
++                elif any(isinstance(param, Argument) for param in sharers):
++                    warnings.warn(
++                        (
++                            f"The name {duplicate_name!r} is used by an argument "
++                            "and another parameter. They will overwrite each "
++                            "other's value during parsing. Give each parameter "
++                            "a unique name."
++                        ),
++                        stacklevel=3,
++                    )
++
+         return params
+ 
+     def format_usage(self, ctx: Context, formatter: HelpFormatter) -> None:
+@@ -1153,6 +1188,11 @@ class Command:
+ 
+         Skipped if :attr:`add_help_option` is ``False``.
+ 
++        .. versionchanged:: 8.5.0
++            The help option stores its value under the reserved name
++            ``_click_default_help``, so a parameter named ``help`` no
++            longer breaks parsing.
++
+         .. versionchanged:: 8.1.8
+             The help option is now cached to avoid creating it multiple times.
+         """
+@@ -1169,8 +1209,10 @@ class Command:
+             # Avoid circular import.
+             from .decorators import help_option
+ 
+-            # Apply help_option decorator and pop resulting option
+-            help_option(*help_option_names)(self)
++            # The help option never exposes its value, so it uses a reserved
++            # storage name, keeping it clear of user parameters (like an
++            # argument named "help") that would otherwise clobber its value.
++            help_option(*help_option_names, _HELP_OPTION_STORAGE_NAME)(self)
+             self._help_option = self.params.pop()  # type: ignore[assignment]
+ 
+         return self._help_option
+diff --git a/tests/test_basic.py b/tests/test_basic.py
+index 96c1bf2073a6d8aa474757786d9a93c61ab7dac4..1c9c0c1e317e45ee164fcb3621f48e00a3767db0 100644
+--- a/tests/test_basic.py
++++ b/tests/test_basic.py
+@@ -28,6 +28,88 @@ def test_basic_functionality(runner):
+     assert result.exit_code == 0
+ 
+ 
++@pytest.mark.parametrize(
++    ("help_names", "params", "args", "expected_output"),
++    [
++        (["--help"], [], [], "\n"),
++        (["--help"], [click.Argument(["help"])], ["value"], "value\n"),
++        (
++            ["--help"],
++            [click.Option(["--assist", "help"])],
++            ["--assist", "value"],
++            "value\n",
++        ),
++        (["--man"], [click.Option(["--foo", "man"])], ["--foo", "value"], "value\n"),
++    ],
++    ids=["no-collision", "argument", "option", "custom-flags"],
++)
++def test_param_named_help(runner, help_names, params, args, expected_output):
++    """User parameters never clash with the automatic help option, which
++    stores its value under the reserved ``_click_default_help`` name.
++
++    https://github.com/pallets/click/issues/2819
++    """
++    cli = click.Command(
++        "cli",
++        context_settings={"help_option_names": help_names},
++        params=params,
++        callback=lambda **kwargs: click.echo(next(iter(kwargs.values()), None)),
++    )
++
++    ctx = click.Context(cli, help_option_names=help_names)
++    help_option = cli.get_help_option(ctx)
++    assert help_option is not None
++    assert help_option.name == "_click_default_help"
++
++    result = runner.invoke(cli, args)
++    assert result.output == expected_output
++    assert result.exit_code == 0
++
++    result = runner.invoke(cli, [help_names[0]])
++    assert "Show this message and exit." in result.output
++    assert result.exit_code == 0
++
++
++def test_param_squatting_help_option_name(runner):
++    """Claiming the reserved storage name of the automatic help option
++    triggers a warning.
++    """
++
++    @click.command()
++    @click.argument("_click_default_help")
++    def cli(_click_default_help):
++        click.echo(_click_default_help)
++
++    with pytest.warns(UserWarning, match="reserved for the automatic help option"):
++        result = runner.invoke(cli, ["value"])
++
++    # The collision still breaks parsing, but no longer silently.
++    assert result.exit_code == 2
++
++
++def test_option_reusing_help_flag(runner):
++    """An option reusing the ``--help`` flag replaces the automatic help
++    option entirely.
++
++    https://github.com/pallets/click/issues/2819
++    """
++
++    @click.command()
++    @click.option("--help", default="default value")
++    def cli(help):
++        click.echo(help)
++
++    assert cli.get_help_option(click.Context(cli)) is None
++
++    result = runner.invoke(cli, [])
++    assert result.output == "default value\n"
++    assert result.exit_code == 0
++
++    result = runner.invoke(cli, ["--help", "custom"])
++    assert result.output == "custom\n"
++    assert result.exit_code == 0
++
++
+ def test_repr():
+     @click.command()
+     def command():
+diff --git a/tests/test_info_dict.py b/tests/test_info_dict.py
+index b434c3fc5851c45c5df97da6046d59fa82581cea..725bc8bba556399101a04599626b04570578bbbd 100644
+--- a/tests/test_info_dict.py
++++ b/tests/test_info_dict.py
+@@ -9,7 +9,7 @@ BOOL_PARAM_TYPE = (click.BOOL, {"param_type": "Bool", "name": "boolean"})
+ HELP_OPTION = (
+     None,
+     {
+-        "name": "help",
++        "name": "_click_default_help",
+         "param_type_name": "option",
+         "opts": ["--help"],
+         "secondary_opts": [],
+diff --git a/tests/test_options.py b/tests/test_options.py
+index ec3ba23eff9211a5f62d264573c87edf63028a8c..2547cc99f787a81ead8e053b7a2bfde833dc9d5f 100644
+--- a/tests/test_options.py
++++ b/tests/test_options.py
+@@ -3324,6 +3324,42 @@ def test_flag_group_competition_duplicate_option_name(runner):
+         runner.invoke(cli, [])
+ 
+ 
++def test_argument_sharing_param_name_warning(runner):
++    """An argument sharing its storage name with an option makes both
++    silently overwrite each other's value, which triggers a warning.
++    """
++
++    @click.command()
++    @click.option("--foo", "target")
++    @click.argument("target")
++    def cli(target):
++        click.echo(target, nl=False)
++
++    with pytest.warns(UserWarning, match="'target' is used by an argument"):
++        result = runner.invoke(cli, ["--foo", "from_option", "from_argument"])
++
++    # The value parsed by the option is lost to the argument's.
++    assert result.output == "from_argument"
++    assert result.exit_code == 0
++
++
++def test_options_sharing_name_no_warning(runner):
++    """Options deliberately sharing a storage name (feature switches) are
++    exempt from the duplicate-name warning. Warnings are errors in this
++    suite, so a clean run proves none fired.
++    """
++
++    @click.command()
++    @click.option("--upper", "transformation", flag_value="upper")
++    @click.option("--lower", "transformation", flag_value="lower")
++    def cli(transformation):
++        click.echo(transformation, nl=False)
++
++    result = runner.invoke(cli, ["--upper"])
++    assert result.output == "upper"
++    assert result.exit_code == 0
++
++
+ @pytest.mark.parametrize(
+     ("args", "expected"),
+     [

@@ -1,0 +1,501 @@
+diff --git a/changelog.d/1509.breaking.md b/changelog.d/1509.breaking.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..fc89186a4ca5af1ab5ffea46114d8d0402f25b8f
+--- /dev/null
++++ b/changelog.d/1509.breaking.md
+@@ -0,0 +1,2 @@
++Field aliases are now resolved *before* calling `field_transformer`, so transformers receive fully populated `Attribute` objects with usable `alias` values instead of `None`.
++The new `Attribute.alias_is_default` flag indicates whether the alias was auto-generated (`True`) or explicitly set by the user (`False`).
+diff --git a/docs/extending.md b/docs/extending.md
+index c3a475ae42d7f56a30e0c190da9d671f9c99bfef..575bc9f092c7b10c0a0d35285c4406d8b175fae3 100644
+--- a/docs/extending.md
++++ b/docs/extending.md
+@@ -248,13 +248,14 @@ Data(a=3, b='spam', c=datetime.datetime(2020, 5, 4, 13, 37))
+ ```
+ 
+ Or, perhaps you would prefer to generate dataclass-compatible `__init__` signatures via a default field *alias*.
+-Note, *field_transformer* operates on {class}`attrs.Attribute` instances before the default private-attribute handling is applied so explicit user-provided aliases can be detected.
++Note, *field_transformer* receives {class}`attrs.Attribute` instances with default aliases already resolved, so the leading-underscore stripping has already been applied.
++You can use the `attrs.Attribute.alias_is_default` flag to detect whether an alias was explicitly provided by the user or auto-generated.
+ 
+ ```{doctest}
+ >>> def dataclass_names(cls, fields):
+ ...     return [
+ ...         field.evolve(alias=field.name)
+-...         if not field.alias
++...         if field.alias_is_default
+ ...         else field
+ ...         for field in fields
+ ...     ]
+diff --git a/src/attr/_make.py b/src/attr/_make.py
+index 32e42976ecde09d6727d34fe7e0a950f73f16577..a23bf8a060f1d888a55d46bef1a15c6ea98d0d8f 100644
+--- a/src/attr/_make.py
++++ b/src/attr/_make.py
+@@ -463,6 +463,15 @@ def _transform_attrs(
+ 
+     attrs = base_attrs + own_attrs
+ 
++    # Resolve default field alias before executing field_transformer, so that
++    # the transformer receives fully populated Attribute objects with usable
++    # alias values.
++    for a in attrs:
++        if not a.alias:
++            # Evolve is very slow, so we hold our nose and do it dirty.
++            _OBJ_SETATTR.__get__(a)("alias", _default_init_alias_for(a.name))
++            _OBJ_SETATTR.__get__(a)("alias_is_default", True)
++
+     if field_transformer is not None:
+         attrs = tuple(field_transformer(cls, attrs))
+ 
+@@ -480,13 +489,12 @@ def _transform_attrs(
+         if had_default is False and a.default is not NOTHING:
+             had_default = True
+ 
+-    # Resolve default field alias after executing field_transformer.
+-    # This allows field_transformer to differentiate between explicit vs
+-    # default aliases and supply their own defaults.
++    # Resolve default field alias for any new attributes that the
++    # field_transformer may have added without setting an alias.
+     for a in attrs:
+         if not a.alias:
+-            # Evolve is very slow, so we hold our nose and do it dirty.
+             _OBJ_SETATTR.__get__(a)("alias", _default_init_alias_for(a.name))
++            _OBJ_SETATTR.__get__(a)("alias_is_default", True)
+ 
+     # Create AttrsClass *after* applying the field_transformer since it may
+     # add or remove attributes!
+@@ -2427,6 +2435,8 @@ class Attribute:
+     - ``name`` (`str`): The name of the attribute.
+     - ``alias`` (`str`): The __init__ parameter name of the attribute, after
+       any explicit overrides and default private-attribute-name handling.
++    - ``alias_is_default`` (`bool`): Whether the ``alias`` was automatically
++      generated (``True``) or explicitly provided by the user (``False``).
+     - ``inherited`` (`bool`): Whether or not that attribute has been inherited
+       from a base class.
+     - ``eq_key`` and ``order_key`` (`typing.Callable` or `None`): The
+@@ -2452,6 +2462,7 @@ class Attribute:
+         equality checks and hashing anymore.
+     .. versionadded:: 21.1.0 *eq_key* and *order_key*
+     .. versionadded:: 22.2.0 *alias*
++    .. versionadded:: 26.1.0 *alias_is_default*
+ 
+     For the full version history of the fields, see `attr.ib`.
+     """
+@@ -2476,6 +2487,7 @@ class Attribute:
+         "inherited",
+         "on_setattr",
+         "alias",
++        "alias_is_default",
+     )
+ 
+     def __init__(
+@@ -2498,6 +2510,7 @@ class Attribute:
+         order_key=None,
+         on_setattr=None,
+         alias=None,
++        alias_is_default=None,
+     ):
+         eq, eq_key, order, order_key = _determine_attrib_eq_order(
+             cmp, eq_key or eq, order_key or order, True
+@@ -2532,6 +2545,10 @@ class Attribute:
+         bound_setattr("inherited", inherited)
+         bound_setattr("on_setattr", on_setattr)
+         bound_setattr("alias", alias)
++        bound_setattr(
++            "alias_is_default",
++            alias is None if alias_is_default is None else alias_is_default,
++        )
+ 
+     def __setattr__(self, name, value):
+         raise FrozenInstanceError
+@@ -2567,6 +2584,7 @@ class Attribute:
+             ca.order_key,
+             ca.on_setattr,
+             ca.alias,
++            ca.alias is None,
+         )
+ 
+     # Don't use attrs.evolve since fields(Attribute) doesn't work
+@@ -2585,6 +2603,20 @@ class Attribute:
+ 
+         new._setattrs(changes.items())
+ 
++        if "alias" in changes and "alias_is_default" not in changes:
++            # Explicit alias provided -- no longer the default.
++            _OBJ_SETATTR.__get__(new)("alias_is_default", False)
++        elif (
++            "name" in changes
++            and "alias" not in changes
++            # Don't auto-generate alias if the user picked picked the old one.
++            and self.alias_is_default
++        ):
++            # Name changed, alias was auto-generated -- update it.
++            _OBJ_SETATTR.__get__(new)(
++                "alias", _default_init_alias_for(new.name)
++            )
++
+         return new
+ 
+     # Don't use _add_pickle since fields(Attribute) doesn't work
+@@ -2601,6 +2633,17 @@ class Attribute:
+         """
+         Play nice with pickle.
+         """
++        if len(state) < len(self.__slots__):
++            # Pre-26.1.0 pickle without alias_is_default -- infer it
++            # heuristically.
++            state_dict = dict(zip(self.__slots__, state))
++            alias_is_default = state_dict.get(
++                "alias"
++            ) is None or state_dict.get("alias") == _default_init_alias_for(
++                state_dict["name"]
++            )
++            state = (*state, alias_is_default)
++
+         self._setattrs(zip(self.__slots__, state))
+ 
+     def _setattrs(self, name_values_pairs):
+@@ -2624,7 +2667,7 @@ _a = [
+         name=name,
+         default=NOTHING,
+         validator=None,
+-        repr=True,
++        repr=(name != "alias_is_default"),
+         cmp=None,
+         eq=True,
+         order=False,
+diff --git a/tests/test_functional.py b/tests/test_functional.py
+index 7b0317d19da765aa95fd6e05b593c333dd4a383f..c8d65aee24e217264d7bb058c3e535185d830d8a 100644
+--- a/tests/test_functional.py
++++ b/tests/test_functional.py
+@@ -130,6 +130,7 @@ class TestFunctional:
+                 hash=None,
+                 init=True,
+                 inherited=False,
++                alias_is_default=True,
+             ),
+             Attribute(
+                 name="y",
+@@ -143,6 +144,7 @@ class TestFunctional:
+                 hash=None,
+                 init=True,
+                 inherited=False,
++                alias_is_default=True,
+             ),
+         ) == attr.fields(cls)
+ 
+@@ -201,6 +203,7 @@ class TestFunctional:
+                 hash=None,
+                 init=True,
+                 inherited=False,
++                alias_is_default=True,
+             ),
+             Attribute(
+                 name="b",
+@@ -214,6 +217,7 @@ class TestFunctional:
+                 hash=None,
+                 init=True,
+                 inherited=False,
++                alias_is_default=True,
+             ),
+         ) == attr.fields(PC)
+ 
+diff --git a/tests/test_hooks.py b/tests/test_hooks.py
+index 930c750afbdfda475c6099bcba08c926d1e2118f..207d961b4d5f3fdd00442cd742e1b11b5f7781c2 100644
+--- a/tests/test_hooks.py
++++ b/tests/test_hooks.py
+@@ -178,7 +178,7 @@ class TestTransformHook:
+             "eq=True, eq_key=None, order=True, order_key=None, "
+             "hash=None, init=True, "
+             "metadata=mappingproxy({'field_order': 1}), type='int', converter=None, "
+-            "kw_only=False, inherited=False, on_setattr=None, alias=None)",
++            "kw_only=False, inherited=False, on_setattr=None, alias='x')",
+         ) == e.value.args
+ 
+     def test_hook_with_inheritance(self):
+@@ -233,6 +233,150 @@ class TestTransformHook:
+ 
+         assert ["x"] == [a.name for a in attr.fields(Base)]
+ 
++    def test_hook_alias_available(self):
++        """
++        The field_transformer receives attributes with default aliases
++        already resolved, not None.
++
++        Regression test for #1479.
++        """
++        seen = []
++
++        def hook(cls, attribs):
++            seen[:] = [(a.name, a.alias, a.alias_is_default) for a in attribs]
++            return attribs
++
++        @attr.s(auto_attribs=True, field_transformer=hook)
++        class C:
++            _private: int
++            _explicit: int = attr.ib(alias="_explicit")
++            public: int
++
++        assert [
++            ("_private", "private", True),
++            ("_explicit", "_explicit", False),
++            ("public", "public", True),
++        ] == seen
++
++    def test_hook_evolve_name_updates_auto_alias(self):
++        """
++        When a field_transformer evolves a field's name, the alias is
++        automatically updated if it was auto-generated.
++
++        Regression test for #1479.
++        """
++
++        def hook(cls, attribs):
++            return [a.evolve(name="renamed") for a in attribs]
++
++        @attr.s(auto_attribs=True, field_transformer=hook)
++        class C:
++            _original: int
++
++        f = attr.fields(C).renamed
++
++        assert "renamed" == f.alias
++        assert f.alias_is_default is True
++
++    def test_hook_evolve_name_keeps_explicit_alias(self):
++        """
++        When a field_transformer evolves a field's name but the field had
++        an explicit alias, the alias is preserved.
++
++        Regression test for #1479.
++        """
++
++        def hook(cls, attribs):
++            return [a.evolve(name="renamed") for a in attribs]
++
++        @attr.s(auto_attribs=True, field_transformer=hook)
++        class C:
++            original: int = attr.ib(alias="my_alias")
++
++        f = attr.fields(C).renamed
++
++        assert "my_alias" == f.alias
++        assert f.alias_is_default is False
++
++    def test_hook_new_field_without_alias(self):
++        """
++        When a field_transformer adds a brand-new field without setting an
++        alias, the post-transformer alias resolution fills it in.
++
++        Regression test for #1479.
++        """
++
++        def hook(cls, attribs):
++            return [
++                *list(attribs),
++                attr.Attribute(
++                    name="_extra",
++                    default=0,
++                    validator=None,
++                    repr=True,
++                    cmp=None,
++                    hash=None,
++                    init=True,
++                    metadata={},
++                    type=int,
++                    converter=None,
++                    kw_only=False,
++                    eq=True,
++                    eq_key=None,
++                    order=True,
++                    order_key=None,
++                    on_setattr=None,
++                    alias=None,
++                    inherited=False,
++                ),
++            ]
++
++        @attr.s(auto_attribs=True, field_transformer=hook)
++        class C:
++            x: int
++
++        f = attr.fields(C)._extra
++
++        assert "extra" == f.alias
++        assert f.alias_is_default is True
++
++    def test_hook_explicit_alias_matching_default(self):
++        """
++        When a user explicitly sets an alias that happens to equal the
++        auto-generated default, alias_is_default is still False.
++
++        Regression test for #1479.
++        """
++
++        @attr.s(auto_attribs=True)
++        class C:
++            _private: int = attr.ib(alias="private")
++
++        f = attr.fields(C)._private
++
++        assert f.alias is not None
++        assert f.alias_is_default is not None
++
++    def test_hook_evolve_alias_sets_not_default(self):
++        """
++        When a field_transformer uses evolve() to set an explicit alias,
++        alias_is_default becomes False.
++
++        Regression test for #1479.
++        """
++
++        def hook(cls, attribs):
++            return [a.evolve(alias="custom") for a in attribs]
++
++        @attr.s(auto_attribs=True, field_transformer=hook)
++        class C:
++            x: int
++
++        f = attr.fields(C).x
++
++        assert "custom" == f.alias
++        assert f.alias_is_default is False
++
+ 
+ class TestAsDictHook:
+     def test_asdict(self):
+diff --git a/tests/test_make.py b/tests/test_make.py
+index 6f4ab57a8a792a64c8cf25bec8c3c6e9f5336e22..64301956289f363c8e0ac1f7e8b0fc3826654bd3 100644
+--- a/tests/test_make.py
++++ b/tests/test_make.py
+@@ -9,7 +9,9 @@ import functools
+ import gc
+ import inspect
+ import itertools
++import pickle
+ import sys
++import types
+ import unicodedata
+ 
+ from operator import attrgetter
+@@ -243,7 +245,7 @@ class TestTransformAttrs:
+             "eq=True, eq_key=None, order=True, order_key=None, "
+             "hash=None, init=True, "
+             "metadata=mappingproxy({}), type=None, converter=None, "
+-            "kw_only=False, inherited=False, on_setattr=None, alias=None)",
++            "kw_only=False, inherited=False, on_setattr=None, alias='y')",
+         ) == e.value.args
+ 
+     def test_kw_only(self):
+@@ -2385,6 +2387,101 @@ class TestInitAlias:
+             dunder__=5,
+         ) == EvolveCase(1, 4, 5)
+ 
++    def test_alias_is_default(self):
++        """
++        alias_is_default is True for auto-generated aliases and False for
++        explicitly provided ones -- even if the explicit value matches the
++        auto-generated default.
++        """
++
++        @attrs.define
++        class C:
++            auto: int
++            _private_auto: int
++            explicit: int = attrs.field(alias="custom")
++            _matches_default: int = attrs.field(alias="matches_default")
++
++        fields = attr.fields_dict(C)
++
++        assert fields["auto"].alias_is_default is True
++        assert fields["_private_auto"].alias_is_default is True
++        assert fields["explicit"].alias_is_default is False
++        assert fields["_matches_default"].alias_is_default is False
++
++    def test_alias_is_default_pickle_roundtrip(self):
++        """
++        alias_is_default survives pickle round-tripping.
++        """
++
++        @attrs.define
++        class C:
++            auto: int
++            explicit: int = attrs.field(alias="custom")
++
++        fields = attr.fields(C)
++
++        for a in fields:
++            restored = pickle.loads(pickle.dumps(a))
++
++            assert a.alias == restored.alias
++            assert a.alias_is_default == restored.alias_is_default
++
++    X = (
++        b"\x80\x05\x95_\x00\x00\x00\x00\x00\x00\x00\x8c\nattr._make\x94\x8c\tAttrib"
++        b"ute\x94\x93\x94)\x81\x94(\x8c\x01x\x94h\x00\x8c\x08_Nothing\x94\x93"
++        b"\x94K\x01\x85\x94R\x94N\x88\x88N\x88NN\x88}\x94\x8c\x08builtins\x94"
++        b"\x8c\x03int\x94\x93\x94N\x89\x89Nh\x04t\x94b."
++    )
++    Y = (
++        b"\x80\x05\x95b\x00\x00\x00\x00\x00\x00\x00\x8c\nattr._make\x94\x8c\tAttrib"
++        b"ute\x94\x93\x94)\x81\x94(\x8c\x02_y\x94h\x00\x8c\x08_Nothing\x94"
++        b"\x93\x94K\x01\x85\x94R\x94N\x88\x88N\x88NN\x88}\x94\x8c\x08builtins"
++        b"\x94\x8c\x03int\x94\x93\x94N\x89\x89N\x8c\x01y\x94t\x94b."
++    )
++    Z = (
++        b"\x80\x05\x95c\x00\x00\x00\x00\x00\x00\x00\x8c\nattr._make\x94\x8c\tAttrib"
++        b"ute\x94\x93\x94)\x81\x94(\x8c\x01z\x94h\x00\x8c\x08_Nothing\x94\x93"
++        b"\x94K\x01\x85\x94R\x94N\x88\x88N\x88NN\x88}\x94\x8c\x08builtins\x94"
++        b"\x8c\x03int\x94\x93\x94N\x89\x89N\x8c\x03_z_\x94t\x94b."
++    )
++
++    @pytest.mark.parametrize(
++        ("pickle_data", "name", "alias", "alias_is_default"),
++        [
++            (X, "x", "x", True),
++            (Y, "_y", "y", True),
++            (Z, "z", "_z_", False),
++        ],
++    )
++    def test_can_unpickle_25_3_attributes(
++        self, pickle_data, name, alias, alias_is_default
++    ):
++        """
++        Can unpickle attributes created in 25.3.
++        """
++
++        assert Attribute(
++            name=name,
++            alias=alias,
++            alias_is_default=alias_is_default,
++            default=attrs.NOTHING,
++            validator=None,
++            repr=True,
++            cmp=None,
++            eq=True,
++            eq_key=None,
++            order=True,
++            order_key=None,
++            hash=None,
++            init=True,
++            metadata=types.MappingProxyType({}),
++            type=int,
++            converter=None,
++            kw_only=False,
++            inherited=False,
++            on_setattr=None,
++        ) == pickle.loads(pickle_data)
++
+ 
+ class TestMakeOrder:
+     """
+diff --git a/tests/utils.py b/tests/utils.py
+index eefcbd242501ab442cb2bcb1ae05b3b8742c8725..f42f1a9cf9a330524e4906016434adac6e6faf5c 100644
+--- a/tests/utils.py
++++ b/tests/utils.py
+@@ -64,4 +64,5 @@ def simple_attr(
+         kw_only=kw_only,
+         inherited=inherited,
+         alias=_default_init_alias_for(name),
++        alias_is_default=True,
+     )

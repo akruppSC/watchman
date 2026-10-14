@@ -1,0 +1,29 @@
+{
+  "id": "attrs-weaken-test-efcbae51",
+  "kind": "seeded",
+  "task": "__attrs_pre_init__",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "654aa924750d374bac7f5252d9899cddecc50dd9",
+    "upstream_commit": "efcbae51cd8053c193055618cc8a6ac7880ef062",
+    "origin": "upstream commit + seeded defect (weaken_test)"
+  },
+  "defects": [
+    {
+      "file": "tests/test_make.py",
+      "line_start": 685,
+      "line_end": 685,
+      "category": "weak_test",
+      "description": "Every assertion in `test_pre_post_init_order` reduced to `is not None`; the test can't fail on wrong values.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "weaken_test",
+    "upstream_subject": "__attrs_pre_init__ (#750)",
+    "date": "2021-01-24"
+  }
+}

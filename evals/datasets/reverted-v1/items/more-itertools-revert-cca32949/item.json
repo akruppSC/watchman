@@ -1,0 +1,28 @@
+{
+  "id": "more-itertools-revert-cca32949",
+  "kind": "reverted",
+  "task": "Simplify the implementation of `last`.",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "c834d6e4a0c4280b7b7750cb0de8dd8acb3d4c2c",
+    "upstream_commit": "cca32949f12d473fd823e37a5530c30d2faa1332",
+    "origin": "upstream bug fix, reverted (source only)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 286,
+      "line_end": 286,
+      "category": "correctness",
+      "description": "Reintroduces the bug fixed upstream by cca32949: fix last() when __reversed__ is None",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "upstream_subject": "fix last() when __reversed__ is None",
+    "date": "2025-07-13"
+  }
+}
