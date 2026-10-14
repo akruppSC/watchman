@@ -108,7 +108,7 @@ def assign_split(item_id: str, seed: str) -> Split:
     return Split.TEST if h / 0xFFFFFFFF < TEST_FRACTION else Split.DEV
 
 
-def _strata_key(item: Item) -> str:
+def strata_key(item: Item) -> str:
     repo = item.source.repo if isinstance(item.source, GitSource) else "inline"
     return item.meta.get("template") or f"{item.kind.value}:{repo}"
 
@@ -119,7 +119,7 @@ def stratified_splits(items: list[Item], seed: str) -> dict[str, Split]:
     and repo, which a per-item coin flip doesn't guarantee on small datasets."""
     groups: dict[str, list[Item]] = {}
     for it in items:
-        groups.setdefault(_strata_key(it), []).append(it)
+        groups.setdefault(strata_key(it), []).append(it)
     out: dict[str, Split] = {}
     for group in groups.values():
         ranked = sorted(

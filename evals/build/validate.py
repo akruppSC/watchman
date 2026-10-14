@@ -1,6 +1,6 @@
 """Validate datasets: every item materializes, parses, and hides the future.
 
-  uv run python -m evals.build.validate seeded-v1 reverted-v1 clean-v1
+uv run python -m evals.build.validate seeded-v1 reverted-v1 clean-v1
 """
 
 from __future__ import annotations
@@ -51,8 +51,10 @@ def validate(name: str) -> list[str]:
                         problems.append(f"{it.id}: syntax error {f.path}:{e.lineno}")
             for d in it.defects:
                 if not any(
-                    (fd := diff.file(r.file)) is not None
-                    and any(r.line_start <= n <= r.line_end for n in fd.added)
+                    (
+                        (fd := diff.file(r.file)) is not None
+                        and any(r.line_start <= n <= r.line_end for n in fd.added)
+                    )
                     or (fd is not None and not fd.added)
                     for r in d.ranges()
                 ):

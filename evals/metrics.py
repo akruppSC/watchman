@@ -159,3 +159,41 @@ def summarize(items: list[Item], scores: list[ItemScore]) -> Summary:
             cat_found[d.category] += di in matched
     s.recall_by_category = {c.value: (cat_found[c], cat_total[c]) for c in cat_total}
     return s
+
+
+CONFIDENCE_BUCKETS: list[tuple[float, float]] = [(0.0, 0.6), (0.6, 0.8), (0.8, 0.9), (0.9, 1.01)]
+
+
+@dataclass
+class Calibration:
+    """Precision per confidence bucket and mean severity of true vs false positives.
+
+    Computed over defect items only (seeded/reverted). Well calibrated means precision
+    rises with confidence, and true positives carry higher severity than false positives.
+    """
+
+    buckets: list[tuple[str, int, int]] = field(default_factory=list)  # label, tp, total
+    mean_severity_tp: float | None = None
+    mean_severity_fp: float | None = None
+
+
+def calibration(pairs: list[tuple[ItemScore, ReviewResult]]) -> Calibration:
+    tp_sev: list[int] = []
+    fp_sev: list[int] = []
+    counts = {b: [0, 0] for b in CONFIDENCE_BUCKETS}
+    for score, result in pairs:
+        if score.kind is ItemKind.CLEAN:
+            continue
+        matched = {m.finding_id for m in score.matches}
+        for f in result.findings:
+            is_tp = f.id in matched
+            (tp_sev if is_tp else fp_sev).append(f.severity.rank)
+            for lo, hi in CONFIDENCE_BUCKETS:
+                if lo <= f.confidence < hi:
+                    counts[(lo, hi)][0] += is_tp
+                    counts[(lo, hi)][1] += 1
+    return Calibration(
+        buckets=[(f"{lo:.1f}-{min(hi, 1.0):.1f}", tp, n) for (lo, hi), (tp, n) in counts.items()],
+        mean_severity_tp=sum(tp_sev) / len(tp_sev) if tp_sev else None,
+        mean_severity_fp=sum(fp_sev) / len(fp_sev) if fp_sev else None,
+    )

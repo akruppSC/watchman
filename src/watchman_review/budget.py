@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -27,14 +28,16 @@ class LedgerEntry(BaseModel):
 
 
 class Ledger:
-    """Append-only JSONL record of real (non-cached) LLM spend."""
+    """Append-only JSONL record of real (non-cached) LLM spend. Safe across threads."""
+
+    _lock = threading.Lock()
 
     def __init__(self, path: Path | None = None) -> None:
         self.path = path or data_dir() / "ledger.jsonl"
 
     def record(self, entry: LedgerEntry) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.path.open("a") as fh:
+        with self._lock, self.path.open("a") as fh:
             fh.write(entry.model_dump_json() + "\n")
 
     def month_total(self, now: datetime | None = None) -> float:

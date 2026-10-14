@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import threading
 from enum import StrEnum
 from pathlib import Path
 
@@ -54,7 +56,7 @@ class CachingClient:
             raise LLMError(f"cache miss in replay mode (key {key[:12]})")
         resp = self._inner.complete(request)
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(".tmp")
+        tmp = path.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
         tmp.write_text(resp.model_dump_json(indent=2))
         tmp.replace(path)
         return resp

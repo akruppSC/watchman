@@ -74,7 +74,9 @@ class Commit:
     files: list[FileStat] = field(default_factory=list)
 
     def src_files(self, r: SourceRepo) -> list[FileStat]:
-        return [f for f in self.files if f.path.endswith(".py") and f.path.startswith(r.src_prefixes)]
+        return [
+            f for f in self.files if f.path.endswith(".py") and f.path.startswith(r.src_prefixes)
+        ]
 
     def test_files(self, r: SourceRepo) -> list[FileStat]:
         return [

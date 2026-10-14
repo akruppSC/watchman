@@ -17,8 +17,8 @@ from evals.dataset import (
     assign_split,
     materialize,
 )
+from evals.harness import RunRecord, build_report, run_dataset, save_run
 from evals.harness import app as harness_app
-from evals.harness import build_report, run_dataset, save_run
 from evals.metrics import overlaps, score_item, summarize
 from typer.testing import CliRunner
 
@@ -145,6 +145,49 @@ def test_run_dataset_baseline_uses_injected_client(toy_copy: Path, tmp_path: Pat
     rec = next(r for r in run.items if r.item_id == "clean-001")
     assert rec.score.n_findings == 0
     assert len(fake.requests) == len(run.items)
+
+
+def test_parallel_run_matches_serial(toy_copy: Path, tmp_path: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+    cfg = Config()
+    cfg.review.checks = ["secrets", "hygiene", "ruff"]
+
+    def go(jobs: int) -> RunRecord:
+        return run_dataset(
+            ds, split=Split.DEV, mode=ReviewMode.DETERMINISTIC, cfg=cfg, offline=True,
+            cache_dir=tmp_path, jobs=jobs,
+        )  # fmt: skip
+
+    serial, parallel = go(1), go(4)
+    assert [r.item_id for r in serial.items] == [r.item_id for r in parallel.items]
+    assert [r.score.matches for r in serial.items] == [r.score.matches for r in parallel.items]
+
+
+def test_sample_items_is_stratified_and_deterministic() -> None:
+    from evals.harness import sample_items
+
+    items = [
+        Item(id=f"{t}-{i}", kind=ItemKind.SEEDED, source=InlineSource(license="x", origin="y"),
+             meta={"template": t})
+        for t in ("a", "b", "c") for i in range(5)
+    ]  # fmt: skip
+    picked = sample_items(items, 6)
+    assert picked == sample_items(items, 6)
+    assert sorted({p.meta["template"] for p in picked}) == ["a", "b", "c"]
+    assert all(sum(p.meta["template"] == t for p in picked) == 2 for t in "abc")
+
+
+def test_calibration_buckets() -> None:
+    from evals.metrics import calibration
+
+    item = Item(
+        id="i", kind=ItemKind.SEEDED, source=InlineSource(license="x", origin="y"),
+        defects=[Defect(file="a.py", line_start=5, line_end=5, category=Category.CORRECTNESS)],
+    )  # fmt: skip
+    res = result([finding("a.py", 5, conf=0.95), finding("z.py", 1, conf=0.65)])
+    cal = calibration([(score_item(item, res), res)])
+    assert ("0.9-1.0", 1, 1) in cal.buckets
+    assert ("0.6-0.8", 0, 1) in cal.buckets
 
 
 def test_harness_refuses_test_split_without_final() -> None:

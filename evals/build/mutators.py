@@ -146,13 +146,20 @@ def swallow_exception(ctx: Ctx) -> Mutation | None:
         old = lines[node.lineno - 1]
         ind = _indent(old)
         fallback = "pass"
-        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(
-            node.targets[0], ast.Name
+        if (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
         ):
             fallback = f"{node.targets[0].id} = None"
         elif not isinstance(node, ast.Expr):
             continue
-        block = [f"{ind}try:\n", f"    {old}", f"{ind}except Exception:\n", f"{ind}    {fallback}\n"]
+        block = [
+            f"{ind}try:\n",
+            f"    {old}",
+            f"{ind}except Exception:\n",
+            f"{ind}    {fallback}\n",
+        ]
         new = "".join(lines[: node.lineno - 1] + block + lines[node.lineno :])
         if not _valid(new):
             continue
@@ -310,7 +317,9 @@ def change_default(ctx: Ctx) -> Mutation | None:
         cands: list[tuple[ast.FunctionDef | ast.AsyncFunctionDef, ast.Constant]] = []
         parents = _parents(tree)
         for fn in ast.walk(tree):
-            if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef) or fn.name.startswith("_"):
+            if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef) or fn.name.startswith(
+                "_"
+            ):
                 continue
             if _in_function(fn, parents):
                 continue  # nested helpers aren't part of the public API
@@ -319,8 +328,12 @@ def change_default(ctx: Ctx) -> Mutation | None:
             if not body_lines & f.added or fn.lineno in f.added:
                 continue
             for d in [*fn.args.defaults, *[k for k in fn.args.kw_defaults if k is not None]]:
-                if isinstance(d, ast.Constant) and _single_line(d) and (
-                    isinstance(d.value, bool) or (type(d.value) is int and 0 <= d.value < 1000)
+                if (
+                    isinstance(d, ast.Constant)
+                    and _single_line(d)
+                    and (
+                        isinstance(d.value, bool) or (type(d.value) is int and 0 <= d.value < 1000)
+                    )
                 ):
                     cands.append((fn, d))
         pick = _choose(ctx.rng, cands)
@@ -415,7 +428,8 @@ def hallucinated_stdlib_attr(ctx: Ctx) -> Mutation | None:
         module, attr = ctx.rng.choice(FAKE_STDLIB_ATTRS)
         lines = _lines(f.text)
         has_import = any(
-            isinstance(n, ast.Import) and any(a.name == module and a.asname is None for a in n.names)
+            isinstance(n, ast.Import)
+            and any(a.name == module and a.asname is None for a in n.names)
             for n in tree.body
         )
         lines.insert(fn.lineno - 1, f"{_indent(lines[fn.lineno - 1])}@{module}.{attr}\n")
@@ -542,13 +556,11 @@ def comment_noise(ctx: Ctx) -> Mutation | None:
         if len(cands) < 2:
             continue
         chosen = sorted(ctx.rng.sample(cands, min(3, len(cands))))
-        offset = 0
         locs: list[Location] = []
-        for lineno, text in chosen:
+        for offset, (lineno, text) in enumerate(chosen):  # each insert shifts later lines
             idx = lineno - 1 + offset
             lines.insert(idx, f"{_indent(lines[idx])}{text}\n")
             locs.append(Location(f.path, idx + 1, idx + 1))
-            offset += 1
         new = "".join(lines)
         if not _valid(new):
             continue
@@ -602,9 +614,7 @@ def duplicate_helper(ctx: Ctx) -> Mutation | None:
             (a.asname or a.name).split(".")[0]
             for n in tree.body if isinstance(n, ast.Import | ast.ImportFrom) for a in n.names
         }  # fmt: skip
-        file_names |= {
-            n.name for n in tree.body if isinstance(n, ast.FunctionDef | ast.ClassDef)
-        }
+        file_names |= {n.name for n in tree.body if isinstance(n, ast.FunctionDef | ast.ClassDef)}
         options = []
         for node in tree.body:
             if not isinstance(node, ast.ImportFrom):
@@ -655,7 +665,7 @@ def duplicate_helper(ctx: Ctx) -> Mutation | None:
         insert_at = min([first_def, *[x.lineno for x in getattr(first_node, "decorator_list", [])]])
         if any(c.lineno < insert_at for c in calls):
             continue
-        block = _lines(copy) + ["\n", "\n"]
+        block = [*_lines(copy), "\n", "\n"]
         lines[insert_at - 1 : insert_at - 1] = block
         new = "".join(lines)
         if not _valid(new):

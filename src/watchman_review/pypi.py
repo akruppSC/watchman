@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import threading
 import time
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -84,7 +86,9 @@ class PackageIndex:
         if path is None or info.status is Lookup.UNKNOWN:
             return
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"fetched_at": time.time(), "info": info.model_dump()}))
+        tmp = path.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+        tmp.write_text(json.dumps({"fetched_at": time.time(), "info": info.model_dump()}))
+        tmp.replace(path)  # atomic: concurrent reviews never read a partial file
 
     def lookup(self, raw_name: str) -> PackageInfo:
         name = normalize(raw_name)

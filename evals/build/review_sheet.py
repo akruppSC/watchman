@@ -1,6 +1,6 @@
 """Render a human review sheet (REVIEW.md) for a dataset, for owner approval before freezing.
 
-  uv run python -m evals.build.review_sheet seeded-v1
+uv run python -m evals.build.review_sheet seeded-v1
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ def excerpt(patch: str, path: str, start: int, end: int) -> str:
                 out.append(f"{n:>5} {mark} {line[1:]}")
             n += 1
     if len(out) > MAX_LINES:
-        out = out[:MAX_LINES] + ["  ..."]
+        out = [*out[:MAX_LINES], "  ..."]
     return "\n".join(out) or "(no lines)"
 
 
@@ -53,7 +53,8 @@ def render(name: str) -> str:
         lines += [
             f"## {it.id}  ({ds.split_of(it.id).value})",
             "",
-            f"- upstream: `{src.repo}@{src.upstream_commit[:10]}`: {it.meta.get('upstream_subject', '')}",
+            f"- upstream: `{src.repo}@{src.upstream_commit[:10]}`: "
+            f"{it.meta.get('upstream_subject', '')}",
             f"- task shown to reviewer: {it.task}",
             f"- diff: {len(stats.files)} file(s), +{stats.lines_added}/-{stats.lines_removed}",
         ]

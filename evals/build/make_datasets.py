@@ -26,6 +26,7 @@ from evals.build.mutators import SCHEDULE, TEMPLATES, Ctx, FileChange, Mutation
 from evals.build.repos import (
     REPOS,
     Commit,
+    FileStat,
     SourceRepo,
     ensure_clone,
     git,
@@ -200,18 +201,22 @@ def build_reverted(fixes: dict[str, list[Commit]], out: Path, rng: random.Random
 # --- dataset A: seeded ----------------------------------------------------------
 
 
-def try_seed(r: SourceRepo, c: Commit, template: str, rng: random.Random) -> tuple[Mutation, str] | None:
+def _file_changes(r: SourceRepo, c: Commit, tree: Path, files: list[FileStat]) -> list[FileChange]:
+    return [
+        FileChange(f.path, (tree / f.path).read_text(), added_lines(r, c.parent, c.sha, f.path))
+        for f in files
+        if (tree / f.path).exists()
+    ]
+
+
+def try_seed(
+    r: SourceRepo, c: Commit, template: str, rng: random.Random
+) -> tuple[Mutation, str] | None:
     with worktree(r, c.sha) as tree:
         ctx = Ctx(
             tree=tree,
-            src=[
-                FileChange(f.path, (tree / f.path).read_text(), added_lines(r, c.parent, c.sha, f.path))
-                for f in c.src_files(r) if (tree / f.path).exists()
-            ],
-            tests=[
-                FileChange(f.path, (tree / f.path).read_text(), added_lines(r, c.parent, c.sha, f.path))
-                for f in c.test_files(r) if (tree / f.path).exists()
-            ],
+            src=_file_changes(r, c, tree, c.src_files(r)),
+            tests=_file_changes(r, c, tree, c.test_files(r)),
             package_files=package_files(tree, r),
             rng=rng,
         )  # fmt: skip
