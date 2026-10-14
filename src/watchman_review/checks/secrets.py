@@ -12,6 +12,7 @@ from collections import Counter
 from dataclasses import dataclass
 
 from watchman_review.checks.base import Check, CheckContext
+from watchman_review.checks.scope import is_test_path
 from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
 
 
@@ -133,6 +134,17 @@ def scan_line(line: str) -> list[tuple[Rule, str]]:
 
 
 _SKIP_SUFFIXES = (".lock", ".min.js", ".svg", ".map")
+# Pattern-only rules that commonly match synthetic fixtures; downgraded inside tests.
+# Provider-specific key formats are never downgraded.
+_LOW_TRUST_IN_TESTS = {"generic-secret", "url-credentials", "jwt"}
+_KEY_BODY = re.compile(r"[A-Za-z0-9+/=]{40,}")
+
+
+def _has_key_body(text: str, added: dict[int, str], lineno: int) -> bool:
+    after_header = text.split("PRIVATE KEY-----", 1)[-1]
+    if _KEY_BODY.search(after_header):
+        return True
+    return any(_KEY_BODY.search(added.get(lineno + k, "")) for k in (1, 2))
 
 
 class SecretsCheck(Check):
@@ -143,13 +155,19 @@ class SecretsCheck(Check):
         for f in ctx.diff.files:
             if f.is_binary or f.path.endswith(_SKIP_SUFFIXES):
                 continue
+            in_tests = is_test_path(f.path)
             for lineno, text in sorted(f.added.items()):
                 for rule, value in scan_line(text):
+                    if rule.id == "private-key" and not _has_key_body(text, f.added, lineno):
+                        continue  # header alone (docs, parsers, test fixtures) is not a leak
+                    severity, confidence = rule.severity, rule.confidence
+                    if in_tests and rule.id in _LOW_TRUST_IN_TESTS:
+                        severity, confidence = Severity.MINOR, round(confidence - 0.2, 2)
                     findings.append(
                         Finding(
                             category=Category.SECURITY,
-                            severity=rule.severity,
-                            confidence=rule.confidence,
+                            severity=severity,
+                            confidence=confidence,
                             file=f.path,
                             line_start=lineno,
                             line_end=lineno,

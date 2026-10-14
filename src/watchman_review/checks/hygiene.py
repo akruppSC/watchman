@@ -6,18 +6,54 @@ silences the linter. These patterns are cheap to detect precisely from the diff 
 
 from __future__ import annotations
 
+import io
 import re
+import tokenize
 
 from watchman_review.checks.base import Check, CheckContext
 from watchman_review.checks.scope import is_test_path
 from watchman_review.gitutil import FileStatus
 from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
 
+# Only unconditional skip decorators. Conditional skips (skipif, pytest.skip() inside an
+# environment check) are legitimate and were the main false-positive source in dogfooding.
 _SKIP = re.compile(
-    r"@pytest\.mark\.(skip|xfail)\b|\bpytest\.(skip|xfail)\(|@unittest\.(skip|expectedFailure)"
+    r"^\s*@(?:pytest\.mark\.skip\b(?!if)|pytest\.mark\.xfail\s*(?:$|\(\s*(?:reason\s*=.*)?\)\s*$)"
+    r"|unittest\.skip\(|unittest\.expectedFailure\b)"
 )
 _ASSERT = re.compile(r"^\s*(assert\b|self\.assert\w*\(|pytest\.raises\()")
-_SUPPRESS = re.compile(r"#\s*(noqa\b|type:\s*ignore\b|pragma:\s*no\s*cover|pyright:\s*ignore)")
+_SUPPRESS = re.compile(
+    r"#\s*(?P<kind>noqa|type:\s*ignore|pyright:\s*ignore|pragma:\s*no\s*cover)"
+    r"(?P<codes>(?::\s*[A-Z]+[0-9]+(?:\s*,\s*[A-Z]+[0-9]+)*)|\[[\w\-, ]+\])?"
+    r"(?P<rest>.*)$"
+)
+
+
+def comments_by_line(source: str) -> dict[int, str] | None:
+    """Map line -> comment text using the tokenizer, so strings are never mistaken for
+    comments. Returns None if the file doesn't tokenize."""
+    out: dict[int, str] = {}
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(source).readline):
+            if tok.type == tokenize.COMMENT:
+                out[tok.start[0]] = tok.string
+    except (tokenize.TokenError, SyntaxError):
+        return None
+    return out
+
+
+def classify_suppression(text: str) -> tuple[str, Severity] | None:
+    """Return (kind, severity) for an unjustified suppression, or None if fine."""
+    m = _SUPPRESS.search(text)
+    if not m:
+        return None
+    kind = re.sub(r"\s+", " ", m.group("kind"))
+    justified = len(re.findall(r"[A-Za-z]{3,}", m.group("rest"))) >= 2
+    if kind.startswith("pragma"):
+        return None if justified else (kind, Severity.NIT)
+    if not m.group("codes"):
+        return kind, Severity.MINOR  # blanket suppression
+    return None if justified else (kind, Severity.NIT)
 
 
 def _finding(
@@ -50,6 +86,12 @@ class HygieneCheck(Check):
                 ))  # fmt: skip
                 continue
 
+            head_file = ctx.tree / f.path
+            comments = (
+                comments_by_line(head_file.read_text(errors="replace"))
+                if head_file.is_file()
+                else None
+            )
             for line, text in sorted(f.added.items()):
                 if test_file and _SKIP.search(text):
                     findings.append(_finding(
@@ -58,13 +100,18 @@ class HygieneCheck(Check):
                         f"Added line {f.path}:{line}: `{text.strip()[:160]}`.",
                         "hygiene:test-skipped",
                     ))  # fmt: skip
-                m = _SUPPRESS.search(text)
-                if m:
+                comment = text if comments is None else comments.get(line)
+                sup = classify_suppression(comment) if comment else None
+                if sup:
+                    kind, severity = sup
+                    blanket = severity is Severity.MINOR
                     findings.append(_finding(
-                        Category.CONVENTION_VIOLATION, Severity.MINOR, 0.8, f.path, line,
-                        f"New lint/type suppression `{m.group(1).strip()}`",
-                        f"Added line {f.path}:{line}: `{text.strip()[:160]}`. Suppressions "
-                        "should be justified or the underlying issue fixed.",
+                        Category.CONVENTION_VIOLATION, severity, 0.8, f.path, line,
+                        f"New {'blanket ' if blanket else ''}`{kind}` suppression without "
+                        "justification",
+                        f"Added line {f.path}:{line}: `{text.strip()[:160]}`. "
+                        + ("No rule code given. " if blanket else "")
+                        + "Justify it in the comment or fix the underlying issue.",
                         "hygiene:suppression",
                     ))  # fmt: skip
 

@@ -18,19 +18,24 @@ from watchman_review.checks.tests_check import TestsCheck
 from watchman_review.config import Config
 from watchman_review.gitutil import get_diff
 from watchman_review.pypi import PackageIndex
-from watchman_review.sandbox import SubprocessSandbox
+from watchman_review.sandbox import Sandbox, SubprocessSandbox
 from watchman_review.schema import Category, CheckResult, CheckStatus, Severity
 
 
-def make_ctx(repo: Path, base: str = "main", head: str = "HEAD", **kw: object) -> CheckContext:
-    cfg = kw.pop("config", None) or Config()
-    assert isinstance(cfg, Config)
+def make_ctx(
+    repo: Path,
+    base: str = "main",
+    head: str = "HEAD",
+    *,
+    config: Config | None = None,
+    sandbox: Sandbox | None = None,
+) -> CheckContext:
     return CheckContext(
         repo_root=repo,
         tree=repo,
         diff=get_diff(repo, base, head),
-        config=cfg,
-        **kw,  # type: ignore[arg-type]
+        config=config or Config(),
+        sandbox=sandbox,
     )
 
 
@@ -296,6 +301,71 @@ def test_hygiene_detects_tampering(git_repo: Path) -> None:
         "hygiene:test-deleted",
         "hygiene:test-skipped",
     ]
+
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        ("x = 1  # noqa", ("noqa", Severity.MINOR)),
+        ("x = 1  # type: ignore", ("type: ignore", Severity.MINOR)),
+        ("x = 1  # noqa: E501", ("noqa", Severity.NIT)),
+        ("x = f()  # type: ignore[attr-defined]", ("type: ignore", Severity.NIT)),
+        ("except Exception:  # noqa: BLE001 - must not abort the review", None),
+        ("x = f()  # type: ignore[arg-type]  # stub is wrong upstream", None),
+        ("x = 1  # ordinary comment", None),
+    ],
+)
+def test_classify_suppression(line: str, expected: tuple[str, Severity] | None) -> None:
+    from watchman_review.checks.hygiene import classify_suppression
+
+    assert classify_suppression(line) == expected
+
+
+@pytest.mark.parametrize(
+    ("line", "flagged"),
+    [
+        ("@pytest.mark.skip", True),
+        ('@pytest.mark.skip(reason="flaky")', True),
+        ("@pytest.mark.xfail", True),
+        ('@pytest.mark.xfail(reason="todo")', True),
+        ('@unittest.skip("later")', True),
+        ('@pytest.mark.skipif(sys.platform == "win32", reason="posix")', False),
+        ("@pytest.mark.xfail(sys.version_info < (3, 13), reason='x')", False),
+        ('        pytest.skip("docker unavailable")', False),
+        ('src = "@pytest.mark.skip\\ndef test_a(): ..."', False),
+    ],
+)
+def test_skip_detection_is_unconditional_decorators_only(line: str, flagged: bool) -> None:
+    from watchman_review.checks.hygiene import _SKIP
+
+    assert bool(_SKIP.search(line)) is flagged
+
+
+def test_suppression_inside_string_literal_ignored(git_repo: Path) -> None:
+    src = 'CASES = ["x  # noqa", """\n# type: ignore\n"""]\ny = 1  # noqa\n'
+    branch_change(git_repo, {"a.py": ""}, {"a.py": src})
+    res = run_check(HygieneCheck(), make_ctx(git_repo))
+    assert [(f.rule, f.line_start) for f in res.findings] == [("hygiene:suppression", 4)]
+
+
+def test_private_key_header_without_body_is_ignored(git_repo: Path) -> None:
+    header = "-----BEGIN RSA " + "PRIVATE KEY-----"
+    body = "MIIEow" + "A" * 58
+    branch_change(
+        git_repo,
+        {"a.py": ""},
+        {"a.py": f'MARKER = "{header}"\n', "key.pem": f"{header}\n{body}\n"},
+    )
+    res = run_check(SecretsCheck(), make_ctx(git_repo))
+    assert [(f.file, f.rule) for f in res.findings] == [("key.pem", "secrets:private-key")]
+
+
+def test_generic_secret_in_tests_downgraded(git_repo: Path) -> None:
+    line = 'db_password = "Zx9!qL2#vR7$mK4@"\n'
+    branch_change(git_repo, {"a.py": ""}, {"tests/test_db.py": line, "app.py": line})
+    res = run_check(SecretsCheck(), make_ctx(git_repo))
+    sev = {f.file: f.severity for f in res.findings}
+    assert sev == {"app.py": Severity.MAJOR, "tests/test_db.py": Severity.MINOR}
 
 
 # --- scope -----------------------------------------------------------------

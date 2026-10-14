@@ -13,13 +13,15 @@ from watchman_review.checks.base import DETERMINISTIC_CONFIDENCE, Check, CheckCo
 from watchman_review.sandbox import run_static_tool
 from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
 
-# Rules that map directly onto the AI-code pitfall catalog.
+# Rules that map directly onto the AI-code pitfall catalog. Deliberately excluded after
+# dogfooding showed low precision: ARG001 (fires on required callback signatures),
+# S105/S106 (fires on enum members like PASS = "pass"; the secrets check is more precise),
+# B011/PT015 (`assert False` is an intentional "unreachable" marker in tests).
 PITFALL_RULES: dict[str, tuple[Category, Severity]] = {
     "F821": (Category.CORRECTNESS, Severity.MAJOR),  # undefined name
     "F811": (Category.CORRECTNESS, Severity.MINOR),  # redefinition of unused name
     "F401": (Category.OVER_ABSTRACTION, Severity.MINOR),  # unused import (dead code)
     "F841": (Category.OVER_ABSTRACTION, Severity.MINOR),  # unused local variable
-    "ARG001": (Category.OVER_ABSTRACTION, Severity.NIT),  # unused function argument
     "E722": (Category.SWALLOWED_ERROR, Severity.MAJOR),  # bare except
     "BLE001": (Category.SWALLOWED_ERROR, Severity.MAJOR),  # blind except Exception
     "S110": (Category.SWALLOWED_ERROR, Severity.MAJOR),  # try/except/pass
@@ -27,11 +29,7 @@ PITFALL_RULES: dict[str, tuple[Category, Severity]] = {
     "B904": (Category.SWALLOWED_ERROR, Severity.MINOR),  # raise without from in except
     "B006": (Category.CORRECTNESS, Severity.MAJOR),  # mutable default argument
     "B008": (Category.CORRECTNESS, Severity.MINOR),  # call in default argument
-    "B011": (Category.WEAK_TEST, Severity.MINOR),  # assert False
     "B015": (Category.WEAK_TEST, Severity.MAJOR),  # pointless comparison (assert missing)
-    "PT015": (Category.WEAK_TEST, Severity.MINOR),  # assertion always fails
-    "S105": (Category.SECURITY, Severity.MAJOR),  # hardcoded password string
-    "S106": (Category.SECURITY, Severity.MAJOR),  # hardcoded password argument
     "S307": (Category.SECURITY, Severity.MAJOR),  # eval
     "S301": (Category.SECURITY, Severity.MINOR),  # pickle
     "S506": (Category.SECURITY, Severity.MAJOR),  # yaml.load without SafeLoader

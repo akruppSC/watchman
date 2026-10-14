@@ -90,8 +90,9 @@ def test_worktree_diff_includes_untracked(git_repo: Path) -> None:
     d = get_diff(git_repo, "main", WORKTREE)
     paths = {f.path for f in d.files}
     assert paths == {"a.py", "fresh.py"}
-    assert d.file("fresh.py") is not None
-    assert d.file("fresh.py").added == {1: "new = True"}  # type: ignore[union-attr]
+    fresh = d.file("fresh.py")
+    assert fresh is not None
+    assert fresh.added == {1: "new = True"}
 
 
 def test_snapshot_is_isolated_and_cleaned_up(git_repo: Path) -> None:
