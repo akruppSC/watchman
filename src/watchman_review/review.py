@@ -142,6 +142,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
     checks: list[CheckResult] = []
     trace: list[ToolTraceStep] = []
     grading: dict[str, str] = {}
+    incomplete_reasons: list[str] = []
     runs_layer1 = mode in (ReviewMode.DETERMINISTIC, ReviewMode.AGENT)
     uses_agent = mode in (ReviewMode.AGENT, ReviewMode.AGENT_NO_L1)
 
@@ -166,7 +167,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
             try:
                 client = _client(cfg, opts, budget)
                 if mode is ReviewMode.BASELINE:
-                    llm_findings, llm_warnings = run_baseline(
+                    llm_findings, llm_warnings, complete = run_baseline(
                         client, diff, task=opts.task, conventions=conventions,
                         max_tokens=cfg.llm.max_output_tokens, temperature=cfg.llm.temperature,
                         seed=cfg.llm.seed,
@@ -176,6 +177,7 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                         client, ctx, conventions, budget, cfg,
                         checks if mode is ReviewMode.AGENT else None,
                     )  # fmt: skip
+                    complete = not outcome.incomplete
                     llm_findings, llm_warnings, trace = (
                         outcome.findings, outcome.warnings, outcome.trace
                     )  # fmt: skip
@@ -188,17 +190,20 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
                 raise ReviewError(f"LLM review failed: {e}") from e
             findings += llm_findings
             warnings += llm_warnings
+            if not complete:
+                incomplete_reasons.append(f"{mode.value} model stage did not finish")
 
         final = finalize(findings, diff, tree, min_confidence=cfg.review.min_confidence)
 
     usage: Usage = budget.usage
+    verdict = compute_verdict(final.findings, block_min_confidence=cfg.review.block_min_confidence)
+    if incomplete_reasons and verdict is Verdict.PASS:
+        verdict = Verdict.WARN  # an unfinished review must never look clean
     return ReviewResult(
         mode=mode,
         base=opts.base,
         head=opts.head,
-        verdict=compute_verdict(
-            final.findings, block_min_confidence=cfg.review.block_min_confidence
-        ),
+        verdict=verdict,
         findings=final.findings,
         checks=checks,
         usage=usage,
@@ -210,6 +215,8 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
         ],
         warnings=warnings,
         tool_trace=trace,
+        incomplete=bool(incomplete_reasons),
+        incomplete_reasons=incomplete_reasons,
     )
 
 

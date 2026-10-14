@@ -55,8 +55,8 @@ def run_baseline(
     max_tokens: int = 4096,
     temperature: float = 0.0,
     seed: int | None = None,
-) -> tuple[list[Finding], list[str]]:
-    """Returns (findings, warnings)."""
+) -> tuple[list[Finding], list[str], bool]:
+    """Returns (findings, warnings, complete). complete is False if the output was unusable."""
     req = CompletionRequest(
         messages=build_messages(diff, task, conventions),
         max_tokens=max_tokens,
@@ -67,5 +67,5 @@ def run_baseline(
     try:
         findings, errors = parse_findings(resp.content, Source.BASELINE)
     except FindingsParseError as e:
-        return [], [f"baseline output unparseable: {e}"]
-    return findings, [f"baseline dropped invalid {err}" for err in errors]
+        return [], [f"baseline output unparseable: {e}"], False
+    return findings, [f"baseline dropped invalid {err}" for err in errors], True

@@ -134,6 +134,12 @@ def review(
         typer.echo(payload)
     else:
         render(result, out)
+    if result.incomplete:
+        err.print(
+            "[red]review incomplete:[/red] " + "; ".join(result.incomplete_reasons)
+            + ". Findings may be missing; exiting 2 so this is never mistaken for a pass."
+        )  # fmt: skip
+        raise typer.Exit(EXIT_ERROR)
     raise typer.Exit(gate_exit_code(result.verdict, fail_on))
 
 

@@ -75,6 +75,10 @@ class LLMError(Exception):
     """Raised when the provider call fails after retries or returns unusable output."""
 
 
+class LLMAuthError(LLMError):
+    """The key is invalid or out of credit. Retrying can't help; stop the review."""
+
+
 class LLMClient(Protocol):
     @property
     def model(self) -> str: ...

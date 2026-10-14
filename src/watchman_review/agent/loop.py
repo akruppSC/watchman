@@ -18,6 +18,7 @@ from watchman_review.agent.tools import TOOLS, ToolContext, execute
 from watchman_review.budget import BudgetExceeded, ReviewBudget
 from watchman_review.llm.types import (
     CompletionRequest,
+    LLMAuthError,
     LLMClient,
     LLMError,
     Message,
@@ -80,6 +81,11 @@ class AgentOutcome:
     warnings: list[str] = field(default_factory=list)
     submitted: bool = False
     stop_reason: str = ""
+
+    @property
+    def incomplete(self) -> bool:
+        """True if the model never delivered a final answer (error, budget, turn limit)."""
+        return not self.submitted
 
 
 def system_prompt(max_tool_calls: int) -> str:
@@ -183,6 +189,10 @@ def run_agent(
         except BudgetExceeded as e:
             outcome.warnings.append(f"agent stopped: {e}")
             outcome.stop_reason = "budget"
+            break
+        except LLMAuthError as e:
+            outcome.warnings.append(f"agent stopped, LLM access problem: {e}")
+            outcome.stop_reason = "llm_auth"
             break
         except LLMError as e:
             outcome.warnings.append(f"agent LLM error: {e}")

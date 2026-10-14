@@ -199,3 +199,65 @@ def test_harness_refuses_test_split_without_final() -> None:
 def test_harness_freeze_requires_approval() -> None:
     res = CliRunner().invoke(harness_app, ["freeze", "--dataset", "toy"])
     assert res.exit_code == 2
+
+
+def test_errors_are_excluded_from_rates_but_counted() -> None:
+    from evals.metrics import error_score
+
+    ok = Item(
+        id="ok", kind=ItemKind.SEEDED, source=InlineSource(license="x", origin="y"),
+        defects=[Defect(file="a.py", line_start=5, line_end=5, category=Category.CORRECTNESS)],
+    )  # fmt: skip
+    bad = ok.model_copy(update={"id": "bad"})
+    res = result([finding("a.py", 5)])
+    scores = [score_item(ok, res), error_score(bad, "incomplete review: x", 0.01)]
+    s = summarize([ok, bad], scores)
+    assert (s.n_items, s.n_errors, s.n_scored) == (2, 1, 1)
+    assert s.recall == 1.0 and s.defects == 1  # the errored item's defect is not a miss
+    assert s.cost_usd == pytest.approx(0.01)
+
+
+def test_incomplete_result_becomes_error_record(toy_copy: Path, tmp_path: Path) -> None:
+    ds = Dataset.load("toy", toy_copy)
+
+    def boom(req: object) -> LLMResponse:
+        from watchman_review.llm.types import LLMError
+
+        raise LLMError("A Timeout Occurred")
+
+    cfg = Config()
+    cfg.review.checks = ["secrets"]
+    run = run_dataset(
+        ds, split=Split.DEV, mode=ReviewMode.AGENT, cfg=cfg, offline=True,
+        llm_client=FakeClient(responder=boom), llm_cache=CacheMode.OFF, cache_dir=tmp_path,
+        limit=2,
+    )  # fmt: skip
+    assert all(r.score.error and "incomplete review" in r.score.error for r in run.items)
+    assert all(r.result is not None for r in run.items)  # kept for diagnosis
+
+
+def test_merge_retry_replaces_only_errored_items(toy_copy: Path, tmp_path: Path) -> None:
+    from evals.harness import merge_retry
+    from evals.metrics import error_score
+
+    ds = Dataset.load("toy", toy_copy)
+    cfg = Config()
+    cfg.review.checks = ["secrets"]
+    full = run_dataset(
+        ds, split=Split.DEV, mode=ReviewMode.DETERMINISTIC, cfg=cfg, offline=True,
+        cache_dir=tmp_path,
+    )  # fmt: skip
+    victim = full.items[0]
+    item = {i.id: i for i in ds.items()}[victim.item_id]
+    broken = full.model_copy(
+        update={"items": [victim.model_copy(update={"score": error_score(item, "boom")}),
+                          *full.items[1:]]}
+    )  # fmt: skip
+    retried = run_dataset(
+        ds, split=Split.DEV, mode=ReviewMode.DETERMINISTIC, cfg=cfg, offline=True,
+        cache_dir=tmp_path, only_ids={victim.item_id},
+    )  # fmt: skip
+    merged = merge_retry(broken, retried)
+    assert [r.item_id for r in merged.items] == [r.item_id for r in full.items]
+    assert all(r.score.error is None for r in merged.items)
+    assert merged.review_config["retried_from"] == broken.run_id

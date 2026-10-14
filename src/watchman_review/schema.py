@@ -196,6 +196,12 @@ class ReviewResult(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     tool_trace: list[ToolTraceStep] = Field(default_factory=list)
     dropped: list[DroppedFinding] = Field(default_factory=list)
+    incomplete: bool = Field(
+        default=False,
+        description="A model stage failed or never submitted. Findings may be missing, so "
+        "the verdict is never PASS and the CLI exits 2.",
+    )
+    incomplete_reasons: list[str] = Field(default_factory=list)
 
 
 def compute_verdict(findings: list[Finding], *, block_min_confidence: float = 0.7) -> Verdict:

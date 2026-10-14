@@ -111,6 +111,11 @@ def _review_item(
         return ItemRecord(item_id=item.id, score=error_score(item, str(e)), result=None)
     finally:
         shutil.rmtree(repo, ignore_errors=True)
+    if result.incomplete:
+        reason = "incomplete review: " + "; ".join(result.incomplete_reasons)
+        warn = next((w for w in result.warnings if "LLM" in w or "agent" in w), "")
+        score = error_score(item, f"{reason}. {warn}"[:300], result.usage.cost_usd)
+        return ItemRecord(item_id=item.id, score=score, result=result)
     return ItemRecord(item_id=item.id, score=score_item(item, result), result=result)
 
 
@@ -130,10 +135,13 @@ def run_dataset(
     ledger: Ledger | None = None,
     jobs: int = 1,
     on_item: Callable[[ItemRecord], None] | None = None,
+    only_ids: set[str] | None = None,
 ) -> RunRecord:
     ds.verify()
     items = ds.items(split)
-    if sample is not None:
+    if only_ids is not None:
+        items = [it for it in items if it.id in only_ids]
+    elif sample is not None:
         items = sample_items(items, sample)
     items = items[:limit]
     opts_kw: dict[str, Any] = {
@@ -171,6 +179,30 @@ def run_dataset(
         review_config=cfg.review.model_dump(mode="json"),
         subset=subset,
         items=records,
+    )
+
+
+def latest_run(
+    dataset: str, split: Split, mode: ReviewMode, model: str | None, sample: int | None
+) -> RunRecord | None:
+    subset = f"sample{sample}" if sample is not None else None
+    best: RunRecord | None = None
+    for p in sorted(RUNS_DIR.glob("*.json")):
+        r = RunRecord.model_validate_json(p.read_text())
+        if (r.dataset, r.split, r.mode, r.model, r.subset) == (dataset, split, mode, model, subset):
+            best = r
+    return best
+
+
+def merge_retry(prev: RunRecord, retried: RunRecord) -> RunRecord:
+    """Replace the errored items of `prev` with their retried records."""
+    fresh = {r.item_id: r for r in retried.items}
+    items = [fresh.get(r.item_id, r) for r in prev.items]
+    return retried.model_copy(
+        update={
+            "items": items,
+            "review_config": {**retried.review_config, "retried_from": prev.run_id},
+        }
     )
 
 
@@ -305,6 +337,10 @@ def run(
     checks: Annotated[
         str | None, typer.Option(help="Comma-separated Layer 1 checks (default: config).")
     ] = None,
+    retry_errors: Annotated[
+        bool,
+        typer.Option(help="Re-run only the failed/incomplete items of the latest matching run."),
+    ] = False,
 ) -> None:
     """Run one reviewer mode over a dataset split and save the run.
 
@@ -331,11 +367,28 @@ def run(
 
     try:
         ds = Dataset.load(dataset)
+        prev: RunRecord | None = None
+        only_ids: set[str] | None = None
+        if retry_errors:
+            wanted = None if mode is ReviewMode.DETERMINISTIC else (model or cfg.llm.model)
+            prev = latest_run(dataset, split, mode, wanted, sample)
+            if prev is None:
+                typer.echo("no matching earlier run to retry", err=True)
+                raise typer.Exit(2)
+            only_ids = {r.item_id for r in prev.items if r.score.error}
+            if not only_ids:
+                typer.echo("the latest matching run has no errors; nothing to retry")
+                raise typer.Exit(0)
         if split is Split.TEST:
             RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+            note = (
+                f" retry-errors infrastructure-failure items={len(only_ids)}"
+                if only_ids is not None
+                else ""
+            )
             with TEST_ACCESS_LOG.open("a") as fh:
                 fh.write(f"{datetime.now(UTC).isoformat()} dataset={dataset} mode={mode} "
-                         f"watchman={_watchman_commit()}\n")  # fmt: skip
+                         f"watchman={_watchman_commit()}{note}\n")  # fmt: skip
         record = run_dataset(
             ds,
             split=split,
@@ -348,7 +401,10 @@ def run(
             ledger=Ledger(),
             jobs=jobs,
             on_item=progress,
+            only_ids=only_ids,
         )
+        if prev is not None:
+            record = merge_retry(prev, record)
     except DatasetError as e:
         typer.echo(f"error: {e}", err=True)
         raise typer.Exit(2) from e

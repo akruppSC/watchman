@@ -229,7 +229,10 @@ def load_config(
 def save_user_config(cfg: Config, path: Path | None = None) -> Path:
     path = path or user_config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    data = cfg.model_dump(mode="json", exclude_none=True)
+    # Only values that differ from the built-in defaults are written. Saving every field
+    # pinned old defaults into the file, so later improvements to a default (a tuned
+    # min_confidence, say) silently never reached existing users.
+    data = cfg.model_dump(mode="json", exclude_none=True, exclude_defaults=True)
     tmp = path.with_suffix(".tmp")
     tmp.write_text(tomli_w.dumps(data))
     tmp.chmod(0o600)

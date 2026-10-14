@@ -77,6 +77,10 @@ def render(result: ReviewResult, console: Console) -> None:
             body.append(Text("fix: " + f.suggested_fix, style="green"))
         console.print(Panel(Group(*body), title=header, title_align="left", expand=True))
 
+    if result.incomplete:
+        console.print(
+            "[bold red]INCOMPLETE REVIEW[/bold red]: " + "; ".join(result.incomplete_reasons)
+        )
     for w in result.warnings:
         console.print(f"[yellow]warning:[/yellow] {w}")
 

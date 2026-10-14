@@ -102,3 +102,29 @@ def test_ollama_needs_no_key() -> None:
 def test_none_key_source() -> None:
     llm = LLMConfig(provider=Provider.OPENAI, api_key_source=KeySource.NONE)
     assert resolve_api_key(llm) is None
+
+
+def test_save_writes_only_non_default_values() -> None:
+    cfg = Config()
+    cfg.llm.model = "vendor/some-model"
+    cfg.llm.input_cost_per_mtok = 0.75
+    path = save_user_config(cfg)
+    text = path.read_text()
+    assert 'model = "vendor/some-model"' in text
+    assert "min_confidence" not in text and "[budget]" not in text and "[review]" not in text
+    loaded, _ = load_config(None)
+    assert loaded.llm.model == "vendor/some-model"
+    assert loaded.review.min_confidence == Config().review.min_confidence
+
+
+def test_default_changes_reach_users_who_saved_before() -> None:
+    cfg = Config()
+    cfg.llm.model = "m"
+    path = save_user_config(cfg)
+    assert "min_confidence" not in path.read_text()  # not pinned, so it follows the default
+
+
+def test_saving_all_defaults_roundtrips_empty() -> None:
+    path = save_user_config(Config())
+    assert path.read_text().strip() == ""
+    assert load_config(None)[0] == Config()

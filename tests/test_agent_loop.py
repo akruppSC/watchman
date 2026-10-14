@@ -242,3 +242,46 @@ def test_model_cannot_spoof_source_or_rule(dup_repo: Path) -> None:
     assert f.source is Source.AGENT
     assert f.rule is None
     assert f.confidence == 0.6
+
+
+def test_llm_failure_marks_review_incomplete_not_clean(dup_repo: Path) -> None:
+    from watchman_review.llm.types import LLMError
+
+    def responder(req: CompletionRequest) -> LLMResponse:
+        raise LLMError("A Timeout Occurred")
+
+    res = run_review(dup_repo, agent_opts(FakeClient(responder=responder)))
+    assert res.incomplete
+    assert res.verdict is not Verdict.PASS
+    assert "did not finish" in res.incomplete_reasons[0]
+    assert any("LLM error" in w for w in res.warnings)
+
+
+def test_auth_failure_stops_agent_with_clear_warning(dup_repo: Path) -> None:
+    from watchman_review.llm.types import LLMAuthError
+
+    def responder(req: CompletionRequest) -> LLMResponse:
+        raise LLMAuthError("out of credits (402)")
+
+    res = run_review(dup_repo, agent_opts(FakeClient(responder=responder)))
+    assert res.incomplete
+    assert any("out of credits" in w for w in res.warnings)
+    assert len(res.tool_trace) == 0
+
+
+def test_cli_exits_2_on_incomplete(dup_repo: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from typer.testing import CliRunner
+
+    from watchman_review import cli
+    from watchman_review.schema import ReviewResult
+
+    def fake_run(root: Path, opts: ReviewOptions) -> ReviewResult:
+        return ReviewResult(
+            mode=ReviewMode.AGENT, base="b", head="h", verdict=Verdict.WARN, findings=[],
+            incomplete=True, incomplete_reasons=["agent model stage did not finish"],
+        )  # fmt: skip
+
+    monkeypatch.setattr(cli, "run_review", fake_run)
+    result = CliRunner().invoke(cli.app, ["review", "--repo", str(dup_repo), "--fail-on", "never"])
+    assert result.exit_code == 2
+    assert "incomplete" in result.output

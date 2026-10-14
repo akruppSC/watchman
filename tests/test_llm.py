@@ -15,7 +15,13 @@ from watchman_review.llm.cache import CacheMode, CachingClient
 from watchman_review.llm.catalog import list_models
 from watchman_review.llm.fake import FakeClient
 from watchman_review.llm.openai_compat import OpenAICompatClient
-from watchman_review.llm.types import CompletionRequest, LLMError, LLMResponse, Role
+from watchman_review.llm.types import (
+    CompletionRequest,
+    LLMAuthError,
+    LLMError,
+    LLMResponse,
+    Role,
+)
 
 TOOL = ToolSpec(
     name="read_file",
@@ -105,7 +111,7 @@ def test_http_non_retryable_error_raises_immediately() -> None:
     client = OpenAICompatClient(
         model="m", base_url="https://x", api_key="k", http=mock_http(handler)
     )
-    with pytest.raises(LLMError, match="401"):
+    with pytest.raises(LLMAuthError, match="invalid API key"):
         client.complete(CompletionRequest(messages=[Message.user("x")]))
     assert calls == 1
 
@@ -304,3 +310,62 @@ def test_anthropic_input_tokens_include_cache() -> None:
     client = AnthropicClient(model="c", base_url="https://a", api_key="k", http=mock_http(handler))
     resp = client.complete(CompletionRequest(messages=[Message.user("q")]))
     assert (resp.input_tokens, resp.cached_input_tokens) == (1000, 900)
+
+
+def _client_for(handler: Any) -> OpenAICompatClient:
+    return OpenAICompatClient(
+        model="m", base_url="https://x", api_key="k", http=mock_http(handler), retry_backoff_s=0
+    )
+
+
+def test_200_with_embedded_timeout_is_retried_not_treated_as_empty() -> None:
+    calls = 0
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls < 3:
+            body = {"id": "g", "error": {"message": "A Timeout Occurred", "code": 504}}
+            return httpx.Response(200, json=body)
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    resp = _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+    assert (resp.content, calls) == ("ok", 3)
+
+
+def test_200_with_persistent_embedded_error_raises() -> None:
+    def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"error": {"message": "overloaded", "code": 529}})
+
+    with pytest.raises(LLMError, match="after 4 attempts"):
+        _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+
+
+@pytest.mark.parametrize(("code", "hint"), [(401, "invalid API key"), (402, "out of credits")])
+def test_auth_and_credit_errors_fail_fast_even_inside_200(code: int, hint: str) -> None:
+    calls = 0
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(200, json={"error": {"message": "nope", "code": code}})
+
+    with pytest.raises(LLMAuthError, match=hint):
+        _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")]))
+    assert calls == 1
+
+
+def test_non_json_200_is_retried() -> None:
+    calls = 0
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(200, text="<html>gateway</html>")
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    assert (
+        _client_for(handler).complete(CompletionRequest(messages=[Message.user("x")])).content
+        == "ok"
+    )

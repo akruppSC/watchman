@@ -79,10 +79,10 @@ def score_item(item: Item, result: ReviewResult) -> ItemScore:
     )
 
 
-def error_score(item: Item, error: str) -> ItemScore:
+def error_score(item: Item, error: str, cost_usd: float = 0.0) -> ItemScore:
     return ItemScore(
         item_id=item.id, kind=item.kind, n_defects=len(item.defects), n_findings=0,
-        matches=[], false_positive_ids=[], cost_usd=0.0, latency_s=0.0, tool_calls=0,
+        matches=[], false_positive_ids=[], cost_usd=cost_usd, latency_s=0.0, tool_calls=0,
         error=error,
     )  # fmt: skip
 
@@ -122,6 +122,10 @@ class Summary:
         return self.clean_findings / self.clean_items if self.clean_items else None
 
     @property
+    def n_scored(self) -> int:
+        return self.n_items - self.n_errors
+
+    @property
     def mean_cost(self) -> float:
         return self.cost_usd / self.n_items if self.n_items else 0.0
 
@@ -137,9 +141,12 @@ def summarize(items: list[Item], scores: list[ItemScore]) -> Summary:
     cat_total: dict[Category, int] = defaultdict(int)
     for sc in scores:
         s.n_items += 1
-        if sc.error:
-            s.n_errors += 1
         s.cost_usd += sc.cost_usd
+        if sc.error:
+            # Failed or incomplete reviews say nothing about reviewer quality; they are
+            # counted and reported, but kept out of every rate.
+            s.n_errors += 1
+            continue
         s.latency_s += sc.latency_s
         s.tool_calls += sc.tool_calls
         item = by_id[sc.item_id]
