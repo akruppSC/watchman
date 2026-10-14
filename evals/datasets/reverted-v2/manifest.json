@@ -2,8 +2,8 @@
   "name": "reverted-v2",
   "version": 1,
   "split_seed": "reverted-v2-20261020",
-  "frozen": false,
-  "content_sha256": null,
+  "frozen": true,
+  "content_sha256": "86d7378f889bf0544de4ef041a26c142c2d3a505317d5a922de513efec899bb5",
   "splits": {
     "attrs-revert-000c5634": "test",
     "attrs-revert-09161fc9": "test",

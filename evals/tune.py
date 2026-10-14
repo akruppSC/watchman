@@ -12,7 +12,7 @@ held-out data.
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -22,7 +22,7 @@ import typer
 from evals.dataset import Dataset, Item, ItemKind, Split
 from evals.harness import RUNS_DIR, RunRecord
 from evals.metrics import ItemScore, Summary, score_item, summarize
-from watchman_review.schema import Finding, ReviewResult, Source
+from watchman_review.schema import CheckStatus, Finding, ReviewResult, Source
 
 app = typer.Typer(add_completion=False)
 
@@ -491,6 +491,103 @@ def overseer_report(
                 f"{fmt(a.clean_major, pct=False):>9} {fmt(a.triggered):>5} {a.gained:>4} "
                 f"{a.lost:>4} ${sm.mean_cost:>6.3f}"
             )
+
+
+REASON_KEYS = {
+    "primary review did not finish": "incomplete",
+    "major/blocker": "major",
+    "escalated": "escalated",
+    "Layer 1 check": "layer1",
+    "large diff": "large",
+    "security-sensitive": "sensitive",
+}
+
+
+def reason_key(text: str) -> str:
+    return next((k for frag, k in REASON_KEYS.items() if frag in text), "other")
+
+
+def _always_runs(split: Split, model: str | None) -> list[RunRecord]:
+    latest: dict[tuple[str, str, str, str], RunRecord] = {}
+    for p in sorted(Path(RUNS_DIR).glob("*.json")):
+        r = RunRecord.model_validate_json(p.read_text())
+        if r.split is split and r.overseer == "always" and (not model or r.model == model):
+            latest[(r.dataset, r.mode.value, r.model or "", r.subset or "")] = r
+    return list(latest.values())
+
+
+@dataclass
+class Row2:
+    items: list[Item] = field(default_factory=list)
+    scores: list[ItemScore] = field(default_factory=list)
+    ran: int = 0
+    n: int = 0
+    clean_major: int = 0
+    clean_n: int = 0
+
+
+def trigger_subsets(
+    runs: list[RunRecord], subsets: dict[str, set[str] | None], layer1_failed_only: bool = True
+) -> dict[str, Row2]:
+    """Score 'overseer when risky' for different sets of allowed trigger reasons.
+
+    None means always. An item uses the overseer result when any of its trigger reasons is in
+    the allowed set. Everything comes from the same primary reviews.
+    """
+    out = {name: Row2() for name in subsets}
+    for run in runs:
+        ds = {i.id: i for i in Dataset.load(run.dataset).items()}
+        for rec in run.items:
+            if rec.result is None or rec.score.error:
+                continue
+            variants = _arm_variants(rec.result)
+            if variants is None:
+                continue
+            only, full, _ = variants
+            keys = {reason_key(t) for t in rec.result.stages[0].trigger_reasons}
+            if layer1_failed_only:
+                # Re-evaluate the Layer 1 trigger as the code now defines it: a check that
+                # found problems (FAILED), not one that could not run (ERROR).
+                keys.discard("layer1")
+                if any(c.status is CheckStatus.FAILED for c in rec.result.checks):
+                    keys.add("layer1")
+            item = ds[rec.item_id]
+            for name, allowed in subsets.items():
+                use = full if (allowed is None or keys & allowed) else only
+                row = out[name]
+                row.n += 1
+                row.ran += use is full
+                row.items.append(item)
+                row.scores.append(score_item(item, use))
+                if item.kind is ItemKind.CLEAN:
+                    row.clean_n += 1
+                    row.clean_major += sum(1 for f in use.findings if f.severity.rank >= 2)
+    return out
+
+
+@app.command("overseer-triggers")
+def overseer_triggers(
+    split: Annotated[Split, typer.Option()] = Split.DEV,
+    model: Annotated[str | None, typer.Option()] = None,
+) -> None:
+    """How often each risk trigger fires and what the overseer does for those items."""
+    runs = _always_runs(split, model)
+    all_keys = ["incomplete", "major", "escalated", "layer1", "large", "sensitive"]
+    subsets: dict[str, set[str] | None] = {"primary only": set(), "all triggers": set(all_keys)}
+    for k in all_keys:
+        subsets[f"only {k}"] = {k}
+        subsets[f"all but {k}"] = set(all_keys) - {k}
+    subsets["always"] = None
+    table = trigger_subsets(runs, subsets)
+    typer.echo(f"  {'trigger set':22} {'ran':>5} {'recall':>7} {'strict':>7} {'prec':>5} "
+               f"{'FP/clean':>8} {'$/rev':>7}")  # fmt: skip
+    for name, row in table.items():
+        sm = summarize(row.items, row.scores)
+        typer.echo(
+            f"  {name:22} {fmt(row.ran / row.n if row.n else None):>5} {fmt(sm.recall):>7} "
+            f"{fmt(sm.recall_strict):>7} {fmt(sm.precision):>5} "
+            f"{fmt(sm.fp_per_clean_diff, pct=False):>8} ${sm.mean_cost:>6.3f}"
+        )
 
 
 if __name__ == "__main__":

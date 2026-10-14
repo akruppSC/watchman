@@ -2,8 +2,8 @@
   "name": "clean-v2",
   "version": 1,
   "split_seed": "clean-v2-20261020",
-  "frozen": false,
-  "content_sha256": null,
+  "frozen": true,
+  "content_sha256": "2996e92a125a6e017e2075c0eadd478303b189479f9b75c09d29c28516a05e02",
   "splits": {
     "attrs-clean-124c20cd": "test",
     "attrs-clean-5aa76a44": "test",

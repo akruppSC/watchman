@@ -2,8 +2,8 @@
   "name": "seeded-v2",
   "version": 1,
   "split_seed": "seeded-v2-20261020",
-  "frozen": false,
-  "content_sha256": null,
+  "frozen": true,
+  "content_sha256": "3fc5944d8eaffc1f927f5c4b3b89de917b70a9454295e78e7ccb9714d1db8590",
   "splits": {
     "attrs-comment-noise-c4c6fdd6": "test",
     "attrs-hallucinated-package-1fcd29f8": "test",

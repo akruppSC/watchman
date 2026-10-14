@@ -118,9 +118,12 @@ def risk_reasons(
         reasons.append(f"{len(serious)} major/blocker finding(s) from the primary reviewer")
     if primary.escalations:
         reasons.append(f"primary reviewer escalated {len(primary.escalations)} question(s)")
-    bad = [c.name for c in checks or [] if c.status in (CheckStatus.FAILED, CheckStatus.ERROR)]
+    # Only checks that found problems. A check that could not run (status ERROR, most often
+    # the target repo's tests failing to install in the sandbox) says nothing about the
+    # change; on the dev split that case fired the trigger on 61% of reviews.
+    bad = [c.name for c in checks or [] if c.status is CheckStatus.FAILED]
     if bad:
-        reasons.append(f"Layer 1 check(s) failed: {', '.join(bad)}")
+        reasons.append(f"Layer 1 check(s) found problems: {', '.join(bad)}")
     size = diff.lines_added + diff.lines_removed
     if size > oc.large_diff_lines or len(diff.files) > oc.large_diff_files:
         reasons.append(f"large diff ({len(diff.files)} files, {size} lines)")

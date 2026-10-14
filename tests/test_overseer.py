@@ -136,10 +136,12 @@ def test_escalation_triggers() -> None:
     assert "escalated 1 question" in reasons(primary=out)[0]
 
 
-def test_failed_layer1_check_triggers() -> None:
+def test_failed_layer1_check_triggers_but_a_check_that_could_not_run_does_not() -> None:
     bad = CheckResult(id="check:ruff", name="ruff", status=CheckStatus.FAILED)
     ok = CheckResult(id="check:mypy", name="mypy", status=CheckStatus.PASSED)
-    assert reasons(checks=[ok, bad]) == ["Layer 1 check(s) failed: ruff"]
+    broken = CheckResult(id="check:pytest", name="pytest", status=CheckStatus.ERROR)
+    assert reasons(checks=[ok, bad]) == ["Layer 1 check(s) found problems: ruff"]
+    assert reasons(checks=[ok, broken]) == []
 
 
 def test_large_diff_triggers_by_lines_and_files() -> None:
