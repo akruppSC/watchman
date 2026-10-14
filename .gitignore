@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets / local config
+.env
+.env.*
+*.key
+
+# Watchman local state
+.watchman/
+evals/.cache/
+evals/results/runs/*.tmp
+
+# Editors
+.idea/
+.vscode/
+*.swp
