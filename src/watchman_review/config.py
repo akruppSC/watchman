@@ -178,6 +178,29 @@ class OverseerConfig(BaseModel):
     second_pass_tool_calls: int = Field(default=12, ge=0)
 
 
+class LivePolicy(StrEnum):
+    ADVISORY = "advisory"  # feedback only; the worker is never stopped
+    BLOCKING = "blocking"  # a BLOCK verdict stops a commit / "done" until fixed or the cap hits
+
+
+class LiveConfig(BaseModel):
+    """Live mode: Watchman supervising a coding agent at checkpoints. User config only: a
+    reviewed repo must not control when (and how expensively) its own reviewer runs."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    policy: LivePolicy = LivePolicy.ADVISORY
+    round_cap: int = Field(default=3, ge=1, le=10)  # review/fix rounds per checkpoint kind
+    # Layer 1 checks that are cheap enough to run on every test run; the worker just ran the tests.
+    test_run_checks: list[str] = Field(
+        default_factory=lambda: ["secrets", "imports", "hygiene", "scope", "ruff", "mypy"]
+    )
+    test_run_mode: ReviewMode = ReviewMode.DETERMINISTIC
+    commit_mode: ReviewMode = ReviewMode.AGENT
+    done_mode: ReviewMode = ReviewMode.AGENT
+    max_findings_shown: int = Field(default=6, ge=1, le=25)
+
+
 USER_ONLY_REVIEW_KEYS = {"default_mode"}
 
 
@@ -188,6 +211,7 @@ class Config(BaseModel):
     budget: BudgetConfig = Field(default_factory=BudgetConfig)
     review: ReviewConfig = Field(default_factory=ReviewConfig)
     overseer: OverseerConfig = Field(default_factory=OverseerConfig)
+    live: LiveConfig = Field(default_factory=LiveConfig)
 
 
 def config_dir() -> Path:

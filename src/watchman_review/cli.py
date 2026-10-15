@@ -16,6 +16,7 @@ from watchman_review.budget import Ledger
 from watchman_review.ci import CiError, CiOptions, run_ci
 from watchman_review.config import (
     ConfigError,
+    LivePolicy,
     OverseerTrigger,
     Provider,
     load_config,
@@ -39,6 +40,10 @@ config_app = typer.Typer(help="Inspect configuration.", no_args_is_help=True)
 app.add_typer(config_app, name="config")
 hook_app = typer.Typer(help="Manage the git pre-push hook.", no_args_is_help=True)
 app.add_typer(hook_app, name="hook")
+live_app = typer.Typer(
+    help="Live mode: supervise a coding agent at checkpoints.", no_args_is_help=True
+)
+app.add_typer(live_app, name="live")
 
 err = Console(stderr=True)
 out = Console()
@@ -264,6 +269,95 @@ def hook_status(repo: Annotated[Path, typer.Option(help="Repository path.")] = P
         "installed" if st.installed else "another hook is in the way" if st.foreign else "absent"
     )
     typer.echo(f"{st.path}: {state}")
+
+
+SessionOpt = Annotated[
+    str, typer.Option(envvar="WATCHMAN_SESSION", help="Session id (one worker session).")
+]
+RepoOpt = Annotated[Path, typer.Option(help="The repository the worker is editing.")]
+
+
+@live_app.command("start")
+def live_start(
+    session: SessionOpt = "default",
+    task: Annotated[str | None, typer.Option(help="What the worker was asked to do.")] = None,
+    base: Annotated[str | None, typer.Option(help="Review everything since this ref.")] = None,
+    repo: RepoOpt = Path("."),
+) -> None:
+    """Record where the worker started (the base) and its task."""
+    from watchman_review.live import controller as live
+
+    try:
+        state = live.start(repo_root(repo.resolve()), session, task=task, base=base)
+    except GitError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    typer.echo(f"session {session}: base {(state.base or '-')[:10]}")
+
+
+@live_app.command("check")
+def live_check(
+    kind: Annotated[str, typer.Option(help="test_run, commit, or done.")] = "done",
+    session: SessionOpt = "default",
+    task: Annotated[str | None, typer.Option(help="What the worker was asked to do.")] = None,
+    policy: Annotated[
+        LivePolicy | None, typer.Option(help="advisory or blocking (default: config).")
+    ] = None,
+    as_json: Annotated[bool, typer.Option("--json", help="Print the feedback as JSON.")] = False,
+    inbox: Annotated[bool, typer.Option(help="Also write .watchman/inbox.md.")] = False,
+    repo: RepoOpt = Path("."),
+) -> None:
+    """Review a snapshot of the worker's tree and print terse feedback."""
+    from watchman_review.live import controller as live
+
+    try:
+        root = repo_root(repo.resolve())
+        fb = live.check(root, kind=kind, session=session, task=task, policy=policy)
+    except (GitError, live.LiveError, ConfigError) as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    if inbox:
+        live.write_inbox(root, session, fb)
+    typer.echo(fb.model_dump_json(indent=2) if as_json else fb.render())
+
+
+@live_app.command("status")
+def live_status(session: SessionOpt = "default", repo: RepoOpt = Path(".")) -> None:
+    """Show the supervised session: base, task, each checkpoint's round, and open findings."""
+    from watchman_review.live import state as live_state
+
+    try:
+        state = live_state.load(repo_root(repo.resolve()), session)
+    except GitError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    if state is None:
+        typer.echo(f"no live session {session!r} yet; run `watchman live start` or `check`")
+        return
+    typer.echo(
+        f"session {state.session}  base {(state.base or '-')[:10]}  task: {state.task or '-'}"
+    )
+    for kind, ep in state.episodes.items():
+        typer.echo(f"  {kind:9} {ep.status:9} round {ep.round}  open findings: {len(ep.seen)}")
+        for seen in ep.seen.values():
+            typer.echo(
+                f"      {seen.severity} {seen.category} {seen.location} (r{seen.round}) {seen.summary}"
+            )
+    cost = sum(h.cost_usd for h in state.history)
+    typer.echo(f"  {len(state.history)} review(s), ${cost:.4f} spent")
+
+
+@live_app.command("reset")
+def live_reset(
+    kind: Annotated[str | None, typer.Option(help="Only this checkpoint kind.")] = None,
+    session: SessionOpt = "default",
+    repo: RepoOpt = Path("."),
+) -> None:
+    """Start the review/fix loop over (clears rounds, seen findings, and escalations)."""
+    from watchman_review.live import controller as live
+
+    live.reset(repo_root(repo.resolve()), session, kind)
+    typer.echo("reset " + (kind or "all checkpoint kinds"))
 
 
 @app.command()
