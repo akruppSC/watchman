@@ -1,0 +1,2938 @@
+{
+  "run_id": "20261015T194712-clean-v1-dev-deterministic",
+  "started_at": "2026-10-15T19:47:12.287650+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "aa29297-dirty",
+  "review_config": {
+    "checks": [
+      "google_style"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-clean-112e50fc",
+      "score": {
+        "item_id": "attrs-clean-112e50fc",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.686,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.349,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.686,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-1921da6e",
+      "score": {
+        "item_id": "attrs-clean-1921da6e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.851,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.529,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.851,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-597c3a8a",
+      "score": {
+        "item_id": "attrs-clean-597c3a8a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.935,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.477,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.935,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-7373d88f",
+      "score": {
+        "item_id": "attrs-clean-7373d88f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.943,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.711,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.943,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-7c9b31ea",
+      "score": {
+        "item_id": "attrs-clean-7c9b31ea",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "66dcc39886f6"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.481,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "66dcc39886f6",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/validators.py",
+            "line_start": 640,
+            "line_end": 640,
+            "summary": "Docstring of `or_` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "src/attr/validators.py:640: Docstring of `or_` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+            "suggested_fix": "describe the value under `Returns:`",
+            "source": "deterministic",
+            "rule": "google:3.8.3-returns",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.158,
+            "findings": [
+              {
+                "id": "66dcc39886f6",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/validators.py",
+                "line_start": 640,
+                "line_end": 640,
+                "summary": "Docstring of `or_` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "src/attr/validators.py:640: Docstring of `or_` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.481,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-8c9a7968",
+      "score": {
+        "item_id": "attrs-clean-8c9a7968",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.539,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.454,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.539,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c58ffd4e",
+      "score": {
+        "item_id": "attrs-clean-c58ffd4e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.53,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.322,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.53,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c7308a66",
+      "score": {
+        "item_id": "attrs-clean-c7308a66",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "c2e438ed0a43"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.507,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c2e438ed0a43",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_funcs.py",
+            "line_start": 6,
+            "line_end": 6,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/attr/_funcs.py:6: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.24,
+            "findings": [
+              {
+                "id": "c2e438ed0a43",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_funcs.py",
+                "line_start": 6,
+                "line_end": 6,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/attr/_funcs.py:6: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.507,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c824bbe1",
+      "score": {
+        "item_id": "attrs-clean-c824bbe1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "c9667e8651fe"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.099,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c9667e8651fe",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/__init__.py",
+            "line_start": 12,
+            "line_end": 12,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/attr/__init__.py:12: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.027,
+            "findings": [
+              {
+                "id": "c9667e8651fe",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/__init__.py",
+                "line_start": 12,
+                "line_end": 12,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/attr/__init__.py:12: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.099,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-edcaf04a",
+      "score": {
+        "item_id": "attrs-clean-edcaf04a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.662,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.485,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.662,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-f53fc544",
+      "score": {
+        "item_id": "attrs-clean-f53fc544",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.68,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.507,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.68,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-051bb0f3",
+      "score": {
+        "item_id": "click-clean-051bb0f3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "2933548b22a2"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.637,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2933548b22a2",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 32,
+            "line_end": 32,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/click/_termui_impl.py:32: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.34,
+            "findings": [
+              {
+                "id": "2933548b22a2",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 32,
+                "line_end": 32,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/click/_termui_impl.py:32: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.637,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-05f6fd0d",
+      "score": {
+        "item_id": "click-clean-05f6fd0d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.849,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.742,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.849,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-555fa9bb",
+      "score": {
+        "item_id": "click-clean-555fa9bb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.83,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.637,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.83,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-985ca165",
+      "score": {
+        "item_id": "click-clean-985ca165",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.838,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.631,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.838,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-a0bbbf20",
+      "score": {
+        "item_id": "click-clean-a0bbbf20",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.472,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.271,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.472,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-a9711c50",
+      "score": {
+        "item_id": "click-clean-a9711c50",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.39,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.144,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.39,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-ac5cec5f",
+      "score": {
+        "item_id": "click-clean-ac5cec5f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "1ef9885d3643"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.656,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1ef9885d3643",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/__init__.py",
+            "line_start": 17,
+            "line_end": 17,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/click/__init__.py:17: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.539,
+            "findings": [
+              {
+                "id": "1ef9885d3643",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/__init__.py",
+                "line_start": 17,
+                "line_end": 17,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/click/__init__.py:17: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.656,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-b5529479",
+      "score": {
+        "item_id": "click-clean-b5529479",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.559,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.34,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.559,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-b9abeaa3",
+      "score": {
+        "item_id": "click-clean-b9abeaa3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.646,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.484,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.646,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-cf0e5242",
+      "score": {
+        "item_id": "click-clean-cf0e5242",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.751,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.662,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.751,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-f561f188",
+      "score": {
+        "item_id": "click-clean-f561f188",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.752,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.579,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.752,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-2129a978",
+      "score": {
+        "item_id": "httpx-clean-2129a978",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "5a2d9491cbe6"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.743,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5a2d9491cbe6",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_content.py",
+            "line_start": 20,
+            "line_end": 20,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "httpx/_content.py:20: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.607,
+            "findings": [
+              {
+                "id": "5a2d9491cbe6",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_content.py",
+                "line_start": 20,
+                "line_end": 20,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "httpx/_content.py:20: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.743,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-4b5a92e8",
+      "score": {
+        "item_id": "httpx-clean-4b5a92e8",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.726,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.409,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.726,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-4f6edf36",
+      "score": {
+        "item_id": "httpx-clean-4f6edf36",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.39,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.265,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.39,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-541a0afe",
+      "score": {
+        "item_id": "httpx-clean-541a0afe",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.386,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.308,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.386,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-8327e134",
+      "score": {
+        "item_id": "httpx-clean-8327e134",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.367,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.168,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.367,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-a7092af2",
+      "score": {
+        "item_id": "httpx-clean-a7092af2",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "af9e9ae2cb52"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.363,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "af9e9ae2cb52",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_urlparse.py",
+            "line_start": 409,
+            "line_end": 409,
+            "summary": "Function `PERCENT` is not lower_with_under (Google Python Style Guide §3.16)",
+            "evidence": "httpx/_urlparse.py:409: Function `PERCENT` is not lower_with_under. Google Python Style Guide §3.16.",
+            "suggested_fix": "name functions and methods in lower_with_under",
+            "source": "deterministic",
+            "rule": "google:3.16-function-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.2,
+            "findings": [
+              {
+                "id": "af9e9ae2cb52",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_urlparse.py",
+                "line_start": 409,
+                "line_end": 409,
+                "summary": "Function `PERCENT` is not lower_with_under (Google Python Style Guide §3.16)",
+                "evidence": "httpx/_urlparse.py:409: Function `PERCENT` is not lower_with_under. Google Python Style Guide §3.16.",
+                "suggested_fix": "name functions and methods in lower_with_under",
+                "source": "deterministic",
+                "rule": "google:3.16-function-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.363,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-b43af721",
+      "score": {
+        "item_id": "httpx-clean-b43af721",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "2ae2f0c19b14"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.559,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2ae2f0c19b14",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_config.py",
+            "line_start": 9,
+            "line_end": 9,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "httpx/_config.py:9: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.471,
+            "findings": [
+              {
+                "id": "2ae2f0c19b14",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_config.py",
+                "line_start": 9,
+                "line_end": 9,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "httpx/_config.py:9: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.559,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-b8394786",
+      "score": {
+        "item_id": "httpx-clean-b8394786",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.544,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.473,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.544,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-db9072f9",
+      "score": {
+        "item_id": "httpx-clean-db9072f9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.521,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.16,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.521,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e65a33d3",
+      "score": {
+        "item_id": "httpx-clean-e65a33d3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.544,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.332,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.544,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e9b0c85d",
+      "score": {
+        "item_id": "httpx-clean-e9b0c85d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.93,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.433,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.93,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-069b3000",
+      "score": {
+        "item_id": "more-itertools-clean-069b3000",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.969,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.924,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.969,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-2d7d14d7",
+      "score": {
+        "item_id": "more-itertools-clean-2d7d14d7",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.875,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.557,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.875,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-3b80ba6c",
+      "score": {
+        "item_id": "more-itertools-clean-3b80ba6c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.921,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.708,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.921,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4b868467",
+      "score": {
+        "item_id": "more-itertools-clean-4b868467",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.55,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.373,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.55,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4e105c4c",
+      "score": {
+        "item_id": "more-itertools-clean-4e105c4c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.693,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.482,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.693,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4f399222",
+      "score": {
+        "item_id": "more-itertools-clean-4f399222",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "69ecfdba5547"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.76,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "69ecfdba5547",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5296,
+            "line_end": 5296,
+            "summary": "Class `serialize` is not CapWords (Google Python Style Guide §3.16)",
+            "evidence": "more_itertools/more.py:5296: Class `serialize` is not CapWords. Google Python Style Guide §3.16.",
+            "suggested_fix": "name classes in CapWords, e.g. `InventoryItem`",
+            "source": "deterministic",
+            "rule": "google:3.16-class-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.652,
+            "findings": [
+              {
+                "id": "69ecfdba5547",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5296,
+                "line_end": 5296,
+                "summary": "Class `serialize` is not CapWords (Google Python Style Guide §3.16)",
+                "evidence": "more_itertools/more.py:5296: Class `serialize` is not CapWords. Google Python Style Guide §3.16.",
+                "suggested_fix": "name classes in CapWords, e.g. `InventoryItem`",
+                "source": "deterministic",
+                "rule": "google:3.16-class-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.76,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-5b79a636",
+      "score": {
+        "item_id": "more-itertools-clean-5b79a636",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.544,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.376,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.544,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-c0780fbb",
+      "score": {
+        "item_id": "more-itertools-clean-c0780fbb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "85d6bddf9715",
+          "daf0afed09e9",
+          "7ce08b6d6b10"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.942,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "85d6bddf9715",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3906,
+            "line_end": 3906,
+            "summary": "Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation (Google Python Style Guide §3.8.1)",
+            "evidence": "more_itertools/more.py:3906: Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation. Google Python Style Guide §3.8.1. Also reported by: google:3.8.3-args; google:3.8.3-returns.",
+            "suggested_fix": "make the first line a one-sentence summary ending in a period",
+            "source": "deterministic",
+            "rule": "google:3.8.1-summary",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "daf0afed09e9",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3928,
+            "line_end": 3928,
+            "summary": "TODO comment without a context link (Google Python Style Guide §3.12)",
+            "evidence": "more_itertools/more.py:3928: TODO comment without a context link. Google Python Style Guide §3.12.",
+            "suggested_fix": "write `# TODO(link-or-bug): what and when`, e.g. `# TODO(b/12345): ...`",
+            "source": "deterministic",
+            "rule": "google:3.12-todo",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "7ce08b6d6b10",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3938,
+            "line_end": 3938,
+            "summary": "Argument `N` is not lower_with_under (Google Python Style Guide §3.16)",
+            "evidence": "more_itertools/more.py:3938: Argument `N` is not lower_with_under. Google Python Style Guide §3.16.",
+            "suggested_fix": "name arguments in lower_with_under",
+            "source": "deterministic",
+            "rule": "google:3.16-argument-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "5 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.698,
+            "findings": [
+              {
+                "id": "7ce08b6d6b10",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3938,
+                "line_end": 3938,
+                "summary": "Argument `N` is not lower_with_under (Google Python Style Guide §3.16)",
+                "evidence": "more_itertools/more.py:3938: Argument `N` is not lower_with_under. Google Python Style Guide §3.16.",
+                "suggested_fix": "name arguments in lower_with_under",
+                "source": "deterministic",
+                "rule": "google:3.16-argument-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "daf0afed09e9",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3928,
+                "line_end": 3928,
+                "summary": "TODO comment without a context link (Google Python Style Guide §3.12)",
+                "evidence": "more_itertools/more.py:3928: TODO comment without a context link. Google Python Style Guide §3.12.",
+                "suggested_fix": "write `# TODO(link-or-bug): what and when`, e.g. `# TODO(b/12345): ...`",
+                "source": "deterministic",
+                "rule": "google:3.12-todo",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "85d6bddf9715",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation (Google Python Style Guide §3.8.1)",
+                "evidence": "more_itertools/more.py:3906: Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation. Google Python Style Guide §3.8.1.",
+                "suggested_fix": "make the first line a one-sentence summary ending in a period",
+                "source": "deterministic",
+                "rule": "google:3.8.1-summary",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "6c0daad5e98d",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring of `chunked_even` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:3906: Docstring of `chunked_even` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "64083064a92c",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring of `chunked_even` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:3906: Docstring of `chunked_even` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.942,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa60e38e",
+      "score": {
+        "item_id": "more-itertools-clean-fa60e38e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "7067cba6ae2c"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.668,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7067cba6ae2c",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/recipes.py",
+            "line_start": 958,
+            "line_end": 958,
+            "summary": "Docstring of `sum_of_squares` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/recipes.py:958: Docstring of `sum_of_squares` has no `Args:` section. Google Python Style Guide §3.8.3.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.217,
+            "findings": [
+              {
+                "id": "7067cba6ae2c",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/recipes.py",
+                "line_start": 958,
+                "line_end": 958,
+                "summary": "Docstring of `sum_of_squares` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/recipes.py:958: Docstring of `sum_of_squares` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.668,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb33cf2c",
+      "score": {
+        "item_id": "more-itertools-clean-fb33cf2c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "20eb71fcf625",
+          "9b0b39b7fd03"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.215,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "20eb71fcf625",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5074,
+            "line_end": 5074,
+            "summary": "Docstring of `argmin` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Args:` section. Google Python Style Guide §3.8.3. Also reported by: google:3.8.3-returns.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "9b0b39b7fd03",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5088,
+            "line_end": 5088,
+            "summary": "Docstring of `argmax` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Args:` section. Google Python Style Guide §3.8.3. Also reported by: google:3.8.3-returns.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "4 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.972,
+            "findings": [
+              {
+                "id": "20eb71fcf625",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5074,
+                "line_end": 5074,
+                "summary": "Docstring of `argmin` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1db1a7e7db13",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5074,
+                "line_end": 5074,
+                "summary": "Docstring of `argmin` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "9b0b39b7fd03",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5088,
+                "line_end": 5088,
+                "summary": "Docstring of `argmax` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "8b3d3ff5d752",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5088,
+                "line_end": 5088,
+                "summary": "Docstring of `argmax` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.215,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb95291e",
+      "score": {
+        "item_id": "more-itertools-clean-fb95291e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.212,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 1.113,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.212,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

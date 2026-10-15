@@ -105,6 +105,11 @@ class SandboxKind(StrEnum):
     SUBPROCESS = "subprocess"
 
 
+class StyleGuide(StrEnum):
+    NONE = "none"
+    GOOGLE = "google"  # Google Python Style Guide: extra checks, shorter function limit, preset
+
+
 class ReviewConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -133,6 +138,9 @@ class ReviewConfig(BaseModel):
     max_diff_lines_warn: int = 600
     # User-config only: a reviewed repo must not be able to opt you into paid LLM modes.
     default_mode: ReviewMode = ReviewMode.DETERMINISTIC
+    # User-config only, like default_mode: opting a repo in or out of a style guide is the
+    # owner's choice, not the reviewed change's.
+    style: StyleGuide = StyleGuide.NONE
 
 
 class OverseerTrigger(StrEnum):
@@ -205,7 +213,7 @@ class LiveConfig(BaseModel):
     max_findings_shown: int = Field(default=6, ge=1, le=25)
 
 
-USER_ONLY_REVIEW_KEYS = {"default_mode"}
+USER_ONLY_REVIEW_KEYS = {"default_mode", "style"}
 
 
 class Config(BaseModel):

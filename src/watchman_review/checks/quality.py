@@ -29,11 +29,15 @@ from dataclasses import dataclass
 
 from watchman_review.checks.base import DETERMINISTIC_CONFIDENCE, Check, CheckContext
 from watchman_review.checks.scope import is_test_path
+from watchman_review.config import StyleGuide
 from watchman_review.gitutil import FileDiff, FileStatus, GitError, run_git
 from watchman_review.schema import Category, CheckResult, CheckStatus, Finding, Severity, Source
 
 MAX_COMPLEXITY = 10
 MAX_LENGTH = 60
+MAX_LENGTH_GOOGLE = (
+    40  # §3.18: "if a function exceeds about 40 lines, think about whether it can be broken up"
+)
 MAX_PARAMS = 5
 MAX_NESTING = 4
 DUP_WINDOW = 6
@@ -202,6 +206,9 @@ class QualityCheck(Check):
         base_src = _base_source(ctx, f)
         base = parse_functions(base_src) if base_src is not None else {}
         base = base or {}
+        max_length = (
+            MAX_LENGTH_GOOGLE if ctx.config.review.style is StyleGuide.GOOGLE else MAX_LENGTH
+        )
         added = set(f.added)
         out: list[Finding] = []
         public_total = [i for i in head.values() if i.public]
@@ -211,7 +218,7 @@ class QualityCheck(Check):
             old = base.get(q)
             checks = (
                 ("complexity", info.complexity, MAX_COMPLEXITY, old.complexity if old else 0),
-                ("length", info.length, MAX_LENGTH, old.length if old else 0),
+                ("length", info.length, max_length, old.length if old else 0),
                 ("params", info.params, MAX_PARAMS, old.params if old else 0),
                 ("nesting", info.nesting, MAX_NESTING, old.nesting if old else 0),
             )

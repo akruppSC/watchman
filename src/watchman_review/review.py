@@ -6,6 +6,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from watchman_review import prompts
 from watchman_review.agent import AgentOutcome, ToolContext, run_agent
 from watchman_review.baseline import run_baseline
 from watchman_review.budget import BudgetExceeded, Ledger, MeteredClient, ReviewBudget
@@ -17,6 +18,7 @@ from watchman_review.config import (
     ConfigError,
     OverseerTrigger,
     Provider,
+    StyleGuide,
     data_dir,
     load_config,
 )
@@ -87,6 +89,12 @@ def load_review_config(repo: Path, base: str) -> tuple[Config, list[str]]:
     """Config with the repo override taken from the base revision, not the change."""
     text = read_at_rev(repo, base, REPO_CONFIG_NAME)
     return load_config(repo, repo_config_text=text) if text is not None else load_config(None)
+
+
+def with_style_preset(conventions: str | None) -> str:
+    """The Google style summary first, then the repository's own CONVENTIONS.md (which wins)."""
+    preset = prompts.load("style_google_python")
+    return preset if not conventions else f"{preset}\n\n# Repository conventions\n\n{conventions}"
 
 
 def load_conventions(repo: Path, base: str, tree: Path, name: str) -> tuple[str | None, str | None]:
@@ -200,6 +208,8 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
             warnings.append("reviewing the live working tree, not a commit snapshot")
 
         names = opts.checks if opts.checks is not None else cfg.review.checks
+        if cfg.review.style is StyleGuide.GOOGLE:
+            names = list(dict.fromkeys([*names, "google_style"]))
         needs_sandbox = (runs_layer1 and "pytest" in names) or uses_agent
         ctx = _check_context(repo, tree, diff, cfg, opts, warnings, needs_sandbox)
 
@@ -213,6 +223,8 @@ def run_review(repo: Path, opts: ReviewOptions, cfg: Config | None = None) -> Re
             )
             if conv_warning:
                 warnings.append(conv_warning)
+            if cfg.review.style is StyleGuide.GOOGLE:
+                conventions = with_style_preset(conventions)
             try:
                 client = _client(cfg, opts, budget)
                 if mode is ReviewMode.BASELINE:

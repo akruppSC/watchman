@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from watchman_review.checks.base import Check, CheckContext, run_check
+from watchman_review.checks.google_style import GoogleStyleCheck
 from watchman_review.checks.hygiene import HygieneCheck
 from watchman_review.checks.imports import ImportsCheck
 from watchman_review.checks.mypy_check import MypyCheck
@@ -24,6 +25,7 @@ REGISTRY: dict[str, type[Check]] = {
         ScopeCheck,
         HygieneCheck,
         QualityCheck,
+        GoogleStyleCheck,
     )
 }
 
