@@ -30,7 +30,8 @@ import typer
 
 from evals.live.evaluate import Task, evaluate, load_tasks
 from evals.quality import measure
-from watchman_review.config import LivePolicy, load_config, save_user_config
+from evals.style_metrics import measure_style
+from watchman_review.config import LivePolicy, StyleGuide, load_config, save_user_config
 from watchman_review.live import opencode
 from watchman_review.live.snapshot import snapshot_commit
 
@@ -81,8 +82,9 @@ def eval_python() -> str:
     return str(py)
 
 
-def watchman_config(tmp: Path) -> Path:
+def watchman_config(tmp: Path, style: str = "none") -> Path:
     cfg, _ = load_config(None)
+    cfg.review.style = StyleGuide(style)
     cfg.review.sandbox = cfg.review.sandbox.__class__("subprocess")
     cfg.live.policy = LivePolicy.ADVISORY
     path = tmp / "watchman.toml"
@@ -218,6 +220,10 @@ def execute(
     snap = snapshot_commit(workdir)
     full_diff = sh(["git", "diff", base, snap], workdir)
     rec["final_diff"] = full_diff[:12000]
+    try:
+        rec["style_metrics"] = measure_style(workdir, full_diff)
+    except Exception as e:  # noqa: BLE001 - a metrics failure must not lose the run
+        rec["style_metrics"] = {"error": f"{type(e).__name__}: {e}"}
     try:  # measured on the full diff against the worker's final tree
         rec["quality"] = measure(workdir, full_diff).as_dict()
     except Exception as e:  # noqa: BLE001 - a metrics failure must not lose the run
@@ -254,6 +260,12 @@ def main(
     ] = 8.0,
     seed: Annotated[int, typer.Option(help="Shuffles run order.")] = 1,
     keep: Annotated[bool, typer.Option(help="Keep the work directories.")] = False,
+    style: Annotated[
+        str, typer.Option(help="Watchman style guide for the supervised arm.")
+    ] = "none",
+    out_dir: Annotated[
+        Path | None, typer.Option(help="Where to write results (default: evals/results/live).")
+    ] = None,
 ) -> None:
     chosen = load_tasks(set(tasks.split(",")) if tasks else None)
     arm_list = [a.strip() for a in arms.split(",")]
@@ -262,12 +274,12 @@ def main(
     python = eval_python()
     spend = Spend(cap=budget)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
-    out = RESULTS_DIR / f"{stamp}-{worker.replace('/', '_')}.json"
+    out = (out_dir or RESULTS_DIR) / f"{stamp}-{worker.replace('/', '_')}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     records: list[dict[str, Any]] = []
     lock = threading.Lock()
     tmp_root = Path(tempfile.mkdtemp(prefix="wm-live-"))
-    wm_config = watchman_config(tmp_root) if "watchman" in arm_list else None
+    wm_config = watchman_config(tmp_root, style) if "watchman" in arm_list else None
 
     def one(item: tuple[Task, str, int]) -> None:
         t, a, n = item
@@ -283,6 +295,7 @@ def main(
                 "trials": trials,
                 "budget": budget,
                 "started": stamp,
+                "style": style,
                 "spend": {"worker": round(spend.worker, 4), "reviewer": round(spend.reviewer, 4)},
                 "runs": records,
             }
