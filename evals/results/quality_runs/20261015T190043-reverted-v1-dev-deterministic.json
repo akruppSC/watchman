@@ -1,13 +1,13 @@
 {
-  "run_id": "20261015T185329-reverted-v1-dev-deterministic",
-  "started_at": "2026-10-15T18:53:29.022626+00:00",
+  "run_id": "20261015T190043-reverted-v1-dev-deterministic",
+  "started_at": "2026-10-15T19:00:43.156206+00:00",
   "dataset": "reverted-v1",
   "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
   "dataset_frozen": true,
   "split": "dev",
   "mode": "deterministic",
   "model": null,
-  "watchman_commit": "2908d8b-dirty",
+  "watchman_commit": "8d509da-dirty",
   "review_config": {
     "checks": [
       "quality"
@@ -36,7 +36,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.449,
+        "latency_s": 0.329,
         "tool_calls": 0,
         "error": null
       },
@@ -53,7 +53,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.285,
+            "duration_s": 0.237,
             "findings": [],
             "output_excerpt": ""
           }
@@ -67,7 +67,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.449,
+        "latency_s": 0.329,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -87,7 +87,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.475,
+        "latency_s": 0.419,
         "tool_calls": 0,
         "error": null
       },
@@ -104,7 +104,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.317,
+            "duration_s": 0.359,
             "findings": [],
             "output_excerpt": ""
           }
@@ -118,7 +118,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.475,
+        "latency_s": 0.419,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -138,7 +138,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.363,
+        "latency_s": 0.334,
         "tool_calls": 0,
         "error": null
       },
@@ -155,7 +155,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.245,
+            "duration_s": 0.235,
             "findings": [],
             "output_excerpt": ""
           }
@@ -169,7 +169,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.363,
+        "latency_s": 0.334,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -189,619 +189,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.561,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.492,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.561,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "attrs-revert-ce89f5d1",
-      "score": {
-        "item_id": "attrs-revert-ce89f5d1",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.297,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.141,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.297,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "attrs-revert-f31bb285",
-      "score": {
-        "item_id": "attrs-revert-f31bb285",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.28,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.179,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.28,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "click-revert-04351129",
-      "score": {
-        "item_id": "click-revert-04351129",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.428,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.329,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.428,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "click-revert-05b795c9",
-      "score": {
-        "item_id": "click-revert-05b795c9",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.359,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.272,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.359,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "click-revert-4fd2fea0",
-      "score": {
-        "item_id": "click-revert-4fd2fea0",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.8,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.719,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.8,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "click-revert-955ca492",
-      "score": {
-        "item_id": "click-revert-955ca492",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.827,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.609,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.827,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "click-revert-c326df95",
-      "score": {
-        "item_id": "click-revert-c326df95",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.836,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.649,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.836,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "httpx-revert-15d09a3b",
-      "score": {
-        "item_id": "httpx-revert-15d09a3b",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.675,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.252,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.675,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "httpx-revert-3b9060ee",
-      "score": {
-        "item_id": "httpx-revert-3b9060ee",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.396,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.3,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.396,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "httpx-revert-6d852d31",
-      "score": {
-        "item_id": "httpx-revert-6d852d31",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.431,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.361,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.431,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "httpx-revert-b7dc0c3d",
-      "score": {
-        "item_id": "httpx-revert-b7dc0c3d",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.41,
-        "tool_calls": 0,
-        "error": null
-      },
-      "result": {
-        "schema_version": 1,
-        "mode": "deterministic",
-        "base": "base",
-        "head": "head",
-        "verdict": "pass",
-        "findings": [],
-        "checks": [
-          {
-            "id": "check:quality",
-            "name": "quality",
-            "status": "passed",
-            "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.324,
-            "findings": [],
-            "output_excerpt": ""
-          }
-        ],
-        "usage": {
-          "model": null,
-          "llm_calls": 0,
-          "tool_calls": 0,
-          "input_tokens": 0,
-          "output_tokens": 0,
-          "cached_input_tokens": 0,
-          "cost_usd": 0.0
-        },
-        "latency_s": 0.41,
-        "dropped_findings": 0,
-        "warnings": [],
-        "tool_trace": [],
-        "dropped": [],
-        "stages": [],
-        "incomplete": false,
-        "incomplete_reasons": []
-      }
-    },
-    {
-      "item_id": "httpx-revert-d5900cd4",
-      "score": {
-        "item_id": "httpx-revert-d5900cd4",
-        "kind": "reverted",
-        "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
-        "false_positive_ids": [],
-        "cost_usd": 0.0,
-        "latency_s": 0.398,
+        "latency_s": 0.393,
         "tool_calls": 0,
         "error": null
       },
@@ -832,7 +220,619 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.398,
+        "latency_s": 0.393,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-ce89f5d1",
+      "score": {
+        "item_id": "attrs-revert-ce89f5d1",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.313,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.132,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.313,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-revert-f31bb285",
+      "score": {
+        "item_id": "attrs-revert-f31bb285",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.296,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.168,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.296,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-04351129",
+      "score": {
+        "item_id": "click-revert-04351129",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.46,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.343,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.46,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-05b795c9",
+      "score": {
+        "item_id": "click-revert-05b795c9",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.401,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.294,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.401,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-4fd2fea0",
+      "score": {
+        "item_id": "click-revert-4fd2fea0",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.782,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.71,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.782,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-955ca492",
+      "score": {
+        "item_id": "click-revert-955ca492",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.845,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.752,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.845,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-revert-c326df95",
+      "score": {
+        "item_id": "click-revert-c326df95",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.864,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.593,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.864,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-15d09a3b",
+      "score": {
+        "item_id": "httpx-revert-15d09a3b",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.579,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.22,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.579,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-3b9060ee",
+      "score": {
+        "item_id": "httpx-revert-3b9060ee",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.424,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.338,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.424,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-6d852d31",
+      "score": {
+        "item_id": "httpx-revert-6d852d31",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.449,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.395,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.449,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-b7dc0c3d",
+      "score": {
+        "item_id": "httpx-revert-b7dc0c3d",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.344,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.249,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.344,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-revert-d5900cd4",
+      "score": {
+        "item_id": "httpx-revert-d5900cd4",
+        "kind": "reverted",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.384,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.285,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.384,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -852,7 +852,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 1.003,
+        "latency_s": 0.953,
         "tool_calls": 0,
         "error": null
       },
@@ -869,7 +869,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.954,
+            "duration_s": 0.872,
             "findings": [],
             "output_excerpt": ""
           }
@@ -883,7 +883,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 1.003,
+        "latency_s": 0.953,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -903,7 +903,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 1.0,
+        "latency_s": 0.947,
         "tool_calls": 0,
         "error": null
       },
@@ -920,7 +920,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.921,
+            "duration_s": 0.807,
             "findings": [],
             "output_excerpt": ""
           }
@@ -934,7 +934,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 1.0,
+        "latency_s": 0.947,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -954,7 +954,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.99,
+        "latency_s": 0.976,
         "tool_calls": 0,
         "error": null
       },
@@ -971,7 +971,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.869,
+            "duration_s": 0.847,
             "findings": [],
             "output_excerpt": ""
           }
@@ -985,7 +985,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.99,
+        "latency_s": 0.976,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1005,7 +1005,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.96,
+        "latency_s": 0.989,
         "tool_calls": 0,
         "error": null
       },
@@ -1022,7 +1022,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.822,
+            "duration_s": 0.916,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1036,7 +1036,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.96,
+        "latency_s": 0.989,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1056,7 +1056,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.425,
+        "latency_s": 0.457,
         "tool_calls": 0,
         "error": null
       },
@@ -1073,7 +1073,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.368,
+            "duration_s": 0.409,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1087,7 +1087,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.425,
+        "latency_s": 0.457,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1107,7 +1107,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.42,
+        "latency_s": 0.458,
         "tool_calls": 0,
         "error": null
       },
@@ -1124,7 +1124,7 @@
             "name": "quality",
             "status": "passed",
             "summary": "no function the change touched crossed a maintainability limit",
-            "duration_s": 0.367,
+            "duration_s": 0.403,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1138,7 +1138,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.42,
+        "latency_s": 0.458,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],

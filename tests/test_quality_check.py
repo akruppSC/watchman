@@ -126,3 +126,21 @@ def test_a_documented_or_tiny_new_module_is_left_alone(git_repo: Path) -> None:
     tiny = "def a():\n    return 1\n\n\ndef b():\n    return 2\n"
     branch_change(git_repo, {"app/other.py": "X = 1\n"}, {"app/doc.py": doc, "app/tiny.py": tiny})
     assert run(git_repo).findings == []
+
+
+def test_public_methods_count_toward_the_api_docs_rule(git_repo: Path) -> None:
+    body = (
+        "class Store:\n    def a(self):\n        return 1\n\n    def b(self):\n        return 2\n\n"
+    )
+    branch_change(git_repo, {"app/other.py": "X = 1\n"}, {"app/store.py": body})
+    res = run(git_repo)
+    assert rules(res) == ["quality:api-docs"]  # Store, Store.a, Store.b are all undocumented
+
+
+def test_private_and_local_helpers_are_not_public_api(git_repo: Path) -> None:
+    body = (
+        "def _a():\n    return 1\n\n\ndef _b():\n    return 2\n\n\n"
+        "def only_public():\n    def inner():\n        return 1\n\n    return inner()\n"
+    )
+    branch_change(git_repo, {"app/other.py": "X = 1\n"}, {"app/p.py": body})
+    assert run(git_repo).findings == []

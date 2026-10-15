@@ -100,45 +100,34 @@ class FuncInfo:
     nesting: int
     public: bool
     documented: bool
+    in_function: bool = False  # defined inside another function (a local helper)
 
 
 def _collect(tree: ast.AST) -> dict[str, FuncInfo]:
     out: dict[str, FuncInfo] = {}
 
-    def visit(node: ast.AST, prefix: str) -> None:
+    def visit(node: ast.AST, prefix: str, in_func: bool = False) -> None:
         for child in ast.iter_child_nodes(node):
-            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                q = f"{prefix}{child.name}"
-                end = child.end_lineno or child.lineno
-                out[q] = FuncInfo(
-                    q,
-                    child.lineno,
-                    end,
-                    complexity(child),
-                    end - child.lineno + 1,
-                    param_count(child),
-                    nesting(child),
-                    not child.name.startswith("_"),
-                    ast.get_docstring(child) is not None,
-                )
-                visit(child, f"{q}.")
-            elif isinstance(child, ast.ClassDef):
-                q = f"{prefix}{child.name}"
-                end = child.end_lineno or child.lineno
-                out[q] = FuncInfo(
-                    q,
-                    child.lineno,
-                    end,
-                    0,
-                    0,
-                    0,
-                    0,
-                    not child.name.startswith("_"),
-                    ast.get_docstring(child) is not None,
-                )
-                visit(child, f"{q}.")
-            else:
-                visit(child, prefix)
+            if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                visit(child, prefix, in_func)
+                continue
+            is_func = not isinstance(child, ast.ClassDef)
+            q = f"{prefix}{child.name}"
+            end = child.end_lineno or child.lineno
+            measured = is_func  # classes carry no complexity, length or parameter counts
+            out[q] = FuncInfo(
+                qualname=q,
+                line=child.lineno,
+                end=end,
+                complexity=complexity(child) if measured else 0,
+                length=end - child.lineno + 1 if measured else 0,
+                params=0 if isinstance(child, ast.ClassDef) else param_count(child),
+                nesting=nesting(child) if measured else 0,
+                public=not child.name.startswith("_"),
+                documented=ast.get_docstring(child) is not None,
+                in_function=in_func,
+            )
+            visit(child, f"{q}.", in_func or is_func)
 
     visit(tree, "")
     return out
@@ -237,7 +226,13 @@ class QualityCheck(Check):
 
     @staticmethod
     def _api_docs(path: str, head: dict[str, FuncInfo], base: dict[str, FuncInfo]) -> list[Finding]:
-        new = [i for q, i in head.items() if q not in base and i.public and "." not in q]
+        new = [
+            i
+            for q, i in head.items()
+            if q not in base
+            and not i.in_function
+            and all(not part.startswith("_") for part in q.split("."))
+        ]
         undocumented = [i for i in new if not i.documented]
         if len(new) < API_MIN_NEW or len(new) - len(undocumented) >= len(new) * API_MIN_SHARE:
             return []

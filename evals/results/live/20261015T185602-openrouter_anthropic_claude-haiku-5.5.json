@@ -1,0 +1,542 @@
+{
+  "worker": "openrouter/anthropic/claude-haiku-5.5",
+  "trials": 1,
+  "budget": 0.6,
+  "started": "20261015T185602",
+  "spend": {
+    "worker": 0.017,
+    "reviewer": 0.0429
+  },
+  "runs": [
+    {
+      "task": "vague_notes",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00699662,
+      "tokens": 125593,
+      "tools": {
+        "bash": 5,
+        "write": 5,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 22,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 22,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/__main__.py b/app/__main__.py\nnew file mode 100644\nindex 0000000..eb4d262\n--- /dev/null\n+++ b/app/__main__.py\n@@ -0,0 +1,3 @@\n+from app.cli import main\n+\n+raise SystemExit(main())\ndiff --git a/app/cli.py b/app/cli.py\nnew file mode 100644\nindex 0000000..45129de\n--- /dev/null\n+++ b/app/cli.py\n@@ -0,0 +1,96 @@\n+\"\"\"Command-line interface for the notes app.\"\"\"\n+\n+from __future__ import annotations\n+\n+import argparse\n+import sys\n+from pathlib import Path\n+from typing import List, Optional, TextIO\n+\n+from app.notes import Note, NoteNotFoundError, NoteStore, default_store_path\n+\n+\n+def _format_note(note: Note, full: bool = False) -> str:\n+    header = f\"[{note.id}] {note.title}  (updated {note.updated})\"\n+    if full:\n+        return f\"{header}\\n{note.body}\" if note.body else header\n+    return header\n+\n+\n+def build_parser() -> argparse.ArgumentParser:\n+    parser = argparse.ArgumentParser(\n+        prog=\"notes\", description=\"A simple command-line notes app.\"\n+    )\n+    parser.add_argument(\n+        \"--file\",\n+        type=Path,\n+        default=None,\n+        help=\"path to the notes store (default: $NOTES_FILE or ~/.notes.json)\",\n+    )\n+    sub = parser.add_subparsers(dest=\"command\", required=True)\n+\n+    p_add = sub.add_parser(\"add\", help=\"add a new note\")\n+    p_add.add_argument(\"title\", help=\"note title\")\n+    p_add.add_argument(\"-b\", \"--body\", default=\"\", help=\"note body text\")\n+\n+    sub.add_parser(\"list\", help=\"list all notes\")\n+\n+    p_show = sub.add_parser(\"show\", help=\"show a note in full\")\n+    p_show.add_argument(\"id\", type=int)\n+\n+    p_edit = sub.add_parser(\"edit\", help=\"change a note's title and/or body\")\n+    p_edit.add_argument(\"id\", type=int)\n+    p_edit.add_argument(\"-t\", \"--title\", default=None)\n+    p_edit.add_argument(\"-b\", \"--body\", default=None)\n+\n+    p_del = sub.add_parser(\"delete\", help=\"delete a note\")\n+    p_del.add_argument(\"id\", type=int)\n+\n+    p_search = sub.add_parser(\"search\", help=\"search titles and bodies\")\n+    p_search.add_argument(\"query\")\n+\n+    return parser\n+\n+\n+def main(\n+    argv: Optional[List[str]] = None, out: TextIO = sys.stdout, err: TextIO = sys.stderr\n+) -> int:\n+    parser = build_parser()\n+    args = parser.parse_args(argv)\n+\n+    store = NoteStore(args.file if args.file is not None else default_store_path())\n+\n+    try:\n+        if args.command == \"add\":\n+            note = store.add(args.title, args.body)\n+            print(f\"added note {note.id}\", file=out)\n+        elif args.command == \"list\":\n+            notes = store.list()\n+            if not notes:\n+                print(\"no notes\", file=out)\n+            for note in notes:\n+                print(_format_note(note), file=out)\n+        elif args.command == \"show\":\n+            print(_format_note(store.get(args.id), full=True), file=out)\n+        elif args.command == \"edit\":\n+            if args.title is None and args.body is None:\n+                parser.error(\"edit requires --title and/or --body\")\n+            note = store.edit(args.id, title=args.title, body=args.body)\n+            print(f\"updated note {note.id}\", file=out)\n+        elif args.command == \"delete\":\n+            note = store.delete(args.id)\n+            print(f\"deleted note {note.id}\", file=out)\n+        elif args.command == \"search\":\n+            matches = store.search(args.query)\n+            if not matches:\n+                print(\"no matches\", file=out)\n+            for note in matches:\n+                print(_format_note(note), file=out)\n+    except (NoteNotFoundError, ValueError) as exc:\n+        print(f\"error: {exc}\", file=err)\n+        return 1\n+    return 0\n+\n+\n+if __name__ == \"__main__\":\n+    raise SystemExit(main())\ndiff --git a/app/notes.py b/app/notes.py\nnew file mode 100644\nindex 0000000..2290c8a\n--- /dev/null\n+++ b/app/notes.py\n@@ -0,0 +1,124 @@\n+\"\"\"Storage layer for the notes app: a list of notes persisted as JSON.\"\"\"\n+\n+from __future__ import annotations\n+\n+import json\n+import os\n+import tempfile\n+from dataclasses import asdict, dataclass\n+from datetime import datetime, timezone\n+from pathlib import Path\n+from typing import List, Optional\n+\n+\n+class NoteNotFoundError(LookupError):\n+    \"\"\"Raised when a note id does not exist.\"\"\"\n+\n+\n+@dataclass\n+class Note:\n+    id: int\n+    title: str\n+    body: str\n+    created: str\n+    updated: str\n+\n+\n+def default_store_path() -> Path:\n+    \"\"\"Return the store path from $NOTES_FILE, or ~/.notes.json by default.\"\"\"\n+    env = os.environ.get(\"NOTES_FILE\")\n+    if env:\n+        return Path(env).expanduser()\n+    return Path.home() / \".notes.json\"\n+\n+\n+def _now() -> str:\n+    return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")\n+\n+\n+class NoteStore:\n+    \"\"\"A JSON-file backed collection of notes.\"\"\"\n+\n+    def __init__(self, path: Path | str):\n+        self.path = Path(path)\n+\n+    # -- persistence -------------------------------------------------------\n+\n+    def _load(self) -> List[Note]:\n+        if not self.path.exists():\n+            return []\n+        with self.path.open(\"r\", encoding=\"utf-8\") as fh:\n+            raw = json.load(fh)\n+        return [Note(**item) for item in raw]\n+\n+    def _save(self, notes: List[Note]) -> None:\n+        self.path.parent.mkdir(parents=True, exist_ok=True)\n+        data = json.dumps([asdict(n) for n in notes], indent=2, ensure_ascii=False)\n+        # Write atomically so a crash mid-write cannot corrupt the store.\n+        fd, tmp = tempfile.mkstemp(\n+            dir=str(self.path.parent), prefix=\".notes-\", suffix=\".tmp\"\n+        )\n+        try:\n+            with os.fdopen(fd, \"w\", encoding=\"utf-8\") as fh:\n+                fh.write(data + \"\\n\")\n+            os.replace(tmp, self.path)\n+        except BaseException:\n+            if os.path.exists(tmp):\n+                os.unlink(tmp)\n+            raise\n+\n+    # -- operations --------------------------------------------------------\n+\n+    def list(self) -> List[Note]:\n+        \"\"\"Return all notes, ordered by id.\"\"\"\n+        return sorted(self._load(), key=lambda n: n.id)\n+\n+    def get(self, note_id: int) -> Note:\n+        for note in self._load():\n+            if note.id == note_id:\n+                return note\n+        raise NoteNotFoundError(f\"no note with id {note_id}\")\n+\n+    def add(self, title: str, body: str = \"\") -> Note:\n+        title = title.strip()\n+        if not title:\n+            raise ValueError(\"title must not be empty\")\n+        notes = self._load()\n+        next_id = max((n.id for n in notes), default=0) + 1\n+        now = _now()\n+        note = Note(id=next_id, title=title, body=body, created=now, updated=now)\n+        notes.append(note)\n+        self._save(notes)\n+        return note\n+\n+    def edit(\n+        self, note_id: int, title: Optional[str] = None, body: Optional[str] = None\n+    ) -> Note:\n+        notes = self._load()\n+        for note in notes:\n+            if note.id == note_id:\n+                if title is not None:\n+                    title = title.strip()\n+                    if not title:\n+                        raise ValueError(\"title must not be empty\")\n+                    note.title = title\n+                if body is not None:\n+                    note.body = body\n+                note.updated = _now()\n+                self._save(notes)\n+                return note\n+        raise NoteNotFoundError(f\"no note with id {note_id}\")\n+\n+    def delete(self, note_id: int) -> Note:\n+        notes = self._load()\n+        for i, note in enumerate(notes):\n+            if note.id == note_id:\n+                removed = notes.pop(i)\n+                self._save(notes)\n+                return removed\n+        raise NoteNotFoundError(f\"no note with id {note_id}\")\n+\n+    def search(self, query: str) -> List[Note]:\n+        \"\"\"Case-insensitive substring search over title and body.\"\"\"\n+        q = query.lower()\n+        return [n for n in self.list() if q in n.title.lower() or q in n.body.lower()]\ndiff --git a/tests/test_cli.py b/tests/test_cli.py\nnew file mode 100644\nindex 0000000..0aad29e\n--- /dev/null\n+++ b/tests/test_cli.py\n@@ -0,0 +1,96 @@\n+import io\n+\n+import pytest\n+\n+from app.cli import main\n+\n+\n+@pytest.fixture\n+def run(tmp_path):\n+    path = str(tmp_path / \"notes.json\")\n+\n+    def _run(*args):\n+        out, err = io.StringIO(), io.StringIO()\n+        code = main([\"--file\", path, *args], out=out, err=err)\n+        return code, out.getvalue(), err.getvalue()\n+\n+    return _run\n+\n+\n+def test_add_and_list(run):\n+    code, out, _ = run(\"add\", \"Shopping\", \"-b\", \"eggs\")\n+    assert code == 0 and out.strip() == \"added note 1\"\n+    code, out, _ = run(\"list\")\n+    assert code == 0\n+    assert \"[1] Shopping\" in out\n+\n+\n+def test_list_empty(run):\n+    code, out, _ = run(\"list\")\n+    assert code == 0 and out.strip() == \"no notes\"\n+\n+\n+def test_show_prints_body(run):\n+    run(\"add\", \"T\", \"-b\", \"the body\")\n+    code, out, _ = run(\"show\", \"1\")\n+    assert code == 0\n+    assert out.splitlines()[1] == \"the body\"\n+\n+\n+def test_edit_title_and_body(run):\n+    run(\"add\", \"T\", \"-b\", \"old\")\n+    code, out, _ = run(\"edit\", \"1\", \"-t\", \"New\", \"-b\", \"fresh\")\n+    assert code == 0 and out.strip() == \"updated note 1\"\n+    _, out, _ = run(\"show\", \"1\")\n+    assert out.splitlines()[0].startswith(\"[1] New\")\n+    assert out.splitlines()[1] == \"fresh\"\n+\n+\n+def test_edit_without_changes_is_usage_error(run):\n+    run(\"add\", \"T\")\n+    with pytest.raises(SystemExit) as exc:\n+        run(\"edit\", \"1\")\n+    assert exc.value.code == 2\n+\n+\n+def test_delete(run):\n+    run(\"add\", \"T\")\n+    code, out, _ = run(\"delete\", \"1\")\n+    assert code == 0 and out.strip() == \"deleted note 1\"\n+    assert run(\"list\")[1].strip() == \"no notes\"\n+\n+\n+def test_missing_note_reports_error_and_exit_1(run):\n+    code, out, err = run(\"show\", \"9\")\n+    assert code == 1\n+    assert out == \"\"\n+    assert \"no note with id 9\" in err\n+\n+\n+def test_blank_title_reports_error(run):\n+    code, _, err = run(\"add\", \"   \")\n+    assert code == 1\n+    assert \"title must not be empty\" in err\n+\n+\n+def test_search(run):\n+    run(\"add\", \"Groceries\", \"-b\", \"eggs\")\n+    run(\"add\", \"Work\")\n+    code, out, _ = run(\"search\", \"EGG\")\n+    assert code == 0\n+    assert \"Groceries\" in out and \"Work\" not in out\n+    assert run(\"search\", \"zzz\")[1].strip() == \"no matches\"\n+\n+\n+def test_no_command_is_usage_error(run):\n+    with pytest.raises(SystemExit) as exc:\n+        run()\n+    assert exc.value.code == 2\n+\n+\n+def test_notes_file_env_var(tmp_path, monkeypatch, capsys):\n+    path = tmp_path / \"env.json\"\n+    monkeypatch.setenv(\"NOTES_FILE\", str(path))\n+    assert main([\"add\", \"from env\"]) == 0\n+    assert path.exists()\n+    assert \"from env\" in path.read_text(encoding=\"utf-8\")\ndiff --git a/tests/test_notes.py b/tests/test_notes.py\nnew file mode 100644\nindex 0000000..ed420a5\n--- /dev/null\n+++ b/tests/test_notes.py\n@@ -0,0 +1,85 @@\n+import json\n+\n+import pytest\n+\n+from app.notes import NoteNotFoundError, NoteStore\n+\n+\n+@pytest.fixture\n+def store(tmp_path):\n+    return NoteStore(tmp_path / \"notes.json\")\n+\n+\n+def test_empty_store_lists_nothing(store):\n+    assert store.list() == []\n+\n+\n+def test_add_assigns_sequential_ids_and_persists(store):\n+    a = store.add(\"first\", \"body one\")\n+    b = store.add(\"second\")\n+    assert (a.id, b.id) == (1, 2)\n+    assert b.body == \"\"\n+    assert [n.title for n in NoteStore(store.path).list()] == [\"first\", \"second\"]\n+\n+\n+def test_add_strips_title_and_rejects_blank(store):\n+    assert store.add(\"  padded  \").title == \"padded\"\n+    with pytest.raises(ValueError):\n+        store.add(\"   \")\n+\n+\n+def test_get_missing_raises(store):\n+    with pytest.raises(NoteNotFoundError):\n+        store.get(42)\n+\n+\n+def test_edit_changes_fields_and_bumps_updated(store):\n+    note = store.add(\"old\", \"old body\")\n+    edited = store.edit(note.id, title=\"new\")\n+    assert edited.title == \"new\"\n+    assert edited.body == \"old body\"\n+    edited = store.edit(note.id, body=\"\")\n+    assert edited.body == \"\"\n+    assert store.get(note.id).title == \"new\"\n+\n+\n+def test_edit_missing_raises(store):\n+    w",
+      "quality": {
+        "functions": 14,
+        "max_complexity": 15,
+        "mean_complexity": 3.57,
+        "over_complexity": 1,
+        "max_length": 38,
+        "over_length": 0,
+        "max_params": 3,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 1,
+        "max_nesting": 4,
+        "public_undocumented": 7,
+        "public_defs": 12,
+        "duplicated_windows": 0,
+        "lint": 12,
+        "prod_lines_added": 223,
+        "test_lines_added": 181,
+        "tests_added": 22,
+        "detail": [
+          {
+            "path": "app/cli.py",
+            "name": "_format_note",
+            "line": 13,
+            "complexity": 3,
+            "length": 5,
+            "params": 2,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "build_parser",
+            "line": 20,
+            "complexity": 1,
+            "length": 33,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "main",
+            "line": 55,
+            "complexity": 15,
+            "length": 38,
+            "params": 3,
+            "nesting": 3,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "default_store_path",
+            "line": 27,
+            "complexity": 2,
+            "length": 6,
+            "params": 0,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_now",
+            "line": 35,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "__init__",
+            "line": 42,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_load",
+            "line": 47,
+            "complexity": 3,
+            "length": 6,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_save",
+            "line": 54,
+            "complexity": 4,
+            "length": 15,
+            "params": 1,
+            "nesting": 2,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "list",
+            "line": 72,
+            "complexity": 1,
+            "length": 3,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/notes.py",
+            "name": "get",
+            "line": 76,
+            "complexity": 3,
+            "length": 5,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "add",
+            "line": 82,
+            "complexity": 3,
+            "length": 11,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "edit",
+            "line": 94,
+            "complexity": 6,
+            "length": 17,
+            "params": 3,
+            "nesting": 4,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "delete",
+            "line": 112,
+            "complexity": 3,
+            "length": 8,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "search",
+            "line": 121,
+            "complexity": 4,
+            "length": 4,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          }
+        ]
+      },
+      "seconds": 66.5
+    },
+    {
+      "task": "vague_notes",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.010038519999999999,
+      "tokens": 229009,
+      "tools": {
+        "bash": 7,
+        "write": 5,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 5,
+        "by_kind": {
+          "test_run": 3,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 7,
+        "cost_usd": 0.0429,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 7,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": [
+              "major correctness app/cli.py:103 mypy [attr-defined]: \"list?[app.notes.Note]\" has no attribute \"__iter__\" (not iterable)",
+              "major correctness app/notes.py:58 mypy [attr-defined]: \"object\" has no attribute \"__iter__\"; maybe \"__dir__\" or \"__str__\"? (not iterab",
+              "major correctness app/notes.py:67 mypy [call-overload]: No overload variant of \"int\" matches argument type \"object\"",
+              "major correctness app/notes.py:73 mypy [attr-defined]: \"object\" has no attribute \"append\"",
+              "major correctness app/notes.py:92 mypy [attr-defined]: \"object\" has no attribute \"__iter__\"; maybe \"__dir__\" or \"__str__\"? (not iterab",
+              "major correctness app/notes.py:102 mypy [attr-defined]: \"object\" has no attribute \"__iter__\"; maybe \"__dir__\" or \"__str__\"? (not iterab",
+              "minor maintainability app/cli.py:81 `_dispatch` has cyclomatic complexity 11 (limit 10)"
+            ]
+          },
+          {
+            "kind": "test_run",
+            "round": 2,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 6,
+            "gate": "pass",
+            "shown": []
+          },
+          {
+            "kind": "test_run",
+            "round": 2,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 1,
+            "gate": "pass",
+            "shown": []
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": []
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": []
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 30,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 30,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/__main__.py b/app/__main__.py\nnew file mode 100644\nindex 0000000..eb4d262\n--- /dev/null\n+++ b/app/__main__.py\n@@ -0,0 +1,3 @@\n+from app.cli import main\n+\n+raise SystemExit(main())\ndiff --git a/app/cli.py b/app/cli.py\nnew file mode 100644\nindex 0000000..afc53cf\n--- /dev/null\n+++ b/app/cli.py\n@@ -0,0 +1,108 @@\n+\"\"\"Command-line interface for the notes app.\"\"\"\n+\n+from __future__ import annotations\n+\n+import argparse\n+import os\n+import sys\n+from collections.abc import Sequence\n+from pathlib import Path\n+\n+from app.notes import Note, NoteNotFoundError, NotesStore\n+\n+DEFAULT_PATH = Path.home() / \".notes.json\"\n+\n+\n+def _default_path() -> Path:\n+    env = os.environ.get(\"NOTES_FILE\")\n+    return Path(env) if env else DEFAULT_PATH\n+\n+\n+def _format_note(note: Note, full: bool = False) -> str:\n+    header = f\"[{note.id}] {note.title}\" if note.title else f\"[{note.id}]\"\n+    if full:\n+        return f\"{header}\\n{note.created_at} (updated {note.updated_at})\\n\\n{note.body}\"\n+    first_line = note.body.splitlines()[0] if note.body else \"\"\n+    return f\"{header} {first_line}\".rstrip()\n+\n+\n+def build_parser() -> argparse.ArgumentParser:\n+    parser = argparse.ArgumentParser(\n+        prog=\"notes\", description=\"A simple command-line notes app.\"\n+    )\n+    parser.add_argument(\n+        \"--file\",\n+        type=Path,\n+        default=None,\n+        help=\"path to the notes file (default: $NOTES_FILE or ~/.notes.json)\",\n+    )\n+    sub = parser.add_subparsers(dest=\"command\", required=True)\n+\n+    add = sub.add_parser(\"add\", help=\"add a new note\")\n+    add.add_argument(\"body\", help=\"note text\")\n+    add.add_argument(\"-t\", \"--title\", default=\"\", help=\"optional title\")\n+\n+    sub.add_parser(\"list\", help=\"list all notes\")\n+\n+    show = sub.add_parser(\"show\", help=\"show a note in full\")\n+    show.add_argument(\"id\", type=int)\n+\n+    edit = sub.add_parser(\"edit\", help=\"replace the text of a note\")\n+    edit.add_argument(\"id\", type=int)\n+    edit.add_argument(\"body\", help=\"new note text\")\n+\n+    delete = sub.add_parser(\"delete\", help=\"delete a note\")\n+    delete.add_argument(\"id\", type=int)\n+\n+    search = sub.add_parser(\"search\", help=\"find notes containing text\")\n+    search.add_argument(\"query\")\n+\n+    return parser\n+\n+\n+def main(argv: Sequence[str] | None = None, *, store: NotesStore | None = None) -> int:\n+    parser = build_parser()\n+    args = parser.parse_args(argv)\n+\n+    if store is None:\n+        path = args.file if args.file is not None else _default_path()\n+        store = NotesStore(path)\n+\n+    try:\n+        return _dispatch(args, store)\n+    except NoteNotFoundError as exc:\n+        print(f\"error: no note with id {exc.args[0]}\", file=sys.stderr)\n+        return 1\n+    except ValueError as exc:\n+        print(f\"error: {exc}\", file=sys.stderr)\n+        return 2\n+\n+\n+def _print_notes(notes: list[Note], empty_message: str) -> None:\n+    if not notes:\n+        print(empty_message)\n+    for note in notes:\n+        print(_format_note(note))\n+\n+\n+def _dispatch(args: argparse.Namespace, store: NotesStore) -> int:\n+    if args.command == \"add\":\n+        note = store.add(args.body, title=args.title)\n+        print(f\"added note {note.id}\")\n+    elif args.command == \"list\":\n+        _print_notes(store.list(), \"no notes\")\n+    elif args.command == \"show\":\n+        print(_format_note(store.get(args.id), full=True))\n+    elif args.command == \"edit\":\n+        note = store.update(args.id, args.body)\n+        print(f\"updated note {note.id}\")\n+    elif args.command == \"delete\":\n+        store.delete(args.id)\n+        print(f\"deleted note {args.id}\")\n+    elif args.command == \"search\":\n+        _print_notes(store.search(args.query), \"no matches\")\n+    return 0\n+\n+\n+if __name__ == \"__main__\":\n+    raise SystemExit(main())\ndiff --git a/app/notes.py b/app/notes.py\nnew file mode 100644\nindex 0000000..e703dc1\n--- /dev/null\n+++ b/app/notes.py\n@@ -0,0 +1,115 @@\n+\"\"\"Core notes storage: a small JSON-file-backed note store.\"\"\"\n+\n+from __future__ import annotations\n+\n+import json\n+import os\n+import tempfile\n+from dataclasses import asdict, dataclass\n+from datetime import datetime, timezone\n+from pathlib import Path\n+from typing import Any, List\n+\n+\n+class NoteNotFoundError(KeyError):\n+    \"\"\"Raised when a note ID does not exist.\"\"\"\n+\n+\n+@dataclass\n+class Note:\n+    id: int\n+    title: str\n+    body: str\n+    created_at: str\n+    updated_at: str\n+\n+\n+def _now() -> str:\n+    return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")\n+\n+\n+class NotesStore:\n+    \"\"\"Stores notes in a JSON file. The file is created on first write.\"\"\"\n+\n+    def __init__(self, path: str | os.PathLike[str]) -> None:\n+        self.path = Path(path)\n+\n+    def _load(self) -> dict[str, Any]:\n+        if not self.path.exists():\n+            return {\"next_id\": 1, \"notes\": []}\n+        with self.path.open(\"r\", encoding=\"utf-8\") as fh:\n+            return json.load(fh)\n+\n+    def _save(self, data: dict[str, Any]) -> None:\n+        self.path.parent.mkdir(parents=True, exist_ok=True)\n+        # Write atomically so a crash cannot leave a half-written file.\n+        fd, tmp = tempfile.mkstemp(\n+            dir=self.path.parent, prefix=\".notes-\", suffix=\".tmp\"\n+        )\n+        try:\n+            with os.fdopen(fd, \"w\", encoding=\"utf-8\") as fh:\n+                json.dump(data, fh, indent=2)\n+            os.replace(tmp, self.path)\n+        except BaseException:\n+            if os.path.exists(tmp):\n+                os.unlink(tmp)\n+            raise\n+\n+    def _notes_from(self, data: dict[str, Any]) -> List[Note]:\n+        return [Note(**item) for item in data[\"notes\"]]\n+\n+    def add(self, body: str, title: str = \"\") -> Note:\n+        body = body.strip()\n+        if not body:\n+            raise ValueError(\"note body must not be empty\")\n+        data = self._load()\n+        now = _now()\n+        note = Note(\n+            id=int(data[\"next_id\"]),\n+            title=title.strip(),\n+            body=body,\n+            created_at=now,\n+            updated_at=now,\n+        )\n+        data[\"notes\"].append(asdict(note))\n+        data[\"next_id\"] = note.id + 1\n+        self._save(data)\n+        return note\n+\n+    def list(self) -> List[Note]:\n+        return sorted(self._notes_from(self._load()), key=lambda n: n.id)\n+\n+    def get(self, note_id: int) -> Note:\n+        for note in self._notes_from(self._load()):\n+            if note.id == note_id:\n+                return note\n+        raise NoteNotFoundError(note_id)\n+\n+    def update(self, note_id: int, body: str) -> Note:\n+        body = body.strip()\n+        if not body:\n+            raise ValueError(\"note body must not be empty\")\n+        data = self._load()\n+        for item in data[\"notes\"]:\n+            if item[\"id\"] == note_id:\n+                item[\"body\"] = body\n+                item[\"updated_at\"] = _now()\n+                self._save(data)\n+                return Note(**item)\n+        raise NoteNotFoundError(note_id)\n+\n+    def delete(self, note_id: int) -> None:\n+        data = self._load()\n+        remaining = [item for item in data[\"notes\"] if item[\"id\"] != note_id]\n+        if len(remaining) == len(data[\"notes\"]):\n+            raise NoteNotFoundError(note_id)\n+        data[\"notes\"] = remaining\n+        self._save(data)\n+\n+    def search(self, query: str) -> List[Note]:\n+        needle = query.lower()\n+        return [\n+            n\n+            for n in self.list()\n+            if needle in n.title.lower() or needle in n.body.lower()\n+        ]\ndiff --git a/tests/test_cli.py b/tests/test_cli.py\nnew file mode 100644\nindex 0000000..bc72258\n--- /dev/null\n+++ b/tests/test_cli.py\n@@ -0,0 +1,106 @@\n+import pytest\n+\n+from app.cli import main\n+\n+\n+@pytest.fixture\n+def notes_file(tmp_path, monkeypatch):\n+    path = tmp_path / \"notes.json\"\n+    monkeypatch.setenv(\"NOTES_FILE\", str(path))\n+    return path\n+\n+\n+def run(*args):\n+    return main(list(args))\n+\n+\n+def test_add_and_list(notes_file, capsys):\n+    assert run(\"add\", \"buy milk\") == 0\n+    assert \"added note 1\" in capsys.readouterr().out\n+    assert run(\"list\") == 0\n+    assert \"[1] buy milk\" in capsys.readouterr().out\n+\n+\n+def test_add_with_title_shows_in_list(notes_file, capsys):\n+    run(\"add\", \"details here\", \"--title\", \"Shopping\")\n+    capsys.readouterr()\n+    run(\"list\")\n+    assert \"[1] Shopping details here\" in capsys.readouterr().out\n+\n+\n+def test_list_empty(notes_file, capsys):\n+    assert run(\"list\") == 0\n+    assert capsys.readouterr().out.strip() == \"no notes\"\n+\n+\n+def test_show_prints_full_body(notes_file, capsys):\n+    run(\"add\", \"line one\\nline two\", \"-t\", \"T\")\n+    capsys.readouterr()\n+    assert run(\"show\", \"1\") == 0\n+    out = capsys.readouterr().out\n+    assert \"[1] T\" in out\n+    assert \"line one\\nline two\" in out\n+\n+\n+def test_show_missing_returns_error(notes_file, capsys):\n+    assert run(\"show\", \"42\") == 1\n+    assert \"no note with id 42\" in capsys.readouterr().err\n+\n+\n+def test_edit(notes_file, capsys):\n+    run(\"add\", \"old\")\n+    capsys.readouterr()\n+    assert run(\"edit\", \"1\", \"new\") == 0\n+    assert \"updated note 1\" in capsys.readouterr().out\n+    run(\"show\", \"1\")\n+    assert \"new\" in capsys.readouterr().out\n+\n+\n+def test_delete(notes_file, capsys):\n+    run(\"add\", \"gone\")\n+    capsys.readouterr()\n+    assert run(\"delete\", \"1\") == 0\n+    assert \"deleted note 1\" in capsys.readouterr().out\n+    assert run(\"list\") == 0\n+    assert \"no notes\" in capsys.readouterr().out\n+\n+\n+def test_delete_missing_returns_error(notes_file, capsys):\n+    assert run(\"delete\", \"7\") == 1\n+    assert \"no note with id 7\" in capsys.readouterr().err\n+\n+\n+def test_search(notes_file, capsys):\n+    run(\"add\", \"alpha bravo\")\n+    run(\"add\", \"charlie\")\n+    capsys.readouterr()\n+    assert run(\"search\", \"BRAVO\") == 0\n+    out = capsys.readouterr().out\n+    assert \"alpha bravo\" in out\n+    assert \"charlie\" not in out\n+\n+\n+def test_search_no_matches(notes_file, capsys):\n+    run(\"add\", \"x\")\n+    capsys.readouterr()\n+    run(\"search\", \"nope\")\n+    assert \"no matches\" in capsys.readouterr().out\n+\n+\n+def test_empty_add_returns_usage_error(notes_file, capsys):\n+    assert run(\"add\", \"   \") == 2\n+    assert \"must not be empty\" in capsys.readouterr().err\n+\n+\n+def test_file_option_overrides_env(tmp_path, monkeypatch, capsys):\n+    env_path = tmp_path / \"env.json\"\n+    flag_path = tmp_path / \"flag.json\"\n+    monkeypatch.setenv(\"NOTES_FILE\", str(env_path))\n+    assert run(\"--file\", str(flag_path), \"add\", \"hi\") == 0\n+    assert flag_path.exists()\n+    assert not env_path.exists()\n+\n+\n+def test_missing_command_is_error(notes_file):\n+    with pytest.raises(SystemExit):\n+        run()\ndiff --git a/tests/test_notes.py b/tests/test_notes.py\nnew file mode 100644\nindex 0000000..724f1fe\n--- /dev/null\n+++ b/tests/test_notes.py\n@@ -0,0 +1,114 @@\n+import json\n+\n+import pytest\n+\n+from app.notes import NoteNotFoundError, NotesStore\n+\n+\n+@pytest.fixture\n+def store(tmp_path):\n+    return NotesStore(tmp_path / \"notes.json\")\n+\n+\n+def test_empty_store_lists_nothing(store):\n+    assert store.list() == []\n+\n+\n+def test_add_assigns_incrementing_ids(store):\n+    a = store.add(\"first\")\n+    b = store.add(\"second\")\n+    assert (a.id, b.id) == (1, 2)\n+\n+\n+def test_add_strips_whitespace_and_stores_title(store):\n+    note = store.add(\"  hello  \", title=\" Greeting \")\n+    assert note.body == \"hello\"\n+    assert note.title == \"Greeting\"\n+\n+\n+def test_add_rejects_empty_body(store):\n+    with pytest.raises(ValueError):\n+        store.add(\"   \")\n+\n+\n+def test_get_returns_note(store):\n+    added = store.add(\"body\")\n+    assert store.get(added.id) == added\n+\n+\n+def test_get_missing_raises(store):\n+    with pytest.raises(NoteNotFoundError):\n+        store.get(99)\n+\n+\n+def test_list_is_sorted_by_id(store):\n+    store.add(\"one\")\n+    store.add(\"two\")\n+    assert [n.body for n in store.list()] == [\"one\", \"two\"]\n+\n+\n+def test_update_changes_body_and_timestamp(store):\n+    note = store.add(\"old\")\n+    updated = store.update(note.id, \"new\")\n+    assert updated.body == \"new\"\n+    assert update",
+      "quality": {
+        "functions": 17,
+        "max_complexity": 7,
+        "mean_complexity": 2.88,
+        "over_complexity": 0,
+        "max_length": 32,
+        "over_length": 0,
+        "max_params": 2,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 2,
+        "public_undocumented": 9,
+        "public_defs": 11,
+        "duplicated_windows": 0,
+        "lint": 5,
+        "prod_lines_added": 226,
+        "test_lines_added": 220,
+        "tests_added": 30,
+        "detail": [
+          {
+            "path": "app/cli.py",
+            "name": "_default_path",
+            "line": 16,
+            "complexity": 2,
+            "length": 3,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "_format_note",
+            "line": 21,
+            "complexity": 4,
+            "length": 6,
+            "params": 2,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "build_parser",
+            "line": 29,
+            "complexity": 1,
+            "length": 32,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "main",
+            "line": 63,
+            "complexity": 5,
+            "length": 16,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "_print_notes",
+            "line": 81,
+            "complexity": 3,
+            "length": 5,
+            "params": 2,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/cli.py",
+            "name": "_dispatch",
+            "line": 88,
+            "complexity": 7,
+            "length": 17,
+            "params": 2,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_now",
+            "line": 27,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "__init__",
+            "line": 34,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_load",
+            "line": 37,
+            "complexity": 2,
+            "length": 5,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_save",
+            "line": 43,
+            "complexity": 3,
+            "length": 14,
+            "params": 1,
+            "nesting": 2,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "_notes_from",
+            "line": 58,
+            "complexity": 2,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "add",
+            "line": 61,
+            "complexity": 2,
+            "length": 17,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "list",
+            "line": 79,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "get",
+            "line": 82,
+            "complexity": 3,
+            "length": 5,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "update",
+            "line": 88,
+            "complexity": 4,
+            "length": 12,
+            "params": 2,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "delete",
+            "line": 101,
+            "complexity": 4,
+            "length": 7,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/notes.py",
+            "name": "search",
+            "line": 109,
+            "complexity": 4,
+            "length": 7,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          }
+        ]
+      },
+      "seconds": 118.1
+    }
+  ]
+}
