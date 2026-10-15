@@ -1,0 +1,22 @@
+# Watchman reviews its own pull requests. Layer 1 only, so it needs no API key and works on
+# fork PRs. Switch `mode` to `agent` and add an `api-key` secret for the LLM reviewer.
+name: Watchman
+
+on: pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./
+        with:
+          mode: deterministic
+          # The repo's own test suite is the slowest check; CI already runs it.
+          checks: secrets,imports,hygiene,scope,ruff,mypy

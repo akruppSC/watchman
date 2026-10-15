@@ -1,0 +1,24 @@
+# Copy to .github/workflows/watchman.yml in your repository.
+name: Watchman
+
+# Use `pull_request`, never `pull_request_target`: the review runs the PR's code in a sandbox
+# and must not hold a token that can write to your repository.
+on: pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Watchman needs history to find the merge base
+      - uses: akruppSC/watchman@main # pin a tag or commit once you have one
+        with:
+          mode: agent
+          model: google/gemini-3.7-flash
+          api-key: ${{ secrets.OPENROUTER_API_KEY }}
+          # Fork PRs have no secrets: the action falls back to the free deterministic checks.

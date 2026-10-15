@@ -1,0 +1,107 @@
+name: Watchman review
+description: >-
+  Review a pull request for the pitfalls of AI-written code (hallucinated dependencies,
+  swallowed errors, weak tests, secrets, scope creep) and post one comment that is updated in
+  place on every push.
+author: akruppSC
+branding:
+  icon: eye
+  color: blue
+
+inputs:
+  mode:
+    description: "deterministic (free, no API key), agent (adds the LLM reviewer), baseline, or agent_no_l1."
+    default: deterministic
+  model:
+    description: "LLM model id (agent and baseline modes). Defaults to the model in Watchman's config."
+    default: ""
+  provider:
+    description: "openrouter, anthropic, openai, or ollama. Defaults to openrouter."
+    default: ""
+  api-key:
+    description: "API key for the provider, from a secret: ${{ secrets.OPENROUTER_API_KEY }}. Not needed in deterministic mode."
+    default: ""
+  checks:
+    description: "Comma-separated Layer 1 checks to run. Defaults to all of them."
+    default: ""
+  deep:
+    description: "Also run the overseer (a larger model) on this review. Costs more."
+    default: "false"
+  fail-on:
+    description: "Fail the job when the verdict reaches this level: block, warn, or never."
+    default: block
+  strict:
+    description: "Also fail the job when the review is incomplete (a model stage failed)."
+    default: "false"
+  comment:
+    description: "Post or update the pull request comment."
+    default: "true"
+  github-token:
+    description: "Token used to post the comment. Needs pull-requests: write."
+    default: ${{ github.token }}
+
+outputs:
+  verdict:
+    description: "pass, warn, or block."
+    value: ${{ steps.review.outputs.verdict }}
+  findings:
+    description: "Number of findings."
+    value: ${{ steps.review.outputs.findings }}
+  incomplete:
+    description: "true if a model stage failed and findings may be missing."
+    value: ${{ steps.review.outputs.incomplete }}
+  cost-usd:
+    description: "LLM spend for this review."
+    value: ${{ steps.review.outputs.cost-usd }}
+  json-path:
+    description: "Path of the full JSON result on the runner."
+    value: ${{ steps.review.outputs.json-path }}
+  markdown-path:
+    description: "Path of the rendered Markdown report on the runner."
+    value: ${{ steps.review.outputs.markdown-path }}
+  comment-url:
+    description: "URL of the posted comment, if any."
+    value: ${{ steps.review.outputs.comment-url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Run Watchman
+      id: review
+      shell: bash
+      # Inputs reach the script only as environment variables, never interpolated into the
+      # script text, so a hostile value can't inject shell commands.
+      env:
+        WM_MODE: ${{ inputs.mode }}
+        WM_MODEL: ${{ inputs.model }}
+        WM_PROVIDER: ${{ inputs.provider }}
+        WM_API_KEY: ${{ inputs.api-key }}
+        WM_CHECKS: ${{ inputs.checks }}
+        WM_DEEP: ${{ inputs.deep }}
+        WM_FAIL_ON: ${{ inputs.fail-on }}
+        WM_STRICT: ${{ inputs.strict }}
+        WM_COMMENT: ${{ inputs.comment }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set -euo pipefail
+        provider="${WM_PROVIDER:-openrouter}"
+        case "$provider" in
+          openrouter) key_env=OPENROUTER_API_KEY ;;
+          anthropic)  key_env=ANTHROPIC_API_KEY ;;
+          openai)     key_env=OPENAI_API_KEY ;;
+          *)          key_env="" ;;
+        esac
+        if [ -n "$WM_API_KEY" ] && [ -n "$key_env" ]; then
+          export "$key_env=$WM_API_KEY"
+        fi
+        args=(--mode "$WM_MODE" --fail-on "$WM_FAIL_ON")
+        [ -n "$WM_PROVIDER" ] && args+=(--provider "$WM_PROVIDER")
+        [ -n "$WM_MODEL" ] && args+=(--model "$WM_MODEL")
+        [ -n "$WM_CHECKS" ] && args+=(--checks "$WM_CHECKS")
+        [ "$WM_DEEP" = "true" ] && args+=(--deep)
+        [ "$WM_STRICT" = "true" ] && args+=(--strict)
+        [ "$WM_COMMENT" = "true" ] && args+=(--comment) || args+=(--no-comment)
+        uv run --project "$GITHUB_ACTION_PATH" --frozen watchman ci "${args[@]}"

@@ -11,10 +11,13 @@ import typer
 from rich.console import Console
 
 from watchman_review import __version__
+from watchman_review import hook as hooks
 from watchman_review.budget import Ledger
+from watchman_review.ci import CiError, CiOptions, run_ci
 from watchman_review.config import (
     ConfigError,
     OverseerTrigger,
+    Provider,
     load_config,
     save_user_config,
     user_config_path,
@@ -22,6 +25,7 @@ from watchman_review.config import (
 from watchman_review.gitutil import WORKTREE, GitError, repo_root
 from watchman_review.llm.cache import CacheMode
 from watchman_review.report import render
+from watchman_review.report_md import render_markdown
 from watchman_review.review import ReviewError, ReviewOptions, run_review
 from watchman_review.schema import ReviewMode, ReviewResult, Verdict
 
@@ -33,6 +37,8 @@ app = typer.Typer(
 )
 config_app = typer.Typer(help="Inspect configuration.", no_args_is_help=True)
 app.add_typer(config_app, name="config")
+hook_app = typer.Typer(help="Manage the git pre-push hook.", no_args_is_help=True)
+app.add_typer(hook_app, name="hook")
 
 err = Console(stderr=True)
 out = Console()
@@ -95,6 +101,9 @@ def review(
     output: Annotated[
         Path | None, typer.Option("--output", "-o", help="Also write JSON here.")
     ] = None,
+    markdown: Annotated[
+        Path | None, typer.Option("--markdown", help="Also write a Markdown report here.")
+    ] = None,
     fail_on: Annotated[
         FailOn, typer.Option(help="Exit 1 when the verdict reaches this level.")
     ] = FailOn.BLOCK,
@@ -141,6 +150,8 @@ def review(
     payload = result.model_dump_json(indent=2)
     if output is not None:
         output.write_text(payload + "\n")
+    if markdown is not None:
+        markdown.write_text(render_markdown(result) + "\n")
     if as_json:
         typer.echo(payload)
     else:
@@ -152,6 +163,107 @@ def review(
         )  # fmt: skip
         raise typer.Exit(EXIT_ERROR)
     raise typer.Exit(gate_exit_code(result.verdict, fail_on))
+
+
+@app.command("ci")
+def ci_command(
+    mode: Annotated[ReviewMode, typer.Option(help="Reviewer to run.")] = ReviewMode.DETERMINISTIC,
+    model: Annotated[str | None, typer.Option(help="Override the LLM model.")] = None,
+    provider: Annotated[
+        Provider | None, typer.Option(help="LLM provider (default: from config).")
+    ] = None,
+    checks: Annotated[str | None, typer.Option(help="Comma-separated Layer 1 checks.")] = None,
+    base: Annotated[str | None, typer.Option(help="Base ref (default: the PR's base).")] = None,
+    head: Annotated[str | None, typer.Option(help="Head ref (default: the PR's head).")] = None,
+    deep: Annotated[bool, typer.Option("--deep", help="Run the overseer too.")] = False,
+    comment: Annotated[
+        bool, typer.Option("--comment/--no-comment", help="Post or update the PR comment.")
+    ] = True,
+    fail_on: Annotated[
+        FailOn, typer.Option(help="Fail the job when the verdict reaches this level.")
+    ] = FailOn.BLOCK,
+    strict: Annotated[
+        bool, typer.Option(help="Also fail the job when the review is incomplete.")
+    ] = False,
+    out_dir: Annotated[
+        Path | None, typer.Option(help="Where to write the JSON and Markdown.")
+    ] = None,
+    repo: Annotated[Path, typer.Option(help="Checkout to review.")] = Path("."),
+) -> None:
+    """Review a pull request in GitHub Actions and post the result as one comment.
+
+    Reads GITHUB_EVENT_PATH, GITHUB_REPOSITORY, and GITHUB_TOKEN from the environment.
+    """
+    import os
+
+    opts = CiOptions(
+        mode=mode, model=model, provider=provider, deep=deep, comment=comment, strict=strict,
+        fail_on=fail_on.value, out_dir=out_dir,
+        checks=[c.strip() for c in checks.split(",") if c.strip()] if checks else None,
+        base=base, head=head,
+    )  # fmt: skip
+    try:
+        outcome = run_ci(opts, dict(os.environ), cwd=repo.resolve())
+    except CiError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    render(outcome.result, out)
+    for note in outcome.notes:
+        err.print(f"[yellow]note:[/yellow] {note}")
+    if outcome.comment_url:
+        typer.echo(f"PR comment {outcome.comment_action}: {outcome.comment_url}")
+    typer.echo(f"wrote {outcome.json_path} and {outcome.markdown_path}")
+    raise typer.Exit(outcome.exit_code)
+
+
+@hook_app.command("install")
+def hook_install(
+    mode: Annotated[
+        ReviewMode, typer.Option(help="deterministic is free and fast; agent uses your LLM.")
+    ] = ReviewMode.DETERMINISTIC,
+    with_tests: Annotated[
+        bool, typer.Option(help="Also run the project's tests on every push (slow).")
+    ] = False,
+    force: Annotated[bool, typer.Option(help="Replace an existing pre-push hook.")] = False,
+    repo: Annotated[Path, typer.Option(help="Repository path.")] = Path("."),
+) -> None:
+    """Install a pre-push hook that blocks pushes whose review verdict is BLOCK."""
+    try:
+        path = hooks.install(
+            repo_root(repo.resolve()), mode=mode.value, with_tests=with_tests, force=force
+        )
+    except (GitError, hooks.HookError) as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    typer.echo(f"installed {path}")
+    typer.echo("skip once with `git push --no-verify` or `WATCHMAN_SKIP=1 git push`")
+
+
+@hook_app.command("uninstall")
+def hook_uninstall(
+    repo: Annotated[Path, typer.Option(help="Repository path.")] = Path("."),
+) -> None:
+    """Remove the Watchman pre-push hook (restoring one it replaced)."""
+    try:
+        path = hooks.uninstall(repo_root(repo.resolve()))
+    except (GitError, hooks.HookError) as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    typer.echo(f"removed {path}" if path else "no Watchman hook was installed")
+
+
+@hook_app.command("status")
+def hook_status(repo: Annotated[Path, typer.Option(help="Repository path.")] = Path(".")) -> None:
+    """Show whether the pre-push hook is installed."""
+    try:
+        st = hooks.status(repo_root(repo.resolve()))
+    except GitError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    state = (
+        "installed" if st.installed else "another hook is in the way" if st.foreign else "absent"
+    )
+    typer.echo(f"{st.path}: {state}")
 
 
 @app.command()
