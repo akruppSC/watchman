@@ -77,9 +77,27 @@ Most of the lessons are failures, and several were in the evaluation, not the pr
    requests per minute failed most of a parallel batch until retries honored the provider's reset
    time.
 
+## Live mode, and an experiment that showed nothing
+
+Live mode reviews a coding agent *while it works*: at test runs, commits, and "done", on a git
+snapshot built with a throwaway index so the worker's repository is never touched, with findings
+tracked by what they are about (so a moved line isn't "new"), a three-round cap that escalates to the
+human, and advisory-by-default feedback. It was exercised end to end against real OpenCode sessions.
+
+I then tried to measure whether it helps: a Haiku 5.5 worker on 10 small tasks built around known
+pitfalls, alone vs. supervised, 3 trials each (60 runs, about $1.30 in total). Haiku got every task right
+both ways (30/30 each, including two harder tasks I added after seeing the ceiling). So the experiment
+shows cost (about 3.6 cents per supervised run) and no harm, and it does **not** show benefit: with
+nothing to fix, nothing can be fixed. The question of whether a different model family catches a
+Claude worker's blind spots stays open. Two things worth keeping from it: the experiment found four real
+bugs in my integration that unit tests had missed (a git exclude pathspec error, snapshot shas that
+changed every second so "unchanged" was never detected, findings re-announced as new at "done", and a
+worker's `git add -A` committing the plugin file), and headless `opencode run` exits at `session.idle`,
+so the "done" prompt only works in server mode.
+
 ## Next
 
 Re-run the evaluation now that the sandbox installs real projects' test dependencies; grow the
-labeled set beyond injected defects; measure larger models only where the cheap one reports
-nothing, the one place the overseer helped; and build the live mode that reviews a coding agent's
-work at checkpoints, where the model-family blind-spot question can finally be tested.
+labeled set beyond injected defects; measure larger models only where the cheap one reports nothing,
+the one place the overseer helped; and test live mode against a worker that actually makes mistakes (a
+weaker model or harder, longer tasks), which is the comparison this experiment couldn't make.
