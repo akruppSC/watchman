@@ -341,7 +341,8 @@ def live_status(session: SessionOpt = "default", repo: RepoOpt = Path(".")) -> N
         typer.echo(f"  {kind:9} {ep.status:9} round {ep.round}  open findings: {len(ep.seen)}")
         for seen in ep.seen.values():
             typer.echo(
-                f"      {seen.severity} {seen.category} {seen.location} (r{seen.round}) {seen.summary}"
+                f"      {seen.severity} {seen.category} {seen.location} "
+                f"(r{seen.round}) {seen.summary}"
             )
     cost = sum(h.cost_usd for h in state.history)
     typer.echo(f"  {len(state.history)} review(s), ${cost:.4f} spent")
