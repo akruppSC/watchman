@@ -5,8 +5,8 @@
   "started": "20261015T200055",
   "style": "google",
   "spend": {
-    "worker": 0.1414,
-    "reviewer": 0.4426
+    "worker": 0.1868,
+    "reviewer": 0.4901
   },
   "runs": [
     {
@@ -3473,6 +3473,1296 @@
         ]
       },
       "seconds": 70.5
+    },
+    {
+      "task": "vague_inventory",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00486524,
+      "tokens": 119090,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 14,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 14,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/inventory.py b/app/inventory.py\nnew file mode 100644\nindex 0000000..d908440\n--- /dev/null\n+++ b/app/inventory.py\n@@ -0,0 +1,99 @@\n+\"\"\"A small in-memory inventory tracker for a shop.\"\"\"\n+\n+from __future__ import annotations\n+\n+from dataclasses import dataclass\n+\n+\n+class InventoryError(Exception):\n+    \"\"\"Base error for inventory operations.\"\"\"\n+\n+\n+class UnknownItemError(InventoryError):\n+    \"\"\"Raised when a SKU is not in the inventory.\"\"\"\n+\n+\n+class DuplicateItemError(InventoryError):\n+    \"\"\"Raised when adding a SKU that already exists.\"\"\"\n+\n+\n+class InsufficientStockError(InventoryError):\n+    \"\"\"Raised when removing more units than are on hand.\"\"\"\n+\n+\n+@dataclass\n+class Item:\n+    sku: str\n+    name: str\n+    price_cents: int\n+    quantity: int = 0\n+\n+    def __post_init__(self) -> None:\n+        if not self.sku:\n+            raise ValueError(\"sku must be non-empty\")\n+        if self.price_cents < 0:\n+            raise ValueError(\"price_cents must be >= 0\")\n+        if self.quantity < 0:\n+            raise ValueError(\"quantity must be >= 0\")\n+\n+\n+class Inventory:\n+    \"\"\"Tracks items keyed by SKU, with stock in/out and low-stock reporting.\"\"\"\n+\n+    def __init__(self) -> None:\n+        self._items: dict[str, Item] = {}\n+\n+    def __contains__(self, sku: object) -> bool:\n+        return sku in self._items\n+\n+    def __len__(self) -> int:\n+        return len(self._items)\n+\n+    def add_item(\n+        self, sku: str, name: str, price_cents: int, quantity: int = 0\n+    ) -> Item:\n+        if sku in self._items:\n+            raise DuplicateItemError(f\"item {sku!r} already exists\")\n+        item = Item(sku=sku, name=name, price_cents=price_cents, quantity=quantity)\n+        self._items[sku] = item\n+        return item\n+\n+    def get(self, sku: str) -> Item:\n+        try:\n+            return self._items[sku]\n+        except KeyError:\n+            raise UnknownItemError(f\"no item with sku {sku!r}\") from None\n+\n+    def restock(self, sku: str, amount: int) -> int:\n+        \"\"\"Add units to stock. Returns the new quantity.\"\"\"\n+        if amount <= 0:\n+            raise ValueError(\"amount must be positive\")\n+        item = self.get(sku)\n+        item.quantity += amount\n+        return item.quantity\n+\n+    def sell(self, sku: str, amount: int) -> int:\n+        \"\"\"Remove units from stock. Returns the new quantity.\"\"\"\n+        if amount <= 0:\n+            raise ValueError(\"amount must be positive\")\n+        item = self.get(sku)\n+        if amount > item.quantity:\n+            raise InsufficientStockError(\n+                f\"cannot sell {amount} of {sku!r}; only {item.quantity} on hand\"\n+            )\n+        item.quantity -= amount\n+        return item.quantity\n+\n+    def remove_item(self, sku: str) -> None:\n+        self.get(sku)\n+        del self._items[sku]\n+\n+    def total_value_cents(self) -> int:\n+        return sum(item.price_cents * item.quantity for item in self._items.values())\n+\n+    def low_stock(self, threshold: int) -> list[Item]:\n+        \"\"\"Items with quantity at or below threshold, sorted by SKU.\"\"\"\n+        return sorted(\n+            (i for i in self._items.values() if i.quantity <= threshold),\n+            key=lambda i: i.sku,\n+        )\ndiff --git a/tests/test_inventory.py b/tests/test_inventory.py\nnew file mode 100644\nindex 0000000..17d7203\n--- /dev/null\n+++ b/tests/test_inventory.py\n@@ -0,0 +1,100 @@\n+import pytest\n+\n+from app.inventory import (\n+    DuplicateItemError,\n+    InsufficientStockError,\n+    Inventory,\n+    Item,\n+    UnknownItemError,\n+)\n+\n+\n+@pytest.fixture\n+def inv() -> Inventory:\n+    inventory = Inventory()\n+    inventory.add_item(\"A-1\", \"Apple\", 50, quantity=10)\n+    inventory.add_item(\"B-2\", \"Bread\", 300, quantity=2)\n+    return inventory\n+\n+\n+def test_add_item_and_lookup(inv):\n+    item = inv.get(\"A-1\")\n+    assert item == Item(\"A-1\", \"Apple\", 50, 10)\n+    assert \"A-1\" in inv\n+    assert len(inv) == 2\n+\n+\n+def test_add_duplicate_sku_rejected(inv):\n+    with pytest.raises(DuplicateItemError):\n+        inv.add_item(\"A-1\", \"Other\", 1)\n+\n+\n+def test_unknown_sku_raises(inv):\n+    with pytest.raises(UnknownItemError):\n+        inv.get(\"nope\")\n+    with pytest.raises(UnknownItemError):\n+        inv.restock(\"nope\", 1)\n+    with pytest.raises(UnknownItemError):\n+        inv.sell(\"nope\", 1)\n+    with pytest.raises(UnknownItemError):\n+        inv.remove_item(\"nope\")\n+\n+\n+def test_restock_increases_quantity(inv):\n+    assert inv.restock(\"A-1\", 5) == 15\n+    assert inv.get(\"A-1\").quantity == 15\n+\n+\n+def test_sell_decreases_quantity(inv):\n+    assert inv.sell(\"A-1\", 4) == 6\n+    assert inv.get(\"A-1\").quantity == 6\n+\n+\n+def test_sell_exact_stock_allowed(inv):\n+    assert inv.sell(\"B-2\", 2) == 0\n+\n+\n+def test_sell_more_than_on_hand_raises_and_leaves_stock(inv):\n+    with pytest.raises(InsufficientStockError):\n+        inv.sell(\"B-2\", 3)\n+    assert inv.get(\"B-2\").quantity == 2\n+\n+\n+@pytest.mark.parametrize(\"amount\", [0, -1])\n+def test_non_positive_amounts_rejected(inv, amount):\n+    with pytest.raises(ValueError):\n+        inv.restock(\"A-1\", amount)\n+    with pytest.raises(ValueError):\n+        inv.sell(\"A-1\", amount)\n+\n+\n+def test_remove_item(inv):\n+    inv.remove_item(\"B-2\")\n+    assert \"B-2\" not in inv\n+    assert len(inv) == 1\n+\n+\n+def test_total_value_cents(inv):\n+    # 50 * 10 + 300 * 2\n+    assert inv.total_value_cents() == 1100\n+\n+\n+def test_total_value_empty_inventory():\n+    assert Inventory().total_value_cents() == 0\n+\n+\n+def test_low_stock_sorted_and_inclusive(inv):\n+    inv.add_item(\"C-3\", \"Cheese\", 700, quantity=1)\n+    skus = [i.sku for i in inv.low_stock(2)]\n+    assert skus == [\"B-2\", \"C-3\"]\n+\n+\n+def test_item_validation():\n+    with pytest.raises(ValueError):\n+        Item(\"\", \"x\", 1)\n+    with pytest.raises(ValueError):\n+        Item(\"X\", \"x\", -1)\n+    with pytest.raises(ValueError):\n+        Item(\"X\", \"x\", 1, quantity=-1)\n+    with pytest.raises(ValueError):\n+        Inventory().add_item(\"X\", \"x\", 1, quantity=-5)",
+      "style_metrics": {
+        "pylint": 3,
+        "pylint_by_symbol": {
+          "line-too-long": 2,
+          "missing-class-docstring": 1
+        },
+        "public_defs": 13,
+        "documented": 8,
+        "public_funcs": 7,
+        "annotated": 7,
+        "long_functions": 0,
+        "prod_lines_added": 99
+      },
+      "quality": {
+        "functions": 11,
+        "max_complexity": 4,
+        "mean_complexity": 2.0,
+        "over_complexity": 0,
+        "max_length": 11,
+        "over_length": 0,
+        "max_params": 4,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 1,
+        "public_undocumented": 5,
+        "public_defs": 13,
+        "duplicated_windows": 0,
+        "lint": 0,
+        "prod_lines_added": 99,
+        "test_lines_added": 100,
+        "tests_added": 13,
+        "detail": [
+          {
+            "path": "app/inventory.py",
+            "name": "__post_init__",
+            "line": 31,
+            "complexity": 4,
+            "length": 7,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__init__",
+            "line": 43,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__contains__",
+            "line": 46,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__len__",
+            "line": 49,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "add_item",
+            "line": 52,
+            "complexity": 2,
+            "length": 8,
+            "params": 4,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "get",
+            "line": 61,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "restock",
+            "line": 67,
+            "complexity": 2,
+            "length": 7,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "sell",
+            "line": 75,
+            "complexity": 3,
+            "length": 11,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "remove_item",
+            "line": 87,
+            "complexity": 1,
+            "length": 3,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "total_value_cents",
+            "line": 91,
+            "complexity": 2,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "low_stock",
+            "line": 94,
+            "complexity": 3,
+            "length": 6,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          }
+        ]
+      },
+      "seconds": 62.4
+    },
+    {
+      "task": "vague_gradebook",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00784259,
+      "tokens": 224312,
+      "tools": {
+        "bash": 4,
+        "write": 2,
+        "edit": 3
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 19,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 19,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/gradebook.py b/app/gradebook.py\nnew file mode 100644\nindex 0000000..f0c48d5\n--- /dev/null\n+++ b/app/gradebook.py\n@@ -0,0 +1,179 @@\n+\"\"\"A simple gradebook for teachers.\n+\n+Students are identified by a unique string ID. Assignments have a maximum\n+point value and a weight. A student's course percentage is the weighted\n+average of their percentages on the assignments they have been scored on;\n+assignments without a recorded score are ignored until one is entered.\n+\"\"\"\n+\n+from __future__ import annotations\n+\n+from dataclasses import dataclass, field\n+from statistics import fmean\n+\n+# (minimum percentage, letter grade), highest threshold first.\n+DEFAULT_LETTER_SCALE: tuple[tuple[float, str], ...] = (\n+    (90.0, \"A\"),\n+    (80.0, \"B\"),\n+    (70.0, \"C\"),\n+    (60.0, \"D\"),\n+    (0.0, \"F\"),\n+)\n+\n+\n+class GradebookError(Exception):\n+    \"\"\"Raised for invalid gradebook operations.\"\"\"\n+\n+\n+@dataclass(frozen=True)\n+class Assignment:\n+    name: str\n+    max_points: float\n+    weight: float = 1.0\n+\n+    def __post_init__(self) -> None:\n+        if not self.name:\n+            raise GradebookError(\"assignment name must not be empty\")\n+        if self.max_points <= 0:\n+            raise GradebookError(\"max_points must be positive\")\n+        if self.weight <= 0:\n+            raise GradebookError(\"weight must be positive\")\n+\n+\n+@dataclass\n+class Student:\n+    student_id: str\n+    name: str\n+    # assignment name -> points earned\n+    scores: dict[str, float] = field(default_factory=dict)\n+\n+\n+class Gradebook:\n+    def __init__(\n+        self, letter_scale: tuple[tuple[float, str], ...] = DEFAULT_LETTER_SCALE\n+    ) -> None:\n+        self._letter_scale = tuple(\n+            sorted(letter_scale, key=lambda t: t[0], reverse=True)\n+        )\n+        self._students: dict[str, Student] = {}\n+        self._assignments: dict[str, Assignment] = {}\n+\n+    # --- setup -----------------------------------------------------------\n+\n+    def add_student(self, student_id: str, name: str) -> None:\n+        if not student_id:\n+            raise GradebookError(\"student_id must not be empty\")\n+        if student_id in self._students:\n+            raise GradebookError(f\"duplicate student: {student_id}\")\n+        self._students[student_id] = Student(student_id, name)\n+\n+    def add_assignment(self, name: str, max_points: float, weight: float = 1.0) -> None:\n+        if name in self._assignments:\n+            raise GradebookError(f\"duplicate assignment: {name}\")\n+        self._assignments[name] = Assignment(name, max_points, weight)\n+\n+    def remove_assignment(self, name: str) -> None:\n+        if name not in self._assignments:\n+            raise GradebookError(f\"unknown assignment: {name}\")\n+        del self._assignments[name]\n+        for student in self._students.values():\n+            student.scores.pop(name, None)\n+\n+    # --- scores ----------------------------------------------------------\n+\n+    def record_score(\n+        self, student_id: str, assignment_name: str, points: float\n+    ) -> None:\n+        student = self._get_student(student_id)\n+        assignment = self._get_assignment(assignment_name)\n+        if points < 0:\n+            raise GradebookError(\"points must not be negative\")\n+        if points > assignment.max_points:\n+            raise GradebookError(\n+                f\"points {points} exceed max {assignment.max_points} for {assignment_name}\"\n+            )\n+        student.scores[assignment_name] = float(points)\n+\n+    def clear_score(self, student_id: str, assignment_name: str) -> None:\n+        self._get_student(student_id).scores.pop(assignment_name, None)\n+\n+    def get_score(self, student_id: str, assignment_name: str) -> float | None:\n+        self._get_assignment(assignment_name)\n+        return self._get_student(student_id).scores.get(assignment_name)\n+\n+    # --- calculations ----------------------------------------------------\n+\n+    def student_percentage(self, student_id: str) -> float | None:\n+        \"\"\"Weighted percentage over scored assignments, or None if nothing is scored.\"\"\"\n+        student = self._get_student(student_id)\n+        total_weight = 0.0\n+        weighted_sum = 0.0\n+        for name, points in student.scores.items():\n+            assignment = self._assignments[name]\n+            total_weight += assignment.weight\n+            weighted_sum += assignment.weight * (points / assignment.max_points)\n+        if total_weight == 0:\n+            return None\n+        return 100.0 * weighted_sum / total_weight\n+\n+    def letter_grade(self, student_id: str) -> str | None:\n+        pct = self.student_percentage(student_id)\n+        if pct is None:\n+            return None\n+        return self.to_letter(pct)\n+\n+    def to_letter(self, percentage: float) -> str:\n+        for threshold, letter in self._letter_scale:\n+            if percentage >= threshold:\n+                return letter\n+        return self._letter_scale[-1][1]\n+\n+    def assignment_average(self, assignment_name: str) -> float | None:\n+        \"\"\"Mean percentage on an assignment across students who have a score.\"\"\"\n+        assignment = self._get_assignment(assignment_name)\n+        pcts = [\n+            100.0 * s.scores[assignment_name] / assignment.max_points\n+            for s in self._students.values()\n+            if assignment_name in s.scores\n+        ]\n+        return fmean(pcts) if pcts else None\n+\n+    def class_average(self) -> float | None:\n+        \"\"\"Mean of student percentages, ignoring students with no scores.\"\"\"\n+        pcts = [\n+            p\n+            for sid in self._students\n+            if (p := self.student_percentage(sid)) is not None\n+        ]\n+        return fmean(pcts) if pcts else None\n+\n+    def report(self) -> list[dict[str, object]]:\n+        \"\"\"One row per student, sorted by name, suitable for display or export.\"\"\"\n+        rows = []\n+        for student in sorted(\n+            self._students.values(), key=lambda s: (s.name, s.student_id)\n+        ):\n+            pct = self.student_percentage(student.student_id)\n+            rows.append(\n+                {\n+                    \"student_id\": student.student_id,\n+                    \"name\": student.name,\n+                    \"percentage\": None if pct is None else round(pct, 2),\n+                    \"letter\": None if pct is None else self.to_letter(pct),\n+                }\n+            )\n+        return rows\n+\n+    # --- helpers ---------------------------------------------------------\n+\n+    def _get_student(self, student_id: str) -> Student:\n+        try:\n+            return self._students[student_id]\n+        except KeyError:\n+            raise GradebookError(f\"unknown student: {student_id}\") from None\n+\n+    def _get_assignment(self, name: str) -> Assignment:\n+        try:\n+            return self._assignments[name]\n+        except KeyError:\n+            raise GradebookError(f\"unknown assignment: {name}\") from None\ndiff --git a/tests/test_gradebook.py b/tests/test_gradebook.py\nnew file mode 100644\nindex 0000000..94d798c\n--- /dev/null\n+++ b/tests/test_gradebook.py\n@@ -0,0 +1,150 @@\n+import pytest\n+\n+from app.gradebook import Assignment, Gradebook, GradebookError\n+\n+\n+@pytest.fixture\n+def book() -> Gradebook:\n+    gb = Gradebook()\n+    gb.add_student(\"s1\", \"Ada\")\n+    gb.add_student(\"s2\", \"Ben\")\n+    gb.add_assignment(\"quiz\", 10)\n+    gb.add_assignment(\"exam\", 100, weight=3)\n+    return gb\n+\n+\n+def test_empty_student_has_no_percentage(book):\n+    assert book.student_percentage(\"s1\") is None\n+    assert book.letter_grade(\"s1\") is None\n+\n+\n+def test_single_score_percentage(book):\n+    book.record_score(\"s1\", \"quiz\", 8)\n+    assert book.student_percentage(\"s1\") == pytest.approx(80.0)\n+    assert book.letter_grade(\"s1\") == \"B\"\n+\n+\n+def test_weighted_percentage(book):\n+    book.record_score(\"s1\", \"quiz\", 10)  # 100%, weight 1\n+    book.record_score(\"s1\", \"exam\", 50)  # 50%, weight 3\n+    # (1*100 + 3*50) / 4 = 62.5\n+    assert book.student_percentage(\"s1\") == pytest.approx(62.5)\n+    assert book.letter_grade(\"s1\") == \"D\"\n+\n+\n+def test_unscored_assignments_are_ignored(book):\n+    book.add_assignment(\"hw\", 20)\n+    book.record_score(\"s1\", \"quiz\", 10)\n+    assert book.student_percentage(\"s1\") == pytest.approx(100.0)\n+\n+\n+def test_clear_score_removes_it_from_calculation(book):\n+    book.record_score(\"s1\", \"quiz\", 10)\n+    book.record_score(\"s1\", \"exam\", 0)\n+    book.clear_score(\"s1\", \"exam\")\n+    assert book.student_percentage(\"s1\") == pytest.approx(100.0)\n+    assert book.get_score(\"s1\", \"exam\") is None\n+\n+\n+def test_get_score(book):\n+    book.record_score(\"s1\", \"quiz\", 7.5)\n+    assert book.get_score(\"s1\", \"quiz\") == 7.5\n+    assert book.get_score(\"s2\", \"quiz\") is None\n+\n+\n+def test_letter_boundaries(book):\n+    assert book.to_letter(100) == \"A\"\n+    assert book.to_letter(90) == \"A\"\n+    assert book.to_letter(89.99) == \"B\"\n+    assert book.to_letter(80) == \"B\"\n+    assert book.to_letter(70) == \"C\"\n+    assert book.to_letter(60) == \"D\"\n+    assert book.to_letter(59.9) == \"F\"\n+    assert book.to_letter(0) == \"F\"\n+\n+\n+def test_custom_letter_scale():\n+    gb = Gradebook(letter_scale=((50.0, \"Pass\"), (0.0, \"Fail\")))\n+    assert gb.to_letter(75) == \"Pass\"\n+    assert gb.to_letter(49) == \"Fail\"\n+\n+\n+def test_assignment_average(book):\n+    book.record_score(\"s1\", \"quiz\", 10)  # 100%\n+    book.record_score(\"s2\", \"quiz\", 5)  # 50%\n+    assert book.assignment_average(\"quiz\") == pytest.approx(75.0)\n+    assert book.assignment_average(\"exam\") is None\n+\n+\n+def test_class_average_ignores_unscored_students(book):\n+    book.add_student(\"s3\", \"Cy\")\n+    book.record_score(\"s1\", \"quiz\", 10)  # 100%\n+    book.record_score(\"s2\", \"quiz\", 6)  # 60%\n+    assert book.class_average() == pytest.approx(80.0)\n+\n+\n+def test_class_average_none_when_empty(book):\n+    assert book.class_average() is None\n+\n+\n+def test_report_sorted_by_name_with_rounding(book):\n+    book.record_score(\"s1\", \"quiz\", 9)  # Ada 90%\n+    book.record_score(\"s2\", \"quiz\", 2)  # Ben 20%\n+    book.record_score(\"s2\", \"exam\", 1)  # Ben weighted: (1*20 + 3*1)/4 = 5.75\n+    rows = book.report()\n+    assert [r[\"name\"] for r in rows] == [\"Ada\", \"Ben\"]\n+    assert rows[0] == {\n+        \"student_id\": \"s1\",\n+        \"name\": \"Ada\",\n+        \"percentage\": 90.0,\n+        \"letter\": \"A\",\n+    }\n+    assert rows[1][\"percentage\"] == 5.75\n+    assert rows[1][\"letter\"] == \"F\"\n+\n+\n+def test_report_unscored_student_has_none(book):\n+    rows = book.report()\n+    assert all(r[\"percentage\"] is None and r[\"letter\"] is None for r in rows)\n+\n+\n+def test_duplicate_student_rejected(book):\n+    with pytest.raises(GradebookError):\n+        book.add_student(\"s1\", \"Other\")\n+\n+\n+def test_duplicate_assignment_rejected(book):\n+    with pytest.raises(GradebookError):\n+        book.add_assignment(\"quiz\", 5)\n+\n+\n+def test_unknown_student_and_assignment_rejected(book):\n+    with pytest.raises(GradebookError):\n+        book.record_score(\"nope\", \"quiz\", 1)\n+    with pytest.raises(GradebookError):\n+        book.record_score(\"s1\", \"nope\", 1)\n+\n+\n+def test_points_out_of_range_rejected(book):\n+    with pytest.raises(GradebookError):\n+        book.record_score(\"s1\", \"quiz\", 11)\n+    with pytest.raises(GradebookError):\n+        book.record_score(\"s1\", \"quiz\", -1)\n+\n+\n+def test_invalid_assignment_definitions_rejected():\n+    with pytest.raises(GradebookError):\n+        Assignment(\"\", 10)\n+    with pytest.raises(GradebookError):\n+        Assignment(\"x\", 0)\n+    with pytest.raises(GradebookError):\n+        Assignment(\"x\", 10, weight=0)\n+\n+\n+def test_remove_assignment_drops_scores(book):\n+    book.record_score(\"s1\", \"quiz\", 10)\n+    book.record_score(\"s1\", \"exam\", 0)\n+    book.remove_assignment(\"exam\")\n+    assert book.student_percentage(\"s1\") == pytest.approx(100.0)\n+    with pytest.raises(GradebookError):\n+        book.remove_assignment(\"exam\")",
+      "style_metrics": {
+        "pylint": 5,
+        "pylint_by_symbol": {
+          "line-too-long": 4,
+          "missing-class-docstring": 1
+        },
+        "public_defs": 16,
+        "documented": 5,
+        "public_funcs": 12,
+        "annotated": 12,
+        "long_functions": 0,
+        "prod_lines_added": 179
+      },
+      "quality": {
+        "functions": 16,
+        "max_complexity": 4,
+        "mean_complexity": 2.62,
+        "over_complexity": 0,
+        "max_length": 16,
+        "over_length": 0,
+        "max_params": 3,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 2,
+        "public_undocumented": 11,
+        "public_defs": 16,
+        "duplicated_windows": 0,
+        "lint": 0,
+        "prod_lines_added": 179,
+        "test_lines_added": 150,
+        "tests_added": 19,
+        "detail": [
+          {
+            "path": "app/gradebook.py",
+            "name": "__post_init__",
+            "line": 34,
+            "complexity": 4,
+            "length": 7,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "__init__",
+            "line": 52,
+            "complexity": 1,
+            "length": 8,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_student",
+            "line": 63,
+            "complexity": 3,
+            "length": 6,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_assignment",
+            "line": 70,
+            "complexity": 2,
+            "length": 4,
+            "params": 3,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "remove_assignment",
+            "line": 75,
+            "complexity": 3,
+            "length": 6,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "record_score",
+            "line": 84,
+            "complexity": 3,
+            "length": 12,
+            "params": 3,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "clear_score",
+            "line": 97,
+            "complexity": 1,
+            "length": 2,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "get_score",
+            "line": 100,
+            "complexity": 1,
+            "length": 3,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "student_percentage",
+            "line": 106,
+            "complexity": 3,
+            "length": 12,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "letter_grade",
+            "line": 119,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "to_letter",
+            "line": 125,
+            "complexity": 3,
+            "length": 5,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "assignment_average",
+            "line": 131,
+            "complexity": 4,
+            "length": 9,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "class_average",
+            "line": 141,
+            "complexity": 4,
+            "length": 8,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "report",
+            "line": 150,
+            "complexity": 4,
+            "length": 16,
+            "params": 0,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_get_student",
+            "line": 169,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_get_assignment",
+            "line": 175,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          }
+        ]
+      },
+      "seconds": 79.4
+    },
+    {
+      "task": "vague_inventory",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00473607,
+      "tokens": 99045,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 15,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 15,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/inventory.py b/app/inventory.py\nnew file mode 100644\nindex 0000000..4e41edf\n--- /dev/null\n+++ b/app/inventory.py\n@@ -0,0 +1,108 @@\n+\"\"\"A small in-memory inventory tracker for a shop.\"\"\"\n+\n+from __future__ import annotations\n+\n+from dataclasses import dataclass\n+\n+\n+class InventoryError(Exception):\n+    \"\"\"Base error for inventory operations.\"\"\"\n+\n+\n+class UnknownItemError(InventoryError, KeyError):\n+    \"\"\"Raised when an SKU is not in the inventory.\"\"\"\n+\n+\n+class InsufficientStockError(InventoryError):\n+    \"\"\"Raised when removing more units than are on hand.\"\"\"\n+\n+\n+@dataclass\n+class Item:\n+    sku: str\n+    name: str\n+    quantity: int = 0\n+    price: float = 0.0\n+\n+    def __post_init__(self) -> None:\n+        if not self.sku:\n+            raise ValueError(\"sku must be non-empty\")\n+        if self.quantity < 0:\n+            raise ValueError(\"quantity must be non-negative\")\n+        if self.price < 0:\n+            raise ValueError(\"price must be non-negative\")\n+\n+\n+class Inventory:\n+    \"\"\"Tracks items keyed by SKU.\"\"\"\n+\n+    def __init__(self) -> None:\n+        self._items: dict[str, Item] = {}\n+\n+    def __len__(self) -> int:\n+        return len(self._items)\n+\n+    def __contains__(self, sku: object) -> bool:\n+        return sku in self._items\n+\n+    def add_item(\n+        self, sku: str, name: str, price: float = 0.0, quantity: int = 0\n+    ) -> Item:\n+        \"\"\"Register a new item. Raises ValueError if the SKU already exists.\"\"\"\n+        if sku in self._items:\n+            raise ValueError(f\"SKU already exists: {sku!r}\")\n+        item = Item(sku=sku, name=name, quantity=quantity, price=price)\n+        self._items[sku] = item\n+        return item\n+\n+    def get(self, sku: str) -> Item:\n+        try:\n+            return self._items[sku]\n+        except KeyError:\n+            raise UnknownItemError(sku) from None\n+\n+    def receive(self, sku: str, amount: int) -> int:\n+        \"\"\"Add stock for an SKU. Returns the new quantity.\"\"\"\n+        if amount <= 0:\n+            raise ValueError(\"amount must be positive\")\n+        item = self.get(sku)\n+        item.quantity += amount\n+        return item.quantity\n+\n+    def remove(self, sku: str, amount: int) -> int:\n+        \"\"\"Remove stock for an SKU (e.g. a sale). Returns the new quantity.\"\"\"\n+        if amount <= 0:\n+            raise ValueError(\"amount must be positive\")\n+        item = self.get(sku)\n+        if amount > item.quantity:\n+            raise InsufficientStockError(\n+                f\"cannot remove {amount} of {sku!r}; only {item.quantity} on hand\"\n+            )\n+        item.quantity -= amount\n+        return item.quantity\n+\n+    def set_price(self, sku: str, price: float) -> None:\n+        if price < 0:\n+            raise ValueError(\"price must be non-negative\")\n+        self.get(sku).price = price\n+\n+    def remove_item(self, sku: str) -> Item:\n+        \"\"\"Delete an item entirely and return it.\"\"\"\n+        item = self.get(sku)\n+        del self._items[sku]\n+        return item\n+\n+    def low_stock(self, threshold: int) -> list[Item]:\n+        \"\"\"Items with quantity at or below threshold, sorted by SKU.\"\"\"\n+        return sorted(\n+            (i for i in self._items.values() if i.quantity <= threshold),\n+            key=lambda i: i.sku,\n+        )\n+\n+    def total_value(self) -> float:\n+        \"\"\"Sum of quantity * price across all items.\"\"\"\n+        return sum(i.quantity * i.price for i in self._items.values())\n+\n+    def items(self) -> list[Item]:\n+        \"\"\"All items sorted by SKU.\"\"\"\n+        return sorted(self._items.values(), key=lambda i: i.sku)\ndiff --git a/tests/test_inventory.py b/tests/test_inventory.py\nnew file mode 100644\nindex 0000000..d0dd27f\n--- /dev/null\n+++ b/tests/test_inventory.py\n@@ -0,0 +1,110 @@\n+import pytest\n+\n+from app.inventory import (\n+    Inventory,\n+    InsufficientStockError,\n+    Item,\n+    UnknownItemError,\n+)\n+\n+\n+@pytest.fixture\n+def inv() -> Inventory:\n+    i = Inventory()\n+    i.add_item(\"A-1\", \"Widget\", price=2.5, quantity=10)\n+    i.add_item(\"B-2\", \"Gadget\", price=10.0, quantity=1)\n+    return i\n+\n+\n+def test_add_item_and_get(inv):\n+    item = inv.get(\"A-1\")\n+    assert item == Item(sku=\"A-1\", name=\"Widget\", quantity=10, price=2.5)\n+    assert len(inv) == 2\n+    assert \"A-1\" in inv\n+\n+\n+def test_add_duplicate_sku_rejected(inv):\n+    with pytest.raises(ValueError):\n+        inv.add_item(\"A-1\", \"Other\")\n+\n+\n+def test_add_item_validates_fields():\n+    inv = Inventory()\n+    with pytest.raises(ValueError):\n+        inv.add_item(\"\", \"No SKU\")\n+    with pytest.raises(ValueError):\n+        inv.add_item(\"X\", \"Neg qty\", quantity=-1)\n+    with pytest.raises(ValueError):\n+        inv.add_item(\"X\", \"Neg price\", price=-0.01)\n+\n+\n+def test_get_unknown_raises(inv):\n+    with pytest.raises(UnknownItemError):\n+        inv.get(\"nope\")\n+    with pytest.raises(KeyError):\n+        inv.get(\"nope\")\n+\n+\n+def test_receive_increases_quantity(inv):\n+    assert inv.receive(\"A-1\", 5) == 15\n+    assert inv.get(\"A-1\").quantity == 15\n+\n+\n+def test_receive_rejects_non_positive(inv):\n+    with pytest.raises(ValueError):\n+        inv.receive(\"A-1\", 0)\n+    with pytest.raises(ValueError):\n+        inv.receive(\"A-1\", -3)\n+\n+\n+def test_remove_decreases_quantity(inv):\n+    assert inv.remove(\"A-1\", 4) == 6\n+    assert inv.get(\"A-1\").quantity == 6\n+\n+\n+def test_remove_more_than_on_hand_fails_and_leaves_stock(inv):\n+    with pytest.raises(InsufficientStockError):\n+        inv.remove(\"B-2\", 2)\n+    assert inv.get(\"B-2\").quantity == 1\n+\n+\n+def test_remove_rejects_non_positive(inv):\n+    with pytest.raises(ValueError):\n+        inv.remove(\"A-1\", 0)\n+\n+\n+def test_receive_unknown_sku_raises(inv):\n+    with pytest.raises(UnknownItemError):\n+        inv.receive(\"nope\", 1)\n+\n+\n+def test_set_price(inv):\n+    inv.set_price(\"A-1\", 3.0)\n+    assert inv.get(\"A-1\").price == 3.0\n+    with pytest.raises(ValueError):\n+        inv.set_price(\"A-1\", -1)\n+\n+\n+def test_remove_item(inv):\n+    removed = inv.remove_item(\"B-2\")\n+    assert removed.sku == \"B-2\"\n+    assert \"B-2\" not in inv\n+    assert len(inv) == 1\n+    with pytest.raises(UnknownItemError):\n+        inv.remove_item(\"B-2\")\n+\n+\n+def test_low_stock_sorted_and_inclusive(inv):\n+    inv.add_item(\"C-3\", \"Thing\", price=1.0, quantity=3)\n+    skus = [i.sku for i in inv.low_stock(3)]\n+    assert skus == [\"B-2\", \"C-3\"]\n+\n+\n+def test_total_value(inv):\n+    # 10 * 2.5 + 1 * 10.0\n+    assert inv.total_value() == pytest.approx(35.0)\n+    assert Inventory().total_value() == 0\n+\n+\n+def test_items_sorted_by_sku(inv):\n+    assert [i.sku for i in inv.items()] == [\"A-1\", \"B-2\"]",
+      "style_metrics": {
+        "pylint": 2,
+        "pylint_by_symbol": {
+          "line-too-long": 1,
+          "missing-class-docstring": 1
+        },
+        "public_defs": 14,
+        "documented": 11,
+        "public_funcs": 9,
+        "annotated": 9,
+        "long_functions": 0,
+        "prod_lines_added": 108
+      },
+      "quality": {
+        "functions": 13,
+        "max_complexity": 4,
+        "mean_complexity": 1.92,
+        "over_complexity": 0,
+        "max_length": 11,
+        "over_length": 0,
+        "max_params": 4,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 1,
+        "public_undocumented": 3,
+        "public_defs": 14,
+        "duplicated_windows": 0,
+        "lint": 0,
+        "prod_lines_added": 108,
+        "test_lines_added": 110,
+        "tests_added": 15,
+        "detail": [
+          {
+            "path": "app/inventory.py",
+            "name": "__post_init__",
+            "line": 27,
+            "complexity": 4,
+            "length": 7,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__init__",
+            "line": 39,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__len__",
+            "line": 42,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "__contains__",
+            "line": 45,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "add_item",
+            "line": 48,
+            "complexity": 2,
+            "length": 9,
+            "params": 4,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "get",
+            "line": 58,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "receive",
+            "line": 64,
+            "complexity": 2,
+            "length": 7,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "remove",
+            "line": 72,
+            "complexity": 3,
+            "length": 11,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "set_price",
+            "line": 84,
+            "complexity": 2,
+            "length": 4,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "remove_item",
+            "line": 89,
+            "complexity": 1,
+            "length": 5,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "low_stock",
+            "line": 95,
+            "complexity": 3,
+            "length": 6,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "total_value",
+            "line": 102,
+            "complexity": 2,
+            "length": 3,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/inventory.py",
+            "name": "items",
+            "line": 106,
+            "complexity": 1,
+            "length": 3,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          }
+        ]
+      },
+      "seconds": 60.7
+    },
+    {
+      "task": "vague_gradebook",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0066558699999999995,
+      "tokens": 147729,
+      "tools": {
+        "bash": 5,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 21,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 21,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/gradebook.py b/app/gradebook.py\nnew file mode 100644\nindex 0000000..825ad69\n--- /dev/null\n+++ b/app/gradebook.py\n@@ -0,0 +1,196 @@\n+\"\"\"A simple gradebook for teachers.\n+\n+Students are identified by a unique string id. Assignments have a maximum\n+point value and a weight. A student's overall percentage is the weighted\n+average of their earned/maximum ratios across the assignments they have been\n+graded on. Ungraded assignments are excluded from that calculation rather than\n+counted as zero, so a grade can be viewed mid-term.\n+\"\"\"\n+\n+from __future__ import annotations\n+\n+from dataclasses import dataclass, field\n+\n+# (minimum percentage, letter) pairs, checked in order.\n+DEFAULT_LETTER_SCALE: tuple[tuple[float, str], ...] = (\n+    (90.0, \"A\"),\n+    (80.0, \"B\"),\n+    (70.0, \"C\"),\n+    (60.0, \"D\"),\n+    (0.0, \"F\"),\n+)\n+\n+\n+class GradebookError(Exception):\n+    \"\"\"Base class for gradebook errors.\"\"\"\n+\n+\n+class DuplicateError(GradebookError):\n+    \"\"\"Raised when adding a student or assignment that already exists.\"\"\"\n+\n+\n+class NotFoundError(GradebookError):\n+    \"\"\"Raised when referring to an unknown student or assignment.\"\"\"\n+\n+\n+@dataclass(frozen=True)\n+class Assignment:\n+    name: str\n+    max_points: float\n+    weight: float = 1.0\n+\n+    def __post_init__(self) -> None:\n+        if not self.name or not self.name.strip():\n+            raise ValueError(\"assignment name must not be empty\")\n+        if self.max_points <= 0:\n+            raise ValueError(\"max_points must be positive\")\n+        if self.weight <= 0:\n+            raise ValueError(\"weight must be positive\")\n+\n+\n+@dataclass\n+class Student:\n+    student_id: str\n+    name: str\n+    # assignment name -> points earned\n+    scores: dict[str, float] = field(default_factory=dict)\n+\n+\n+class Gradebook:\n+    def __init__(\n+        self, letter_scale: tuple[tuple[float, str], ...] = DEFAULT_LETTER_SCALE\n+    ) -> None:\n+        self._letter_scale = tuple(\n+            sorted(letter_scale, key=lambda t: t[0], reverse=True)\n+        )\n+        self._students: dict[str, Student] = {}\n+        self._assignments: dict[str, Assignment] = {}\n+\n+    # --- roster and assignments -------------------------------------------\n+\n+    def add_student(self, student_id: str, name: str) -> None:\n+        if not student_id:\n+            raise ValueError(\"student_id must not be empty\")\n+        if student_id in self._students:\n+            raise DuplicateError(f\"student {student_id!r} already exists\")\n+        self._students[student_id] = Student(student_id, name)\n+\n+    def remove_student(self, student_id: str) -> None:\n+        self._get_student(student_id)\n+        del self._students[student_id]\n+\n+    def add_assignment(self, name: str, max_points: float, weight: float = 1.0) -> None:\n+        if name in self._assignments:\n+            raise DuplicateError(f\"assignment {name!r} already exists\")\n+        self._assignments[name] = Assignment(name, max_points, weight)\n+\n+    def students(self) -> list[Student]:\n+        return sorted(self._students.values(), key=lambda s: s.name.lower())\n+\n+    def assignments(self) -> list[Assignment]:\n+        return list(self._assignments.values())\n+\n+    # --- scores -------------------------------------------------------------\n+\n+    def record_score(\n+        self, student_id: str, assignment_name: str, points: float\n+    ) -> None:\n+        student = self._get_student(student_id)\n+        assignment = self._get_assignment(assignment_name)\n+        if points < 0:\n+            raise ValueError(\"points must not be negative\")\n+        if points > assignment.max_points:\n+            raise ValueError(\n+                f\"points {points} exceed maximum {assignment.max_points} for {assignment_name!r}\"\n+            )\n+        student.scores[assignment_name] = float(points)\n+\n+    def clear_score(self, student_id: str, assignment_name: str) -> None:\n+        student = self._get_student(student_id)\n+        self._get_assignment(assignment_name)\n+        student.scores.pop(assignment_name, None)\n+\n+    def get_score(self, student_id: str, assignment_name: str) -> float | None:\n+        student = self._get_student(student_id)\n+        self._get_assignment(assignment_name)\n+        return student.scores.get(assignment_name)\n+\n+    # --- calculations -------------------------------------------------------\n+\n+    def student_percentage(self, student_id: str) -> float | None:\n+        \"\"\"Weighted percentage over graded assignments, or None if none graded.\"\"\"\n+        student = self._get_student(student_id)\n+        total_weight = 0.0\n+        weighted_sum = 0.0\n+        for name, points in student.scores.items():\n+            assignment = self._assignments[name]\n+            total_weight += assignment.weight\n+            weighted_sum += assignment.weight * (points / assignment.max_points)\n+        if total_weight == 0:\n+            return None\n+        return 100.0 * weighted_sum / total_weight\n+\n+    def letter_grade(self, student_id: str) -> str | None:\n+        percentage = self.student_percentage(student_id)\n+        if percentage is None:\n+            return None\n+        return self.letter_for_percentage(percentage)\n+\n+    def letter_for_percentage(self, percentage: float) -> str:\n+        for cutoff, letter in self._letter_scale:\n+            if percentage >= cutoff:\n+                return letter\n+        return self._letter_scale[-1][1]\n+\n+    def assignment_average(self, assignment_name: str) -> float | None:\n+        \"\"\"Mean points earned on an assignment across graded students.\"\"\"\n+        self._get_assignment(assignment_name)\n+        values = [\n+            s.scores[assignment_name]\n+            for s in self._students.values()\n+            if assignment_name in s.scores\n+        ]\n+        if not values:\n+            return None\n+        return sum(values) / len(values)\n+\n+    def class_average(self) -> float | None:\n+        \"\"\"Mean percentage across students who have at least one grade.\"\"\"\n+        percentages = [\n+            p\n+            for sid in self._students\n+            if (p := self.student_percentage(sid)) is not None\n+        ]\n+        if not percentages:\n+            return None\n+        return sum(percentages) / len(percentages)\n+\n+    def report(self) -> list[dict[str, object]]:\n+        \"\"\"One row per student, sorted by name, suitable for display or export.\"\"\"\n+        rows = []\n+        for student in self.students():\n+            pct = self.student_percentage(student.student_id)\n+            rows.append(\n+                {\n+                    \"student_id\": student.student_id,\n+                    \"name\": student.name,\n+                    \"percentage\": None if pct is None else round(pct, 2),\n+                    \"letter\": None if pct is None else self.letter_for_percentage(pct),\n+                    \"graded\": len(student.scores),\n+                }\n+            )\n+        return rows\n+\n+    # --- lookups ------------------------------------------------------------\n+\n+    def _get_student(self, student_id: str) -> Student:\n+        try:\n+            return self._students[student_id]\n+        except KeyError:\n+            raise NotFoundError(f\"no student with id {student_id!r}\") from None\n+\n+    def _get_assignment(self, name: str) -> Assignment:\n+        try:\n+            return self._assignments[name]\n+        except KeyError:\n+            raise NotFoundError(f\"no assignment named {name!r}\") from None\ndiff --git a/tests/test_gradebook.py b/tests/test_gradebook.py\nnew file mode 100644\nindex 0000000..4a19ad4\n--- /dev/null\n+++ b/tests/test_gradebook.py\n@@ -0,0 +1,155 @@\n+import pytest\n+\n+from app.gradebook import (\n+    DuplicateError,\n+    Gradebook,\n+    NotFoundError,\n+)\n+\n+\n+@pytest.fixture\n+def book() -> Gradebook:\n+    gb = Gradebook()\n+    gb.add_student(\"s1\", \"Ada\")\n+    gb.add_student(\"s2\", \"Ben\")\n+    gb.add_assignment(\"quiz1\", 10)\n+    gb.add_assignment(\"exam\", 100, weight=3)\n+    return gb\n+\n+\n+def test_record_and_get_score(book):\n+    book.record_score(\"s1\", \"quiz1\", 8)\n+    assert book.get_score(\"s1\", \"quiz1\") == 8\n+    assert book.get_score(\"s2\", \"quiz1\") is None\n+\n+\n+def test_percentage_is_weighted(book):\n+    book.record_score(\"s1\", \"quiz1\", 10)  # 100% weight 1\n+    book.record_score(\"s1\", \"exam\", 70)  # 70% weight 3\n+    # (1*100 + 3*70) / 4 = 77.5\n+    assert book.student_percentage(\"s1\") == pytest.approx(77.5)\n+\n+\n+def test_ungraded_assignments_are_excluded(book):\n+    book.record_score(\"s1\", \"quiz1\", 5)\n+    assert book.student_percentage(\"s1\") == pytest.approx(50.0)\n+\n+\n+def test_no_grades_gives_none(book):\n+    assert book.student_percentage(\"s1\") is None\n+    assert book.letter_grade(\"s1\") is None\n+\n+\n+def test_letter_grade_boundaries(book):\n+    assert book.letter_for_percentage(90) == \"A\"\n+    assert book.letter_for_percentage(89.99) == \"B\"\n+    assert book.letter_for_percentage(80) == \"B\"\n+    assert book.letter_for_percentage(70) == \"C\"\n+    assert book.letter_for_percentage(60) == \"D\"\n+    assert book.letter_for_percentage(59.9) == \"F\"\n+    assert book.letter_for_percentage(0) == \"F\"\n+\n+\n+def test_letter_grade_for_student(book):\n+    book.record_score(\"s1\", \"quiz1\", 9)\n+    assert book.letter_grade(\"s1\") == \"A\"\n+\n+\n+def test_custom_letter_scale():\n+    gb = Gradebook(letter_scale=((50.0, \"pass\"), (0.0, \"fail\")))\n+    assert gb.letter_for_percentage(55) == \"pass\"\n+    assert gb.letter_for_percentage(49) == \"fail\"\n+\n+\n+def test_clear_score(book):\n+    book.record_score(\"s1\", \"quiz1\", 10)\n+    book.clear_score(\"s1\", \"quiz1\")\n+    assert book.get_score(\"s1\", \"quiz1\") is None\n+    assert book.student_percentage(\"s1\") is None\n+\n+\n+def test_assignment_average(book):\n+    book.record_score(\"s1\", \"quiz1\", 8)\n+    book.record_score(\"s2\", \"quiz1\", 6)\n+    assert book.assignment_average(\"quiz1\") == pytest.approx(7.0)\n+    assert book.assignment_average(\"exam\") is None\n+\n+\n+def test_class_average_skips_ungraded_students(book):\n+    book.add_student(\"s3\", \"Cy\")\n+    book.record_score(\"s1\", \"quiz1\", 10)  # 100%\n+    book.record_score(\"s2\", \"quiz1\", 5)  # 50%\n+    assert book.class_average() == pytest.approx(75.0)\n+\n+\n+def test_class_average_empty(book):\n+    assert book.class_average() is None\n+\n+\n+def test_report_sorted_by_name(book):\n+    book.record_score(\"s1\", \"quiz1\", 9)\n+    rows = book.report()\n+    assert [r[\"name\"] for r in rows] == [\"Ada\", \"Ben\"]\n+    assert rows[0] == {\n+        \"student_id\": \"s1\",\n+        \"name\": \"Ada\",\n+        \"percentage\": 90.0,\n+        \"letter\": \"A\",\n+        \"graded\": 1,\n+    }\n+    assert rows[1][\"percentage\"] is None\n+    assert rows[1][\"letter\"] is None\n+\n+\n+def test_students_sorted_case_insensitively():\n+    gb = Gradebook()\n+    gb.add_student(\"a\", \"zoe\")\n+    gb.add_student(\"b\", \"Adam\")\n+    assert [s.name for s in gb.students()] == [\"Adam\", \"zoe\"]\n+\n+\n+def test_remove_student(book):\n+    book.remove_student(\"s2\")\n+    assert [s.student_id for s in book.students()] == [\"s1\"]\n+    with pytest.raises(NotFoundError):\n+        book.remove_student(\"s2\")\n+\n+\n+def test_duplicate_student_rejected(book):\n+    with pytest.raises(DuplicateError):\n+        book.add_student(\"s1\", \"Other\")\n+\n+\n+def test_duplicate_assignment_rejected(book):\n+    with pytest.raises(DuplicateError):\n+        book.add_assignment(\"quiz1\", 5)\n+\n+\n+def test_unknown_student_or_assignment(book):\n+    with pytest.raises(NotFoundError):\n+        book.record_score(\"nope\", \"quiz1\", 1)\n+    with pytest.raises(NotFoundError):\n+        book.record_score(\"s1\", \"nope\", 1)\n+    with pytest.raises(NotFoundError):\n+        book.get_score(\"nope\", \"quiz1\")\n+\n+\n+@pytest.mark.parametrize(\"points\", [-1, 11])\n+def test_out_of_range_points_rejected(book, points):\n+    with pytest.raises(ValueError):\n+        book.record_score(\"s1\", \"quiz1\", points)\n+\n+\n+def test_invalid_assignment_definitions():\n+    gb = Gradebook()\n+    with pytest.raises(ValueError):\n+        gb.add_assignment(\"\", 10)\n+    with pytest.raises(ValueError):\n+        gb.add_assignment(\"x\", 0)\n+    with pyte",
+      "style_metrics": {
+        "pylint": 6,
+        "pylint_by_symbol": {
+          "line-too-long": 5,
+          "missing-class-docstring": 1
+        },
+        "public_defs": 20,
+        "documented": 7,
+        "public_funcs": 14,
+        "annotated": 14,
+        "long_functions": 0,
+        "prod_lines_added": 196
+      },
+      "quality": {
+        "functions": 18,
+        "max_complexity": 5,
+        "mean_complexity": 2.39,
+        "over_complexity": 0,
+        "max_length": 15,
+        "over_length": 0,
+        "max_params": 3,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 2,
+        "public_undocumented": 13,
+        "public_defs": 20,
+        "duplicated_windows": 0,
+        "lint": 0,
+        "prod_lines_added": 196,
+        "test_lines_added": 155,
+        "tests_added": 20,
+        "detail": [
+          {
+            "path": "app/gradebook.py",
+            "name": "__post_init__",
+            "line": 42,
+            "complexity": 5,
+            "length": 7,
+            "params": 0,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "__init__",
+            "line": 60,
+            "complexity": 1,
+            "length": 8,
+            "params": 1,
+            "nesting": 0,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_student",
+            "line": 71,
+            "complexity": 3,
+            "length": 6,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "remove_student",
+            "line": 78,
+            "complexity": 1,
+            "length": 3,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_assignment",
+            "line": 82,
+            "complexity": 2,
+            "length": 4,
+            "params": 3,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "students",
+            "line": 87,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "assignments",
+            "line": 90,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "record_score",
+            "line": 95,
+            "complexity": 3,
+            "length": 12,
+            "params": 3,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "clear_score",
+            "line": 108,
+            "complexity": 1,
+            "length": 4,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "get_score",
+            "line": 113,
+            "complexity": 1,
+            "length": 4,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "student_percentage",
+            "line": 120,
+            "complexity": 3,
+            "length": 12,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "letter_grade",
+            "line": 133,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "letter_for_percentage",
+            "line": 139,
+            "complexity": 3,
+            "length": 5,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "assignment_average",
+            "line": 145,
+            "complexity": 4,
+            "length": 11,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "class_average",
+            "line": 157,
+            "complexity": 4,
+            "length": 10,
+            "params": 0,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "report",
+            "line": 168,
+            "complexity": 4,
+            "length": 15,
+            "params": 0,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_get_student",
+            "line": 186,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_get_assignment",
+            "line": 192,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          }
+        ]
+      },
+      "seconds": 72.8
+    },
+    {
+      "task": "vague_gradebook",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.02120958,
+      "tokens": 709213,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "WATCHMAN done round 1/3 verdict=WARN gate=pass new=0 open=6 fixed=0\n= minor maintainability app/gradebook.py:59 (open since r1) New public `Student` has no docstring, unlike the rest of this module [check:quality]\n= minor maintainability app/gradebook.py:65 (open since r1) New public `Assignment` has no docstring, unlike the rest of this module [check:quality]\n= minor convention_violation app/gradebook.py:74 (open since r1) 6 added line(s) exceed 80 characters: 74, 148, 180, 196, 208 (+1 more) (Google Python Style Guide \u00a73.2) [check:google_style]\n= minor maintainability app/gradebook.py:208 (open since r1) Docstring of `Gradebook.category_percentage` has no `Args:` section (Google Python Style Guide \u00a73.8.3) [check:google_style]\n= minor maintainability app/gradebook.py:228 (open since r1) Docstring of `Gradebook.course_percentage` has no `Args:` section (Google Python Style Guide \u00a73.8.3) [check:google_style]\n= minor convention_violation tests/test_gradebook.py:135 (open since r1) 2 added line(s) exceed 80 characters: 135, 176 (Google Python Style Guide \u00a73.2) [check:google_style]",
+      "watchman": {
+        "reviews": 5,
+        "by_kind": {
+          "test_run": 3,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 8,
+        "cost_usd": 0.0475,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 6,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": [
+              "minor maintainability app/gradebook.py:59 New public `Student` has no docstring, unlike the rest of this module",
+              "minor maintainability app/gradebook.py:65 New public `Assignment` has no docstring, unlike the rest of this module",
+              "minor convention_violation app/gradebook.py:74 6 added line(s) exceed 80 characters: 74, 148, 180, 196, 208 (+1 more) (Google Python Style Guide \u00a73",
+              "minor maintainability app/gradebook.py:208 Docstring of `Gradebook.category_percentage` has no `Args:` section (Google Python Style Guide \u00a73.8.",
+              "minor maintainability app/gradebook.py:228 Docstring of `Gradebook.course_percentage` has no `Args:` section (Google Python Style Guide \u00a73.8.3)",
+              "minor convention_violation tests/test_gradebook.py:135 2 added line(s) exceed 80 characters: 135, 176 (Google Python Style Guide \u00a73.2)"
+            ]
+          },
+          {
+            "kind": "commit",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 6,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": []
+          },
+          {
+            "kind": "done",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 6,
+            "fixed": 0,
+            "gate": "pass",
+            "shown": []
+          },
+          {
+            "kind": "test_run",
+            "round": 2,
+            "verdict": "warn",
+            "new": 1,
+            "open": 1,
+            "fixed": 5,
+            "gate": "pass",
+            "shown": [
+              "minor convention_violation app/gradebook.py:78 6 added line(s) exceed 80 characters: 78, 152, 184, 200, 212 (+1 more) (Google Python Style Guide \u00a73"
+            ]
+          },
+          {
+            "kind": "test_run",
+            "round": 3,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 2,
+            "gate": "released",
+            "shown": [
+              "minor convention_violation app/gradebook.py:152 5 added line(s) exceed 80 characters: 152, 184, 200, 212, 300 (Google Python Style Guide \u00a73.2)"
+            ]
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 43,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 43,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {},
+        "correct": true,
+        "clean": true,
+        "strong_tests": null
+      },
+      "final_diff": "diff --git a/app/gradebook.py b/app/gradebook.py\nnew file mode 100644\nindex 0000000..5f5bf6b\n--- /dev/null\n+++ b/app/gradebook.py\n@@ -0,0 +1,311 @@\n+\"\"\"Gradebook module for tracking student scores and computing course grades.\n+\n+Typical usage::\n+\n+    gb = Gradebook()\n+    gb.add_student(\"s1\", \"Ada Lovelace\")\n+    gb.add_assignment(\"hw1\", \"Homework 1\", max_points=10, category=\"homework\")\n+    gb.add_assignment(\"final\", \"Final Exam\", max_points=100, category=\"exam\")\n+    gb.set_category_weight(\"homework\", 0.4)\n+    gb.set_category_weight(\"exam\", 0.6)\n+    gb.record_score(\"s1\", \"hw1\", 9)\n+    gb.record_score(\"s1\", \"final\", 85)\n+    gb.course_percentage(\"s1\")  # 0.4*90 + 0.6*85 = 87.0\n+    gb.letter_grade(\"s1\")       # \"B+\"\n+\"\"\"\n+\n+from __future__ import annotations\n+\n+from dataclasses import dataclass, field\n+from typing import Dict, Optional\n+\n+DEFAULT_CATEGORY = \"general\"\n+\n+# (minimum percentage, letter) pairs, checked from highest to lowest.\n+DEFAULT_GRADE_SCALE: tuple[tuple[float, str], ...] = (\n+    (97.0, \"A+\"),\n+    (93.0, \"A\"),\n+    (90.0, \"A-\"),\n+    (87.0, \"B+\"),\n+    (83.0, \"B\"),\n+    (80.0, \"B-\"),\n+    (77.0, \"C+\"),\n+    (73.0, \"C\"),\n+    (70.0, \"C-\"),\n+    (67.0, \"D+\"),\n+    (63.0, \"D\"),\n+    (60.0, \"D-\"),\n+    (0.0, \"F\"),\n+)\n+\n+\n+class GradebookError(Exception):\n+    \"\"\"Base error for gradebook operations.\"\"\"\n+\n+\n+class DuplicateError(GradebookError):\n+    \"\"\"Raised when adding a student or assignment whose ID already exists.\"\"\"\n+\n+\n+class NotFoundError(GradebookError):\n+    \"\"\"Raised when referring to an unknown student or assignment.\"\"\"\n+\n+\n+class ValidationError(GradebookError):\n+    \"\"\"Raised when input values are invalid.\"\"\"\n+\n+\n+@dataclass\n+class Student:\n+    \"\"\"A student enrolled in the gradebook.\"\"\"\n+\n+    student_id: str\n+    name: str\n+\n+\n+@dataclass\n+class Assignment:\n+    \"\"\"A gradable item with a maximum point value and a category.\"\"\"\n+\n+    assignment_id: str\n+    name: str\n+    max_points: float\n+    category: str = DEFAULT_CATEGORY\n+\n+\n+@dataclass\n+class Gradebook:\n+    \"\"\"In-memory gradebook of students, assignments, scores, and weights.\"\"\"\n+\n+    _students: Dict[str, Student] = field(default_factory=dict)\n+    _assignments: Dict[str, Assignment] = field(default_factory=dict)\n+    # student_id -> assignment_id -> points earned\n+    _scores: Dict[str, Dict[str, float]] = field(default_factory=dict)\n+    # category -> weight (fraction of final grade). Categories without a\n+    # weight are treated as equally sharing any remaining weight.\n+    _category_weights: Dict[str, float] = field(default_factory=dict)\n+\n+    # ----- students -------------------------------------------------------\n+\n+    def add_student(self, student_id: str, name: str) -> Student:\n+        if not student_id:\n+            raise ValidationError(\"student_id must be non-empty\")\n+        if not name or not name.strip():\n+            raise ValidationError(\"name must be non-empty\")\n+        if student_id in self._students:\n+            raise DuplicateError(f\"student {student_id!r} already exists\")\n+        student = Student(student_id, name.strip())\n+        self._students[student_id] = student\n+        self._scores[student_id] = {}\n+        return student\n+\n+    def remove_student(self, student_id: str) -> None:\n+        self._require_student(student_id)\n+        del self._students[student_id]\n+        del self._scores[student_id]\n+\n+    def get_student(self, student_id: str) -> Student:\n+        return self._require_student(student_id)\n+\n+    def students(self) -> list[Student]:\n+        return sorted(self._students.values(), key=lambda s: s.name.lower())\n+\n+    # ----- assignments ----------------------------------------------------\n+\n+    def add_assignment(\n+        self,\n+        assignment_id: str,\n+        name: str,\n+        max_points: float,\n+        category: str = DEFAULT_CATEGORY,\n+    ) -> Assignment:\n+        if not assignment_id:\n+            raise ValidationError(\"assignment_id must be non-empty\")\n+        if not name or not name.strip():\n+            raise ValidationError(\"name must be non-empty\")\n+        if max_points <= 0:\n+            raise ValidationError(\"max_points must be positive\")\n+        if not category:\n+            raise ValidationError(\"category must be non-empty\")\n+        if assignment_id in self._assignments:\n+            raise DuplicateError(f\"assignment {assignment_id!r} already exists\")\n+        assignment = Assignment(\n+            assignment_id, name.strip(), float(max_points), category\n+        )\n+        self._assignments[assignment_id] = assignment\n+        return assignment\n+\n+    def remove_assignment(self, assignment_id: str) -> None:\n+        self._require_assignment(assignment_id)\n+        del self._assignments[assignment_id]\n+        for scores in self._scores.values():\n+            scores.pop(assignment_id, None)\n+\n+    def get_assignment(self, assignment_id: str) -> Assignment:\n+        return self._require_assignment(assignment_id)\n+\n+    def assignments(self) -> list[Assignment]:\n+        return list(self._assignments.values())\n+\n+    # ----- scores ---------------------------------------------------------\n+\n+    def record_score(self, student_id: str, assignment_id: str, points: float) -> None:\n+        \"\"\"Record (or overwrite) a student's points on an assignment.\"\"\"\n+        self._require_student(student_id)\n+        assignment = self._require_assignment(assignment_id)\n+        if points < 0:\n+            raise ValidationError(\"points must be non-negative\")\n+        if points > assignment.max_points:\n+            raise ValidationError(\n+                f\"points {points} exceed max_points {assignment.max_points} \"\n+                f\"for {assignment_id!r}\"\n+            )\n+        self._scores[student_id][assignment_id] = float(points)\n+\n+    def clear_score(self, student_id: str, assignment_id: str) -> None:\n+        self._require_student(student_id)\n+        self._require_assignment(assignment_id)\n+        self._scores[student_id].pop(assignment_id, None)\n+\n+    def get_score(self, student_id: str, assignment_id: str) -> Optional[float]:\n+        \"\"\"Return points earned, or None if no score has been recorded.\"\"\"\n+        self._require_student(student_id)\n+        self._require_assignment(assignment_id)\n+        return self._scores[student_id].get(assignment_id)\n+\n+    # ----- category weights -----------------------------------------------\n+\n+    def set_category_weight(self, category: str, weight: float) -> None:\n+        \"\"\"Set a category's share of the final grade as a fraction in [0, 1].\"\"\"\n+        if not category:\n+            raise ValidationError(\"category must be non-empty\")\n+        if not 0 <= weight <= 1:\n+            raise ValidationError(\"weight must be between 0 and 1\")\n+        total = sum(w for c, w in self._category_weights.items() if c != category)\n+        if total + weight > 1 + 1e-9:\n+            raise ValidationError(\"category weights would exceed 1.0\")\n+        self._category_weights[category] = float(weight)\n+\n+    def category_weights(self) -> Dict[str, float]:\n+        \"\"\"Return the effective weight of every category currently in use.\n+\n+        Explicitly weighted categories keep their weight. Any remaining\n+        categories (used by assignments but without an explicit weight)\n+        split the leftover weight equally. If no categories are weighted,\n+        all categories are weighted equally.\n+        \"\"\"\n+        used = {a.category for a in self._assignments.values()}\n+        if not used:\n+            return {}\n+        explicit = {c: w for c, w in self._category_weights.items() if c in used}\n+        unweighted = sorted(used - explicit.keys())\n+        leftover = max(0.0, 1.0 - sum(explicit.values()))\n+        result = dict(explicit)\n+        if unweighted:\n+            share = leftover / len(unweighted)\n+            for c in unweighted:\n+                result[c] = share\n+        return result\n+\n+    # ----- grade computation ----------------------------------------------\n+\n+    def category_percentage(self, student_id: str, category: str) -> Optional[float]:\n+        \"\"\"Points earned / points possible within one category, as a percentage.\n+\n+        Only graded assignments count. Returns None if nothing in the category\n+        has been graded for this student.\n+\n+        Args:\n+            student_id: ID of the student to compute for.\n+            category: Category name to restrict the calculation to.\n+\n+        Returns:\n+            The percentage in [0, 100], or None if no work is graded.\n+\n+        Raises:\n+            NotFoundError: If the student does not exist.\n+        \"\"\"\n+        self._require_student(student_id)\n+        earned = possible = 0.0\n+        for a in self._assignments.values():\n+            if a.category != category:\n+                continue\n+            score = self._scores[student_id].get(a.assignment_id)\n+            if score is None:\n+                continue\n+            earned += score\n+            possible += a.max_points\n+        if possible == 0:\n+            return None\n+        return earned / possible * 100.0\n+\n+    def course_percentage(self, student_id: str) -> Optional[float]:\n+        \"\"\"Weighted course percentage across categories with grades.\n+\n+        Categories with no graded work are excluded and the remaining weights\n+        are renormalized. Returns None if the student has no graded work.\n+\n+        Args:\n+            student_id: ID of the student to compute for.\n+\n+        Returns:\n+            The weighted percentage, or None if no work is graded.\n+\n+        Raises:\n+            NotFoundError: If the student does not exist.\n+        \"\"\"\n+        self._require_student(student_id)\n+        weights = self.category_weights()\n+        parts: list[tuple[float, float]] = []\n+        for category, weight in weights.items():\n+            pct = self.category_percentage(student_id, category)\n+            if pct is not None:\n+                parts.append((weight, pct))\n+        total_weight = sum(w for w, _ in parts)\n+        if total_weight == 0:\n+            return None\n+        return sum(w * p for w, p in parts) / total_weight\n+\n+    def letter_grade(\n+        self,\n+        student_id: str,\n+        scale: tuple[tuple[float, str], ...] = DEFAULT_GRADE_SCALE,\n+    ) -> Optional[str]:\n+        pct = self.course_percentage(student_id)\n+        if pct is None:\n+            return None\n+        return letter_for_percentage(pct, scale)\n+\n+    def report(self) -> list[tuple[str, str, Optional[float], Optional[str]]]:\n+        \"\"\"Return (student_id, name, percentage, letter) rows sorted by name.\"\"\"\n+        rows = []\n+        for s in self.students():\n+            pct = self.course_percentage(s.student_id)\n+            letter = letter_for_percentage(pct) if pct is not None else None\n+            rows.append((s.student_id, s.name, pct, letter))\n+        return rows\n+\n+    # ----- helpers --------------------------------------------------------\n+\n+    def _require_student(self, student_id: str) -> Student:\n+        try:\n+            return self._students[student_id]\n+        except KeyError:\n+            raise NotFoundError(f\"unknown student {student_id!r}\") from None\n+\n+    def _require_assignment(self, assignment_id: str) -> Assignment:\n+        try:\n+            return self._assignments[assignment_id]\n+        except KeyError:\n+            raise NotFoundError(f\"unknown assignment {assignment_id!r}\") from None\n+\n+\n+def letter_for_percentage(\n+    percentage: float,\n+    scale: tuple[tuple[float, str], ...] = DEFAULT_GRADE_SCALE,\n+) -> str:\n+    \"\"\"Map a percentage to a letter grade using a (threshold, letter) scale.\"\"\"\n+    for threshold, letter in scale:\n+        if percentage >= threshold:\n+            return letter\n+    return scale[-1][1]\ndiff --git a/tests/test_gradebook.py b/tests/test_gradebook.py\nnew file mode 100644\nindex 0000000..3200313\n--- /dev/null\n+++ b/tests/test_gradebook.py\n@@ -0,0 +1,241 @@\n+import pytest\n+\n+from app.gradebook im",
+      "style_metrics": {
+        "pylint": 5,
+        "pylint_by_symbol": {
+          "line-too-long": 5
+        },
+        "public_defs": 25,
+        "documented": 15,
+        "public_funcs": 18,
+        "annotated": 18,
+        "long_functions": 0,
+        "prod_lines_added": 311
+      },
+      "quality": {
+        "functions": 20,
+        "max_complexity": 7,
+        "mean_complexity": 3.0,
+        "over_complexity": 0,
+        "max_length": 29,
+        "over_length": 0,
+        "max_params": 4,
+        "over_params": 0,
+        "over_nesting": 0,
+        "breaches": 0,
+        "max_nesting": 2,
+        "public_undocumented": 10,
+        "public_defs": 25,
+        "duplicated_windows": 0,
+        "lint": 13,
+        "prod_lines_added": 311,
+        "test_lines_added": 241,
+        "tests_added": 31,
+        "detail": [
+          {
+            "path": "app/gradebook.py",
+            "name": "letter_for_percentage",
+            "line": 303,
+            "complexity": 3,
+            "length": 9,
+            "params": 2,
+            "nesting": 2,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_student",
+            "line": 90,
+            "complexity": 5,
+            "length": 11,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "remove_student",
+            "line": 102,
+            "complexity": 1,
+            "length": 4,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "get_student",
+            "line": 107,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "students",
+            "line": 110,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "add_assignment",
+            "line": 115,
+            "complexity": 7,
+            "length": 22,
+            "params": 4,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "remove_assignment",
+            "line": 138,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "get_assignment",
+            "line": 144,
+            "complexity": 1,
+            "length": 2,
+            "params": 1,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "assignments",
+            "line": 147,
+            "complexity": 1,
+            "length": 2,
+            "params": 0,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "record_score",
+            "line": 152,
+            "complexity": 3,
+            "length": 12,
+            "params": 3,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "clear_score",
+            "line": 165,
+            "complexity": 1,
+            "length": 4,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "get_score",
+            "line": 170,
+            "complexity": 1,
+            "length": 5,
+            "params": 2,
+            "nesting": 0,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "set_category_weight",
+            "line": 178,
+            "complexity": 6,
+            "length": 10,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "category_weights",
+            "line": 189,
+            "complexity": 7,
+            "length": 20,
+            "params": 0,
+            "nesting": 2,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "category_percentage",
+            "line": 212,
+            "complexity": 5,
+            "length": 29,
+            "params": 2,
+            "nesting": 2,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "course_percentage",
+            "line": 242,
+            "complexity": 6,
+            "length": 26,
+            "params": 1,
+            "nesting": 2,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "letter_grade",
+            "line": 269,
+            "complexity": 2,
+            "length": 9,
+            "params": 2,
+            "nesting": 1,
+            "public": true,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "report",
+            "line": 279,
+            "complexity": 3,
+            "length": 8,
+            "params": 0,
+            "nesting": 1,
+            "public": true,
+            "documented": true
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_require_student",
+            "line": 290,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          },
+          {
+            "path": "app/gradebook.py",
+            "name": "_require_assignment",
+            "line": 296,
+            "complexity": 2,
+            "length": 5,
+            "params": 1,
+            "nesting": 1,
+            "public": false,
+            "documented": false
+          }
+        ]
+      },
+      "seconds": 217.1
     }
   ]
 }
