@@ -16,7 +16,7 @@ evidence, and findings that can't be grounded are dropped.
 > [design writeup](docs/WRITEUP.md).
 
 **See it in 60 seconds:** `asciinema play demo/watchman.cast` (a 50 second recording), or run
-`demo/demo.sh` yourself. It builds a throwaway project, has an "AI agent" add a hallucinated
+`bash demo/demo.sh` yourself. It builds a throwaway project, has an "AI agent" add a hallucinated
 import, a leaked token, a bare `except`, and a skipped test, and shows Watchman catching them
 and a pre-push hook rejecting the push. The deterministic part needs no API key.
 
@@ -375,7 +375,7 @@ Known biases:
 
 ```bash
 uv run python -m evals.harness run --dataset seeded-v1 --mode agent --model anthropic/claude-haiku-5.5 --jobs 6
-evals/ablation.sh            # the full dev-split ablation used for the results below
+bash evals/ablation.sh       # the full dev-split ablation used for the results below
 uv run python -m evals.tune policies   # replay post-processing policies on dev runs (free)
 make results                 # regenerates evals/results/RESULTS.md
 ```

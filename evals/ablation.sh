@@ -7,7 +7,7 @@
 #   Model tiers: Haiku 5.5 on the full dev split; GPT-5 on a 40-item stratified sample;
 #                Opus 4.6 on a 20-item sample (a subset of the 40).
 #
-# Usage: evals/ablation.sh [haiku|tiers|all]   (default: all)
+# Usage: bash evals/ablation.sh [haiku|tiers|all]   (default: all)
 # Needs docker access (run under `sg docker -c` if your login predates the docker group).
 set -euo pipefail
 cd "$(dirname "$0")/.."

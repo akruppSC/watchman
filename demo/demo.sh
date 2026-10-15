@@ -3,8 +3,8 @@
 # catching the usual problems: first the free deterministic checks, then the LLM reviewer
 # (needs OPENROUTER_API_KEY; skipped if absent), then the pre-push hook blocking a push.
 #
-#   demo/demo.sh                       # run it
-#   uvx asciinema rec -c demo/demo.sh  # record it
+#   bash demo/demo.sh                          # run it
+#   uvx asciinema rec -c 'bash demo/demo.sh'   # record it
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="$(mktemp -d)"

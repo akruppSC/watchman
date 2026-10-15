@@ -8,7 +8,7 @@
 #             scores primary-only / overseer-when-risky / overseer-always from the same
 #             primary review (paired, and no extra primary cost).
 #
-# Usage: evals/overseer_eval.sh <flash|overseer> [primary-model]
+# Usage: bash evals/overseer_eval.sh <flash|overseer> [primary-model]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 STAGE="${1:?stage: flash | overseer}"
