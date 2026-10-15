@@ -55,10 +55,11 @@ def render_plugin(
     round_cap: int,
     done: bool = True,
     python: str | None = None,
+    command: list[str] | None = None,
     timeout_s: int = 900,
 ) -> str:
     config: dict[str, Any] = {
-        "cmd": watchman_command(python),
+        "cmd": command or watchman_command(python),
         "repo": str(repo),
         "policy": policy.value,
         "round_cap": round_cap,
