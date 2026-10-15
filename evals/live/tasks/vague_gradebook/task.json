@@ -1,0 +1,11 @@
+{
+  "id": "vague_gradebook",
+  "title": "Gradebook",
+  "prompt": "Make a gradebook module that teachers could use, in the `app` package. Include tests. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "maintainability"
+  ],
+  "probes": [],
+  "mutant_target": null,
+  "suite": "vague"
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Key-value command interpreter",
+  "pitfalls": [
+    "maintainability"
+  ],
+  "probes": [],
+  "mutant_target": null,
+  "prompt": "Add `execute(line, store)` in a new module `app/commands.py`. `line` is a command string whose words are separated by whitespace, and `store` is a dict that the commands read and change. `execute` returns a string. Raise `CommandError` (already in `app/errors.py`) for every error. Command names are case-insensitive. Commands:\n- `set KEY VALUE...` stores the remaining words joined by single spaces; returns \"OK\".\n- `get KEY` returns the value; a missing key is an error.\n- `del KEY` removes the key and returns \"1\", or returns \"0\" if it did not exist.\n- `exists KEY` returns \"1\" or \"0\".\n- `incr KEY [N]` and `decr KEY [N]` add or subtract N (default 1) to the integer stored at KEY (a missing key counts as 0) and return the new value; a stored value or N that is not an integer is an error.\n- `append KEY TEXT...` appends the remaining words joined by single spaces to the value (a missing key counts as an empty string) and returns the new length.\n- `rename OLD NEW` moves a value; OLD must exist and NEW must not exist; returns \"OK\".\n- `swap A B` exchanges the values of two existing keys; returns \"OK\".\n- `keys [PREFIX]` returns the matching keys sorted and joined by single spaces, or \"(empty)\" if there are none.\n- `count` returns the number of keys; `clear` removes all keys and returns \"OK\".\nErrors and their exact messages: an empty line -> \"empty command\"; an unknown command -> \"unknown command: NAME\" (NAME as typed); the wrong number of arguments -> \"wrong number of arguments for NAME\" (NAME lowercase); a missing key -> \"no such key: KEY\"; a stored value or N that is not an integer -> \"not an integer: X\" (X is the offending text); renaming onto an existing key -> \"key exists: NEW\".\nAdd tests in `tests/test_commands.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "id": "command_interpreter",
+  "suite": "quality"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "vague_inventory",
+  "title": "Inventory tracker",
+  "prompt": "Build a small inventory tracker for a shop in the `app` package. Include tests. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "maintainability"
+  ],
+  "probes": [],
+  "mutant_target": null,
+  "suite": "vague"
+}

@@ -29,6 +29,7 @@ from typing import Annotated, Any
 import typer
 
 from evals.live.evaluate import Task, evaluate, load_tasks
+from evals.quality import measure
 from watchman_review.config import LivePolicy, load_config, save_user_config
 from watchman_review.live import opencode
 from watchman_review.live.snapshot import snapshot_commit
@@ -141,7 +142,11 @@ def watchman_state(workdir: Path) -> dict[str, Any]:
         "findings_shown": sum(h["new"] for h in history),
         "cost_usd": round(sum(h["cost_usd"] for h in history), 4),
         "history": [
-            {k: h[k] for k in ("kind", "round", "verdict", "new", "open", "fixed", "gate")}
+            {
+                k: h[k]
+                for k in ("kind", "round", "verdict", "new", "open", "fixed", "gate", "shown")
+                if k in h
+            }
             for h in history
         ],
     }
@@ -211,7 +216,12 @@ def execute(
     rec["watchman"] = watchman_state(workdir) if arm == "watchman" else {}
     rec["evaluation"] = evaluate(task, workdir, base, python)
     snap = snapshot_commit(workdir)
-    rec["final_diff"] = sh(["git", "diff", base, snap], workdir)[:12000]
+    full_diff = sh(["git", "diff", base, snap], workdir)
+    rec["final_diff"] = full_diff[:12000]
+    try:  # measured on the full diff against the worker's final tree
+        rec["quality"] = measure(workdir, full_diff).as_dict()
+    except Exception as e:  # noqa: BLE001 - a metrics failure must not lose the run
+        rec["quality"] = {"error": f"{type(e).__name__}: {e}"}
     rec["seconds"] = round(time.monotonic() - start, 1)
     spend.add(rec["worker_cost"], rec["watchman"].get("cost_usd", 0.0))
     if sid:

@@ -25,6 +25,7 @@ class Category(StrEnum):
     CONVENTION_VIOLATION = "convention_violation"
     COMMENT_NOISE = "comment_noise"
     CORRECTNESS = "correctness"
+    MAINTAINABILITY = "maintainability"  # deterministic only: see checks/quality.py
     OTHER = "other"
 
 

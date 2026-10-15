@@ -33,6 +33,7 @@ class Task:
     probes: list[str]
     mutant_target: str | None
     post_hoc: bool = False  # added after seeing results; flagged in the report
+    suite: str = "pitfalls"  # "pitfalls" (defects) or "quality" (maintainability)
     dir: Path = field(default=Path("."))
 
     @property
@@ -56,7 +57,12 @@ def load_tasks(only: set[str] | None = None) -> list[Task]:
             continue
         keys = ("id", "title", "prompt", "pitfalls", "probes", "mutant_target")
         out.append(
-            Task(dir=p.parent, post_hoc=bool(data.get("post_hoc")), **{k: data[k] for k in keys})
+            Task(
+                dir=p.parent,
+                post_hoc=bool(data.get("post_hoc")),
+                suite=data.get("suite", "pitfalls"),
+                **{k: data[k] for k in keys},
+            )
         )
     return out
 
@@ -87,13 +93,17 @@ def _copy_tree(src: Path, dst: Path) -> None:
 
 
 def evaluate(task: Task, workdir: Path, base_sha: str, python: str) -> dict[str, object]:
-    # spec: hidden acceptance tests, run against a copy so nothing leaks into the worker's repo
-    with tempfile.TemporaryDirectory(prefix="wm-eval-") as tmp:
-        spec_dir = Path(tmp) / "repo"
-        _copy_tree(workdir, spec_dir)
-        (spec_dir / "_hidden").mkdir()
-        shutil.copy(task.hidden / "test_spec.py", spec_dir / "_hidden" / "test_spec.py")
-        spec = pytest_counts(python, spec_dir, "_hidden")
+    spec_file = task.hidden / "test_spec.py"
+    spec: dict[str, int]
+    if spec_file.is_file():  # hidden acceptance tests, run on a copy so nothing leaks
+        with tempfile.TemporaryDirectory(prefix="wm-eval-") as tmp:
+            spec_dir = Path(tmp) / "repo"
+            _copy_tree(workdir, spec_dir)
+            (spec_dir / "_hidden").mkdir()
+            shutil.copy(spec_file, spec_dir / "_hidden" / "test_spec.py")
+            spec = pytest_counts(python, spec_dir, "_hidden")
+    else:  # open-ended task: the only check is that the worker's own tests exist and pass
+        spec = pytest_counts(python, workdir, "tests")
     visible = pytest_counts(python, workdir, "tests")
     probes = {p: run_probe(p, workdir, base_sha) for p in task.probes}
 

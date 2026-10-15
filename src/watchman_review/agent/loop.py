@@ -41,10 +41,14 @@ caller, a risky change you couldn't verify), list it under `escalations` (at mos
 each with the file, lines, and a concrete question). A senior reviewer may look at it.
 Don't escalate things you can check yourself."""
 
+# The agent doesn't emit `maintainability`; only the deterministic quality check does, so the
+# model's tool schema (and with it every cached request) stays what it was.
+AGENT_CATEGORIES = [c.value for c in Category if c is not Category.MAINTAINABILITY]
+
 FINDING_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
-        "category": {"type": "string", "enum": [c.value for c in Category]},
+        "category": {"type": "string", "enum": AGENT_CATEGORIES},
         "severity": {"type": "string", "enum": [s.value for s in Severity]},
         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
         "file": {"type": ["string", "null"]},

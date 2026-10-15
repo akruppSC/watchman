@@ -250,6 +250,11 @@ def check(
                 fixed=len(fixed),
                 cost_usd=fb.cost_usd,
                 gate=fb.gate,
+                shown=[
+                    f"{f.severity.value} {f.category.value} "
+                    f"{f.file or '(change)'}:{f.line_start} {f.summary[:100]}"
+                    for _, f in new_items
+                ],
             )
         )
         return done(fb)

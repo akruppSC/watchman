@@ -114,6 +114,7 @@ class ReviewConfig(BaseModel):
             "imports",
             "hygiene",
             "scope",
+            "quality",
             "ruff",
             "mypy",
             "pytest",
@@ -193,7 +194,10 @@ class LiveConfig(BaseModel):
     round_cap: int = Field(default=3, ge=1, le=10)  # review/fix rounds per checkpoint kind
     # Layer 1 checks that are cheap enough to run on every test run; the worker just ran the tests.
     test_run_checks: list[str] = Field(
-        default_factory=lambda: ["secrets", "imports", "hygiene", "scope", "ruff", "mypy"]
+        default_factory=lambda: [
+            *("secrets", "imports", "hygiene", "scope", "quality"),
+            *("ruff", "mypy"),
+        ]
     )
     test_run_mode: ReviewMode = ReviewMode.DETERMINISTIC
     commit_mode: ReviewMode = ReviewMode.AGENT

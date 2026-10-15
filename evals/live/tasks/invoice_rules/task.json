@@ -1,0 +1,11 @@
+{
+  "title": "Invoice validation rules",
+  "pitfalls": [
+    "maintainability"
+  ],
+  "probes": [],
+  "mutant_target": null,
+  "prompt": "Add `validate_invoice(invoice)` in a new module `app/invoices.py`. `invoice` is a dict. It returns a list of error strings (an empty list means valid), collecting every error in the order of the rules below, and never raises for bad data. Rules:\n1. `id` missing or blank -> \"missing id\".\n2. `customer` missing or blank -> \"missing customer\".\n3. `currency` not one of \"USD\", \"EUR\", \"GBP\" -> \"unsupported currency\".\n4. `issued` missing or not an ISO date (YYYY-MM-DD, a real calendar date) -> \"bad issue date\".\n5. `due` missing or not an ISO date -> \"bad due date\".\n6. If both dates are valid and `due` is before `issued` -> \"due before issued\".\n7. `lines` missing or empty -> \"no lines\".\n8. For each line (a dict), numbered from 1, in this order: missing or blank `sku` -> \"line N: missing sku\"; `qty` not a positive int (bools do not count) -> \"line N: bad quantity\"; `price` not a number (bools do not count) or negative -> \"line N: bad price\".\n9. Each sku that appears on more than one line is reported once, when its second occurrence is seen -> \"duplicate sku: SKU\" (these come after all the per-line errors, in the order of those second occurrences). Lines with a missing sku are ignored here.\n10. `tax_rate`, if present, must be a number from 0 to 0.5 inclusive -> otherwise \"bad tax rate\".\n11. `total`, if present, must equal round(sum(qty * price) * (1 + tax_rate), 2), where a missing tax_rate counts as 0; only check this when every line is valid and there is no tax rate error -> otherwise \"total mismatch\".\n12. `notes`, if present, longer than 500 characters -> \"notes too long\".\nAdd tests in `tests/test_invoices.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "id": "invoice_rules",
+  "suite": "quality"
+}

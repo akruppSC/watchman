@@ -1,0 +1,11 @@
+{
+  "title": "Shipping cost rules",
+  "pitfalls": [
+    "maintainability"
+  ],
+  "probes": [],
+  "mutant_target": null,
+  "prompt": "Add `shipping_cost(order)` in a new module `app/shipping.py`. `order` is a dict with keys `country` (str), `weight_kg` (float), `subtotal` (float), and optional booleans `express`, `fragile`, `hazmat`, `remote`, and an optional `tier` (\"silver\" or \"gold\"). It returns the shipping price in dollars, rounded to 2 decimals. Rules:\n1. Zone: country \"US\" is domestic; \"DE\", \"FR\", \"ES\", \"IT\", \"NL\" are eu; any other country is intl.\n2. Base price by weight (kg) and zone: up to 0.5 / up to 2 / up to 5 / up to 20 -> domestic 4, 7, 12, 25; eu 9, 15, 24, 48; intl 14, 24, 40, 80. A weight of 0 or less raises ValueError(\"invalid weight\"); over 20 raises ValueError(\"too heavy\").\n3. Hazmat: not allowed for intl (raise ValueError(\"hazmat not allowed\")); for domestic and eu add 15.\n4. Express adds 50% of the base price (100% for intl).\n5. Fragile adds 5.\n6. Remote adds 8 for domestic and eu; it is ignored for intl.\n7. Free shipping: for a domestic order that is not express and has subtotal of 100 or more, the base price is 0 (surcharges still apply).\n8. Tier discount on the total after all surcharges: silver 5% off, gold 10% off.\n9. If the final total is above 0 but below 3, it becomes 3. Round the result to 2 decimals.\nAdd tests in `tests/test_shipping.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "id": "shipping_cost",
+  "suite": "quality"
+}

@@ -6,6 +6,7 @@ from watchman_review.checks.base import Check, CheckContext, run_check
 from watchman_review.checks.hygiene import HygieneCheck
 from watchman_review.checks.imports import ImportsCheck
 from watchman_review.checks.mypy_check import MypyCheck
+from watchman_review.checks.quality import QualityCheck
 from watchman_review.checks.ruff_check import RuffCheck
 from watchman_review.checks.scope import ScopeCheck
 from watchman_review.checks.secrets import SecretsCheck
@@ -22,6 +23,7 @@ REGISTRY: dict[str, type[Check]] = {
         ImportsCheck,
         ScopeCheck,
         HygieneCheck,
+        QualityCheck,
     )
 }
 

@@ -1,0 +1,2627 @@
+{
+  "run_id": "20261015T185314-seeded-v1-dev-deterministic",
+  "started_at": "2026-10-15T18:53:14.869173+00:00",
+  "dataset": "seeded-v1",
+  "dataset_sha256": "20d39a15e85955cb07f21c90c3e0e568a3067e20d2b0a7af4fb58d184e754705",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "2908d8b-dirty",
+  "review_config": {
+    "checks": [
+      "quality"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-broaden-except-278d3a5b",
+      "score": {
+        "item_id": "attrs-broaden-except-278d3a5b",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.372,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.189,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.372,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-flip-comparison-c2824ac3",
+      "score": {
+        "item_id": "attrs-flip-comparison-c2824ac3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.453,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.356,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.453,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-negate-condition-028797bd",
+      "score": {
+        "item_id": "attrs-negate-condition-028797bd",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.404,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.201,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.404,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-negate-condition-20c2d4fc",
+      "score": {
+        "item_id": "attrs-negate-condition-20c2d4fc",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "a3f03397769a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.448,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a3f03397769a",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 661,
+            "line_end": 661,
+            "summary": "`_ClassBuilder.__init__` has 66 lines long (limit 60)",
+            "evidence": "src/attr/_make.py:661 `_ClassBuilder.__init__`: length = 66, over the limit of 60; this function grew from 58 in this change.",
+            "suggested_fix": "extract coherent blocks into named helper functions",
+            "source": "deterministic",
+            "rule": "quality:length",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.364,
+            "findings": [
+              {
+                "id": "a3f03397769a",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 661,
+                "line_end": 661,
+                "summary": "`_ClassBuilder.__init__` has 66 lines long (limit 60)",
+                "evidence": "src/attr/_make.py:661 `_ClassBuilder.__init__`: length = 66, over the limit of 60; this function grew from 58 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.448,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-negate-condition-7b02220b",
+      "score": {
+        "item_id": "attrs-negate-condition-7b02220b",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "d7cb42e14345",
+          "55eb08ea136c",
+          "004c9a65a8ad"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.123,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "d7cb42e14345",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_funcs.py",
+            "line_start": 117,
+            "line_end": 117,
+            "summary": "`_asdict_anything` has 71 lines long (limit 60)",
+            "evidence": "src/attr/_funcs.py:117 `_asdict_anything`: length = 71, over the limit of 60; this function grew from 53 in this change. Also reported by: quality:params.",
+            "suggested_fix": "extract coherent blocks into named helper functions",
+            "source": "deterministic",
+            "rule": "quality:length",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "55eb08ea136c",
+            "category": "duplication",
+            "severity": "minor",
+            "confidence": 0.7999999999999999,
+            "file": "src/attr/_funcs.py",
+            "line_start": 164,
+            "line_end": 169,
+            "summary": "Copy of existing code at src/attr/_funcs.py:92",
+            "evidence": "src/attr/_funcs.py:164-169 added 6+ lines that already exist at src/attr/_funcs.py:92.",
+            "suggested_fix": "reuse or extract the existing code, don't copy it",
+            "source": "deterministic",
+            "rule": "quality:duplicate",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "004c9a65a8ad",
+            "category": "duplication",
+            "severity": "minor",
+            "confidence": 0.7999999999999999,
+            "file": "src/attr/_funcs.py",
+            "line_start": 172,
+            "line_end": 177,
+            "summary": "Copy of existing code at src/attr/_funcs.py:100",
+            "evidence": "src/attr/_funcs.py:172-177 added 6+ lines that already exist at src/attr/_funcs.py:100.",
+            "suggested_fix": "reuse or extract the existing code, don't copy it",
+            "source": "deterministic",
+            "rule": "quality:duplicate",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "4 maintainability issue(s) introduced by this change",
+            "duration_s": 0.062,
+            "findings": [
+              {
+                "id": "d7cb42e14345",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_funcs.py",
+                "line_start": 117,
+                "line_end": 117,
+                "summary": "`_asdict_anything` has 71 lines long (limit 60)",
+                "evidence": "src/attr/_funcs.py:117 `_asdict_anything`: length = 71, over the limit of 60; this function grew from 53 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "4454795f7695",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_funcs.py",
+                "line_start": 117,
+                "line_end": 117,
+                "summary": "`_asdict_anything` has 6 parameters (limit 5)",
+                "evidence": "src/attr/_funcs.py:117 `_asdict_anything`: params = 6, over the limit of 5; this function grew from 5 in this change.",
+                "suggested_fix": "group related parameters into a small dataclass, or split the function",
+                "source": "deterministic",
+                "rule": "quality:params",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "55eb08ea136c",
+                "category": "duplication",
+                "severity": "minor",
+                "confidence": 0.7999999999999999,
+                "file": "src/attr/_funcs.py",
+                "line_start": 164,
+                "line_end": 169,
+                "summary": "Copy of existing code at src/attr/_funcs.py:92",
+                "evidence": "src/attr/_funcs.py:164-169 added 6+ lines that already exist at src/attr/_funcs.py:92.",
+                "suggested_fix": "reuse or extract the existing code, don't copy it",
+                "source": "deterministic",
+                "rule": "quality:duplicate",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "004c9a65a8ad",
+                "category": "duplication",
+                "severity": "minor",
+                "confidence": 0.7999999999999999,
+                "file": "src/attr/_funcs.py",
+                "line_start": 172,
+                "line_end": 177,
+                "summary": "Copy of existing code at src/attr/_funcs.py:100",
+                "evidence": "src/attr/_funcs.py:172-177 added 6+ lines that already exist at src/attr/_funcs.py:100.",
+                "suggested_fix": "reuse or extract the existing code, don't copy it",
+                "source": "deterministic",
+                "rule": "quality:duplicate",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.123,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-prompt-injection-cbaef3f8",
+      "score": {
+        "item_id": "attrs-prompt-injection-cbaef3f8",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.27,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.182,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.27,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-raise-to-return-e84b57ea",
+      "score": {
+        "item_id": "attrs-raise-to-return-e84b57ea",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.126,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.043,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.126,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-swallow-exception-1e07f468",
+      "score": {
+        "item_id": "attrs-swallow-exception-1e07f468",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "cb5d74295d76"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.338,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "cb5d74295d76",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 2919,
+            "line_end": 2919,
+            "summary": "`pipe` has cyclomatic complexity 13 (limit 10)",
+            "evidence": "src/attr/_make.py:2919 `pipe`: complexity = 13, over the limit of 10; this function grew from 8 in this change. Also reported by: quality:length.",
+            "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+            "source": "deterministic",
+            "rule": "quality:complexity",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "2 maintainability issue(s) introduced by this change",
+            "duration_s": 0.263,
+            "findings": [
+              {
+                "id": "cb5d74295d76",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 2919,
+                "line_end": 2919,
+                "summary": "`pipe` has cyclomatic complexity 13 (limit 10)",
+                "evidence": "src/attr/_make.py:2919 `pipe`: complexity = 13, over the limit of 10; this function grew from 8 in this change.",
+                "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+                "source": "deterministic",
+                "rule": "quality:complexity",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "08278dd3adab",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 2919,
+                "line_end": 2919,
+                "summary": "`pipe` has 61 lines long (limit 60)",
+                "evidence": "src/attr/_make.py:2919 `pipe`: length = 61, over the limit of 60; this function grew from 42 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.338,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-weaken-test-4fcd15bd",
+      "score": {
+        "item_id": "attrs-weaken-test-4fcd15bd",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.303,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.236,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.303,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-weaken-test-862696af",
+      "score": {
+        "item_id": "attrs-weaken-test-862696af",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.518,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.436,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.518,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-weaken-test-efcbae51",
+      "score": {
+        "item_id": "attrs-weaken-test-efcbae51",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.496,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.414,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.496,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-weaken-test-f870beb8",
+      "score": {
+        "item_id": "attrs-weaken-test-f870beb8",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "2c9ab8113fcd"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.492,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2c9ab8113fcd",
+            "category": "duplication",
+            "severity": "minor",
+            "confidence": 0.7999999999999999,
+            "file": "src/attr/validators.py",
+            "line_start": 632,
+            "line_end": 637,
+            "summary": "Copy of existing code at src/attr/validators.py:130",
+            "evidence": "src/attr/validators.py:632-637 added 6+ lines that already exist at src/attr/validators.py:130.",
+            "suggested_fix": "reuse or extract the existing code, don't copy it",
+            "source": "deterministic",
+            "rule": "quality:duplicate",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.391,
+            "findings": [
+              {
+                "id": "2c9ab8113fcd",
+                "category": "duplication",
+                "severity": "minor",
+                "confidence": 0.7999999999999999,
+                "file": "src/attr/validators.py",
+                "line_start": 632,
+                "line_end": 637,
+                "summary": "Copy of existing code at src/attr/validators.py:130",
+                "evidence": "src/attr/validators.py:632-637 added 6+ lines that already exist at src/attr/validators.py:130.",
+                "suggested_fix": "reuse or extract the existing code, don't copy it",
+                "source": "deterministic",
+                "rule": "quality:duplicate",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.492,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-weaken-test-fe6eb312",
+      "score": {
+        "item_id": "attrs-weaken-test-fe6eb312",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.186,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.088,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.186,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-broaden-except-a6256bfb",
+      "score": {
+        "item_id": "click-broaden-except-a6256bfb",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.457,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.38,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.457,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-change-default-6de21215",
+      "score": {
+        "item_id": "click-change-default-6de21215",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.591,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.525,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.591,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-comment-noise-becbde5c",
+      "score": {
+        "item_id": "click-comment-noise-becbde5c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.58,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.509,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.58,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-duplicate-helper-6d64ca5d",
+      "score": {
+        "item_id": "click-duplicate-helper-6d64ca5d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.574,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.446,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.574,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-hallucinated-package-0b7a9acc",
+      "score": {
+        "item_id": "click-hallucinated-package-0b7a9acc",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.824,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.731,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.824,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-hallucinated-package-9835b0f7",
+      "score": {
+        "item_id": "click-hallucinated-package-9835b0f7",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.781,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.664,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.781,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-hallucinated-stdlib-attr-74e7f707",
+      "score": {
+        "item_id": "click-hallucinated-stdlib-attr-74e7f707",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.818,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.742,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.818,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-prompt-injection-1b524bb3",
+      "score": {
+        "item_id": "click-prompt-injection-1b524bb3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.809,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.707,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.809,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-swallow-exception-721c8b0d",
+      "score": {
+        "item_id": "click-swallow-exception-721c8b0d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.587,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.539,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.587,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-swallow-exception-986f322e",
+      "score": {
+        "item_id": "click-swallow-exception-986f322e",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.542,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.45,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.542,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-swallow-exception-c7c21790",
+      "score": {
+        "item_id": "click-swallow-exception-c7c21790",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "e584cd92092a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.467,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e584cd92092a",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/types.py",
+            "line_start": 830,
+            "line_end": 830,
+            "summary": "`Path.convert` has 5 levels of nesting (limit 4)",
+            "evidence": "src/click/types.py:830 `Path.convert`: nesting = 5, over the limit of 4; this function grew from 3 in this change.",
+            "suggested_fix": "use early returns/continue (guard clauses) or extract the inner block into a helper",
+            "source": "deterministic",
+            "rule": "quality:nesting",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.402,
+            "findings": [
+              {
+                "id": "e584cd92092a",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/types.py",
+                "line_start": 830,
+                "line_end": 830,
+                "summary": "`Path.convert` has 5 levels of nesting (limit 4)",
+                "evidence": "src/click/types.py:830 `Path.convert`: nesting = 5, over the limit of 4; this function grew from 3 in this change.",
+                "suggested_fix": "use early returns/continue (guard clauses) or extract the inner block into a helper",
+                "source": "deterministic",
+                "rule": "quality:nesting",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.467,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-broaden-except-760af43b",
+      "score": {
+        "item_id": "httpx-broaden-except-760af43b",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.456,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.301,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.456,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-comment-noise-2d9c3580",
+      "score": {
+        "item_id": "httpx-comment-noise-2d9c3580",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.519,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.441,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.519,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-comment-noise-966550b3",
+      "score": {
+        "item_id": "httpx-comment-noise-966550b3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.53,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.457,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.53,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-duplicate-helper-1526048c",
+      "score": {
+        "item_id": "httpx-duplicate-helper-1526048c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 4,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "02e9a29e99dd",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "164ac1ca2245",
+          "ea57500355b5",
+          "3ee0d9f1492f"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.517,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "02e9a29e99dd",
+            "category": "duplication",
+            "severity": "minor",
+            "confidence": 0.7999999999999999,
+            "file": "httpx/_models.py",
+            "line_start": 60,
+            "line_end": 65,
+            "summary": "Copy of existing code at httpx/_multipart.py:29",
+            "evidence": "httpx/_models.py:60-65 added 6+ lines that already exist at httpx/_multipart.py:29.",
+            "suggested_fix": "reuse or extract the existing code, don't copy it",
+            "source": "deterministic",
+            "rule": "quality:duplicate",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "164ac1ca2245",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_models.py",
+            "line_start": 320,
+            "line_end": 320,
+            "summary": "`Request.__init__` has 62 lines long (limit 60)",
+            "evidence": "httpx/_models.py:320 `Request.__init__`: length = 62, over the limit of 60; this function grew from 51 in this change.",
+            "suggested_fix": "extract coherent blocks into named helper functions",
+            "source": "deterministic",
+            "rule": "quality:length",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "ea57500355b5",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_multipart.py",
+            "line_start": 23,
+            "line_end": 23,
+            "summary": "New public `get_multipart_boundary_from_content_type` has no docstring, unlike the rest of this module",
+            "evidence": "httpx/_multipart.py:23: 100% of the module's other public definitions (3) have docstrings; this one doesn't.",
+            "suggested_fix": "add a short docstring in the same style as its neighbours",
+            "source": "deterministic",
+            "rule": "quality:docstring",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3ee0d9f1492f",
+            "category": "duplication",
+            "severity": "minor",
+            "confidence": 0.7999999999999999,
+            "file": "httpx/_multipart.py",
+            "line_start": 29,
+            "line_end": 34,
+            "summary": "Copy of existing code at httpx/_models.py:60",
+            "evidence": "httpx/_multipart.py:29-34 added 6+ lines that already exist at httpx/_models.py:60.",
+            "suggested_fix": "reuse or extract the existing code, don't copy it",
+            "source": "deterministic",
+            "rule": "quality:duplicate",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "4 maintainability issue(s) introduced by this change",
+            "duration_s": 0.442,
+            "findings": [
+              {
+                "id": "164ac1ca2245",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_models.py",
+                "line_start": 320,
+                "line_end": 320,
+                "summary": "`Request.__init__` has 62 lines long (limit 60)",
+                "evidence": "httpx/_models.py:320 `Request.__init__`: length = 62, over the limit of 60; this function grew from 51 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "ea57500355b5",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_multipart.py",
+                "line_start": 23,
+                "line_end": 23,
+                "summary": "New public `get_multipart_boundary_from_content_type` has no docstring, unlike the rest of this module",
+                "evidence": "httpx/_multipart.py:23: 100% of the module's other public definitions (3) have docstrings; this one doesn't.",
+                "suggested_fix": "add a short docstring in the same style as its neighbours",
+                "source": "deterministic",
+                "rule": "quality:docstring",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "02e9a29e99dd",
+                "category": "duplication",
+                "severity": "minor",
+                "confidence": 0.7999999999999999,
+                "file": "httpx/_models.py",
+                "line_start": 60,
+                "line_end": 65,
+                "summary": "Copy of existing code at httpx/_multipart.py:29",
+                "evidence": "httpx/_models.py:60-65 added 6+ lines that already exist at httpx/_multipart.py:29.",
+                "suggested_fix": "reuse or extract the existing code, don't copy it",
+                "source": "deterministic",
+                "rule": "quality:duplicate",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "3ee0d9f1492f",
+                "category": "duplication",
+                "severity": "minor",
+                "confidence": 0.7999999999999999,
+                "file": "httpx/_multipart.py",
+                "line_start": 29,
+                "line_end": 34,
+                "summary": "Copy of existing code at httpx/_models.py:60",
+                "evidence": "httpx/_multipart.py:29-34 added 6+ lines that already exist at httpx/_models.py:60.",
+                "suggested_fix": "reuse or extract the existing code, don't copy it",
+                "source": "deterministic",
+                "rule": "quality:duplicate",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.517,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-hallucinated-package-a6af45ed",
+      "score": {
+        "item_id": "httpx-hallucinated-package-a6af45ed",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.485,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.371,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.485,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-raise-to-return-83a85189",
+      "score": {
+        "item_id": "httpx-raise-to-return-83a85189",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.47,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.295,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.47,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-raise-to-return-ce7e14da",
+      "score": {
+        "item_id": "httpx-raise-to-return-ce7e14da",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.394,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.221,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.394,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-scope-creep-rename-37593c19",
+      "score": {
+        "item_id": "httpx-scope-creep-rename-37593c19",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.467,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.309,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.467,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-change-default-4ffef76e",
+      "score": {
+        "item_id": "more-itertools-change-default-4ffef76e",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.429,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.363,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.429,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-change-default-ae1e0ab3",
+      "score": {
+        "item_id": "more-itertools-change-default-ae1e0ab3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "9381db6a4aba"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.549,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "9381db6a4aba",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 588,
+            "line_end": 588,
+            "summary": "New public `raise_` has no docstring, unlike the rest of this module",
+            "evidence": "more_itertools/more.py:588: 98% of the module's other public definitions (89) have docstrings; this one doesn't.",
+            "suggested_fix": "add a short docstring in the same style as its neighbours",
+            "source": "deterministic",
+            "rule": "quality:docstring",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.37,
+            "findings": [
+              {
+                "id": "9381db6a4aba",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 588,
+                "line_end": 588,
+                "summary": "New public `raise_` has no docstring, unlike the rest of this module",
+                "evidence": "more_itertools/more.py:588: 98% of the module's other public definitions (89) have docstrings; this one doesn't.",
+                "suggested_fix": "add a short docstring in the same style as its neighbours",
+                "source": "deterministic",
+                "rule": "quality:docstring",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.549,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-duplicate-helper-d49571b4",
+      "score": {
+        "item_id": "more-itertools-duplicate-helper-d49571b4",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.862,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.694,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.862,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-duplicate-helper-d63a26e5",
+      "score": {
+        "item_id": "more-itertools-duplicate-helper-d63a26e5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.872,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.749,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.872,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-flip-comparison-1859a5cd",
+      "score": {
+        "item_id": "more-itertools-flip-comparison-1859a5cd",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.864,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.435,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.864,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-flip-comparison-fc5773f4",
+      "score": {
+        "item_id": "more-itertools-flip-comparison-fc5773f4",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.637,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.469,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.637,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-hallucinated-stdlib-attr-257f250f",
+      "score": {
+        "item_id": "more-itertools-hallucinated-stdlib-attr-257f250f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.706,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.594,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.706,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-scope-creep-rename-2be4c2b8",
+      "score": {
+        "item_id": "more-itertools-scope-creep-rename-2be4c2b8",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.761,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.518,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.761,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-scope-creep-rename-6f775551",
+      "score": {
+        "item_id": "more-itertools-scope-creep-rename-6f775551",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.714,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.672,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.714,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

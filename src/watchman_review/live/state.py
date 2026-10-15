@@ -57,6 +57,7 @@ class HistoryEntry(BaseModel):
     cost_usd: float
     gate: str
     note: str = ""
+    shown: list[str] = Field(default_factory=list)  # new findings, as the worker saw them
 
 
 class SessionState(BaseModel):
