@@ -1,0 +1,14 @@
+{
+  "title": "Optional error callback for fetch_all",
+  "prompt": "Add an optional `on_error` parameter to `fetch_all` in `app/fetch.py`. If it is given and `fetch(url)` raises, call `on_error(url, exc)` and carry on with the next URL; the failed URL is left out of the results. If `on_error` is not given, behavior must stay exactly as it is today. Add tests in `tests/test_fetch.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "silent_behavior_change",
+    "swallowed_error",
+    "weak_test"
+  ],
+  "probes": [
+    "swallowed:app/fetch.py"
+  ],
+  "mutant_target": "app/fetch.py",
+  "id": "fetch_on_error"
+}

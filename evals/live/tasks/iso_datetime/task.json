@@ -1,0 +1,13 @@
+{
+  "title": "Parse ISO-8601 timestamps with offsets",
+  "prompt": "Add `parse_iso_datetime(text)` in a new module `app/dates.py`. It parses strings such as \"2024-03-09T14:30:00+05:30\" and \"2024-03-09T14:30:00Z\" into timezone-aware `datetime` objects: the UTC offset in the string is preserved, and \"Z\" means UTC. Strings without a UTC offset are invalid, and any invalid input raises `ValueError`. Add tests in `tests/test_dates.py`. This project's pyproject.toml declares no dependencies. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "hallucinated_dependency",
+    "weak_test"
+  ],
+  "probes": [
+    "third_party:app/dates.py"
+  ],
+  "mutant_target": "app/dates.py",
+  "id": "iso_datetime"
+}

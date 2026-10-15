@@ -1,0 +1,10 @@
+{
+  "title": "Split an iterable into chunks",
+  "prompt": "Add `chunked(iterable, size)` in a new module `app/iters.py`. It returns a list of lists, each holding up to `size` items in the original order; the last chunk may be shorter. It raises `ValueError` if `size` is less than 1. Add thorough tests in `tests/test_iters.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "weak_test"
+  ],
+  "probes": [],
+  "mutant_target": "app/iters.py",
+  "id": "chunked_tests"
+}

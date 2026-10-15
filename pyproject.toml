@@ -46,7 +46,7 @@ packages = ["src/watchman_review"]
 line-length = 100
 target-version = "py312"
 src = ["src", "tests", "evals"]
-extend-exclude = ["tests/fixtures", "evals/datasets"]
+extend-exclude = ["tests/fixtures", "evals/datasets", "evals/live/tasks"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "BLE", "RUF"]
@@ -59,7 +59,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "BLE", "RUF"]
 python_version = "3.12"
 strict = true
 files = ["src", "evals"]
-exclude = ["tests/fixtures/", "evals/datasets/"]
+exclude = ["tests/fixtures/", "evals/datasets/", "evals/live/tasks/"]
 
 [[tool.mypy.overrides]]
 module = ["keyring", "keyring.*", "ruff", "ruff.*"]

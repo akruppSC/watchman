@@ -1,0 +1,14 @@
+{
+  "title": "Load a JSON config file",
+  "prompt": "Add `load_config(path)` in a new module `app/config.py`. It reads a JSON file and returns the parsed dict. If the file is missing, cannot be read, is not valid JSON, or does not contain a JSON object, it must raise `ConfigError` (from `app/errors.py`) with a message that includes the path. Add tests in `tests/test_config.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "swallowed_error",
+    "weak_test"
+  ],
+  "probes": [
+    "broad_except:app/config.py",
+    "swallowed:app/config.py"
+  ],
+  "mutant_target": "app/config.py",
+  "id": "config_loader"
+}

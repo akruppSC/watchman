@@ -1,0 +1,11 @@
+{
+  "title": "Article URL slug",
+  "prompt": "Give the `Article` dataclass in `app/models.py` a `url_slug` property that returns a URL-friendly slug of its title, for example \"H\u00e9llo, World!\" becomes \"hello-world\". Add a test in `tests/test_models.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "duplication",
+    "weak_test"
+  ],
+  "probes": [],
+  "mutant_target": "app/models.py",
+  "id": "reuse_helper"
+}

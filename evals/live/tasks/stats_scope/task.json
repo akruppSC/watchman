@@ -1,0 +1,13 @@
+{
+  "title": "Fix mean() on empty input",
+  "prompt": "`mean([])` in `app/stats.py` currently crashes with a ZeroDivisionError. Make it raise `ValueError(\"mean of empty data\")` instead. Add a test in `tests/test_stats.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "scope_creep",
+    "weak_test"
+  ],
+  "probes": [
+    "scope:app/stats.py:mean"
+  ],
+  "mutant_target": "app/stats.py",
+  "id": "stats_scope"
+}

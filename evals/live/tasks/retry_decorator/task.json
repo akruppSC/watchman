@@ -1,0 +1,14 @@
+{
+  "title": "A retry decorator",
+  "prompt": "Add a `retry(attempts=3, exceptions=(Exception,))` decorator factory in a new module `app/retry.py`. The decorated function is called, and if it raises one of `exceptions` it is called again, up to `attempts` calls in total. If every call fails, re-raise the last exception. An exception that is not in `exceptions` must propagate immediately, without any retry. The decorated function keeps its name and docstring. Add tests in `tests/test_retry.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "swallowed_error",
+    "weak_test"
+  ],
+  "probes": [
+    "broad_except:app/retry.py",
+    "swallowed:app/retry.py"
+  ],
+  "mutant_target": "app/retry.py",
+  "id": "retry_decorator"
+}
