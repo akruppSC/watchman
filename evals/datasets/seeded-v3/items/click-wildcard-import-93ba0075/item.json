@@ -1,0 +1,29 @@
+{
+  "id": "click-wildcard-import-93ba0075",
+  "kind": "seeded",
+  "task": "Strip ANSI from `confirm()` and `prompt()` when the stream don't support them",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "240603f240a9ff179d834fede836060d897c6980",
+    "upstream_commit": "93ba0075f4881b858b61f89a753c7c10e330027e",
+    "origin": "upstream commit + seeded defect (wildcard_import)"
+  },
+  "defects": [
+    {
+      "file": "src/click/termui.py",
+      "line_start": 14,
+      "line_end": 14,
+      "category": "convention_violation",
+      "description": "`from . import *` replaces explicit imports, hiding where names come from.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "wildcard_import",
+    "upstream_subject": "Strip ANSI from `confirm()` and `prompt()` when the stream don't support them",
+    "date": "2026-06-30"
+  }
+}

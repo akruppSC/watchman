@@ -1,0 +1,170 @@
+diff --git a/CHANGES.md b/CHANGES.md
+index 7bdf90595cac8a299c03e3e155729b1459ae9a04..c23c7e30b768554e148fab42c0cd518a2cffe28c 100644
+--- a/CHANGES.md
++++ b/CHANGES.md
+@@ -11,6 +11,8 @@ Unreleased
+   returns `None` for hidden options, so help screens are unchanged. {pr}`3821`
+ - Document which types are inferred from `default`, and what an unrecognized
+   `type` callable does to a command-line value. {issue}`3036` {pr}`3808`
++- `path_type` narrows the converted value's type for `convert` and `prompt`.
++  {issue}`3822` {pr}`3858`
+ 
+ ## Version 8.5.0
+ 
+diff --git a/src/click/types.py b/src/click/types.py
+index 0eb84621d3ceb92e240f1523e2e58d5951335633..a19f46fa74872b385a304493a25252d1b3a063f6 100644
+--- a/src/click/types.py
++++ b/src/click/types.py
+@@ -45,6 +45,17 @@ else:
+ _FloatValueT = t.TypeVar("_FloatValueT", bound=float)
+ _FloatValueT_co = t.TypeVar("_FloatValueT_co", bound=float, covariant=True)
+ 
++if t.TYPE_CHECKING:
++    _PathT_co = te.TypeVar(
++        "_PathT_co", covariant=True, default="str | bytes | os.PathLike[str]"
++    )
++elif sys.version_info >= (3, 13):
++    _PathT_co = t.TypeVar(
++        "_PathT_co", covariant=True, default=str | bytes | os.PathLike[str]
++    )
++else:
++    _PathT_co = t.TypeVar("_PathT_co", covariant=True)
++
+ 
+ class ParamTypeInfoDict(t.TypedDict):
+     param_type: str
+@@ -1045,7 +1056,7 @@ class PathInfoDict(ParamTypeInfoDict):
+     allow_dash: bool
+ 
+ 
+-class Path(ParamType[str | bytes | os.PathLike[str]]):
++class Path(ParamType[_PathT_co, str | os.PathLike[str]], t.Generic[_PathT_co]):
+     """The ``Path`` type is similar to the :class:`File` type, but
+     returns the filename instead of an open file. Various checks can be
+     enabled to validate the type of file and permissions.
+@@ -1068,6 +1079,9 @@ class Path(ParamType[str | bytes | os.PathLike[str]]):
+         ``None``, keep Python's default, which is ``str``. Useful to
+         convert to :class:`pathlib.Path`.
+ 
++    .. versionchanged:: 8.5.1
++        Reveal the actual type of the value as converted from raw input.
++
+     .. versionchanged:: 8.1
+         Added the ``executable`` parameter.
+ 
+@@ -1099,7 +1113,7 @@ class Path(ParamType[str | bytes | os.PathLike[str]]):
+         readable: bool = True,
+         resolve_path: bool = False,
+         allow_dash: bool = False,
+-        path_type: type | None = None,
++        path_type: type[_PathT_co] | None = None,
+         executable: bool = False,
+     ) -> None:
+         self.exists = exists
+@@ -1110,7 +1124,7 @@ class Path(ParamType[str | bytes | os.PathLike[str]]):
+         self.executable = executable
+         self.resolve_path = resolve_path
+         self.allow_dash = allow_dash
+-        self.type: type | None = path_type
++        self.type: type[_PathT_co] | None = path_type
+ 
+         if self.file_okay and not self.dir_okay:
+             self.name = _("file")
+@@ -1130,25 +1144,26 @@ class Path(ParamType[str | bytes | os.PathLike[str]]):
+             **super().to_info_dict(),
+         }
+ 
+-    def coerce_path_result(
+-        self, value: str | os.PathLike[str]
+-    ) -> str | bytes | os.PathLike[str]:
+-        if self.type is not None and not isinstance(value, self.type):
+-            if self.type is str:
+-                return os.fsdecode(value)
+-            elif self.type is bytes:
+-                return os.fsencode(value)
++    def coerce_path_result(self, value: str | os.PathLike[str], *, verbose=None) -> _PathT_co:
++        path_type: type[t.Any] | None = self.type
++        rv: t.Any = value
++
++        if path_type is not None and not isinstance(value, path_type):
++            if path_type is str:
++                rv = os.fsdecode(value)
++            elif path_type is bytes:
++                rv = os.fsencode(value)
+             else:
+-                return t.cast("os.PathLike[str]", self.type(value))
++                rv = path_type(value)
+ 
+-        return value
++        return t.cast("_PathT_co", rv)
+ 
+     def convert(
+         self,
+         value: str | os.PathLike[str],
+         param: Parameter | None,
+         ctx: Context | None,
+-    ) -> str | bytes | os.PathLike[str]:
++    ) -> _PathT_co:
+         rv = value
+ 
+         dash = b"-" if isinstance(rv, bytes) else "-"
+diff --git a/tests/test_types/test_Path.py b/tests/test_types/test_Path.py
+index 7461cde8a7cc7df721c8c84bd0d620421d567fa8..09df7bcc4e3152083c0817ed8dfba85a88587be1 100644
+--- a/tests/test_types/test_Path.py
++++ b/tests/test_types/test_Path.py
+@@ -4,6 +4,7 @@ import platform
+ import subprocess
+ import sys
+ import tempfile
++import typing as t
+ 
+ import pytest
+ 
+@@ -183,3 +184,7 @@ def test_path_type(runner, cls, expect):
+     result = runner.invoke(cli, ["a/b/c.txt"], standalone_mode=False)
+     assert result.exception is None
+     assert result.return_value == expect
++
++
++def test_path_converted_type_parameter_at_runtime():
++    assert t.get_args(click.Path[pathlib.Path]) == (pathlib.Path,)
+diff --git a/tests/typing/typing_path.py b/tests/typing/typing_path.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f12a5d9b05d342b49d3dcb3790dd4cc035e761c1
+--- /dev/null
++++ b/tests/typing/typing_path.py
+@@ -0,0 +1,34 @@
++import os
++import pathlib
++
++from typing_extensions import assert_type
++
++import click
++
++# Without ``path_type``, ``convert`` returns the value it was given.
++assert_type(click.Path().convert("a/b.txt", None, None), str | bytes | os.PathLike[str])
++assert_type(click.prompt("File", type=click.Path()), str | bytes | os.PathLike[str])
++
++# ``path_type`` narrows the converted value's type for ``convert`` and ``prompt``.
++assert_type(click.Path(path_type=str).convert("a/b.txt", None, None), str)
++assert_type(click.Path(path_type=bytes).convert("a/b.txt", None, None), bytes)
++assert_type(
++    click.Path(path_type=pathlib.Path).convert("a/b.txt", None, None), pathlib.Path
++)
++assert_type(click.prompt("File", type=click.Path(path_type=str)), str)
++assert_type(click.prompt("File", type=click.Path(path_type=pathlib.Path)), pathlib.Path)
++
++assert_type(click.Path(path_type=pathlib.Path)("a/b.txt"), pathlib.Path)
++assert_type(click.Path(path_type=pathlib.Path)(None), None)
++
++# The class can be parameterized explicitly.
++param_type: click.Path[pathlib.Path] = click.Path(exists=True, path_type=pathlib.Path)
++assert_type(param_type.convert("a/b.txt", None, None), pathlib.Path)
++assert_type(param_type.coerce_path_result("a/b.txt"), pathlib.Path)
++
++general: click.ParamType[str | bytes | os.PathLike[str]] = click.Path()
++specific: click.ParamType[pathlib.Path] = click.Path(path_type=pathlib.Path)
++
++assert_type(
++    click.Path(path_type=pathlib.Path)(pathlib.PurePosixPath("a/b.txt")), pathlib.Path
++)

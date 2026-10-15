@@ -1,0 +1,162 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index e13b55dc78939e065c11de8a5b301718ffbbb6a5..cbfc38ca752de8a762b1b65aab96a2cfd08581ac 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -116,6 +116,7 @@ These tools combine multiple iterables.
+ .. autofunction:: value_chain
+ .. autofunction:: zip_offset(*iterables, offsets, longest=False, fillvalue=None)
+ .. autofunction:: zip_equal
++.. autofunction:: zip_broadcast(*objects, scalar_types=(str, bytes), strict=False)
+ 
+ ----
+ 
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 1167ac4fec0d5bc5cd3c4d684c19bb23f7fa2539..e58fd5851bc0678e868ee3a1a21b189f8fb86f70 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -123,6 +123,7 @@ __all__ = [
+     'product_index',
+     'combination_index',
+     'permutation_index',
++    'zip_broadcast',
+ ]
+ 
+ _marker = object()
+@@ -3994,3 +3995,63 @@ def _chunked_even_finite(iterable, N, n):
+             yield buffer
+             buffer = []
+             num_partial -= 1
++
++
++def zip_broadcast(*objects, scalar_types=(str, bytes), strict=False):
++    """A version of :func:`zip` that "broadcasts" any scalar
++    (i.e., non-iterable) items into output tuples.
++
++    >>> iterable_1 = [1, 2, 3]
++    >>> iterable_2 = ['a', 'b', 'c']
++    >>> scalar = '_'
++    >>> list(zip_broadcast(iterable_1, iterable_2, scalar))
++    [(1, 'a', '_'), (2, 'b', '_'), (3, 'c', '_')]
++
++    The *scalar_types* keyword argument determines what types are considered
++    scalar. It is set to ``(str, bytes)`` by default. Set it to ``None`` to
++    treat strings and byte strings as iterable:
++
++    >>> list(zip_broadcast('abc', 0, 'xyz', scalar_types=None))
++    [('a', 0, 'x'), ('b', 0, 'y'), ('c', 0, 'z')]
++
++    If the *strict* keyword argument is ``True``, then
++    ``UnequalIterablesError`` will be raised if any of the iterables have
++    different lengths.
++
++    """
++    iterables = []
++    all_scalar = True
++    for obj in objects:
++        # If the object is one of our scalar types, turn it into an iterable
++        # by wrapping it with itertools.repeat
++        if scalar_types and isinstance(obj, scalar_types):
++            iterables.append((repeat(obj), False))
++        # Otherwise, test to see whether the object is iterable.
++        # If it is, collect it. If it's not, treat it as a scalar.
++        else:
++            try:
++                iterables.append((iter(obj), True))
++            except TypeError:
++                iterables.append((repeat(obj), False))
++            else:
++                all_scalar = False
++
++    # If all the objects were scalar, we just emit them as a tuple.
++    # Otherwise we zip the collected iterable objects.
++    if all_scalar:
++        yield tuple(objects)
++    else:
++        yield from zip(*(it for it, is_it in iterables))
++
++        # For strict mode, we ensure that all the iterable objects have been
++        # exhausted.
++        if strict:
++            for it, is_it in iterables:
++                if is_it:
++                    if next(it, _marker) is not _marker:
++                        raise UnequalIterablesError
++
++
++def _zip_broadcast_legacy(*args, **kwargs):
++    """Kept for backwards compatibility."""
++    return zip_broadcast(*args, **kwargs)
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 7c1ade74abef7efa398cfee6e76c3383c1474d05..6525d349150f8df7034a4e37882b8fde78a3b420 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -547,3 +547,10 @@ class countable(Generic[_T], Iterator[_T]):
+     def __next__(self) -> _T: ...
+ 
+ def chunked_even(iterable: Iterable[_T], n: int) -> Iterator[List[_T]]: ...
++def zip_broadcast(
++    *objects: Union[_T, Iterable[_T]],
++    scalar_types: Union[
++        type, Tuple[Union[type, Tuple[Any, ...]], ...], None
++    ] = ...,
++    strict: bool = ...
++) -> Iterable[Tuple[_T, ...]]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 5d25fab981d00e1f60612b0ec197d060224b4ffb..a138bfbe71b8253e0879a13965a1885813e7adc9 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -4637,3 +4637,54 @@ class ChunkedEvenTests(TestCase):
+                     items.extend(l)
+                 self.assertEqual(items, list(range(N)))
+                 self.assertLessEqual(max(lengths) - min(lengths), 1)
++
++
++class ZipBroadcastTests(TestCase):
++    def test_basic(self):
++        for objects, expected in [
++            # All scalar
++            ([1, 2], [(1, 2)]),
++            # Scalar, iterable
++            ([1, [2]], [(1, 2)]),
++            # Iterable, scalar
++            ([[1], 2], [(1, 2)]),
++            # Mixed length
++            ([1, [2, 3]], [(1, 2), (1, 3)]),
++            # All iterable
++            ([[1, 2], [3, 4]], [(1, 3), (2, 4)]),
++        ]:
++            with self.subTest(expected=expected):
++                actual = list(mi.zip_broadcast(*objects))
++                self.assertEqual(actual, expected)
++
++    def test_scalar_types(self):
++        # Default: str and bytes are treated as scalar
++        self.assertEqual(
++            list(mi.zip_broadcast('ab', [1, 2, 3])),
++            [('ab', 1), ('ab', 2), ('ab', 3)],
++        )
++        self.assertEqual(
++            list(mi.zip_broadcast(b'ab', [1, 2, 3])),
++            [(b'ab', 1), (b'ab', 2), (b'ab', 3)],
++        )
++        # scalar_types=None allows str and bytes to be treated as iterable
++        self.assertEqual(
++            list(mi.zip_broadcast('abc', [1, 2, 3], scalar_types=None)),
++            [('a', 1), ('b', 2), ('c', 3)],
++        )
++        # Use a custom type
++        self.assertEqual(
++            list(mi.zip_broadcast({'a': 'b'}, [1, 2, 3], scalar_types=dict)),
++            [({'a': 'b'}, 1), ({'a': 'b'}, 2), ({'a': 'b'}, 3)],
++        )
++
++    def test_strict(self):
++        # Truncate by default
++        self.assertEqual(
++            list(mi.zip_broadcast('a', [1, 2], [3, 4, 5])),
++            [('a', 1, 3), ('a', 2, 4)],
++        )
++
++        # Raise an exception for strict=True
++        with self.assertRaises(mi.UnequalIterablesError):
++            list(mi.zip_broadcast('a', [1, 2], [3, 4, 5], strict=True))

@@ -1,0 +1,29 @@
+{
+  "id": "click-wildcard-import-9c079247",
+  "kind": "seeded",
+  "task": "Regroup sentinels",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "b0ffa61c1b2d7245e25c3cd315a911192aa81b2a",
+    "upstream_commit": "9c079247f9b9655077b4ceff52b3fb0a44a9473f",
+    "origin": "upstream commit + seeded defect (wildcard_import)"
+  },
+  "defects": [
+    {
+      "file": "src/click/parser.py",
+      "line_start": 33,
+      "line_end": 33,
+      "category": "convention_violation",
+      "description": "`from ._utils import *` replaces explicit imports, hiding where names come from.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "wildcard_import",
+    "upstream_subject": "Regroup sentinels",
+    "date": "2025-08-24"
+  }
+}

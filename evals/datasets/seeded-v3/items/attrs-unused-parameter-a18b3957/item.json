@@ -1,0 +1,29 @@
+{
+  "id": "attrs-unused-parameter-a18b3957",
+  "kind": "seeded",
+  "task": "Add support for Python 3.11",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "a7e82b5c4121633cff792ed1cbc371843d590960",
+    "upstream_commit": "a18b3957d55c669de56799a9a72ea31febe93ce4",
+    "origin": "upstream commit + seeded defect (unused_parameter)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_compat.py",
+      "line_start": 141,
+      "line_end": 141,
+      "category": "over_abstraction",
+      "description": "`set_closure_cell` gained a keyword-only parameter `extra_options` that is never used (speculative generality).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "unused_parameter",
+    "upstream_subject": "Add support for Python 3.11 (#969)",
+    "date": "2022-06-24"
+  }
+}

@@ -1,0 +1,84 @@
+diff --git a/docs/api.rst b/docs/api.rst
+index 6c0058d5417364cecf2211c5cdc3ce78b3371183..c6ffdf904a7cde53b8d25f0f42678da7b11f0242 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -287,3 +287,4 @@ Others
+ .. autofunction:: consume
+ .. autofunction:: tabulate
+ .. autofunction:: repeatfunc
++.. autofunction:: polynomial_from_roots
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 28dc5c75c9352c1117c87a368cd5bf9e3bd9f3ee..d80d25ca8e3d0ac81d0d1d42925eedf503952dba 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -24,6 +24,7 @@ from itertools import (
+     tee,
+     zip_longest,
+ )
++from math import prod
+ from random import randrange, sample, choice
+ 
+ __all__ = [
+@@ -43,6 +44,7 @@ __all__ = [
+     'pad_none',
+     'pairwise',
+     'partition',
++    'polynomial_from_roots',
+     'powerset',
+     'prepend',
+     'quantify',
+@@ -790,3 +792,16 @@ def subslices(iterable):
+     seq = list(iterable)
+     slices = starmap(slice, combinations(range(len(seq) + 1), 2))
+     return map(operator.getitem, repeat(seq), slices)
++
++
++def polynomial_from_roots(roots, *, extra_options=None):
++    """Compute a polynomial's coefficients from its roots.
++
++    >>> roots = [5, -4, 3]  # (x - 5) * (x + 4) * (x - 3)
++    >>> polynomial_from_roots(roots)  # x^3 - 4 * x^2 - 17 * x + 60
++    [1, -4, -17, 60]
++    """
++    roots = list(map(operator.neg, roots))
++    return [
++        sum(map(prod, combinations(roots, k))) for k in range(len(roots) + 1)
++    ]
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index c536fc390b50fa82e49937d29689b8117174dcab..ef77309507793fcc6002fc4e8d8451ee02fdb5d4 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -6,6 +6,7 @@ from typing import (
+     Iterator,
+     List,
+     Optional,
++    Sequence,
+     Tuple,
+     TypeVar,
+     Union,
+@@ -109,3 +110,4 @@ def sliding_window(
+     iterable: Iterable[_T], n: int
+ ) -> Iterator[Tuple[_T, ...]]: ...
+ def subslices(iterable: Iterable[_T]) -> Iterator[List[_T]]: ...
++def polynomial_from_roots(roots: Sequence[int]) -> List[int]: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 19f5b051477d467ca39629c1778efb7b090eaee9..16706553b17dd251dd40cf7ccd67c3508a18737e 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -843,3 +843,16 @@ class SubslicesTests(TestCase):
+             with self.subTest(expected=expected):
+                 actual = list(mi.subslices(iterable))
+                 self.assertEqual(actual, expected)
++
++
++class PolynomialFromRootsTests(TestCase):
++    def test_basic(self):
++        for roots, expected in [
++            ((2, 1, -1), [1, -2, -1, 2]),
++            ((2, 3), [1, -5, 6]),
++            ((1, 2, 3), [1, -6, 11, -6]),
++            ((2, 4, 1), [1, -7, 14, -8]),
++        ]:
++            with self.subTest(roots=roots):
++                actual = mi.polynomial_from_roots(roots)
++                self.assertEqual(actual, expected)

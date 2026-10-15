@@ -1,0 +1,29 @@
+{
+  "id": "click-unused-parameter-22177f85",
+  "kind": "seeded",
+  "task": "`path_type` narrows the converted value's type for `convert` and `prompt`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "7944461a80b780d060899c8835acab3c273a04a6",
+    "upstream_commit": "22177f857a34e3c35ba957553853a37f23feb37e",
+    "origin": "upstream commit + seeded defect (unused_parameter)"
+  },
+  "defects": [
+    {
+      "file": "src/click/types.py",
+      "line_start": 1147,
+      "line_end": 1147,
+      "category": "over_abstraction",
+      "description": "`coerce_path_result` gained a keyword-only parameter `verbose` that is never used (speculative generality).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "unused_parameter",
+    "upstream_subject": "`path_type` narrows the converted value's type for `convert` and `prompt`",
+    "date": "2026-09-08"
+  }
+}

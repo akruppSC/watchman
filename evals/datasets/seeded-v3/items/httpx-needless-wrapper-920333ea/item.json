@@ -1,0 +1,35 @@
+{
+  "id": "httpx-needless-wrapper-920333ea",
+  "kind": "seeded",
+  "task": "Always encode forward slashes as `%2F` in query parameters",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "301b8fb03a81447c5b5ab1ca991202e10826fbda",
+    "upstream_commit": "920333ea98118e9cf617f246905d7b202510941c",
+    "origin": "upstream commit + seeded defect (needless_wrapper)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_urlparse.py",
+      "line_start": 451,
+      "line_end": 452,
+      "category": "over_abstraction",
+      "description": "Added `_call_quote`, a wrapper that only forwards to `quote`, and routed a call through it for no reason.",
+      "alt_ranges": [
+        {
+          "file": "httpx/_urlparse.py",
+          "line_start": 468,
+          "line_end": 468
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "needless_wrapper",
+    "upstream_subject": "Always encode forward slashes as `%2F` in query parameters (#2723)",
+    "date": "2023-06-09"
+  }
+}

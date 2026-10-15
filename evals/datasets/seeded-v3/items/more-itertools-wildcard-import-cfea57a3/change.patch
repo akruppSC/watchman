@@ -1,0 +1,138 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index db62271b3b12e686ac368da3153bacd3695757d5..a6bab28702c6ce26b9c1b13b1d3ed47db1cc043e 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -22,8 +22,8 @@ from itertools import (
+ from math import exp, factorial, floor, log
+ from queue import Empty, Queue
+ from random import random, randrange, uniform
+-from operator import itemgetter, mul, sub, gt, lt
+-from sys import hexversion, maxsize
++from operator import itemgetter, mul, sub, gt, lt, ge, le
++from sys import *
+ from time import monotonic
+ 
+ from .recipes import (
+@@ -3561,7 +3561,7 @@ def sample(iterable, k, weights=None):
+         return _sample_weighted(iterable, k, weights)
+ 
+ 
+-def is_sorted(iterable, key=None, reverse=False):
++def is_sorted(iterable, key=None, reverse=False, strict=False):
+     """Returns ``True`` if the items of iterable are in sorted order, and
+     ``False`` otherwise. *key* and *reverse* have the same meaning that they do
+     in the built-in :func:`sorted` function.
+@@ -3571,12 +3571,24 @@ def is_sorted(iterable, key=None, reverse=False):
+     >>> is_sorted([5, 4, 3, 1, 2], reverse=True)
+     False
+ 
++    If *strict*, tests for strict sorting, that is, returns ``False`` if equal
++    elements are found:
++
++    >>> is_sorted([1, 2, 2])
++    True
++    >>> is_sorted([1, 2, 2], strict=True)
++    False
++
+     The function returns ``False`` after encountering the first out-of-order
+     item. If there are no out-of-order items, the iterable is exhausted.
+     """
+ 
+-    compare = lt if reverse else gt
+-    it = iterable if (key is None) else map(key, iterable)
++    compare = (
++        (le if reverse else ge)
++        if strict
++        else (lt if reverse else gt)
++    )
++    it = iterable if key is None else map(key, iterable)
+     return not any(starmap(compare, pairwise(it)))
+ 
+ 
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 0b674de12694ff483ec03770bfb828f4569fcd52..8456e4918af6c9c723b4ef7c4e92ec78d073432d 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -501,6 +501,7 @@ def is_sorted(
+     iterable: Iterable[_T],
+     key: Optional[Callable[[_T], _U]] = ...,
+     reverse: bool = False,
++    strict: bool = False
+ ) -> bool: ...
+ 
+ class AbortThread(BaseException):
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 4206dafce30f104a209af402b7a625c6067e6cbd..0947ad69c4392dd8b37fdc066e400e2aa6e9b30a 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -4180,6 +4180,7 @@ class IsSortedTests(TestCase):
+     def test_basic(self):
+         for iterable, kwargs, expected in [
+             ([], {}, True),
++            ([1], {}, True),
+             ([1, 2, 3], {}, True),
+             ([1, 1, 2, 3], {}, True),
+             ([1, 10, 2, 3], {}, False),
+@@ -4190,15 +4191,59 @@ class IsSortedTests(TestCase):
+             ([1, 10, 2, 3], {'reverse': True}, False),
+             (['3', '2', '10', '1'], {'reverse': True}, True),
+             (['3', '2', '10', '1'], {'key': int, 'reverse': True}, False),
++            # strict
++            ([], {'strict': True}, True),
++            ([1], {'strict': True}, True),
++            ([1, 1], {'strict': True}, False),
++            ([1, 2, 3], {'strict': True}, True),
++            ([1, 1, 2, 3], {'strict': True}, False),
++            ([1, 10, 2, 3], {'strict': True}, False),
++            (['1', '10', '2', '3'], {'strict': True}, True),
++            (['1', '10', '2', '3', '3'], {'strict': True}, False),
++            (['1', '10', '2', '3'], {'strict': True, 'key': int}, False),
++            ([1, 2, 3], {'strict': True, 'reverse': True}, False),
++            ([1, 1, 2, 3], {'strict': True, 'reverse': True}, False),
++            ([1, 10, 2, 3], {'strict': True, 'reverse': True}, False),
++            (['3', '2', '10', '1'], {'strict': True, 'reverse': True}, True),
++            (
++                ['3', '2', '10', '10', '1'],
++                {'strict': True, 'reverse': True},
++                False
++            ),
++            (
++                ['3', '2', '10', '1'],
++                {'strict': True, 'key': int, 'reverse': True},
++                False
++            ),
+             # We'll do the same weird thing as Python here
+             (['nan', 0, 'nan', 0], {'key': float}, True),
+             ([0, 'nan', 0, 'nan'], {'key': float}, True),
+             (['nan', 0, 'nan', 0], {'key': float, 'reverse': True}, True),
+             ([0, 'nan', 0, 'nan'], {'key': float, 'reverse': True}, True),
++            ([0, 'nan', 0, 'nan'], {'strict': True, 'key': float}, True),
++            (
++                ['nan', 0, 'nan', 0],
++                {'strict': True, 'key': float, 'reverse': True},
++                True
++            ),
+         ]:
+-            with self.subTest(args=(iterable, kwargs)):
+-                mi_result = mi.is_sorted(iter(iterable), **kwargs)
+-                py_result = iterable == sorted(iterable, **kwargs)
++            key = kwargs.get('key', None)
++            reverse = kwargs.get('reverse', False)
++            strict = kwargs.get('strict', False)
++
++            with self.subTest(
++                    iterable=iterable, key=key, reverse=reverse, strict=strict
++            ):
++                mi_result = mi.is_sorted(
++                    iter(iterable), key=key, reverse=reverse, strict=strict
++                )
++
++                sorted_iterable = sorted(iterable, key=key, reverse=reverse)
++                if strict:
++                    sorted_iterable = list(mi.unique_justseen(sorted_iterable))
++
++                py_result = iterable == sorted_iterable
++
+                 self.assertEqual(mi_result, expected)
+                 self.assertEqual(mi_result, py_result)
+ 

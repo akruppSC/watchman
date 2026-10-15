@@ -1,0 +1,29 @@
+{
+  "id": "httpx-dead-code-4401d55e",
+  "kind": "seeded",
+  "task": "Preserve Authorization header on HTTPS redirect (#1850)",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "4f8068a7ade1f4d10403e325ed2354109df1724f",
+    "upstream_commit": "4401d55ecf0d95be237098b6c73c45420d54d499",
+    "origin": "upstream commit + seeded defect (dead_code)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_utils.py",
+      "line_start": 300,
+      "line_end": 302,
+      "category": "over_abstraction",
+      "description": "`_is_https_redirect_legacy` is an unused alias of the new `is_https_redirect`; nothing calls it (dead code).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "dead_code",
+    "upstream_subject": "Preserve Authorization header on HTTPS redirect (#1850) (#2074)",
+    "date": "2022-02-09"
+  }
+}

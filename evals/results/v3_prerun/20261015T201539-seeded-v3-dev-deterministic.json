@@ -1,0 +1,1813 @@
+{
+  "run_id": "20261015T201539-seeded-v3-dev-deterministic",
+  "started_at": "2026-10-15T20:15:39.598338+00:00",
+  "dataset": "seeded-v3",
+  "dataset_sha256": null,
+  "dataset_frozen": false,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "628817d",
+  "review_config": {
+    "checks": [
+      "hygiene",
+      "quality",
+      "ruff",
+      "mypy"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-unused-parameter-a18b3957",
+      "score": {
+        "item_id": "attrs-unused-parameter-a18b3957",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.322,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.063,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.098,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.122,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 0.974,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"setup.py\", \"line\": 47, \"column\": 0, \"end_line\": 47, \"end_column\": 16, \"message\": \"Need type annotation for \\\"INSTALL_REQUIRES\\\" (hint: \\\"INSTALL_REQUIRES: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"setup.py\", \"line\": 116, \"column\": 6, \"end_line\": 120, \"end_column\": 11, \"message\": \"Item \\\"None\\\" of \\\"Match[str] | None\\\" has no attribute \\\"group\\\"\", \"hint\": null, \"code\": \"union-attr\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 25, \"column\": 4, \"end_line\": 25, \"end_column\": 16, \"message\": \"Cannot assign multiple types to name \\\"ordered_dict\\\" without an explicit \\\"type[...]\\\" annotation\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 50, \"column\": 23, \"end_line\": 50, \"end_column\": 27, \"message\": \"Incompatible types in assignment (expression has type \\\"None\\\", variable has type \\\"Signature\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.322,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-unused-parameter-b950cb8d",
+      "score": {
+        "item_id": "attrs-unused-parameter-b950cb8d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.353,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.003,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.079,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.034,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.138,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/attr/_compat.py\", \"line\": 12, \"column\": 0, \"end_line\": 12, \"end_column\": 32, \"message\": \"Module \\\"typing\\\" has no attribute \\\"_GenericAlias\\\"; maybe \\\"GenericAlias\\\"?\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 42, \"column\": 23, \"end_line\": 42, \"end_column\": 27, \"message\": \"Incompatible types in assignment (expression has type \\\"None\\\", variable has type \\\"Signature\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.353,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-camel-case-rename-43a7d70f",
+      "score": {
+        "item_id": "click-camel-case-rename-43a7d70f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1a5327a10abd",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [
+          "f17c268bf02a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.741,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1a5327a10abd",
+            "category": "security",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 449,
+            "line_end": 449,
+            "summary": "S602: `subprocess` call with `shell=True` identified, security issue",
+            "evidence": "ruff reported S602 at src/click/_termui_impl.py:449 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:S602",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f17c268bf02a",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 663,
+            "line_end": 663,
+            "summary": "`open_url` has 69 lines long (limit 60)",
+            "evidence": "src/click/_termui_impl.py:663 `open_url`: length = 69, over the limit of 60; this function grew from 58 in this change.",
+            "suggested_fix": "extract coherent blocks into named helper functions",
+            "source": "deterministic",
+            "rule": "quality:length",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.006,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.31,
+            "findings": [
+              {
+                "id": "f17c268bf02a",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 663,
+                "line_end": 663,
+                "summary": "`open_url` has 69 lines long (limit 60)",
+                "evidence": "src/click/_termui_impl.py:663 `open_url`: length = 69, over the limit of 60; this function grew from 58 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "failed",
+            "summary": "1 violation(s) on changed lines",
+            "duration_s": 0.034,
+            "findings": [
+              {
+                "id": "1a5327a10abd",
+                "category": "security",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 449,
+                "line_end": 449,
+                "summary": "S602: `subprocess` call with `shell=True` identified, security issue",
+                "evidence": "ruff reported S602 at src/click/_termui_impl.py:449 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:S602",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.322,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/click/_termui_impl.py\", \"line\": 621, \"column\": 19, \"end_line\": 621, \"end_column\": 23, \"message\": \"Incompatible types in assignment (expression has type \\\"bytes | bytearray\\\", variable has type \\\"bytes\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.741,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-dead-code-b4df3b9c",
+      "score": {
+        "item_id": "click-dead-code-b4df3b9c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.664,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.012,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.264,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.269,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.664,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-debug-print-17cedf79",
+      "score": {
+        "item_id": "click-debug-print-17cedf79",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.848,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.005,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.151,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.061,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.577,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.848,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-1aa2d53d",
+      "score": {
+        "item_id": "click-needless-wrapper-1aa2d53d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.87,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.014,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.127,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.017,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.606,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.87,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-405a5481",
+      "score": {
+        "item_id": "click-needless-wrapper-405a5481",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "255db13051e5"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 2.454,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "255db13051e5",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2338,
+            "line_end": 2338,
+            "summary": "`Parameter.__init__` has cyclomatic complexity 12 (limit 10)",
+            "evidence": "src/click/core.py:2338 `Parameter.__init__`: complexity = 12, over the limit of 10; this function grew from 9 in this change.",
+            "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+            "source": "deterministic",
+            "rule": "quality:complexity",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.029,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.569,
+            "findings": [
+              {
+                "id": "255db13051e5",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2338,
+                "line_end": 2338,
+                "summary": "`Parameter.__init__` has cyclomatic complexity 12 (limit 10)",
+                "evidence": "src/click/core.py:2338 `Parameter.__init__`: complexity = 12, over the limit of 10; this function grew from 9 in this change.",
+                "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+                "source": "deterministic",
+                "rule": "quality:complexity",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.025,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.755,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 2.454,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-wildcard-import-93ba0075",
+      "score": {
+        "item_id": "click-wildcard-import-93ba0075",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "e8de81951a7c"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 2.14,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "e8de81951a7c",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.75,
+            "file": "src/click/termui.py",
+            "line_start": 98,
+            "line_end": 98,
+            "summary": "mypy [name-defined]: Name \"_compat\" is not defined",
+            "evidence": "mypy reported [name-defined] at src/click/termui.py:98 on a changed line (no repo venv found; third-party types unknown).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "mypy:name-defined",
+            "evidence_refs": [
+              "check:mypy"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.017,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.48,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.036,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "failed",
+            "summary": "1 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.549,
+            "findings": [
+              {
+                "id": "e8de81951a7c",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.75,
+                "file": "src/click/termui.py",
+                "line_start": 98,
+                "line_end": 98,
+                "summary": "mypy [name-defined]: Name \"_compat\" is not defined",
+                "evidence": "mypy reported [name-defined] at src/click/termui.py:98 on a changed line (no repo venv found; third-party types unknown).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "mypy:name-defined",
+                "evidence_refs": [
+                  "check:mypy"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": "{\"file\": \"src/click/termui.py\", \"line\": 98, \"column\": 7, \"end_line\": 98, \"end_column\": 14, \"message\": \"Name \\\"_compat\\\" is not defined\", \"hint\": null, \"code\": \"name-defined\", \"severity\": \"error\"}"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 2.14,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-0a8b44e6",
+      "score": {
+        "item_id": "httpx-debug-print-0a8b44e6",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 3.266,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.012,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.206,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.02,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.916,
+            "findings": [],
+            "output_excerpt": "}\n{\"file\": \"httpx/_models.py\", \"line\": 1617, \"column\": 48, \"end_line\": 1617, \"end_column\": 52, \"message\": \"Incompatible default for parameter \\\"chunk_size\\\" (default has type \\\"None\\\", parameter has type \\\"int\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1632, \"column\": 37, \"end_line\": 1632, \"end_column\": 50, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1653, \"column\": 41, \"end_line\": 1653, \"end_column\": 54, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1662, \"column\": 46, \"end_line\": 1662, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 40, \"end_line\": 1722, \"end_column\": 44, \"message\": \"Incompatible default for parameter \\\"default\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 60, \"end_line\": 1722, \"end_column\": 64, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 78, \"end_line\": 1722, \"end_column\": 82, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1742, \"column\": 46, \"end_line\": 1742, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1742, \"column\": 64, \"end_line\": 1742, \"end_column\": 68, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1760, \"column\": 34, \"end_line\": 1760, \"end_column\": 38, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1760, \"column\": 52, \"end_line\": 1760, \"end_column\": 56, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 3.266,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-needless-wrapper-920333ea",
+      "score": {
+        "item_id": "httpx-needless-wrapper-920333ea",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 4.308,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.005,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.068,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.018,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 4.128,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 4.308,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-02e75322",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-02e75322",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "ec314b6160d0"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.561,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "ec314b6160d0",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/recipes.py",
+            "line_start": 290,
+            "line_end": 290,
+            "summary": "New public `UnequalIterablesError` has no docstring, unlike the rest of this module",
+            "evidence": "more_itertools/recipes.py:290: 97% of the module's other public definitions (31) have docstrings; this one doesn't.",
+            "suggested_fix": "add a short docstring in the same style as its neighbours",
+            "source": "deterministic",
+            "rule": "quality:docstring",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.022,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.362,
+            "findings": [
+              {
+                "id": "ec314b6160d0",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/recipes.py",
+                "line_start": 290,
+                "line_end": 290,
+                "summary": "New public `UnequalIterablesError` has no docstring, unlike the rest of this module",
+                "evidence": "more_itertools/recipes.py:290: 97% of the module's other public definitions (31) have docstrings; this one doesn't.",
+                "suggested_fix": "add a short docstring in the same style as its neighbours",
+                "source": "deterministic",
+                "rule": "quality:docstring",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.022,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.106,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.561,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-5bd5c263",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-5bd5c263",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "14cb80f1cf9a",
+          "3e91ae7412a6",
+          "f265e2274e4a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.822,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "14cb80f1cf9a",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_more.py",
+            "line_start": 6365,
+            "line_end": 6365,
+            "summary": "F821: Undefined name `peekable`",
+            "evidence": "ruff reported F821 at tests/test_more.py:6365 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:F821",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3e91ae7412a6",
+            "category": "swallowed_error",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "more_itertools/more.py",
+            "line_start": 5270,
+            "line_end": 5270,
+            "summary": "B904: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling",
+            "evidence": "ruff reported B904 at more_itertools/more.py:5270 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:B904",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f265e2274e4a",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "tests/test_more.py",
+            "line_start": 39,
+            "line_end": 39,
+            "summary": "F811: Redefinition of unused `gc` from line 4: `gc` redefined here",
+            "evidence": "ruff reported F811 at tests/test_more.py:39 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:F811",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.064,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.291,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "failed",
+            "summary": "3 violation(s) on changed lines",
+            "duration_s": 0.029,
+            "findings": [
+              {
+                "id": "3e91ae7412a6",
+                "category": "swallowed_error",
+                "severity": "minor",
+                "confidence": 0.95,
+                "file": "more_itertools/more.py",
+                "line_start": 5270,
+                "line_end": 5270,
+                "summary": "B904: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling",
+                "evidence": "ruff reported B904 at more_itertools/more.py:5270 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:B904",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "f265e2274e4a",
+                "category": "correctness",
+                "severity": "minor",
+                "confidence": 0.95,
+                "file": "tests/test_more.py",
+                "line_start": 39,
+                "line_end": 39,
+                "summary": "F811: Redefinition of unused `gc` from line 4: `gc` redefined here",
+                "evidence": "ruff reported F811 at tests/test_more.py:39 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:F811",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "14cb80f1cf9a",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_more.py",
+                "line_start": 6365,
+                "line_end": 6365,
+                "summary": "F821: Undefined name `peekable`",
+                "evidence": "ruff reported F821 at tests/test_more.py:6365 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:F821",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.388,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.822,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-0926631d",
+      "score": {
+        "item_id": "more-itertools-dead-code-0926631d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "40bba2de2a0f"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.658,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "40bba2de2a0f",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 4000,
+            "line_end": 4000,
+            "summary": "`zip_broadcast` has cyclomatic complexity 11 (limit 10)",
+            "evidence": "more_itertools/more.py:4000 `zip_broadcast`: complexity = 11, over the limit of 10; this function is new in this change. Also reported by: quality:nesting.",
+            "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+            "source": "deterministic",
+            "rule": "quality:complexity",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.057,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "2 maintainability issue(s) introduced by this change",
+            "duration_s": 0.321,
+            "findings": [
+              {
+                "id": "40bba2de2a0f",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 4000,
+                "line_end": 4000,
+                "summary": "`zip_broadcast` has cyclomatic complexity 11 (limit 10)",
+                "evidence": "more_itertools/more.py:4000 `zip_broadcast`: complexity = 11, over the limit of 10; this function is new in this change.",
+                "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+                "source": "deterministic",
+                "rule": "quality:complexity",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "666072784043",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 4000,
+                "line_end": 4000,
+                "summary": "`zip_broadcast` has 5 levels of nesting (limit 4)",
+                "evidence": "more_itertools/more.py:4000 `zip_broadcast`: nesting = 5, over the limit of 4; this function is new in this change.",
+                "suggested_fix": "use early returns/continue (guard clauses) or extract the inner block into a helper",
+                "source": "deterministic",
+                "rule": "quality:nesting",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.044,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.187,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.658,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-5c8336c5",
+      "score": {
+        "item_id": "more-itertools-dead-code-5c8336c5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.77,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.02,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.121,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.031,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.542,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.77,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-debug-print-4332c7e5",
+      "score": {
+        "item_id": "more-itertools-debug-print-4332c7e5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.472,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.383,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.028,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.472,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-unused-parameter-4bfc7050",
+      "score": {
+        "item_id": "more-itertools-unused-parameter-4bfc7050",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.202,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.01,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.082,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.021,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.042,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.202,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-cfea57a3",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-cfea57a3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.267,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.075,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.317,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.04,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 0.78,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.267,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-f5e92de4",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-f5e92de4",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.422,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.323,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.025,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.422,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

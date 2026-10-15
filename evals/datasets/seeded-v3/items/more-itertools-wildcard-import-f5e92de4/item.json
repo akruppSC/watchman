@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-wildcard-import-f5e92de4",
+  "kind": "seeded",
+  "task": "Use math.prod() in nth_product()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "06f31819121eb0620d3165fda73a44cbf71b140d",
+    "upstream_commit": "f5e92de40c3f2fcaedd00033e3f86c9168f10088",
+    "origin": "upstream commit + seeded defect (wildcard_import)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 6,
+      "line_end": 6,
+      "category": "convention_violation",
+      "description": "`from functools import *` replaces explicit imports, hiding where names come from.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "wildcard_import",
+    "upstream_subject": "Use math.prod() in nth_product()",
+    "date": "2026-01-02"
+  }
+}

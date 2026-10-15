@@ -1,0 +1,29 @@
+{
+  "id": "httpx-debug-print-0a8b44e6",
+  "kind": "seeded",
+  "task": "Perform port normalization for http, https, ws, wss, and ftp schemes",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "c927f3e9659a8f663afae69d8ac1d997f1dca4eb",
+    "upstream_commit": "0a8b44e67d470239f9659b6c3127af990303491f",
+    "origin": "upstream commit + seeded defect (debug_print)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_models.py",
+      "line_start": 168,
+      "line_end": 168,
+      "category": "convention_violation",
+      "description": "Debugging `print` of `authority` left in library code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "debug_print",
+    "upstream_subject": "Perform port normalization for http, https, ws, wss, and ftp schemes (#1603)",
+    "date": "2021-04-27"
+  }
+}

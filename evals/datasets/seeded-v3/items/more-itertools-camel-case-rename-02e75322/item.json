@@ -1,0 +1,40 @@
+{
+  "id": "more-itertools-camel-case-rename-02e75322",
+  "kind": "seeded",
+  "task": "Update to the latest grouper recipe",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "7c444046f3dbe22622032e1f38050f36d1a3c965",
+    "upstream_commit": "02e753222ce27f199971032a4b18e9513c9b0a48",
+    "origin": "upstream commit + seeded defect (camel_case_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 312,
+      "line_end": 312,
+      "category": "convention_violation",
+      "description": "Local variable `first_size` renamed to camelCase `firstSize` in `_zip_equal`, against the project's snake_case convention.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/recipes.py",
+          "line_start": 315,
+          "line_end": 315
+        },
+        {
+          "file": "more_itertools/recipes.py",
+          "line_start": 322,
+          "line_end": 322
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "camel_case_rename",
+    "upstream_subject": "Update to the latest grouper recipe",
+    "date": "2022-03-09"
+  }
+}

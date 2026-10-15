@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-dead-code-5c8336c5",
+  "kind": "seeded",
+  "task": "Draft of running_median() with windowed data",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "306aa37b5134096822d221741eab9da08d8779ef",
+    "upstream_commit": "5c8336c5f3a7cbc07fd1d1d4a85cd1d833218bfd",
+    "origin": "upstream commit + seeded defect (dead_code)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 1439,
+      "line_end": 1441,
+      "category": "over_abstraction",
+      "description": "`_running_median_legacy` is an unused alias of the new `running_median`; nothing calls it (dead code).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "dead_code",
+    "upstream_subject": "Draft of running_median() with windowed data",
+    "date": "2025-08-01"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-unused-parameter-4bfc7050",
+  "kind": "seeded",
+  "task": "Add polynomial_from_roots recipe",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "81544618365e8da6993acdce57e8e5ab7921adfd",
+    "upstream_commit": "4bfc7050a2106efddc8785d8f3de433820bf78bb",
+    "origin": "upstream commit + seeded defect (unused_parameter)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 797,
+      "line_end": 797,
+      "category": "over_abstraction",
+      "description": "`polynomial_from_roots` gained a keyword-only parameter `extra_options` that is never used (speculative generality).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "unused_parameter",
+    "upstream_subject": "Add polynomial_from_roots recipe",
+    "date": "2022-09-07"
+  }
+}

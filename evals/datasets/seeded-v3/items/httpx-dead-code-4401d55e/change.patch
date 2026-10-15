@@ -1,0 +1,130 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 2b513b0d357f998022745623192ec6f7384ca9f2..5e4c8e2713352aeddf4f85c6643457adc49721d9 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -51,6 +51,7 @@ from ._utils import (
+     URLPattern,
+     get_environment_proxies,
+     get_logger,
++    is_https_redirect,
+     same_origin,
+ )
+ 
+@@ -532,9 +533,10 @@ class BaseClient:
+         headers = Headers(request.headers)
+ 
+         if not same_origin(url, request.url):
+-            # Strip Authorization headers when responses are redirected away from
+-            # the origin.
+-            headers.pop("Authorization", None)
++            if not is_https_redirect(request.url, url):
++                # Strip Authorization headers when responses are redirected
++                # away from the origin. (Except for direct HTTP to HTTPS redirects.)
++                headers.pop("Authorization", None)
+ 
+             # Update the Host header.
+             headers["Host"] = url.netloc.decode("ascii")
+diff --git a/httpx/_utils.py b/httpx/_utils.py
+index c92be8c8c0700e23c69c238bbe854c29e552abf8..dc7dd32b95adc6b99c178f9e822e13730c06f250 100644
+--- a/httpx/_utils.py
++++ b/httpx/_utils.py
+@@ -282,6 +282,26 @@ def same_origin(url: "URL", other: "URL") -> bool:
+     )
+ 
+ 
++def is_https_redirect(url: "URL", location: "URL") -> bool:
++    """
++    Return 'True' if 'location' is a HTTPS upgrade of 'url'
++    """
++    if url.host != location.host:
++        return False
++
++    return (
++        url.scheme == "http"
++        and port_or_default(url) == 80
++        and location.scheme == "https"
++        and port_or_default(location) == 443
++    )
++
++
++def _is_https_redirect_legacy(*args, **kwargs):
++    """Kept for backwards compatibility."""
++    return is_https_redirect(*args, **kwargs)
++
++
+ def get_environment_proxies() -> typing.Dict[str, typing.Optional[str]]:
+     """Gets proxy information from the environment"""
+ 
+diff --git a/tests/client/test_redirects.py b/tests/client/test_redirects.py
+index adc3aae38813cb9e5a22f6e43e33ed58d1662d70..ba02f0a288a4b4fb1b1ab84a893235306ef023ea 100644
+--- a/tests/client/test_redirects.py
++++ b/tests/client/test_redirects.py
+@@ -270,6 +270,15 @@ def test_cross_domain_redirect_with_auth_header():
+     assert "authorization" not in response.json()["headers"]
+ 
+ 
++def test_cross_domain_https_redirect_with_auth_header():
++    client = httpx.Client(transport=httpx.MockTransport(redirects))
++    url = "http://example.com/cross_domain"
++    headers = {"Authorization": "abc"}
++    response = client.get(url, headers=headers, follow_redirects=True)
++    assert response.url == "https://example.org/cross_domain_target"
++    assert "authorization" not in response.json()["headers"]
++
++
+ def test_cross_domain_redirect_with_auth():
+     client = httpx.Client(transport=httpx.MockTransport(redirects))
+     url = "https://example.com/cross_domain"
+@@ -287,6 +296,15 @@ def test_same_domain_redirect():
+     assert response.json()["headers"]["authorization"] == "abc"
+ 
+ 
++def test_same_domain_https_redirect_with_auth_header():
++    client = httpx.Client(transport=httpx.MockTransport(redirects))
++    url = "http://example.org/cross_domain"
++    headers = {"Authorization": "abc"}
++    response = client.get(url, headers=headers, follow_redirects=True)
++    assert response.url == "https://example.org/cross_domain_target"
++    assert response.json()["headers"]["authorization"] == "abc"
++
++
+ def test_body_redirect():
+     """
+     A 308 redirect should preserve the request body.
+diff --git a/tests/test_utils.py b/tests/test_utils.py
+index 88ef5877e91120f15d7c04913d0d591d0bf28840..e4bbb6ba2c6683e716468bff046e7ea02cdb2a47 100644
+--- a/tests/test_utils.py
++++ b/tests/test_utils.py
+@@ -10,6 +10,7 @@ from httpx._utils import (
+     get_ca_bundle_from_env,
+     get_environment_proxies,
+     guess_json_utf,
++    is_https_redirect,
+     obfuscate_sensitive_headers,
+     parse_header_links,
+     same_origin,
+@@ -221,6 +222,24 @@ def test_not_same_origin():
+     assert not same_origin(origin1, origin2)
+ 
+ 
++def test_is_https_redirect():
++    url = httpx.URL("http://example.com")
++    location = httpx.URL("https://example.com")
++    assert is_https_redirect(url, location)
++
++
++def test_is_not_https_redirect():
++    url = httpx.URL("http://example.com")
++    location = httpx.URL("https://www.example.com")
++    assert not is_https_redirect(url, location)
++
++
++def test_is_not_https_redirect_if_not_default_ports():
++    url = httpx.URL("http://example.com:9999")
++    location = httpx.URL("https://example.com:1337")
++    assert not is_https_redirect(url, location)
++
++
+ @pytest.mark.parametrize(
+     ["pattern", "url", "expected"],
+     [

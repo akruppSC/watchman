@@ -1,0 +1,133 @@
+diff --git a/README.rst b/README.rst
+index 619a708e007969e3046743ab2a38a3279bb46bd4..36ac6cb13e1f25644b32f395b90c564a477f69f8 100644
+--- a/README.rst
++++ b/README.rst
+@@ -157,6 +157,7 @@ Python iterables.
+ |                        +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+ |                        | `random_combination <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.random_combination>`_,                                                         |
+ |                        | `random_combination_with_replacement <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.random_combination_with_replacement>`_,                       |
++|                        | `random_derangement <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.random_derangement>`_,                                                         |
+ |                        | `random_permutation <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.random_permutation>`_,                                                         |
+ |                        | `random_product <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.random_product>`_                                                                  |
+ +------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+diff --git a/docs/api.rst b/docs/api.rst
+index 9568d587453d904dacc5e47c8b3f7cb5f0c94281..65c25c55f783a5263ad1e1c19de5db904d779663 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -247,6 +247,7 @@ These tools yield combinatorial arrangements of items from iterables.
+ .. autofunction:: random_permutation
+ .. autofunction:: random_combination
+ .. autofunction:: random_combination_with_replacement
++.. autofunction:: random_derangement
+ .. autofunction:: nth_product
+ .. autofunction:: nth_permutation
+ .. autofunction:: nth_combination
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 62eced5807431de00e9f35d8935c5b8d2dcc92a6..ca79113ff4579f26bdf04bdaefb31cbe240e2fc2 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -33,8 +33,8 @@ from itertools import (
+     zip_longest,
+ )
+ from math import prod, comb, isqrt, gcd
+-from operator import mul, not_, itemgetter, getitem, index
+-from random import randrange, sample, choice
++from operator import mul, is_, not_, itemgetter, getitem, index
++from random import *
+ from sys import hexversion
+ 
+ __all__ = [
+@@ -69,6 +69,7 @@ __all__ = [
+     'reshape',
+     'random_combination_with_replacement',
+     'random_combination',
++    'random_derangement',
+     'random_permutation',
+     'random_product',
+     'repeatfunc',
+@@ -1399,3 +1400,22 @@ def running_median(iterable, *, maxlen=None):
+         return _running_median_minheap_only(iterator)  # pragma: no cover
+ 
+     return _running_median_minheap_and_maxheap(iterator)  # pragma: no cover
++
++
++def random_derangement(iterable):
++    """Return a random derangement of elements in the iterable.
++
++    Equivalent to but much faster than ``choice(list(derangements(iterable)))``.
++
++    """
++    seq = tuple(iterable)
++    if len(seq) < 2:
++        if len(seq) == 0:
++            return ()
++        raise IndexError('No derangments to choose from')
++    perm = list(range(len(seq)))
++    start = tuple(perm)
++    while True:
++        shuffle(perm)
++        if not any(map(is_, start, perm)):
++            return itemgetter(*perm)(seq)
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 519eed81ebcc93ab10570605cc188065bc6b9a34..6822a45e2091f4d1f5d5e8a7ed24f68ec880d0d9 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -44,6 +44,7 @@ __all__ = [
+     'reshape',
+     'random_combination_with_replacement',
+     'random_combination',
++    'random_derangement',
+     'random_permutation',
+     'random_product',
+     'repeatfunc',
+@@ -201,3 +202,4 @@ def multinomial(*counts: int) -> int: ...
+ def running_median(
+     iterable: Iterable[_NumberT], *, maxlen: int | None = ...
+ ) -> Iterator[_NumberT]: ...
++def random_derangement(iterable: Iterable[_T]) -> tuple[_T, ...]: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 20614267b5ba1d1464f7f82ac8cdcb0f21deb89b..8d5597c6696354da8e28fcd4100545be915d234d 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -11,7 +11,7 @@ from itertools import (
+     islice,
+     pairwise,
+ )
+-from operator import mul
++from operator import mul, eq
+ from math import comb, prod, factorial
+ from statistics import mean
+ from unittest import TestCase
+@@ -654,6 +654,32 @@ class RandomCombinationWithReplacementTests(TestCase):
+         self.assertEqual(all_items, set(items))
+ 
+ 
++class TestRandomDerangement(TestCase):
++    def test_basics(self):
++        word = tuple('love')
++        for _ in range(20):
++            d = mi.random_derangement(word)
++            self.assertEqual(len(d), len(word))  # Same size
++            self.assertEqual(set(d), set(word))  # Same values
++            self.assertFalse(any(map(eq, d, word)))  # No fixed points
++
++        c = Counter(mi.random_derangement(word) for _ in range(10_000))
++
++        # Repeated calls generate exactly the set of valid derangements.
++        self.assertEqual(set(c), set(mi.derangements(word)))
++
++        # Check approximate equidistribution (all counts within eight
++        # standard deviations of the expected mean).
++        self.assertTrue(940 <= min(c.values()) and max(c.values()) <= 1280)
++
++        # Corner case for empty input
++        self.assertEqual(mi.random_derangement(''), ())
++
++        # Error case
++        with self.assertRaises(IndexError):
++            mi.random_derangement('x')  # Not enough values
++
++
+ class NthCombinationTests(TestCase):
+     def test_basic(self):
+         iterable = 'abcdefg'

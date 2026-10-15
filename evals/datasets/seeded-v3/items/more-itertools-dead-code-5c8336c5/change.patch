@@ -1,0 +1,214 @@
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index 111c2d97d814c39b2599bae01600e3381b14b5b1..3d6388e528093ea87d157de766ab97213830598d 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -10,6 +10,7 @@ Some backward-compatible usability improvements have been made.
+ 
+ import random
+ 
++from bisect import bisect_left, insort_left
+ from collections import deque
+ from contextlib import suppress
+ from collections.abc import Sized
+@@ -32,7 +33,7 @@ from itertools import (
+     zip_longest,
+ )
+ from math import prod, comb, isqrt, gcd
+-from operator import mul, not_, itemgetter, getitem
++from operator import mul, not_, itemgetter, getitem, index
+ from random import randrange, sample, choice
+ from sys import hexversion
+ 
+@@ -1332,29 +1333,10 @@ def multinomial(*counts):
+     return prod(map(comb, accumulate(counts), counts))
+ 
+ 
+-def running_median(iterable):  # pragma: no cover
+-    """Yields the cumulative median of values seen so far.
++def _running_median_minheap_and_maxheap(iterator):  # pragma: no cover
++    "Non-windowed running_median() for Python 3.14+"
+ 
+-    For example:
+-
+-    >>> list(running_median([5.0, 9.0, 4.0, 12.0, 8.0, 9.0]))
+-    [5.0, 7.0, 5.0, 7.0, 8.0, 8.5]
+-
+-    Supports numeric types such as int, float, Decimal, and Fraction,
+-    but not complex numbers which are unorderable.
+-
+-    On versions of Python prior to 3.14, max-heaps are simulated with
+-    negative values. The negation causes Decimal inputs to apply context
+-    rounding, making the results slightly different than that obtained
+-    by statistics.median().
+-    """
+-
+-    # This recipe differs from the one in the heapq docs in that
+-    # eliminates the len() tests in favor of two updates per loop,
+-    # one for the even case and the other for the case where
+-    # the lo max-heap has one more element than the hi min-heap.
+-
+-    read = iter(iterable).__next__
++    read = iterator.__next__
+     lo = []  # max-heap
+     hi = []  # min-heap (same size as or one smaller than lo)
+ 
+@@ -1367,10 +1349,10 @@ def running_median(iterable):  # pragma: no cover
+             yield (lo[0] + hi[0]) / 2
+ 
+ 
+-def _running_median_minheap_only(iterable):  # pragma: no cover
+-    # Backport of running_median() for Python 3.13 and prior.
++def _running_median_minheap_only(iterator):  # pragma: no cover
++    "Backport of non-windowed running_median() for Python 3.13 and prior."
+ 
+-    read = iter(iterable).__next__
++    read = iterator.__next__
+     lo = []  # max-heap (actually a minheap with negated values)
+     hi = []  # min-heap (same size as or one smaller than lo)
+ 
+@@ -1383,6 +1365,77 @@ def _running_median_minheap_only(iterable):  # pragma: no cover
+             yield (hi[0] - lo[0]) / 2
+ 
+ 
+-if not _max_heap_available:
+-    _running_median_minheap_only.__doc__ = running_median.__doc__
+-    running_median = _running_median_minheap_only
++def _sorted_window(iterator, k):  # pragma: no cover
++    "Yield windows in sorted order"
++
++    # This simple implementation is reasonably fast with two O(1) deque
++    # updates and two O(log k) data comparisons per iteration.  However,
++    # it also has two O(k) steps, a list insertion and a list deletion.
++
++    # Grant Jenks' work on SortedCollections showed that those two steps
++    # have a very low constant factor because they are implemented with
++    # highly optimized C memmoves that shift the data pointers without
++    # needing to touch the underlying data with reference counts.
++
++    # This function could be reimplemented with SortedCollections, blist
++    # some other binary tree, or an IndexableSkipList all of which have
++    # O(k) insertions and deletions, albiet with a larger constant
++    # factor. For very large window sizes, this might matter.
++
++    history = deque()
++    window = []
++    for x in iterator:
++        history.append(x)
++        insort_left(window, x)
++        if len(window) > k:
++            i = bisect_left(window, history.popleft())
++            del window[i]
++        yield window
++
++
++def _running_median_windowed(iterable, window):
++    "Yield median of values in a sliding window."
++
++    for data in _sorted_window(iterable, k=window):
++        n = len(data)
++        if n % 2 == 1:
++            yield data[n // 2]
++        else:
++            i = n // 2
++            yield (data[i - 1] + data[i]) / 2
++
++
++def running_median(iterable, *, window=None):  # pragma: no cover
++    """Cumulative median of values seen so far or values in a sliding window.
++
++    For example:
++
++        >>> list(running_median([5.0, 9.0, 4.0, 12.0, 8.0, 9.0]))
++        [5.0, 7.0, 5.0, 7.0, 8.0, 8.5]
++        >>> list(running_median([5.0, 9.0, 4.0, 12.0, 8.0, 9.0], window=3))
++        [5.0, 7.0, 5.0, 9.0, 8.0, 9.0]
++
++    Supports numeric types such as int, float, Decimal, and Fraction,
++    but not complex numbers which are unorderable.
++
++    On version Python 3.13 and prior, max-heaps are simulated with
++    negative values. The negation causes Decimal inputs to apply context
++    rounding, making the results slightly different than that obtained
++    by statistics.median().
++    """
++
++    iterator = iter(iterable)
++
++    if window is not None:
++        window = index(window)
++        return _running_median_windowed(iterator, window)
++
++    if not _max_heap_available:
++        return _running_median_minheap_only(iterator)
++
++    return _running_median_minheap_and_maxheap(iterator)
++
++
++def _running_median_legacy(*args, **kwargs):
++    """Kept for backwards compatibility."""
++    return running_median(*args, **kwargs)
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 9cf20ba51bd687036773641a8eb397a18f5229ef..f8ae2aff9a877cb0642e6b0c4eefb659f01c3c43 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -197,4 +197,6 @@ def _strong_probable_prime(n: int, base: int) -> bool: ...
+ def is_prime(n: int) -> bool: ...
+ def loops(n: int) -> Iterator[None]: ...
+ def multinomial(*counts: int) -> int: ...
+-def running_median(iterable: Iterable[_NumberT]) -> Iterator[_NumberT]: ...
++def running_median(
++    iterable: Iterable[_NumberT], *, window: int | None = ...
++) -> Iterator[_NumberT]: ...
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index 2fa703d0e8e6db8c87f650d7455892f52f1bc4ed..ac7c662fe401592f52e189354227bef20c8a494a 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -1451,7 +1451,7 @@ class RunningMedianTests(TestCase):
+             # Apply unary plus to force context rounding.
+             [+Decimal(random.uniform(-500, 500)) for _ in range(500)],
+             [
+-                Fraction(random.randrange(-500, 500), random.randrange(1_000))
++                Fraction(random.randrange(-500, 500), random.randrange(1, 500))
+                 for _ in range(500)
+             ],
+         ]:
+@@ -1463,13 +1463,37 @@ class RunningMedianTests(TestCase):
+ 
+         self.assertEqual(list(running_median([])), [])  # Empty input
+ 
++    def test_vs_statistics_median_windowed(self):
++        running_median = mi.running_median
++        size = 10
++
++        for data in [
++            random.choices(range(-500, 500), k=500),
++            # Apply unary plus to force context rounding.
++            [+Decimal(random.uniform(-500, 500)) for _ in range(500)],
++            [
++                Fraction(random.randrange(-500, 500), random.randrange(1, 500))
++                for _ in range(500)
++            ],
++        ]:
++            with self.subTest(data=data):
++                iterator = running_median(iter(data), window=size)
++                for k, rm in enumerate(iterator, start=1):
++                    expected = statistics.median(data[max(0, k - size) : k])
++                    self.assertEqual(rm, expected)
++                    self.assertEqual(type(rm), type(expected))
++
++        self.assertEqual(list(running_median([])), [])  # Empty input
++
+     def test_error_cases(self):
+         running_median = mi.running_median
+         with self.assertRaises(TypeError):
+-            list(running_median(1234))  # No iterable input
++            running_median(1234)  # Non-iterable input
++        with self.assertRaises(TypeError):
++            running_median([], window='abc')  # Wrong type for window size
+         with self.assertRaises(TypeError):
+             list(running_median([3 + 4j, 5 - 7j]))  # Unorderable input type
+         with self.assertRaises(TypeError):
+             list(
+                 running_median(['abc', 'def', 'ghi'])
+-            )  # Type that doesn't support division
++            )  # Input type that doesn't support division

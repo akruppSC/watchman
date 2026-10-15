@@ -1,0 +1,217 @@
+diff --git a/README.rst b/README.rst
+index fdd253f36ad17b567e99ae2b8938f8959be316f0..c91eb1da7e4c28d850a3ee90ec2b291683568435 100644
+--- a/README.rst
++++ b/README.rst
+@@ -70,6 +70,7 @@ Python iterables.
+ |                        | `partial_product <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.partial_product>`_                                                                |
+ +------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+ | Summarizing            | `ilen <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.ilen>`_,                                                                                     |
++|                        | `extract <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.extract>`_,                                                                               |
+ |                        | `unique_to_each <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.unique_to_each>`_,                                                                 |
+ |                        | `sample <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.sample>`_,                                                                                 |
+ |                        | `consecutive_groups <https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.consecutive_groups>`_,                                                         |
+diff --git a/docs/api.rst b/docs/api.rst
+index bb756d66e357a5ada2b26c5fae421f2b0208691d..92e025beb32aa17f615807feed8ab8e7800293ae 100644
+--- a/docs/api.rst
++++ b/docs/api.rst
+@@ -144,6 +144,7 @@ These tools return summarized or aggregated data from an iterable.
+ **New itertools**
+ 
+ .. autofunction:: ilen
++.. autofunction:: extract
+ .. autofunction:: unique_to_each
+ .. autofunction:: sample(iterable, k=1, weights=None)
+ .. autofunction:: consecutive_groups(iterable, ordering=lambda x: x)
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index d9e11138fa10c1b3a3acedb71c3fc88111e19bfd..7e80dff5b197d2d06cb792e90ce6d925986c52c3 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -92,6 +92,7 @@ __all__ = [
+     'duplicates_justseen',
+     'classify_unique',
+     'exactly_n',
++    'extract',
+     'filter_except',
+     'filter_map',
+     'first',
+@@ -5230,3 +5231,49 @@ def argmax(iterable, *, key=None):
+     if key is not None:
+         iterable = map(key, iterable)
+     return max(enumerate(iterable), key=itemgetter(1))[0]
++
++
++def extract(iterable, indices):
++    """Yield values at the specified indices.
++
++    Example:
++
++        >>> data = list('abcdefghijklmnopqrstuvwxyz')
++        >>> list(extract(data, [7, 4, 11, 11, 14]))
++        ['h', 'e', 'l', 'l', 'o']
++
++    The *iterable* is consumed lazily and can be infinite.
++    The *indices* are consumed immediately and must be finite.
++
++    Raises ``IndexError`` if an index lies beyond the iterable.
++    Raises ``ValueError`` for negative indices.
++    """
++
++    iterator = iter(iterable)
++    indices = tuple(indices)
++
++    n = len(indices)
++    buffer = {}
++    iterator_position = -1
++    next_to_emit = 0
++    indexAndPosition = sorted(zip(indices, count()))
++
++    if indices and indexAndPosition[0][0] < 0:
++        raise ValueError('Indices must be non-negative')
++
++    for index, order in indexAndPosition:
++        advance = index - iterator_position
++        if advance:
++            try:
++                value = next(islice(iterator, advance - 1, None))
++            except StopIteration:
++                raise IndexError(index)
++            iterator_position = index
++
++        buffer[order] = value
++
++        while next_to_emit in buffer:
++            yield buffer.pop(next_to_emit)
++            next_to_emit += 1
++            if next_to_emit == n:
++                return
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index fb2d9923e6c9013993d9cd9f4bb9c10b20fc97f2..948334a52004c5589df9e6a87e5e8665f13ebfe0 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -61,6 +61,7 @@ __all__ = [
+     'duplicates_justseen',
+     'classify_unique',
+     'exactly_n',
++    'extract',
+     'filter_except',
+     'filter_map',
+     'first',
+@@ -941,3 +942,6 @@ def argmin(
+ def argmax(
+     iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
+ ) -> int: ...
++def extract(
++    iterable: Iterable[_T], indices: Iterable[int]
++) -> Iterator[_T]: ...
+diff --git a/tests/test_more.py b/tests/test_more.py
+index 03f6d654af0423655adb56e9f2e3b9c578f88248..08ba6e098594e885bc826f35e893004d359f86e0 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -36,6 +36,7 @@ from time import sleep
+ from typing import Iterable, Iterator, NamedTuple
+ from unittest import skipIf, TestCase
+ 
++import gc
+ import more_itertools as mi
+ 
+ 
+@@ -6273,3 +6274,99 @@ class ArgMinArgMaxTests(TestCase):
+             with self.subTest(i=i):
+                 self.assertEqual(mi.argmin(iterable, key=key), expected_min)
+                 self.assertEqual(mi.argmax(iterable, key=key), expected_max)
++
++
++class ExtractTests(TestCase):
++    def test_basics(self):
++        extract = mi.extract
++        data = list('abcdefghijklmnopqrstuvwxyz')
++
++        # Test iterator inputs, increasing and decreasing indices, and repeats.
++        self.assertEqual(
++            list(extract(iter(data), iter([7, 4, 11, 11, 14]))),
++            ['h', 'e', 'l', 'l', 'o'],
++        )
++
++        # Empty indices
++        self.assertEqual(list(extract(iter([data]), iter([]))), [])
++
++        # Result is an iterator
++        iterator = extract('abc', [0, 1, 2])
++        self.assertTrue(hasattr(iterator, '__next__'))
++
++        # Error cases
++
++        with self.assertRaises(TypeError):
++            list(extract(None, []))  # Non-iterable data source
++        with self.assertRaises(TypeError):
++            list(extract(data, None))  # Non-iterable indices
++        with self.assertRaises(ValueError):
++            list(extract(data, [0.0, 1.0, 2.0]))  # Non-integer indices
++        with self.assertRaises(ValueError):
++            list(extract(data, [1, 2, -3]))  # Negative indices
++        with self.assertRaises(IndexError):
++            list(extract(data, [1, 2, len(data)]))  # Indices out of range
++
++    def test_negative_one_bug(self):
++        # When the lowest index was exactly -1, it matched the initial
++        # iterator_position of -1 giving a zero advance step.
++        extract = mi.extract
++
++        with self.assertRaises(ValueError):
++            list(extract('abcdefg', [1, 2, -1]))
++
++    def test_none_value_bug(self):
++        # The buffer used to be a list with unused slots marked with None.
++        # The marked got conflated with None values in the data stream.
++        extract = mi.extract
++        data = ['a', 'b', 'None', 'c', 'd']
++        self.assertEqual(list(extract(data, range(5))), data)
++
++    def test_all_orderings(self):
++        extract = mi.extract
++
++        data = 'abcdefg'
++        for indices in product(range(6), repeat=5):  # 6, 5
++            with self.subTest(indices=indices):
++                actual = tuple(extract(data, indices))
++                expected = itemgetter(*indices)(data)
++                self.assertEqual(actual, expected)
++
++    def test_early_free(self):
++        # No references are held for skipped values or for previously
++        # emitted values regardless of how long they were in the buffer.
++
++        extract = mi.extract
++
++        class TrackDels(str):
++            def __del__(self):
++                dead.add(str(self))
++
++        dead = set()
++        iterator = extract(map(TrackDels, 'ABCDEF'), [3, 2, 4, 5])
++
++        value = next(iterator)
++        gc.collect()  # Force collection on PyPy.
++        self.assertEqual(value, 'D')  #  Returns D.  Buffered C is alive.
++        self.assertEqual(dead, {'A', 'B'})  # A and B are dead.
++
++        value = next(iterator)
++        gc.collect()  # Force collection on PyPy
++        self.assertEqual(value, 'C')  #  Returns C.
++
++        value = next(iterator)
++        gc.collect()  # Force collection on PyPy
++        self.assertEqual(value, 'E')  #  Returns E.
++        self.assertEqual(dead, {'A', 'B', 'D', 'C'})  # D and C are now dead.
++
++    def lazy_consumption(self):
++        extract = mi.extract
++
++        input_stream = peekable(iter('ABCDEFGHIJKLM'))
++        iterator = extract(input_stream, [4, 2, 10])
++
++        self.assertEqual(next(iterator, 'E'))  # C is still buffered
++        self.assertEqual(input_stream.peek(), 'F')
++
++        self.assertEqual(next(iterator, 'C'))
++        self.assertEqual(input_stream.peek(), 'F')

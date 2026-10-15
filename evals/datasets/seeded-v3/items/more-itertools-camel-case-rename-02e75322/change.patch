@@ -1,0 +1,348 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 1a21b7bbab0a5d1bb905ecbf79e5772bc27b0f66..259d715ac5b54fac6c5152bf330ae9e27c664f7d 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -27,6 +27,9 @@ from sys import hexversion, maxsize
+ from time import monotonic
+ 
+ from .recipes import (
++    _marker,
++    _zip_equal,
++    UnequalIterablesError,
+     consume,
+     flatten,
+     pairwise,
+@@ -133,9 +136,6 @@ __all__ = [
+ ]
+ 
+ 
+-_marker = object()
+-
+-
+ def chunked(iterable, n, strict=False):
+     """Break *iterable* into lists of length *n*:
+ 
+@@ -1646,45 +1646,6 @@ def stagger(iterable, offsets=(-1, 0, 1), longest=False, fillvalue=None):
+     )
+ 
+ 
+-class UnequalIterablesError(ValueError):
+-    def __init__(self, details=None):
+-        msg = 'Iterables have different lengths'
+-        if details is not None:
+-            msg += (': index 0 has length {}; index {} has length {}').format(
+-                *details
+-            )
+-
+-        super().__init__(msg)
+-
+-
+-def _zip_equal_generator(iterables):
+-    for combo in zip_longest(*iterables, fillvalue=_marker):
+-        for val in combo:
+-            if val is _marker:
+-                raise UnequalIterablesError()
+-        yield combo
+-
+-
+-def _zip_equal(*iterables):
+-    # Check whether the iterables are all the same size.
+-    try:
+-        first_size = len(iterables[0])
+-        for i, it in enumerate(iterables[1:], 1):
+-            size = len(it)
+-            if size != first_size:
+-                break
+-        else:
+-            # If we didn't break out, we can use the built-in zip.
+-            return zip(*iterables)
+-
+-        # If we did break out, there was a mismatch.
+-        raise UnequalIterablesError(details=(first_size, i, size))
+-    # If any one of the iterables didn't have a length, start reading
+-    # them until one runs out.
+-    except TypeError:
+-        return _zip_equal_generator(iterables)
+-
+-
+ def zip_equal(*iterables):
+     """``zip`` the input *iterables* together, but raise
+     ``UnequalIterablesError`` if they aren't all the same length.
+diff --git a/more_itertools/recipes.py b/more_itertools/recipes.py
+index a2596423a4c3dbd15a357241477a0af0a531f9ec..1e1e6ebdd5530b37c39f84cec24bf3fec8e1ca18 100644
+--- a/more_itertools/recipes.py
++++ b/more_itertools/recipes.py
+@@ -7,7 +7,9 @@ Some backward-compatible usability improvements have been made.
+ .. [1] http://docs.python.org/library/itertools.html#recipes
+ 
+ """
++import operator
+ import warnings
++
+ from collections import deque
+ from itertools import (
+     chain,
+@@ -21,7 +23,6 @@ from itertools import (
+     tee,
+     zip_longest,
+ )
+-import operator
+ from random import randrange, sample, choice
+ 
+ __all__ = [
+@@ -59,6 +60,8 @@ __all__ = [
+     'unique_justseen',
+ ]
+ 
++_marker = object()
++
+ 
+ def take(n, iterable):
+     """Return first *n* items of the iterable as a list.
+@@ -284,12 +287,73 @@ else:
+     pairwise.__doc__ = _pairwise.__doc__
+ 
+ 
+-def grouper(iterable, n, fillvalue=None):
+-    """Collect data into fixed-length chunks or blocks.
++class UnequalIterablesError(ValueError):
++    def __init__(self, details=None):
++        msg = 'Iterables have different lengths'
++        if details is not None:
++            msg += (': index 0 has length {}; index {} has length {}').format(
++                *details
++            )
++
++        super().__init__(msg)
++
++
++def _zip_equal_generator(iterables):
++    for combo in zip_longest(*iterables, fillvalue=_marker):
++        for val in combo:
++            if val is _marker:
++                raise UnequalIterablesError()
++        yield combo
++
++
++def _zip_equal(*iterables):
++    # Check whether the iterables are all the same size.
++    try:
++        firstSize = len(iterables[0])
++        for i, it in enumerate(iterables[1:], 1):
++            size = len(it)
++            if size != firstSize:
++                break
++        else:
++            # If we didn't break out, we can use the built-in zip.
++            return zip(*iterables)
++
++        # If we did break out, there was a mismatch.
++        raise UnequalIterablesError(details=(firstSize, i, size))
++    # If any one of the iterables didn't have a length, start reading
++    # them until one runs out.
++    except TypeError:
++        return _zip_equal_generator(iterables)
+ 
+-    >>> list(grouper('ABCDEFG', 3, 'x'))
++
++def grouper(iterable, n, incomplete='fill', fillvalue=None):
++    """Group elements from *iterable* into fixed-length groups of length *n*.
++
++    >>> list(grouper('ABCDEF', 3))
++    [('A', 'B', 'C'), ('D', 'E', 'F')]
++
++    The keyword arguments *incomplete* and *fillvalue* control what happens for
++    iterables whose length is not a multiple of *n*.
++
++    When *incomplete* is `'fill'`, the last group will contain instances of
++    *fillvalue*.
++
++    >>> list(grouper('ABCDEFG', 3, incomplete='fill', fillvalue='x'))
+     [('A', 'B', 'C'), ('D', 'E', 'F'), ('G', 'x', 'x')]
+ 
++    When *incomplete* is `'ignore'`, the last group will not be emitted.
++
++    >>> list(grouper('ABCDEFG', 3, incomplete='ignore', fillvalue='x'))
++    [('A', 'B', 'C'), ('D', 'E', 'F')]
++
++    When *incomplete* is `'strict'`, a subclass of `ValueError` will be raised.
++
++    >>> it = grouper('ABCDEFG', 3, incomplete='strict')
++    >>> list(it)  # doctest: +IGNORE_EXCEPTION_DETAIL
++    Traceback (most recent call last):
++    ...
++    UnequalIterablesError
++
+     """
+     if isinstance(iterable, int):
+         warnings.warn(
+@@ -297,7 +361,14 @@ def grouper(iterable, n, fillvalue=None):
+         )
+         n, iterable = iterable, n
+     args = [iter(iterable)] * n
+-    return zip_longest(fillvalue=fillvalue, *args)
++    if incomplete == 'fill':
++        return zip_longest(*args, fillvalue=fillvalue)
++    if incomplete == 'strict':
++        return _zip_equal(*args)
++    if incomplete == 'ignore':
++        return zip(*args)
++    else:
++        raise ValueError('Expected fill, strict, or ignore')
+ 
+ 
+ def roundrobin(*iterables):
+diff --git a/more_itertools/recipes.pyi b/more_itertools/recipes.pyi
+index 4648a41b5e51155d4db10cd5e221e8a7a9449201..629b282501959e15198bfebfbd3b38a959fbfb59 100644
+--- a/more_itertools/recipes.pyi
++++ b/more_itertools/recipes.pyi
+@@ -39,22 +39,22 @@ def repeatfunc(
+     func: Callable[..., _U], times: Optional[int] = ..., *args: Any
+ ) -> Iterator[_U]: ...
+ def pairwise(iterable: Iterable[_T]) -> Iterator[Tuple[_T, _T]]: ...
++
+ @overload
+ def grouper(
+-    iterable: Iterable[_T], n: int
+-) -> Iterator[Tuple[Optional[_T], ...]]: ...
+-@overload
+-def grouper(
+-    iterable: Iterable[_T], n: int, fillvalue: _U
++    iterable: Iterable[_T],
++    n: int,
++    incomplete: str = ...,
++    fillvalue: _U = ...,
+ ) -> Iterator[Tuple[Union[_T, _U], ...]]: ...
+ @overload
+ def grouper(  # Deprecated interface
+-    iterable: int, n: Iterable[_T]
+-) -> Iterator[Tuple[Optional[_T], ...]]: ...
+-@overload
+-def grouper(  # Deprecated interface
+-    iterable: int, n: Iterable[_T], fillvalue: _U
++    iterable: int,
++    n: Iterable[_T],
++    incomplete: str = ...,
++    fillvalue: _U = ...,
+ ) -> Iterator[Tuple[Union[_T, _U], ...]]: ...
++
+ def roundrobin(*iterables: Iterable[_T]) -> Iterator[_T]: ...
+ def partition(
+     pred: Optional[Callable[[_T], object]], iterable: Iterable[_T]
+diff --git a/tests/test_recipes.py b/tests/test_recipes.py
+index be409957490b4b32decab34cc8ebaf001deee963..ad948f966830a8c8dc8cc31a5fe1f53228f22141 100644
+--- a/tests/test_recipes.py
++++ b/tests/test_recipes.py
+@@ -259,35 +259,75 @@ class PairwiseTests(TestCase):
+ 
+ 
+ class GrouperTests(TestCase):
+-    """Tests for ``grouper()``"""
+-
+-    def test_even(self):
+-        """Test when group size divides evenly into the length of
+-        the iterable.
++    def test_basic(self):
++        seq = 'ABCDEF'
++        for n, expected in [
++            (3, [('A', 'B', 'C'), ('D', 'E', 'F')]),
++            (4, [('A', 'B', 'C', 'D'), ('E', 'F', None, None)]),
++            (5, [('A', 'B', 'C', 'D', 'E'), ('F', None, None, None, None)]),
++            (6, [('A', 'B', 'C', 'D', 'E', 'F')]),
++            (7, [('A', 'B', 'C', 'D', 'E', 'F', None)]),
++        ]:
++            with self.subTest(n=n):
++                actual = list(mi.grouper(iter(seq), n))
++                self.assertEqual(actual, expected)
+ 
+-        """
+-        self.assertEqual(
+-            list(mi.grouper('ABCDEF', 3)), [('A', 'B', 'C'), ('D', 'E', 'F')]
+-        )
++    def test_fill(self):
++        seq = 'ABCDEF'
++        fillvalue = 'x'
++        for n, expected in [
++            (1, ['A', 'B', 'C', 'D', 'E', 'F']),
++            (2, ['AB', 'CD', 'EF']),
++            (3, ['ABC', 'DEF']),
++            (4, ['ABCD', 'EFxx']),
++            (5, ['ABCDE', 'Fxxxx']),
++            (6, ['ABCDEF']),
++            (7, ['ABCDEFx']),
++        ]:
++            with self.subTest(n=n):
++                it = mi.grouper(
++                    iter(seq), n, incomplete='fill', fillvalue=fillvalue
++                )
++                actual = [''.join(x) for x in it]
++                self.assertEqual(actual, expected)
+ 
+-    def test_odd(self):
+-        """Test when group size does not divide evenly into the length of the
+-        iterable.
++    def test_ignore(self):
++        seq = 'ABCDEF'
++        for n, expected in [
++            (1, ['A', 'B', 'C', 'D', 'E', 'F']),
++            (2, ['AB', 'CD', 'EF']),
++            (3, ['ABC', 'DEF']),
++            (4, ['ABCD']),
++            (5, ['ABCDE']),
++            (6, ['ABCDEF']),
++            (7, []),
++        ]:
++            with self.subTest(n=n):
++                it = mi.grouper(iter(seq), n, incomplete='ignore')
++                actual = [''.join(x) for x in it]
++                self.assertEqual(actual, expected)
+ 
+-        """
+-        self.assertEqual(
+-            list(mi.grouper('ABCDE', 3)), [('A', 'B', 'C'), ('D', 'E', None)]
+-        )
++    def test_strict(self):
++        seq = 'ABCDEF'
++        for n, expected in [
++            (1, ['A', 'B', 'C', 'D', 'E', 'F']),
++            (2, ['AB', 'CD', 'EF']),
++            (3, ['ABC', 'DEF']),
++            (6, ['ABCDEF']),
++        ]:
++            with self.subTest(n=n):
++                it = mi.grouper(iter(seq), n, incomplete='strict')
++                actual = [''.join(x) for x in it]
++                self.assertEqual(actual, expected)
+ 
+-    def test_fill_value(self):
+-        """Test that the fill value is used to pad the final group"""
+-        self.assertEqual(
+-            list(mi.grouper('ABCDE', 3, 'x')),
+-            [('A', 'B', 'C'), ('D', 'E', 'x')],
+-        )
++    def test_strict_fails(self):
++        seq = 'ABCDEF'
++        for n in [4, 5, 7]:
++            with self.subTest(n=n):
++                with self.assertRaises(ValueError):
++                    list(mi.grouper(iter(seq), n, incomplete='strict'))
+ 
+     def test_legacy_order(self):
+-        """Historically, grouper expected the n as the first parameter"""
+         with warnings.catch_warnings(record=True) as caught:
+             warnings.simplefilter('always')
+             self.assertEqual(
+@@ -295,8 +335,11 @@ class GrouperTests(TestCase):
+                 [('A', 'B', 'C'), ('D', 'E', 'F')],
+             )
+ 
+-        (warning,) = caught
+-        assert warning.category == DeprecationWarning
++        self.assertEqual(caught[0].category, DeprecationWarning)
++
++    def test_invalid_incomplete(self):
++        with self.assertRaises(ValueError):
++            list(mi.grouper('ABCD', 3, incomplete='bogus'))
+ 
+ 
+ class RoundrobinTests(TestCase):

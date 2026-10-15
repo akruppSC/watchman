@@ -1,0 +1,29 @@
+{
+  "id": "click-debug-print-17cedf79",
+  "kind": "seeded",
+  "task": "Update _termui_impl.py",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "a352c6e416a734dd7891aa71f6c206b7d42b6baa",
+    "upstream_commit": "17cedf797efbd9f1ff2bf0ecfabc46a53ff3821a",
+    "origin": "upstream commit + seeded defect (debug_print)"
+  },
+  "defects": [
+    {
+      "file": "src/click/_termui_impl.py",
+      "line_start": 430,
+      "line_end": 430,
+      "category": "convention_violation",
+      "description": "Debugging `print` of `cmd_filepath` left in library code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "debug_print",
+    "upstream_subject": "Update _termui_impl.py",
+    "date": "2025-07-31"
+  }
+}

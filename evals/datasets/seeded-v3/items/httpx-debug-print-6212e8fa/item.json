@@ -1,0 +1,29 @@
+{
+  "id": "httpx-debug-print-6212e8fa",
+  "kind": "seeded",
+  "task": "Move utility functions from _utils.py to _multipart.py",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "83a85189c79708b732d04e7b906e388fb0fbde94",
+    "upstream_commit": "6212e8fa3bf90154b891c7721f6d29737caac861",
+    "origin": "upstream commit + seeded defect (debug_print)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_multipart.py",
+      "line_start": 194,
+      "line_end": 194,
+      "category": "convention_violation",
+      "description": "Debugging `print` of `filename` left in library code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "debug_print",
+    "upstream_subject": "Move utility functions from _utils.py to _multipart.py (#3388)",
+    "date": "2024-11-01"
+  }
+}

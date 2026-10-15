@@ -1,0 +1,29 @@
+{
+  "id": "httpx-debug-print-073a3284",
+  "kind": "seeded",
+  "task": "Drop 'Response(on_close=...)' from API",
+  "source": {
+    "type": "git",
+    "repo": "httpx",
+    "url": "https://github.com/encode/httpx.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "4870cb5adf63f4377a71c0b5bef6146fcdb53a9c",
+    "upstream_commit": "073a3284abbcecad68033053acf595ff749800a7",
+    "origin": "upstream commit + seeded defect (debug_print)"
+  },
+  "defects": [
+    {
+      "file": "httpx/_client.py",
+      "line_start": 108,
+      "line_end": 108,
+      "category": "convention_violation",
+      "description": "Debugging `print` of `seconds` left in library code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "debug_print",
+    "upstream_subject": "Drop 'Response(on_close=...)' from API (#1572)",
+    "date": "2021-04-16"
+  }
+}

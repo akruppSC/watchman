@@ -22,7 +22,7 @@ from typing import Annotated
 
 import typer
 
-from evals.build.mutators import SCHEDULE, TEMPLATES, Ctx, FileChange, Mutation
+from evals.build.mutators import SCHEDULE, TEMPLATES, Ctx, FileChange, Mutation, Template
 from evals.build.repos import (
     REPOS,
     Commit,
@@ -222,8 +222,9 @@ def _file_changes(r: SourceRepo, c: Commit, tree: Path, files: list[FileStat]) -
 
 
 def try_seed(
-    r: SourceRepo, c: Commit, template: str, rng: random.Random
-) -> tuple[Mutation, str] | None:
+    r: SourceRepo, c: Commit, template: str, rng: random.Random,
+    templates: dict[str, Template] | None = None,
+) -> tuple[Mutation, str] | None:  # fmt: skip
     with worktree(r, c.sha) as tree:
         ctx = Ctx(
             tree=tree,
@@ -232,7 +233,7 @@ def try_seed(
             package_files=package_files(tree, r),
             rng=rng,
         )  # fmt: skip
-        mutation = TEMPLATES[template](ctx)
+        mutation = (templates or TEMPLATES)[template](ctx)
         if mutation is None:
             return None
         for path, text in mutation.edits.items():
@@ -244,7 +245,7 @@ def try_seed(
 
 def build_seeded(
     pools: dict[str, list[Commit]], skip: set[str], out: Path, rng: random.Random,
-    counts: dict[str, int] | None = None,
+    counts: dict[str, int] | None = None, templates: dict[str, Template] | None = None,
 ) -> dict[str, int]:  # fmt: skip
     schedule = [t for t, n in (counts or SCHEDULE).items() for _ in range(n)]
     rng.shuffle(schedule)
@@ -257,7 +258,7 @@ def build_seeded(
             r = REPOS[name]
             hit = None
             for c in [c for c in pools[name] if c.sha not in used][:60]:
-                res = try_seed(r, c, template, rng)
+                res = try_seed(r, c, template, rng, templates)
                 if res is not None:
                     hit = (c, *res)
                     break
@@ -287,6 +288,9 @@ def build_seeded(
 
 def init_dataset(name: str, seed: int) -> Path:
     root = DATASETS_DIR / name
+    manifest = root / "manifest.json"
+    if manifest.exists() and Manifest.model_validate_json(manifest.read_text()).frozen:
+        raise BuildError(f"{name} is frozen; refusing to rebuild it")
     if root.exists():
         shutil.rmtree(root)
     (root / "items").mkdir(parents=True)

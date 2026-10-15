@@ -1,0 +1,29 @@
+{
+  "id": "attrs-unused-parameter-0f758fe5",
+  "kind": "seeded",
+  "task": "Expose converter as a decorator",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "57b314c0dc8e0b80c0ed8f61c0be81965137ea41",
+    "upstream_commit": "0f758fe54a8742110f730ebbaf146e79f3937c8d",
+    "origin": "upstream commit + seeded defect (unused_parameter)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 2843,
+      "line_end": 2843,
+      "category": "over_abstraction",
+      "description": "`converter` gained a keyword-only parameter `strict` that is never used (speculative generality).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "unused_parameter",
+    "upstream_subject": "Expose converter as a decorator (#1541)",
+    "date": "2026-04-16"
+  }
+}

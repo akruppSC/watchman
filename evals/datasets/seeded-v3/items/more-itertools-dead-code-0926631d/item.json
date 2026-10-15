@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-dead-code-0926631d",
+  "kind": "seeded",
+  "task": "Implement zip_broadcast",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "31b8a0ed1c8a60d7c6b96bc6d2b7c64c646a1057",
+    "upstream_commit": "0926631dee33163aa39ff2ce30882ea38be48a1a",
+    "origin": "upstream commit + seeded defect (dead_code)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4055,
+      "line_end": 4057,
+      "category": "over_abstraction",
+      "description": "`_zip_broadcast_legacy` is an unused alias of the new `zip_broadcast`; nothing calls it (dead code).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "dead_code",
+    "upstream_subject": "Implement zip_broadcast",
+    "date": "2021-08-30"
+  }
+}

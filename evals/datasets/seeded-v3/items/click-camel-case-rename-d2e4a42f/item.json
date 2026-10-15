@@ -1,0 +1,35 @@
+{
+  "id": "click-camel-case-rename-d2e4a42f",
+  "kind": "seeded",
+  "task": "Extract `_guess_type` from `convert_type` and add overloads",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "25edc1e31360efba4f64c8c3c540bbbcfb7876da",
+    "upstream_commit": "d2e4a42ff410d92e88293f3552422a4a284c749b",
+    "origin": "upstream commit + seeded defect (camel_case_rename)"
+  },
+  "defects": [
+    {
+      "file": "src/click/types.py",
+      "line_start": 1219,
+      "line_end": 1219,
+      "category": "convention_violation",
+      "description": "Local variable `is_guessed` renamed to camelCase `isGuessed` in `convert_type`, against the project's snake_case convention.",
+      "alt_ranges": [
+        {
+          "file": "src/click/types.py",
+          "line_start": 1239,
+          "line_end": 1239
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "camel_case_rename",
+    "upstream_subject": "Extract `_guess_type` from `convert_type` and add overloads (#3372)",
+    "date": "2026-04-30"
+  }
+}

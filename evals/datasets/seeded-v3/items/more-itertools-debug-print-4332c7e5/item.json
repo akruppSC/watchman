@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-debug-print-4332c7e5",
+  "kind": "seeded",
+  "task": "Remove unnecessary fillvalue trick from product_index()",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "8fa3b81c8dd90c3b3f6648add2228aaaebb42884",
+    "upstream_commit": "4332c7e59aa68a10bbf4aac278d336fe29e67013",
+    "origin": "upstream commit + seeded defect (debug_print)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 4335,
+      "line_end": 4335,
+      "category": "convention_violation",
+      "description": "Debugging `print` of `index` left in library code.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "debug_print",
+    "upstream_subject": "Remove unnecessary fillvalue trick from product_index()",
+    "date": "2025-10-09"
+  }
+}

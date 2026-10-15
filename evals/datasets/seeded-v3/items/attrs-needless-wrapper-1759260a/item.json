@@ -1,0 +1,35 @@
+{
+  "id": "attrs-needless-wrapper-1759260a",
+  "kind": "seeded",
+  "task": "Add support for re.Pattern to validators.matches_re()",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "fe19f4b341dbba5cda14b11d6a184105891c67e5",
+    "upstream_commit": "1759260aa0bb0ef62fdfcab8636af9d4cfa91c14",
+    "origin": "upstream commit + seeded defect (needless_wrapper)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/validators.py",
+      "line_start": 162,
+      "line_end": 163,
+      "category": "over_abstraction",
+      "description": "Added `_call_MatchesReValidator`, a wrapper that only forwards to `_MatchesReValidator`, and routed a call through it for no reason.",
+      "alt_ranges": [
+        {
+          "file": "src/attr/validators.py",
+          "line_start": 218,
+          "line_end": 218
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "needless_wrapper",
+    "upstream_subject": "Add support for re.Pattern to validators.matches_re() (#877)",
+    "date": "2021-11-30"
+  }
+}

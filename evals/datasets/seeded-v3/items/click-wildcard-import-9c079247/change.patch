@@ -1,0 +1,136 @@
+diff --git a/src/click/_utils.py b/src/click/_utils.py
+index a92dea3d84f1e8928994cccd3db27322b75f500c..09fb00855e68840d18187f3de3a604e7defc37e8 100644
+--- a/src/click/_utils.py
++++ b/src/click/_utils.py
+@@ -13,13 +13,24 @@ class Sentinel(enum.Enum):
+     """
+ 
+     UNSET = object()
++    FLAG_NEEDS_VALUE = object()
+ 
+     def __repr__(self) -> str:
+         return f"{self.__class__.__name__}.{self.name}"
+ 
+ 
+ UNSET = Sentinel.UNSET
+-"""A sentinel object used to indicate that a value is not set."""
++"""Sentinel used to indicate that a value is not set."""
++
++FLAG_NEEDS_VALUE = Sentinel.FLAG_NEEDS_VALUE
++"""Sentinel used to indicate an option was passed as a flag without a
++value but is not a flag option.
++
++``Option.consume_value`` uses this to prompt or use the ``flag_value``.
++"""
+ 
+ T_UNSET = t.Literal[UNSET]  # type: ignore[valid-type]
+ """Type hint for the :data:`UNSET` sentinel value."""
++
++T_FLAG_NEEDS_VALUE = t.Literal[FLAG_NEEDS_VALUE]  # type: ignore[valid-type]
++"""Type hint for the :data:`FLAG_NEEDS_VALUE` sentinel value."""
+diff --git a/src/click/core.py b/src/click/core.py
+index c2af2537159a5906d8309f96e26588c27e44d2a8..bb1f6cbf13e6e91dbebd3748ad9f303092e5840c 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -19,6 +19,7 @@ from itertools import repeat
+ from types import TracebackType
+ 
+ from . import types
++from ._utils import FLAG_NEEDS_VALUE
+ from ._utils import UNSET
+ from .exceptions import Abort
+ from .exceptions import BadParameter
+@@ -31,7 +32,6 @@ from .formatting import HelpFormatter
+ from .formatting import join_options
+ from .globals import pop_context
+ from .globals import push_context
+-from .parser import _flag_needs_value
+ from .parser import _OptionParser
+ from .parser import _split_opt
+ from .termui import confirm
+@@ -3185,7 +3185,7 @@ class Option(Parameter):
+ 
+         # The parser will emit a sentinel value if the option is allowed to as a flag
+         # without a value.
+-        if value is _flag_needs_value:
++        if value is FLAG_NEEDS_VALUE:
+             # If the option allows for a prompt, we start an interaction with the user.
+             if self.prompt is not None and not ctx.resilient_parsing:
+                 value = self.prompt_for_value(ctx)
+@@ -3207,14 +3207,14 @@ class Option(Parameter):
+ 
+         # Re-interpret a multiple option which has been sent as-is by the parser.
+         # Here we replace each occurrence of value-less flags (marked by the
+-        # _flag_needs_value sentinel) with the flag_value.
++        # FLAG_NEEDS_VALUE sentinel) with the flag_value.
+         elif (
+             self.multiple
+             and value is not UNSET
+             and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
+-            and any(v is _flag_needs_value for v in value)
++            and any(v is FLAG_NEEDS_VALUE for v in value)
+         ):
+-            value = [self.flag_value if v is _flag_needs_value else v for v in value]
++            value = [self.flag_value if v is FLAG_NEEDS_VALUE else v for v in value]
+             source = ParameterSource.COMMANDLINE
+ 
+         # The value wasn't set, or used the param's default, prompt for one to the user
+diff --git a/src/click/parser.py b/src/click/parser.py
+index 2c2159cc01906855e864322cc28c1878625e5054..b2cf5835bfd999b87b67165ef3b97ebcd555a531 100644
+--- a/src/click/parser.py
++++ b/src/click/parser.py
+@@ -30,6 +30,7 @@ from collections import deque
+ from gettext import gettext as _
+ from gettext import ngettext
+ 
++from ._utils import *
+ from ._utils import UNSET
+ from .exceptions import BadArgumentUsage
+ from .exceptions import BadOptionUsage
+@@ -37,6 +38,7 @@ from .exceptions import NoSuchOption
+ from .exceptions import UsageError
+ 
+ if t.TYPE_CHECKING:
++    from ._utils import T_FLAG_NEEDS_VALUE
+     from ._utils import T_UNSET
+     from .core import Argument as CoreArgument
+     from .core import Context
+@@ -45,11 +47,6 @@ if t.TYPE_CHECKING:
+ 
+ V = t.TypeVar("V")
+ 
+-# Sentinel value that indicates an option was passed as a flag without a
+-# value but is not a flag option. Option.consume_value uses this to
+-# prompt or use the flag_value.
+-_flag_needs_value = object()
+-
+ 
+ def _unpack_args(
+     args: cabc.Sequence[str], nargs_spec: cabc.Sequence[int]
+@@ -431,13 +428,15 @@ class _OptionParser:
+ 
+     def _get_value_from_state(
+         self, option_name: str, option: _Option, state: _ParsingState
+-    ) -> t.Any:
++    ) -> str | cabc.Sequence[str] | T_FLAG_NEEDS_VALUE:
+         nargs = option.nargs
+ 
++        value: str | cabc.Sequence[str] | T_FLAG_NEEDS_VALUE
++
+         if len(state.rargs) < nargs:
+             if option.obj._flag_needs_value:
+                 # Option allows omitting the value.
+-                value = _flag_needs_value
++                value = FLAG_NEEDS_VALUE
+             else:
+                 raise BadOptionUsage(
+                     option_name,
+@@ -458,7 +457,7 @@ class _OptionParser:
+             ):
+                 # The next arg looks like the start of an option, don't
+                 # use it as the value if omitting the value is allowed.
+-                value = _flag_needs_value
++                value = FLAG_NEEDS_VALUE
+             else:
+                 value = state.rargs.pop(0)
+         else:

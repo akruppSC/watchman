@@ -1,0 +1,29 @@
+{
+  "id": "click-dead-code-b4df3b9c",
+  "kind": "seeded",
+  "task": "Add `cls` to signature of `argument` and `option`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "2a7543e46ac43463354e1f7d30b17ae8332a3907",
+    "upstream_commit": "b4df3b9c5bae55f1f49128d68eff138864583faa",
+    "origin": "upstream commit + seeded defect (dead_code)"
+  },
+  "defects": [
+    {
+      "file": "src/click/decorators.py",
+      "line_start": 360,
+      "line_end": 362,
+      "category": "over_abstraction",
+      "description": "`_argument_legacy` is an unused alias of the new `argument`; nothing calls it (dead code).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "dead_code",
+    "upstream_subject": "Add `cls` to signature of `argument` and `option`",
+    "date": "2023-07-04"
+  }
+}

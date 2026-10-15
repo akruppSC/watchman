@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-wildcard-import-ccf96ac6",
+  "kind": "seeded",
+  "task": "Issue 1070: Add random derangements",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "b26c5b3a8d44a6bc026b49190cc423db72f91b63",
+    "upstream_commit": "ccf96ac64c4d6489d95a4bbf67b00999d341bdd2",
+    "origin": "upstream commit + seeded defect (wildcard_import)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/recipes.py",
+      "line_start": 37,
+      "line_end": 37,
+      "category": "convention_violation",
+      "description": "`from random import *` replaces explicit imports, hiding where names come from.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "wildcard_import",
+    "upstream_subject": "Issue 1070: Add random derangements",
+    "date": "2025-10-09"
+  }
+}

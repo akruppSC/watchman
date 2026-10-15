@@ -1,0 +1,40 @@
+{
+  "id": "more-itertools-camel-case-rename-5bd5c263",
+  "kind": "seeded",
+  "task": "Working draft",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "b1178c1bbca0dd8f6bae8be11d68f413c99e68e0",
+    "upstream_commit": "5bd5c263f9378eece7be45a92505828467e032ac",
+    "origin": "upstream commit + seeded defect (camel_case_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 5259,
+      "line_end": 5259,
+      "category": "convention_violation",
+      "description": "Local variable `index_and_position` renamed to camelCase `indexAndPosition` in `extract`, against the project's snake_case convention.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 5261,
+          "line_end": 5261
+        },
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 5264,
+          "line_end": 5264
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "camel_case_rename",
+    "upstream_subject": "Working draft",
+    "date": "2025-08-13"
+  }
+}

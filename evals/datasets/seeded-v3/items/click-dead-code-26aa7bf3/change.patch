@@ -1,0 +1,121 @@
+diff --git a/src/click/__init__.py b/src/click/__init__.py
+index cfef88ea84608d13de4ffc71f27aa6e6ac49015e..46f99e951a9eeb8163bccda0d88f745bf12248b2 100644
+--- a/src/click/__init__.py
++++ b/src/click/__init__.py
+@@ -19,6 +19,7 @@ from .decorators import command as command
+ from .decorators import confirmation_option as confirmation_option
+ from .decorators import group as group
+ from .decorators import help_option as help_option
++from .decorators import HelpOption as HelpOption
+ from .decorators import make_pass_decorator as make_pass_decorator
+ from .decorators import option as option
+ from .decorators import pass_context as pass_context
+diff --git a/src/click/core.py b/src/click/core.py
+index 29e46bd70750dc4a4dd9ebc390fa74746d1a7cb2..c623764eedd31ce8d7a21f4b966b24f98c237d23 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -1285,25 +1285,19 @@ class Command(BaseCommand):
+         return list(all_names)
+ 
+     def get_help_option(self, ctx: Context) -> t.Optional["Option"]:
+-        """Returns the help option object."""
++        """Returns the help option object.
++
++        Unless ``add_help_option`` is ``False``.
++        """
+         help_options = self.get_help_option_names(ctx)
+ 
+         if not help_options or not self.add_help_option:
+             return None
+ 
+-        def show_help(ctx: Context, param: "Parameter", value: str) -> None:
+-            if value and not ctx.resilient_parsing:
+-                echo(ctx.get_help(), color=ctx.color)
+-                ctx.exit()
+-
+-        return Option(
+-            help_options,
+-            is_flag=True,
+-            is_eager=True,
+-            expose_value=False,
+-            callback=show_help,
+-            help=_("Show this message and exit."),
+-        )
++        # Avoid circular import.
++        from .decorators import HelpOption
++
++        return HelpOption(help_options)
+ 
+     def make_parser(self, ctx: Context) -> OptionParser:
+         """Creates the underlying option parser for this command."""
+diff --git a/src/click/decorators.py b/src/click/decorators.py
+index c346c702aedad04ac970224f4bd3c81280103288..b192af95ada7882b9525b3c4df5387c80879d8c2 100644
+--- a/src/click/decorators.py
++++ b/src/click/decorators.py
+@@ -522,32 +522,46 @@ def version_option(
+     return option(*param_decls, **kwargs)
+ 
+ 
+-def help_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+-    """Add a ``--help`` option which immediately prints the help page
++class HelpOption(Option):
++    """Pre-configured ``--help`` option which immediately prints the help page
+     and exits the program.
++    """
++
++    def __init__(
++        self,
++        param_decls: t.Optional[t.Sequence[str]] = None,
++        **kwargs: t.Any,
++    ) -> None:
++        if not param_decls:
++            param_decls = ("--help",)
++
++        kwargs.setdefault("is_flag", True)
++        kwargs.setdefault("expose_value", False)
++        kwargs.setdefault("is_eager", True)
++        kwargs.setdefault("help", _("Show this message and exit."))
++        kwargs.setdefault("callback", self.show_help)
++
++        super().__init__(param_decls, **kwargs)
++
++    @staticmethod
++    def show_help(ctx: Context, param: Parameter, value: bool) -> None:
++        """Callback that print the help page on ``<stdout>`` and exits."""
++        if value and not ctx.resilient_parsing:
++            echo(ctx.get_help(), color=ctx.color)
++            ctx.exit()
+ 
+-    This is usually unnecessary, as the ``--help`` option is added to
+-    each command automatically unless ``add_help_option=False`` is
+-    passed.
++
++def help_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
++    """Decorator for the pre-configured ``--help`` option defined above.
+ 
+     :param param_decls: One or more option names. Defaults to the single
+         value ``"--help"``.
+     :param kwargs: Extra arguments are passed to :func:`option`.
+     """
++    kwargs.setdefault("cls", HelpOption)
++    return option(*param_decls, **kwargs)
+ 
+-    def callback(ctx: Context, param: Parameter, value: bool) -> None:
+-        if not value or ctx.resilient_parsing:
+-            return
+-
+-        echo(ctx.get_help(), color=ctx.color)
+-        ctx.exit()
+-
+-    if not param_decls:
+-        param_decls = ("--help",)
+ 
+-    kwargs.setdefault("is_flag", True)
+-    kwargs.setdefault("expose_value", False)
+-    kwargs.setdefault("is_eager", True)
+-    kwargs.setdefault("help", _("Show this message and exit."))
+-    kwargs["callback"] = callback
+-    return option(*param_decls, **kwargs)
++def _help_option_legacy(*args, **kwargs):
++    """Kept for backwards compatibility."""
++    return help_option(*args, **kwargs)

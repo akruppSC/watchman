@@ -1,0 +1,29 @@
+{
+  "id": "click-dead-code-26aa7bf3",
+  "kind": "seeded",
+  "task": "Deduplicate `--help` option definition",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "9aeb586cbc622c229bbf80ad948e590f596a8d3e",
+    "upstream_commit": "26aa7bf3189e19a8a63890b1c2cc7eca24312d6f",
+    "origin": "upstream commit + seeded defect (dead_code)"
+  },
+  "defects": [
+    {
+      "file": "src/click/decorators.py",
+      "line_start": 565,
+      "line_end": 567,
+      "category": "over_abstraction",
+      "description": "`_help_option_legacy` is an unused alias of the new `help_option`; nothing calls it (dead code).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "dead_code",
+    "upstream_subject": "Deduplicate `--help` option definition (#2563)",
+    "date": "2024-11-02"
+  }
+}

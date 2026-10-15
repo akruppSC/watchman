@@ -1,0 +1,35 @@
+{
+  "id": "more-itertools-camel-case-rename-2175ce39",
+  "kind": "seeded",
+  "task": "Update derangements to extend functionality and runspeed",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "f36c88fe03688fa442154ef14f429bcfa4c38525",
+    "upstream_commit": "2175ce39eb257829b6d36110684e34a89cb8f45f",
+    "origin": "upstream commit + seeded defect (camel_case_rename)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 856,
+      "line_end": 856,
+      "category": "convention_violation",
+      "description": "Local variable `pool_unique` renamed to camelCase `poolUnique` in `derangements`, against the project's snake_case convention.",
+      "alt_ranges": [
+        {
+          "file": "more_itertools/more.py",
+          "line_start": 857,
+          "line_end": 857
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "camel_case_rename",
+    "upstream_subject": "Update derangements to extend functionality and runspeed",
+    "date": "2025-01-12"
+  }
+}

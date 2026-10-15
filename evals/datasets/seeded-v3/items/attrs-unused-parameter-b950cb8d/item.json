@@ -1,0 +1,29 @@
+{
+  "id": "attrs-unused-parameter-b950cb8d",
+  "kind": "seeded",
+  "task": "compat: move check for closure cellvar update wrapper function",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "bf522367c0100893915c795673cbc775bd2d8408",
+    "upstream_commit": "b950cb8d83789de9824f39808ddac64a06cc3031",
+    "origin": "upstream commit + seeded defect (unused_parameter)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_compat.py",
+      "line_start": 93,
+      "line_end": 93,
+      "category": "over_abstraction",
+      "description": "`set_first_cellvar_to` gained a keyword-only parameter `strict` that is never used (speculative generality).",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "unused_parameter",
+    "upstream_subject": "compat: move check for closure cellvar update wrapper function (#1092)",
+    "date": "2023-02-26"
+  }
+}

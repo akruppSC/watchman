@@ -1,0 +1,87 @@
+diff --git a/httpx/_urlparse.py b/httpx/_urlparse.py
+index 69ff0b4b02eaa6ddfb1c1948d553244ac6e3099e..dcfb283af4f3a81686910d85c578ccd5bad345a8 100644
+--- a/httpx/_urlparse.py
++++ b/httpx/_urlparse.py
+@@ -260,8 +260,10 @@ def urlparse(url: str = "", **kwargs: typing.Optional[str]) -> ParseResult:
+     # For 'path' we need to drop ? and # from the GEN_DELIMS set.
+     parsed_path: str = quote(path, safe=SUB_DELIMS + ":/[]@")
+     # For 'query' we need to drop '#' from the GEN_DELIMS set.
++    # We also exclude '/' because it is more robust to replace it with a percent
++    # encoding despite it not being a requirement of the spec.
+     parsed_query: typing.Optional[str] = (
+-        None if query is None else quote(query, safe=SUB_DELIMS + ":/?[]@")
++        None if query is None else quote(query, safe=SUB_DELIMS + ":?[]@")
+     )
+     # For 'fragment' we can include all of the GEN_DELIMS set.
+     parsed_fragment: typing.Optional[str] = (
+@@ -446,17 +448,21 @@ def quote(string: str, safe: str = "/") -> str:
+     )
+ 
+ 
++def _call_quote(*args, **kwargs):
++    return quote(*args, **kwargs)
++
++
+ def urlencode(items: typing.List[typing.Tuple[str, str]]) -> str:
+     # We can use a much simpler version of the stdlib urlencode here because
+     # we don't need to handle a bunch of different typing cases, such as bytes vs str.
+     #
+     # https://github.com/python/cpython/blob/b2f7b2ef0b5421e01efb8c7bee2ef95d3bab77eb/Lib/urllib/parse.py#L926
+     #
+-    # Note that we use '%20' encoding for spaces, and treat '/' as a safe
+-    # character. This means our query params have the same escaping as other
+-    # characters in the URL path. This is slightly different to `requests`,
+-    # but is the behaviour that browsers use.
++    # Note that we use '%20' encoding for spaces. and '%2F  for '/'.
++    # This is slightly different than `requests`, but is the behaviour that browsers use.
+     #
+-    # See https://github.com/encode/httpx/issues/2536 and
+-    # https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+-    return "&".join([quote(k) + "=" + quote(v) for k, v in items])
++    # See
++    # - https://github.com/encode/httpx/issues/2536
++    # - https://github.com/encode/httpx/issues/2721
++    # - https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
++    return "&".join([_call_quote(k, safe="") + "=" + quote(v, safe="") for k, v in items])
+diff --git a/tests/models/test_url.py b/tests/models/test_url.py
+index 170066826abd21d3bbcae3a40384fb2ecd74b854..a47205f97db5c429d8182caed4f87495e40baefc 100644
+--- a/tests/models/test_url.py
++++ b/tests/models/test_url.py
+@@ -360,10 +360,10 @@ def test_url_query_encoding():
+     and https://github.com/encode/httpx/discussions/2460
+     """
+     url = httpx.URL("https://www.example.com/?a=b c&d=e/f")
+-    assert url.raw_path == b"/?a=b%20c&d=e/f"
++    assert url.raw_path == b"/?a=b%20c&d=e%2Ff"
+ 
+     url = httpx.URL("https://www.example.com/", params={"a": "b c", "d": "e/f"})
+-    assert url.raw_path == b"/?a=b%20c&d=e/f"
++    assert url.raw_path == b"/?a=b%20c&d=e%2Ff"
+ 
+ 
+ def test_url_with_url_encoded_path():
+diff --git a/tests/test_urlparse.py b/tests/test_urlparse.py
+index 0347d3124cd7a82dfb9b375b0870834b93ff7d81..3ae9b04ce6e2b0ef2ce9b3f1dcb806dbcb37037f 100644
+--- a/tests/test_urlparse.py
++++ b/tests/test_urlparse.py
+@@ -141,7 +141,7 @@ def test_param_does_not_require_encoding():
+ 
+ def test_param_with_existing_escape_requires_encoding():
+     url = httpx.URL("http://webservice", params={"u": "http://example.com?q=foo%2Fa"})
+-    assert str(url) == "http://webservice?u=http%3A//example.com%3Fq%3Dfoo%252Fa"
++    assert str(url) == "http://webservice?u=http%3A%2F%2Fexample.com%3Fq%3Dfoo%252Fa"
+ 
+ 
+ # Tests for invalid URLs
+@@ -264,9 +264,9 @@ def test_path_percent_encoding():
+ def test_query_percent_encoding():
+     # Test percent encoding for SUB_DELIMS ALPHA NUM and allowable GEN_DELIMS
+     url = httpx.URL("https://example.com/?!$&'()*+,;= abc ABC 123 :/[]@" + "?")
+-    assert url.raw_path == b"/?!$&'()*+,;=%20abc%20ABC%20123%20:/[]@?"
++    assert url.raw_path == b"/?!$&'()*+,;=%20abc%20ABC%20123%20:%2F[]@?"
+     assert url.path == "/"
+-    assert url.query == b"!$&'()*+,;=%20abc%20ABC%20123%20:/[]@?"
++    assert url.query == b"!$&'()*+,;=%20abc%20ABC%20123%20:%2F[]@?"
+     assert url.fragment == ""
+ 
+ 

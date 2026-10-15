@@ -1,0 +1,35 @@
+{
+  "id": "click-needless-wrapper-405a5481",
+  "kind": "seeded",
+  "task": "Move common `help` argument from `Option` and `Argument` to `Parameter`",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "86949d19b930ef68a45566544cb4b9508d895d0d",
+    "upstream_commit": "405a5481e4dbd5022799993d787bd8446137d9a3",
+    "origin": "upstream commit + seeded defect (needless_wrapper)"
+  },
+  "defects": [
+    {
+      "file": "src/click/core.py",
+      "line_start": 2215,
+      "line_end": 2216,
+      "category": "over_abstraction",
+      "description": "Added `_call_format_deprecated_label`, a wrapper that only forwards to `_format_deprecated_label`, and routed a call through it for no reason.",
+      "alt_ranges": [
+        {
+          "file": "src/click/core.py",
+          "line_start": 2403,
+          "line_end": 2403
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "needless_wrapper",
+    "upstream_subject": "Move common `help` argument from `Option` and `Argument` to `Parameter`",
+    "date": "2026-09-10"
+  }
+}

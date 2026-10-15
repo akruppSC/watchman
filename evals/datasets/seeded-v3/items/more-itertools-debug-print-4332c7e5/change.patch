@@ -1,0 +1,27 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 8a5d23fa8298be4d37279be716b277ac3da2bc9a..cbbf80bdc7a18358c0f613e7cf8afcfba6832712 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -4326,14 +4326,15 @@ def product_index(element, *args):
+     ``ValueError`` will be raised if the given *element* isn't in the product
+     of *args*.
+     """
+-    index = 0
+-
+-    for x, pool in zip_longest(element, args, fillvalue=_marker):
+-        if x is _marker or pool is _marker:
+-            raise ValueError('element is not a product of args')
++    elements = tuple(element)
++    pools = tuple(map(tuple, args))
++    if len(element) != len(args):
++        raise ValueError('element is not a product of args')
+ 
+-        pool = tuple(pool)
+-        index = index * len(pool) + pool.index(x)
++    index = 0
++    print(f"DEBUG index: {index!r}")
++    for elem, pool in zip(elements, pools):
++        index = index * len(pool) + pool.index(elem)
+ 
+     return index
+ 

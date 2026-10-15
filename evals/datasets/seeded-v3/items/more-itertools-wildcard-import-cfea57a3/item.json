@@ -1,0 +1,29 @@
+{
+  "id": "more-itertools-wildcard-import-cfea57a3",
+  "kind": "seeded",
+  "task": "Add `strict` parameter to `is_sorted` for strict ordering check",
+  "source": {
+    "type": "git",
+    "repo": "more-itertools",
+    "url": "https://github.com/more-itertools/more-itertools.git",
+    "license": "MIT",
+    "base_commit": "a89d4143883f81ff0d7299057ffae855aa303e78",
+    "upstream_commit": "cfea57a30c1c66022975f877d703f80c1e7a0d14",
+    "origin": "upstream commit + seeded defect (wildcard_import)"
+  },
+  "defects": [
+    {
+      "file": "more_itertools/more.py",
+      "line_start": 26,
+      "line_end": 26,
+      "category": "convention_violation",
+      "description": "`from sys import *` replaces explicit imports, hiding where names come from.",
+      "alt_ranges": []
+    }
+  ],
+  "meta": {
+    "template": "wildcard_import",
+    "upstream_subject": "Add `strict` parameter to `is_sorted` for strict ordering check",
+    "date": "2021-10-04"
+  }
+}

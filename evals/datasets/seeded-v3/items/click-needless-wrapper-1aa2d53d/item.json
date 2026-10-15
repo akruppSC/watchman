@@ -1,0 +1,35 @@
+{
+  "id": "click-needless-wrapper-1aa2d53d",
+  "kind": "seeded",
+  "task": "Redesigned tests and get_pager_file branching to be more clear and not set color unknowingly.",
+  "source": {
+    "type": "git",
+    "repo": "click",
+    "url": "https://github.com/pallets/click.git",
+    "license": "BSD-3-Clause",
+    "base_commit": "e94e8dc40da6fc3975fe4931ecd8ecbac87f7cc9",
+    "upstream_commit": "1aa2d53d63ff68bf14b35931177aac9270e39713",
+    "origin": "upstream commit + seeded defect (needless_wrapper)"
+  },
+  "defects": [
+    {
+      "file": "src/click/_termui_impl.py",
+      "line_start": 430,
+      "line_end": 431,
+      "category": "over_abstraction",
+      "description": "Added `_call_MaybeStripAnsi`, a wrapper that only forwards to `MaybeStripAnsi`, and routed a call through it for no reason.",
+      "alt_ranges": [
+        {
+          "file": "src/click/_termui_impl.py",
+          "line_start": 448,
+          "line_end": 448
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "needless_wrapper",
+    "upstream_subject": "Redesigned tests and get_pager_file branching to be more clear and not set color unknowingly.",
+    "date": "2026-05-05"
+  }
+}

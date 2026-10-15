@@ -1,0 +1,35 @@
+{
+  "id": "attrs-needless-wrapper-48b8611c",
+  "kind": "seeded",
+  "task": "Add instance support to attrs.fields()",
+  "source": {
+    "type": "git",
+    "repo": "attrs",
+    "url": "https://github.com/python-attrs/attrs.git",
+    "license": "MIT",
+    "base_commit": "3a68d4913221abc6f8ad3be50937f7ae49300a98",
+    "upstream_commit": "48b8611c27779811d161200e17de8da24aae7feb",
+    "origin": "upstream commit + seeded defect (needless_wrapper)"
+  },
+  "defects": [
+    {
+      "file": "src/attr/_make.py",
+      "line_start": 1891,
+      "line_end": 1892,
+      "category": "over_abstraction",
+      "description": "Added `_call_fields`, a wrapper that only forwards to `fields`, and routed a call through it for no reason.",
+      "alt_ranges": [
+        {
+          "file": "src/attr/_make.py",
+          "line_start": 1927,
+          "line_end": 1927
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "template": "needless_wrapper",
+    "upstream_subject": "Add instance support to attrs.fields() (#1529)",
+    "date": "2026-03-14"
+  }
+}
