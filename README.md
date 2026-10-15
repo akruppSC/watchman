@@ -30,12 +30,12 @@ Watchman has three main goals:
 2. **Be verifiable**: every finding cites the tool calls behind it, and the whole thing is measured on
    a frozen evaluation, not on impressions.
 3. **Keep AI-written code readable and maintainable.** As more code is written by AI agents, it
-   should still read like code a senior developer would accept: small focused functions, documented
-   public interfaces, sensible naming and error handling, and a project whose structure still makes
-   sense. The reference is a style guide, the
-   [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html), plus the repo's own
-   conventions. Watchman works on this live, with the worker, as it writes: see
-   [Code quality and style](#code-quality-and-style).
+   should still read like code a senior developer would accept. That has two parts. The first is
+   *quantified*: small, focused functions with **low cyclomatic complexity** (10 or less), shallow
+   nesting, few parameters, documented public interfaces, and no copy-paste. The second is a style
+   guide, the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html), plus the
+   repo's own conventions (naming, error handling, structure). Watchman works on both live, with the
+   worker, as it writes: see [Code quality and style](#code-quality-and-style).
 
 Goal 3 is the hardest to measure, and the sections below say exactly what is and isn't shown.
 
@@ -332,6 +332,71 @@ done-prompt.
 
 ## Code quality and style
 
+Watchman measures code quality in two ways. The first is a set of **quantified limits that don't depend on
+any style guide**, with complexity first among them: they were the original, measurable definition of
+"good code" for this project. The second is the **Google Python Style Guide**, an opt-in mode that checks the
+rules a program can decide. Both run in live mode, so the worker hears about a problem while it is cheap to
+fix.
+
+### Quantified maintainability: complexity, size, nesting, parameters, duplication
+
+The `quality` check (`checks/quality.py`, on by default) measures the code a change touches against fixed
+limits. A finding is raised only when *this change* creates the problem (a new function over a limit, or an
+existing one the change pushes across it), never for debt that was already there: adding one branch to a
+function that was already too complex does not make it too complex. The limits are fixed in code, so a
+reviewed repo can't loosen its own review.
+
+| measure | how it is computed | limit | why |
+|---|---|---|---|
+| **Cyclomatic complexity** | McCabe: 1 + decisions (`if`/`elif`, loops, `except`, ternaries, `and`/`or`, comprehension filters, `match` cases) per function | **10** | McCabe's proposed limit (discussed in NIST SP 500-235): beyond it a function has too many paths to test or hold in your head |
+| Function length | lines from `def` to the last line | 60 (**40** in Google mode) | Google's guide §3.18 hints at "about 40 lines" |
+| Parameters | positional and keyword parameters, excluding `self`/`cls` | 5 | ruff's default (`PLR0913`) |
+| Nesting | deepest block depth in a function (`elif` is not deeper than its `if`) | 4 | common practice; deep nesting hides the main path |
+| Documentation | public functions and classes added without a docstring, where the module documents its API; new modules whose public API is mostly undocumented | n/a | readers need the contract |
+| Copy-paste | six or more added lines that already exist elsewhere in production code | 6 lines | reuse over duplication |
+
+In live mode the worker sees, for example,
+
+```
++ minor maintainability app/cli.py:81 `_dispatch` has cyclomatic complexity 11 (limit 10) | fix: split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table
+```
+
+On the dev split of the evaluation (real commits from attrs, click, httpx and more-itertools) the check fires
+about 0.07 times per clean commit and caught 1 of the 41 seeded defects (an injected copied helper): it is a
+maintainability guard, not a defect finder. That was measured on dev only, at $0.
+
+**Did supervision lower complexity?** Complexity is the cleanest of these measures, and the most consistent
+effect I found. Maximum cyclomatic complexity in the code a Haiku 5.5 worker wrote, and functions over the
+limit of 10, alone vs. supervised (the experiments are described below):
+
+| experiment | max complexity per run | functions over 10 per run | pairs where supervised was lower / higher (functions over 10) |
+|---|---|---|---|
+| 1: defect tasks (54 runs; Haiku's code was already simple) | 3.2 → 3.5 | 0.00 → 0.00 | 0 / 0 (a ceiling: nothing to fix) |
+| **2A: specified tasks that invite long functions** | **17.7 → 11.2** | **0.67 → 0.22** | 4 / 0 (p = 0.12) |
+| **2B: vague one-line tasks** | **8.6 → 5.3** | **0.33 → 0.00** | 3 / 0 (p = 0.25) |
+| 3: same vague tasks, Google mode | 7.8 → 7.2 | 0.33 → 0.11 | 2 / 0 (p = 0.50) |
+
+Case by case, the effect is large where the first draft was bad. On `vague_notes` (experiment 2B) all three
+unsupervised runs ended with a function of complexity 15 to 18, and all three supervised runs with 5 to 6
+after Watchman flagged it. On `invoice_rules` the unsupervised runs ended at 32 to 33 and two of three
+supervised runs at 9; on `shipping_cost` unsupervised 14 to 16 and supervised 7, 8 and 16. **It did not
+replicate that strongly:** on the same `vague_notes` task in experiment 3 the supervised runs ended at 10, 15
+and 7 against 14 to 15 unsupervised, and the mean maximum barely moved (7.8 → 7.2, with 4 pairs higher and 2
+lower). In experiment 2A, all three supervised runs that still ended over a limit had been shown a finding
+for it and did not fix it.
+
+What this does and doesn't show. Complexity went down in the direction the goal wants in every experiment
+where there was something to reduce, and the clearest cases are large. No comparison is statistically
+significant at the registered per-suite level (nine pairs each), the mean maximum is not monotone across
+experiments (2B's pairs were mixed, 3 lower and 4 higher, because already-simple runs wobbled by a point or
+two), and the metric uses the same limit as the check, so it shows that **the worker acts on the complexity
+feedback**, not that complexity independently proves better code. Splitting a function also costs something:
+supervised runs wrote about 10% more production code on 2A, and the most parameters in a function rose from
+2.6 to 3.2 as logic moved into helpers. Full tables are in
+[`evals/results/QUALITY.md`](evals/results/QUALITY.md).
+
+### The Google Python Style Guide
+
 **The reference is a style guide, not a standard.** A style guide is something code can be checked
 against, which is why Watchman uses the
 [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) as its yardstick
@@ -368,23 +433,9 @@ Every finding it raises cites its guide section, for example
 worker sees these at test runs, commits and "done". It is a best-effort detector of departures from the
 guide, not a certification of compliance.
 
-The quality limits are fixed in code (`checks/quality.py`), not configurable by the reviewed repo, and
-are conservative on purpose: a finding is raised only when *this change* creates the problem, never for
-debt that was already there. On the dev split of the evaluation (real commits from attrs, click, httpx and
-more-itertools) the `quality` check fires about 0.07 times per clean commit and caught 1 of the 41
-seeded defects (an injected copied helper): it is a maintainability guard, not a defect finder. That was
-measured on dev only, at $0; the held-out split was not touched.
+### Does it improve the code?
 
-**Live.** In live mode this check runs at every checkpoint (test run, commit, "done"), so the worker
-sees something like
-
-```
-+ minor maintainability app/cli.py:81 `_dispatch` has cyclomatic complexity 11 (limit 10) | fix: split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table
-```
-
-and can fix it in the same session.
-
-**Does it improve the code?** Two measurements, each stated with its limits:
+Three pre-registered experiments, each stated with its limits (complexity results are broken out above):
 
 - *Experiment 1 (above), re-measured on code quality:* no difference. Haiku's code was already small
   and simple, so there was nothing to improve (`evals/results/QUALITY.md`).
