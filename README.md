@@ -20,6 +20,24 @@ evidence, and findings that can't be grounded are dropped.
 import, a leaked token, a bare `except`, and a skipped test, and shows Watchman catching them
 and a pre-push hook rejecting the push. The deterministic part needs no API key.
 
+## Goals
+
+Watchman has three main goals:
+
+1. **Catch what AI-written code gets wrong**: hallucinated dependencies, swallowed errors, weakened
+   tests, copied helpers, scope creep, invented APIs.
+2. **Be verifiable**: every finding cites the tool calls behind it, and the whole thing is measured on
+   a frozen evaluation, not on impressions.
+3. **Keep AI-written code readable and maintainable.** As more code is written by AI agents, it
+   should still read like code a senior developer would accept: small focused functions, documented
+   public interfaces, sensible naming and error handling, and a project whose structure still makes
+   sense. The reference is a style guide, the
+   [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html), plus the repo's own
+   conventions. Watchman works on this live, with the worker, as it writes: see
+   [Code quality and style](#code-quality-and-style).
+
+Goal 3 is the hardest to measure, and the sections below say exactly what is and isn't shown.
+
 ## Install
 
 Requires Python 3.12+, git, and [uv](https://docs.astral.sh/uv/).
@@ -310,6 +328,85 @@ done-prompt.
   billed to whatever runs it.
 - **The overseer was not shown to help** (see [The overseer](#the-overseer)). Live mode does not use it;
   `--deep` stays an opt-in tool.
+
+## Code quality and style
+
+**The reference is a style guide, not a standard.** A style guide is something code can be checked
+against, which is why Watchman uses the
+[Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) as its yardstick
+for "readable by a senior developer". Watchman does not certify compliance with it, or with any
+standard: it flags concrete departures it can detect reliably, tells the worker while they are cheap
+to fix, and leaves the rest (formatting, taste, whether the design is elegant) to a formatter and to
+human review. What it covers today, by section of the guide:
+
+| Google Python Style Guide | What Watchman does today | Where |
+|---|---|---|
+| §3.18 Function length: "prefer small and focused functions" (about 40 lines) | Flags a function that *this change* pushes past 60 lines, 10 cyclomatic complexity, 5 parameters, or 4 levels of nesting, and suggests how to split it. The guide gives only the 40-line hint; the other limits come from general practice (McCabe's 10, ruff's defaults) | `quality` check |
+| §3.8 Comments and docstrings (public API documented) | Flags a new public function/class without a docstring where the module documents its API, and a new module whose public API is mostly undocumented. It does not check the `Args:`/`Returns:`/`Raises:` format yet | `quality` check |
+| §2.4 Exceptions (no catch-all `except:`, small `try` bodies, no `assert` for validation) | Flags bare and blind `except`, `except: pass`, `raise` without `from`; the agent judges `try` body size | `ruff`, agent |
+| §2.12 Default argument values (no mutable defaults) | Flags mutable and call-expression defaults | `ruff` |
+| §2.1 Lint | Runs ruff and mypy on the changed lines (not pylint) | `ruff`, `mypy` |
+| Reuse over copy-paste (readability, not a numbered rule) | Flags added blocks that already exist elsewhere | `quality` check, agent |
+| §3.2-3.6 Formatting (line length, indentation, whitespace) | Not re-implemented: use a formatter (Black, Pyink or `ruff format`) | n/a |
+| §3.16 Naming, §2.2 Imports, §2.7 Comprehensions, §2.21 Type annotations, §3.12 TODOs, §3.17 Main | **Not enforced yet.** Planned as an opt-in `style = "google"` mode | planned |
+
+The quality limits are fixed in code (`checks/quality.py`), not configurable by the reviewed repo, and
+are conservative on purpose: a finding is raised only when *this change* creates the problem, never for
+debt that was already there. On the dev split of the evaluation (real commits from attrs, click, httpx and
+more-itertools) the `quality` check fires about 0.07 times per clean commit and caught 1 of the 41
+seeded defects (an injected copied helper): it is a maintainability guard, not a defect finder. That was
+measured on dev only, at $0; the held-out split was not touched.
+
+**Live.** In live mode this check runs at every checkpoint (test run, commit, "done"), so the worker
+sees something like
+
+```
++ minor maintainability app/cli.py:81 `_dispatch` has cyclomatic complexity 11 (limit 10) | fix: split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table
+```
+
+and can fix it in the same session.
+
+**Does it improve the code?** Two measurements, each stated with its limits:
+
+- *Experiment 1 (above), re-measured on code quality:* no difference. Haiku's code was already small
+  and simple, so there was nothing to improve (`evals/results/QUALITY.md`).
+- *Experiment 2* (pre-registered in [`evals/live/QUALITY_EXPERIMENT.md`](evals/live/QUALITY_EXPERIMENT.md)
+  before any run; full tables in [`evals/results/QUALITY.md`](evals/results/QUALITY.md)): 36 runs, 9 per
+  arm and suite. **2A** has three specified tasks that invite one long, branchy function; **2B** has three
+  deliberately vague one-line tasks ("Build a small inventory tracker for a shop"). Haiku 5.5 worker, alone
+  vs. supervised (advisory), cost about $1.26 in total.
+
+  | functions over a limit (per run) | alone | supervised | pairs where supervised was lower / higher |
+  |---|---|---|---|
+  | 2A, specified tasks | 0.67 | 0.33 | 3 / 0 (sign test p = 0.25) |
+  | 2B, vague tasks | 0.33 | 0.00 | 3 / 0 (p = 0.25) |
+  | 2B, public API without a docstring | 7.9 | 5.3 | 6 / 1 (p = 0.12) |
+  | 2A, longest function (lines) | 46.7 | 30.2 | 7 / 1 (p = 0.07) |
+
+  **Every comparison points the same way, and none is significant** at the registered per-suite level
+  (9 pairs each; the pre-registered plan did not pool suites). Pooling the primary metric across both
+  suites after the fact gives 6 pairs lower and 0 higher (p = 0.03), which I report as exploratory only.
+  The clearest case is `vague_notes`: all three unsupervised runs ended with a `main` of complexity 15 to
+  18, all three supervised runs with complexity 5 to 6, after Watchman flagged it. On `shipping_cost`
+  Watchman flagged the oversized function in all three runs and the worker fixed it in two. It costs
+  something: supervised runs wrote about 10% more production code on 2A (8 pairs longer, 1 shorter,
+  p = 0.04), because splitting a function adds signatures and docstrings; with 14 metrics compared per
+  suite, one p below 0.05 is expected by chance, so treat that as suggestive.
+
+  Cost: about $0.05 of reviewer spend per supervised run (4 reviews on average), against about $0.009 of
+  worker spend.
+
+  **What this does not show.**
+  - *Not independent proof of better code.* The metric uses the same limits as the check (stated in the
+    pre-registration), so it shows that the worker acts on the feedback.
+  - *Correctness is not reliably measured on two of the three specified tasks.* On `shipping_cost` all six
+    runs failed the same hidden assertion, which tests behavior for an unknown `tier` that the prompt
+    never specifies (the worker raised `ValueError`); without that one line all six runs pass. The
+    `invoice_rules` hidden spec likewise asserts a few cases the prompt leaves open (for example a boolean
+    `tax_rate`), and its saved diffs were truncated, so I couldn't re-check which failed. I left the
+    pre-registered tasks unchanged and don't claim anything about correctness there. On
+    `command_interpreter` and the vague tasks the results are clean: 3/3 and 9/9, equal in both arms.
+  - *Small n:* nine pairs per suite, one worker model, one reviewer model, three tasks per suite.
 
 ## How it works
 

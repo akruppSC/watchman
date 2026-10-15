@@ -65,3 +65,22 @@ read the counts.
 - One worker model, one reviewer model, 3 trials, 6 tasks. The tasks and the metrics were
   written by the same people who wrote the check.
 - The pitfall suite results from experiment 1 are not re-opened.
+
+## Amendment (written before any results were read)
+
+The standards framing above ("IEEE or ISO standard", "ISO/IEC 25010") came from a misreading of the
+goal. The intended reference is a **code style guide**, the Google Python Style Guide
+(https://google.github.io/styleguide/pyguide.html). The hypotheses, tasks, metrics and analysis plan
+above are unchanged. The limits used for `breaches` map to the guide's §3.18 (function length) and to
+general practice for complexity, parameters and nesting; the guide itself does not set those.
+
+## Post-run notes (written after the results were read)
+
+- Results: `evals/results/QUALITY.md` (generated) and the README. All primary comparisons favored
+  supervision in direction; none was significant per suite as registered.
+- Task flaw found afterwards, not fixed: the `shipping_cost` hidden spec asserts a result for an
+  unspecified `tier="unknown"`, which made all six runs "incorrect" in both arms; `invoice_rules` has a
+  similar over-reach. Correctness for those two tasks is therefore not used. The tasks are left as
+  registered so the committed record matches what ran.
+- `evals/live/report.py` mixed these runs into experiment 1's table until it was filtered by task suite;
+  that is fixed and `LIVE.md` is back to the 60 experiment-1 runs.
