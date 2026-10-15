@@ -1,0 +1,134 @@
+{
+  "worker": "openrouter/anthropic/claude-haiku-5.5",
+  "trials": 1,
+  "budget": 1.0,
+  "started": "20261015T162725",
+  "spend": {
+    "worker": 0.0076,
+    "reviewer": 0.0349
+  },
+  "runs": [
+    {
+      "task": "config_loader",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00377817,
+      "tokens": 101818,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 15,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..4a6fcbf\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,29 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from `path` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, \"r\", encoding=\"utf-8\") as f:\n+            text = f.read()\n+    except FileNotFoundError:\n+        raise ConfigError(f\"config file not found: {path}\") from None\n+    except (OSError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"cannot read config file {path}: {exc}\") from exc\n+\n+    try:\n+        data = json.loads(text)\n+    except json.JSONDecodeError as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path} must contain a JSON object, got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..f0d6266\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,72 @@\n+import json\n+\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def write(tmp_path, name, content):\n+    p = tmp_path / name\n+    p.write_text(content, encoding=\"utf-8\")\n+    return p\n+\n+\n+def test_returns_parsed_dict(tmp_path):\n+    p = write(tmp_path, \"c.json\", json.dumps({\"a\": 1, \"b\": {\"c\": [1, 2]}}))\n+    assert load_config(p) == {\"a\": 1, \"b\": {\"c\": [1, 2]}}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = write(tmp_path, \"c.json\", \"{}\")\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_directory_path_raises_with_path(tmp_path):\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(tmp_path)\n+    assert str(tmp_path) in str(excinfo.value)\n+\n+\n+def test_undecodable_bytes_raise_with_path(tmp_path):\n+    p = tmp_path / \"bin.json\"\n+    p.write_bytes(b\"\\xff\\xfe\\x00garbage\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_with_path(tmp_path):\n+    p = write(tmp_path, \"bad.json\", \"{not json\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_empty_file_raises_with_path(tmp_path):\n+    p = write(tmp_path, \"empty.json\", \"\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\"content\", [\"[]\", \"[1, 2]\", '\"text\"', \"42\", \"null\", \"true\"])\n+def test_non_object_json_raises_with_path(tmp_path, content):\n+    p = write(tmp_path, \"non_object.json\", content)\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_config_error_chains_original_cause(tmp_path):\n+    p = write(tmp_path, \"bad.json\", \"{\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert excinfo.value.__cause__ is not None",
+      "seconds": 59.9
+    },
+    {
+      "task": "config_loader",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0038545,
+      "tokens": 104106,
+      "tools": {
+        "glob": 1,
+        "bash": 3,
+        "read": 2,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0349,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..7afd4e2\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,30 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from `path` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as f:\n+            data = json.load(f)\n+    except FileNotFoundError:\n+        raise ConfigError(f\"config file not found: {path}\") from None\n+    except OSError as exc:\n+        raise ConfigError(\n+            f\"cannot read config file {path}: {exc.strerror or exc}\"\n+        ) from exc\n+    except json.JSONDecodeError as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path}: {exc.msg}\") from exc\n+    except UnicodeDecodeError as exc:\n+        raise ConfigError(f\"cannot decode config file {path} as UTF-8\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path} must contain a JSON object, got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..7026400\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,80 @@\n+import json\n+\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_loads_json_object(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(json.dumps({\"debug\": True, \"port\": 8080}), encoding=\"utf-8\")\n+\n+    assert load_config(p) == {\"debug\": True, \"port\": 8080}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_directory_raises_config_error_with_path(tmp_path):\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(tmp_path)\n+\n+    assert str(tmp_path) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_empty_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"empty.json\"\n+    p.write_text(\"\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_utf8_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"binary.json\"\n+    p.write_bytes(b\"\\xff\\xfe\\x00garbage\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\n+    \"content\",\n+    [\"[1, 2, 3]\", '\"just a string\"', \"42\", \"true\", \"null\"],\n+)\n+def test_non_object_json_raises_config_error_with_path(tmp_path, content):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)",
+      "seconds": 89.6
+    }
+  ]
+}
