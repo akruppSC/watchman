@@ -1,0 +1,1934 @@
+{
+  "run_id": "20261015T203850-seeded-v3-dev-baseline-anthropic_claude-haiku-5.5",
+  "started_at": "2026-10-15T20:38:50.829232+00:00",
+  "dataset": "seeded-v3",
+  "dataset_sha256": "163c06158f678fc3dc71333f7bffa295b107b34b83c7e19ec7b5e206b7f7109a",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "e74c9a8",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "quality",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-unused-parameter-a18b3957",
+      "score": {
+        "item_id": "attrs-unused-parameter-a18b3957",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "3461dfa75205"
+        ],
+        "cost_usd": 0.001948525,
+        "latency_s": 13.119,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "3461dfa75205",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "tests/test_annotations.py",
+            "line_start": 97,
+            "line_end": 101,
+            "summary": "test_auto_attribs is skipped on all Pythons below 3.11, removing coverage on every supported version that previously ran it.",
+            "evidence": "A new `@pytest.mark.skipif(sys.version_info[:2] < (3, 11), reason=\"Incompatible behavior on older Pythons\")` is added to test_auto_attribs. The same kind of skip is added to test_annotations_strings (around line 391), replacing an xfail that only covered 3.6. The diff does not show that the underlying behavior differs, so the tests are being hidden rather than made to pass.",
+            "suggested_fix": "Make the assertions version-aware (branch on sys.version_info inside the test) so they still run on 3.5-3.10, or document exactly which behavior differs and why, rather than skipping the whole test.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4245,
+          "output_tokens": 2836,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001948525
+        },
+        "latency_s": 13.119,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "3fc5d7d31bb8",
+              "category": "weak_test",
+              "severity": "major",
+              "confidence": 0.5,
+              "file": "tests/test_annotations.py",
+              "line_start": 153,
+              "line_end": 157,
+              "summary": "Expected annotation was changed from typing.Optional[typing.Any] to typing.Any in multiple tests, weakening the assertion for all versions.",
+              "evidence": "`foo=typing.Optional[typing.Any]` is replaced with `foo=typing.Any` at lines ~156 and ~425. This edits the expected value to match the new behavior across every Python version, without any version gate, so it changes what is asserted rather than adding 3.11 support.",
+              "suggested_fix": "Gate the expected value on sys.version_info (for example, Optional[Any] on older versions and Any on 3.11+) so older-version behavior is still verified.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "1f3ee2438e8e",
+              "category": "over_abstraction",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "src/attr/_compat.py",
+              "line_start": 141,
+              "line_end": 141,
+              "summary": "The pre-3.8 set_closure_cell gained an unused keyword parameter `extra_options`.",
+              "evidence": "`def set_closure_cell(cell, value, *, extra_options=None):` in the else branch. The parameter is never read in the body, and the 3.8+ variant has no such parameter, so the two definitions now have different signatures.",
+              "suggested_fix": "Remove `extra_options` so both variants share the signature `(cell, value)`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "bcfc8066cda3",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "src/attr/_compat.py",
+              "line_start": 113,
+              "line_end": 116,
+              "summary": "The explanatory comment about CodeType.replace() and the posonlyargcount signature change was deleted without replacement.",
+              "evidence": "The block that previously explained why CodeType.replace() was used on 3.8+ was removed, and the new 3.8+ branch has a blank line and no comment. A future maintainer loses the rationale for the version split.",
+              "suggested_fix": "Keep a short comment explaining why the cell_contents assignment is used on 3.8+.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "667babecb86b",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": ".github/workflows/main.yml",
+              "line_start": 26,
+              "line_end": 26,
+              "summary": "The CI matrix uses the non-standard version spec \"3.11.0-beta - 3.11\" instead of a plain, resolvable version string.",
+              "evidence": "`python-version: [..., \"3.10\", \"3.11.0-beta - 3.11\", ...]`. This relies on a semver hyphen-range with a beta prerelease, which is unusual and may resolve to unexpected interpreters or fail as 3.11 moves past beta.",
+              "suggested_fix": "Use the plain \"3.11\" entry (or \"3.11-dev\" if pre-release testing is intended), matching the other entries' format.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-unused-parameter-b950cb8d",
+      "score": {
+        "item_id": "attrs-unused-parameter-b950cb8d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "6603f66072f9",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.001044275,
+        "latency_s": 7.837,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "6603f66072f9",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/attr/_compat.py",
+            "line_start": 91,
+            "line_end": 91,
+            "summary": "A new keyword-only parameter `strict=None` is added to `set_first_cellvar_to` but is never used.",
+            "evidence": "`def set_first_cellvar_to(value, *, strict=None):` in the else branch. The body only does `x = value`, and nothing in the diff reads or passes `strict`. The task was only to move the introspection check, so this parameter is unexplained. It also changes the function's code object (`co_kwonlyargcount` becomes 1), which feeds into the `args` list used to rebuild the py<3.8 code object.",
+            "suggested_fix": "Remove the `*, strict=None` parameter so the function signature matches the original, unless there is a documented reason it is needed for the rewritten code object.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2087,
+          "output_tokens": 1567,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001044275
+        },
+        "latency_s": 7.837,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "508dc0c09e0e",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "changelog.d/1092.change.md",
+              "line_start": 1,
+              "line_end": 1,
+              "summary": "The changelog describes a user-facing bug fix, but the task only describes a compat refactor that moves a check.",
+              "evidence": "The entry states 'Fix slots class cellvar updating closure in CPython 3.8+ even when `__code__` introspection is unavailable.' The diff only restructures where `__code__` introspection runs. Nothing shows that a bug existed or was verified, and the issue number 1092 is not referenced elsewhere.",
+              "suggested_fix": "Confirm the bug and its issue number, or change the changelog to describe the internal refactor, or drop the entry.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-camel-case-rename-43a7d70f",
+      "score": {
+        "item_id": "click-camel-case-rename-43a7d70f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "cea78be18621",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [
+          "1b299c1bc7b9"
+        ],
+        "cost_usd": 0.002317025,
+        "latency_s": 14.189,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "cea78be18621",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.9,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 436,
+            "line_end": 440,
+            "summary": "_pipepager passes a list to subprocess.Popen with shell=True, so any pager arguments (e.g. `less -R`) are silently dropped or treated as shell positional parameters.",
+            "evidence": "c = subprocess.Popen([str(cmd_path)] + cmdParams, shell=True, ...). On POSIX with shell=True and a list, only the first element is the command string; remaining elements become $0/$1 for /bin/sh. So PAGER='less -R' runs bare `less` and loses -R, which is exactly the #1477/#2775 scenario this change is meant to fix. The cmdParams are also no longer tied to the resolved executable.",
+            "suggested_fix": "Drop shell=True and call subprocess.Popen([str(cmd_path), *cmdParams], stdin=subprocess.PIPE, env=env, ...).",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "1b299c1bc7b9",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 690,
+            "line_end": 694,
+            "summary": "On Windows, open_url now runs `start` via subprocess.call without a shell, but `start` is a cmd.exe builtin, so the call fails and open_url always returns 127.",
+            "evidence": "args = [\"start\"] ... return subprocess.call(args) inside try/except OSError: return 127. Without shell=True, subprocess cannot find a `start` executable, so FileNotFoundError is raised and swallowed, making browser opening silently non-functional on Windows.",
+            "suggested_fix": "Use subprocess.call(['cmd', '/c', 'start', '', url]) or keep os.system/shell=True for the Windows start path, and don't swallow OSError into a generic 127.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5961,
+          "output_tokens": 3144,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.002317025
+        },
+        "latency_s": 14.189,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "63fad2670842",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 381,
+              "line_end": 382,
+              "summary": "shlex.split(..., posix=False) keeps quote characters in the parsed tokens, so quoted PAGER values will not resolve via which().",
+              "evidence": "pager_cmd_parts = shlex.split(os.environ.get(\"PAGER\", \"\"), posix=False). A PAGER like '\"C:\\\\Program Files\\\\pager.exe\" -x' yields a token with literal quotes, so which() returns None and the configured pager is skipped on Windows.",
+              "suggested_fix": "Use posix=True semantics or strip surrounding quotes from the first token before which().",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "414822d7c40b",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 446,
+              "line_end": 452,
+              "summary": "The pipe pager now encodes with the locale default and errors='replace' instead of get_best_encoding(stdin), changing output encoding behavior.",
+              "evidence": "subprocess.Popen(..., errors=\"replace\", text=True) with no encoding argument; previously encoding = get_best_encoding(stdin) was used. Non-UTF-8 locales or Windows code pages may now behave differently.",
+              "suggested_fix": "Pass encoding=get_best_encoding-equivalent value explicitly, or keep the binary write path.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "58ff24d83f47",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "tests/test_utils.py",
+              "line_start": 273,
+              "line_end": 283,
+              "summary": "Expected pager output for the failing-generator cases was changed from None to \"\", weakening the assertion about whether the pager ran.",
+              "evidence": "expected_pager=None changed to expected_pager=\"\" and the test now always does pager_out_tmp.read_text(), so a missing pager output file can no longer be distinguished from an empty one.",
+              "suggested_fix": "Keep distinguishing 'pager not started' from 'empty output' (e.g. check existence) rather than normalizing both to an empty string.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "0adf84547062",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 425,
+              "line_end": 425,
+              "summary": "New variable `cmdParams` uses camelCase, inconsistent with the snake_case used elsewhere in the module.",
+              "evidence": "cmdParams = cmd_parts[1:] and later usages in _pipepager.",
+              "suggested_fix": "Rename to cmd_params.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-dead-code-b4df3b9c",
+      "score": {
+        "item_id": "click-dead-code-b4df3b9c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "cecb81b77c38",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000869525,
+        "latency_s": 7.048,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "cecb81b77c38",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.8,
+            "file": "src/click/decorators.py",
+            "line_start": 353,
+            "line_end": 357,
+            "summary": "A new `_argument_legacy` wrapper is added that nothing calls, and it is unrelated to the requested signature change.",
+            "evidence": "The diff adds `def _argument_legacy(*args, **kwargs): ... return argument(*args, **kwargs)` after `argument()`. No caller in the diff uses it, and it is private, so it is dead code. Its docstring 'Kept for backwards compatibility' is also misleading, since the function was never public and nothing previously referenced it.",
+            "suggested_fix": "Remove `_argument_legacy`. If a compatibility shim is genuinely needed, justify it and wire it up, but otherwise keep the change to the signatures.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2409,
+          "output_tokens": 1137,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.000869525
+        },
+        "latency_s": 7.048,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-debug-print-17cedf79",
+      "score": {
+        "item_id": "click-debug-print-17cedf79",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "5ae8dd068efe",
+          "7723625bcd8d"
+        ],
+        "cost_usd": 0.000914025,
+        "latency_s": 6.35,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5ae8dd068efe",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 425,
+            "line_end": 425,
+            "summary": "A leftover debug `print` was added to `_pipepager`, which writes to stdout on every pager invocation.",
+            "evidence": "`print(f\"DEBUG cmd_filepath: {cmd_filepath!r}\")` is added right after `cmd_filepath = shutil.which(cmd)`. Pager output goes to the same stream the user is reading, so this corrupts the paged output and leaks internal state. It is unrelated to the stated task.",
+            "suggested_fix": "Remove the debug print statement.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "7723625bcd8d",
+            "category": "scope_creep",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 20,
+            "line_end": 20,
+            "summary": "The diff rewrites unrelated imports (moving `which` and `shutil` into function bodies) without a functional reason.",
+            "evidence": "The module-level `from shutil import which` is removed, and `import shutil` is moved into `render_progress`, `_pipepager`, `_tempfilepager`, and `Editor.get_editor`. None of this changes behavior, and it is outside a task described only as 'Update _termui_impl.py'.",
+            "suggested_fix": "Keep the original module-level imports and drop the import reshuffling.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1993,
+          "output_tokens": 1330,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.000914025
+        },
+        "latency_s": 6.35,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "45f6a58d5d10",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 20,
+              "line_end": 20,
+              "summary": "Removing the module-level `which` name can break code or tests that patch `click._termui_impl.which`.",
+              "evidence": "The module no longer exposes `which` at import time, and `_pipepager`/`_tempfilepager` now call `shutil.which` instead. Any monkeypatch targeting `click._termui_impl.which` will raise AttributeError or stop taking effect.",
+              "suggested_fix": "Restore the module-level `from shutil import which` and keep the original call sites.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "bdec8343c72b",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 423,
+              "line_end": 423,
+              "summary": "A whitespace-only line with trailing spaces was added in `_pipepager`.",
+              "evidence": "The added line after `return False` contains only indentation whitespace, which lint tools flag as trailing whitespace.",
+              "suggested_fix": "Remove the trailing whitespace on the blank line.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-1aa2d53d",
+      "score": {
+        "item_id": "click-needless-wrapper-1aa2d53d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "b36863a47a67",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00171365,
+        "latency_s": 8.842,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "b36863a47a67",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.8,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 448,
+            "line_end": 451,
+            "summary": "`isinstance(stream, t.BinaryIO)` is False for real binary streams such as `io.BufferedWriter` or `io.BytesIO`, so the binary-stream branch never runs and ANSI stripping is silently skipped.",
+            "evidence": "The new code replaces the old `elif not getattr(stream, 'encoding', None)` fallback with `elif isinstance(stream, t.BinaryIO):` (line ~450). `typing.BinaryIO` is a typing class, not an ABC that concrete io classes register with. `io.BufferedWriter` (the pipe pager's `proc.stdin`) and `io.BytesIO` are not subclasses of it, so they fall through and are yielded unwrapped. The new test `test_get_pager_file_with_real_pager_binary_stream` with `strip ansi` would then fail, since the raw ANSI bytes reach the pager. Behavior for pipe pagers and BytesIO-backed streams regresses.",
+            "suggested_fix": "Restore a capability-based check for binary streams, e.g. `elif not isinstance(stream, io.TextIOBase) and not getattr(stream, 'encoding', None):` or `elif isinstance(stream, (io.RawIOBase, io.BufferedIOBase)):`, and add a unit test that runs `get_pager_file` against a BytesIO-backed pager stream.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 5722,
+          "output_tokens": 1997,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00171365
+        },
+        "latency_s": 8.842,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "e6a4bb7c6135",
+              "category": "over_abstraction",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "src/click/_termui_impl.py",
+              "line_start": 430,
+              "line_end": 432,
+              "summary": "`_call_MaybeStripAnsi` is a pointless one-line wrapper around the `MaybeStripAnsi` class, adding indirection without purpose.",
+              "evidence": "`def _call_MaybeStripAnsi(*args, **kwargs): return MaybeStripAnsi(*args, **kwargs)` is used once in `get_pager_file`, where `MaybeStripAnsi(...)` could be called directly.",
+              "suggested_fix": "Call `MaybeStripAnsi(...)` directly and remove the wrapper.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-405a5481",
+      "score": {
+        "item_id": "click-needless-wrapper-405a5481",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001221495,
+        "latency_s": 6.874,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4327,
+          "output_tokens": 1608,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001221495
+        },
+        "latency_s": 6.874,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "df72889daee3",
+              "category": "over_abstraction",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "src/click/core.py",
+              "line_start": 2215,
+              "line_end": 2217,
+              "summary": "The new `_call_format_deprecated_label` wrapper adds an indirection with no apparent purpose, since `_format_deprecated_label` can be called directly from `Parameter.__init__`.",
+              "evidence": "core.py adds `def _call_format_deprecated_label(*args, **kwargs): return _format_deprecated_label(*args, **kwargs)` and `Parameter.__init__` calls it instead of `_format_deprecated_label`. Nothing in the diff explains the wrapper, and the module-level name resolves at call time without it.",
+              "suggested_fix": "Call `_format_deprecated_label(deprecated)` directly in `Parameter.__init__` and delete the wrapper, unless a monkeypatching or import-order reason is documented.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-wildcard-import-93ba0075",
+      "score": {
+        "item_id": "click-wildcard-import-93ba0075",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "3afa40d8b0b2",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [
+          "f85e876ba863"
+        ],
+        "cost_usd": 0.00103412,
+        "latency_s": 7.082,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "f85e876ba863",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.8,
+            "file": "src/click/termui.py",
+            "line_start": 87,
+            "line_end": 95,
+            "summary": "`_readline_prompt` references `_compat` and `resolve_color_default`, which the diff never imports as names in termui.py, so every `prompt()` and `confirm()` call may raise NameError.",
+            "evidence": "The diff adds `from . import *` and keeps `from ._compat import isatty` and `from ._compat import strip_ansi`, but the new body calls `_compat.should_strip_ansi(...)`. No `from . import _compat` or `from ._compat import should_strip_ansi` is added. Wildcard imports skip underscore-prefixed names unless `__all__` lists them, so `_compat` is not bound by `from . import *`. The diff also does not show an import for `resolve_color_default`.",
+            "suggested_fix": "Import what is used explicitly, e.g. `from ._compat import should_strip_ansi` and `from .globals import resolve_color_default`, and drop the wildcard import. If the module-level lookup is needed for CliRunner patching, use `from . import _compat` and call `_compat.should_strip_ansi`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "3afa40d8b0b2",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "src/click/termui.py",
+            "line_start": 14,
+            "line_end": 14,
+            "summary": "A wildcard `from . import *` is added to termui.py, which pollutes the module namespace and can shadow existing names.",
+            "evidence": "Line 14 adds `from . import *`. The task only needs ANSI stripping in `_readline_prompt`. Wildcard imports from the package make name resolution implicit and can shadow or be shadowed by existing names in this module, and the repo's style uses explicit imports.",
+            "suggested_fix": "Remove the wildcard import and add only the explicit names needed.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2848,
+          "output_tokens": 1603,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00103412
+        },
+        "latency_s": 7.082,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "67ee7a6bc63c",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "CHANGES.md",
+              "line_start": 9,
+              "line_end": 11,
+              "summary": "The changelog cites issue and PR numbers and a historical claim that cannot be verified from the diff.",
+              "evidence": "The entry cites {issue}`3572` and {pr}`3653` and says the stripping was lost in 8.4.0 when {pr}`2969` changed prompt writing. These references are not supported by anything in the change.",
+              "suggested_fix": "Verify the issue and PR numbers and the regression history before merging, or drop the unverifiable references.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-0a8b44e6",
+      "score": {
+        "item_id": "httpx-debug-print-0a8b44e6",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "b94d7c10699f",
+          "6ece3c1e3d81"
+        ],
+        "cost_usd": 0.0015414,
+        "latency_s": 9.841,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b94d7c10699f",
+            "category": "other",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "httpx/_models.py",
+            "line_start": 160,
+            "line_end": 160,
+            "summary": "A leftover debug `print` runs on every URL construction and writes to stdout in library code.",
+            "evidence": "`print(f\"DEBUG authority: {authority!r}\")` is added inside `URL.__init__`, so every URL created by the library, including every request, emits this output.",
+            "suggested_fix": "Remove the print statement.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "6ece3c1e3d81",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "httpx/_models.py",
+            "line_start": 580,
+            "line_end": 580,
+            "summary": "`URL.__eq__` now parses the other operand with `URL(other)`, so comparing a URL to an invalid string can raise instead of returning False.",
+            "evidence": "`return isinstance(other, (URL, str)) and str(self) == str(URL(other))`. For a str such as \"not a url\" or a malformed authority, `URL(other)` may raise `InvalidURL`/`TypeError`, where the previous code returned False. Equality checks such as `x in list_of_strings` will now raise.",
+            "suggested_fix": "Catch parse errors in `__eq__` and return False, or normalize only when the string parses successfully.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3608,
+          "output_tokens": 2181,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0015414
+        },
+        "latency_s": 9.841,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "6644d42f74dc",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "httpx/_models.py",
+              "line_start": 157,
+              "line_end": 165,
+              "summary": "Default-port matching is case-sensitive on the scheme and relies on a string suffix check of the authority.",
+              "evidence": "`self._uri_reference.scheme` is looked up in a dict with lowercase keys without lowercasing, and `authority.endswith(default_port)` matches on the raw authority string. Mixed-case input such as `HTTP://example.com:80` may keep its explicit port, and the suffix match is fragile where userinfo or unusual hosts are involved.",
+              "suggested_fix": "Lowercase the scheme before the lookup and compare the parsed port (`self._uri_reference.port`) against the default instead of matching the authority suffix.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-needless-wrapper-920333ea",
+      "score": {
+        "item_id": "httpx-needless-wrapper-920333ea",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "cb15e2a58814",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [
+          "08d8123583a5"
+        ],
+        "cost_usd": 0.00121815,
+        "latency_s": 7.511,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "cb15e2a58814",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.7,
+            "file": "httpx/_urlparse.py",
+            "line_start": 451,
+            "line_end": 456,
+            "summary": "The new `_call_quote` wrapper only forwards its arguments to `quote` and adds no behavior.",
+            "evidence": "`def _call_quote(*args, **kwargs): return quote(*args, **kwargs)` is added, and `urlencode` calls `_call_quote(k, safe=\"\")` for keys while calling `quote(v, safe=\"\")` for values. The keys and values could both call `quote(..., safe=\"\")` directly, so the wrapper is an unnecessary indirection that is inconsistent between the two calls.",
+            "suggested_fix": "Remove `_call_quote` and call `quote(k, safe=\"\")` directly, matching the value call.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "08d8123583a5",
+            "category": "comment_noise",
+            "severity": "nit",
+            "confidence": 0.6,
+            "file": "httpx/_urlparse.py",
+            "line_start": 457,
+            "line_end": 462,
+            "summary": "The rewritten urlencode comment has typos and an unclear sentence.",
+            "evidence": "The comment reads \"we use '%20' encoding for spaces. and '%2F  for '/'.\" It has a stray period, a missing closing quote, and a double space.",
+            "suggested_fix": "Rewrite as: \"We use '%20' for spaces and '%2F' for '/'.\"",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3158,
+          "output_tokens": 1647,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00121815
+        },
+        "latency_s": 7.511,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "40d3f89a0643",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "httpx/_urlparse.py",
+              "line_start": 462,
+              "line_end": 462,
+              "summary": "The `return` line in `urlencode` is likely longer than the project's line-length limit.",
+              "evidence": "`    return \"&\".join([_call_quote(k, safe=\"\") + \"=\" + quote(v, safe=\"\") for k, v in items])` is roughly 90 characters, above the usual 88-character limit for this codebase's formatter.",
+              "suggested_fix": "Split the comprehension across lines, or drop the `_call_quote` wrapper, which also shortens the line.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-02e75322",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-02e75322",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "a86bbe98c22a",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.001944275,
+        "latency_s": 9.571,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a86bbe98c22a",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.6,
+            "file": "more_itertools/recipes.py",
+            "line_start": 290,
+            "line_end": 365,
+            "summary": "The third positional parameter of grouper changed from fillvalue to incomplete, so existing positional calls like grouper(it, 3, 'x') now raise ValueError instead of padding.",
+            "evidence": "Old signature: grouper(iterable, n, fillvalue=None). New signature: grouper(iterable, n, incomplete='fill', fillvalue=None). The else branch raises ValueError('Expected fill, strict, or ignore') for any unrecognised incomplete value, so grouper('ABCDE', 3, 'x') fails at call time. The new test_invalid_incomplete does not cover this migration path, and no deprecation or compatibility shim is provided.",
+            "suggested_fix": "Keep fillvalue in the third position, or detect a non-keyword string in the third slot and emit a DeprecationWarning, or document the breaking change explicitly in the changelog and docstring.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 6195,
+          "output_tokens": 2340,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.001944275
+        },
+        "latency_s": 9.571,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "6992d4ca9adc",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "tests/test_recipes.py",
+              "line_start": 329,
+              "line_end": 340,
+              "summary": "test_legacy_order no longer asserts that exactly one warning was emitted, and it indexes caught[0] without checking the length.",
+              "evidence": "The original `(warning,) = caught` checked for exactly one warning. The replacement `self.assertEqual(caught[0].category, DeprecationWarning)` passes if extra warnings are emitted, and raises IndexError rather than a clear failure if none are emitted.",
+              "suggested_fix": "Restore `(warning,) = caught` or add `self.assertEqual(len(caught), 1)` before checking the category.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "1cedae487890",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "more_itertools/recipes.py",
+              "line_start": 310,
+              "line_end": 325,
+              "summary": "The moved _zip_equal helper renames local variables to camelCase (firstSize), which is inconsistent with the snake_case style used in the rest of the codebase.",
+              "evidence": "`firstSize = len(iterables[0])` and `if size != firstSize:` / `details=(firstSize, i, size)` replace the original `first_size` in the same function.",
+              "suggested_fix": "Keep the original snake_case name `first_size` when moving the code.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-5bd5c263",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-5bd5c263",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "a82ce93af693",
+          "2b86ab6aff3b"
+        ],
+        "cost_usd": 0.00217312,
+        "latency_s": 15.448,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a82ce93af693",
+            "category": "weak_test",
+            "severity": "major",
+            "confidence": 0.9,
+            "file": "tests/test_more.py",
+            "line_start": 6355,
+            "line_end": 6366,
+            "summary": "`lazy_consumption` lacks the `test_` prefix, so unittest never runs it, and its body is also incorrect.",
+            "evidence": "The method is named `lazy_consumption` (no `test_` prefix), so the test runner skips it. Even if it ran, `self.assertEqual(next(iterator, 'E'))` passes one argument to assertEqual, which raises TypeError. The expected values are also inconsistent with the indices [4, 2, 10]: the first emitted value should be 'C' (index 2), not the 'E' default.",
+            "suggested_fix": "Rename to `test_lazy_consumption`, change the calls to `assertEqual(next(iterator), 'C')` and similar, and verify the expected values by running the test.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "2b86ab6aff3b",
+            "category": "weak_test",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "tests/test_more.py",
+            "line_start": 6318,
+            "line_end": 6323,
+            "summary": "`test_none_value_bug` does not exercise a None value; it uses the string 'None'.",
+            "evidence": "The comment says the buffer was conflated with None values, but `data = ['a', 'b', 'None', 'c', 'd']` contains the string 'None', not `None`. The regression for the bug described is therefore not covered.",
+            "suggested_fix": "Use `None` (the object) in the data, e.g. `['a', None, 'b']`, so the test covers the sentinel collision.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4604,
+          "output_tokens": 3442,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00217312
+        },
+        "latency_s": 15.448,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "19d8902707df",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/more.py",
+              "line_start": 5240,
+              "line_end": 5246,
+              "summary": "The docstring says indices are consumed immediately, but the function is a generator, so nothing runs until the first `next()`.",
+              "evidence": "The body is a generator (it contains `yield`). `tuple(indices)` and the negative-index `ValueError` only run on first iteration, and the docstring's claim about eager consumption is inaccurate. Non-integer indices also surface as an incidental `ValueError` from `islice`, not from explicit validation.",
+              "suggested_fix": "Correct the docstring, or make `extract` a regular function that validates and then returns an inner generator.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "58e474a1d756",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "README.rst",
+              "line_start": 73,
+              "line_end": 73,
+              "summary": "`extract` is listed under the 'Summarizing' category, which does not fit an index-selection tool.",
+              "evidence": "The new row is added to the Summarizing group alongside ilen, unique_to_each, and sample. extract yields selected elements rather than summarizing the iterable.",
+              "suggested_fix": "Place it in a more suitable category, such as the selecting/filtering group.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-0926631d",
+      "score": {
+        "item_id": "more-itertools-dead-code-0926631d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "4f32573434db",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.001451495,
+        "latency_s": 9.366,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "4f32573434db",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 4056,
+            "line_end": 4057,
+            "summary": "An unused `_zip_broadcast_legacy` wrapper was added for a backwards-compatibility name that never existed.",
+            "evidence": "more.py adds `def _zip_broadcast_legacy(*args, **kwargs): return zip_broadcast(*args, **kwargs)` with docstring 'Kept for backwards compatibility.' Nothing in the diff references it, and `zip_broadcast` is a new public function, so there is no prior API to preserve.",
+            "suggested_fix": "Delete `_zip_broadcast_legacy`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3803,
+          "output_tokens": 2199,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001451495
+        },
+        "latency_s": 9.366,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "a116108a1be4",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/more.py",
+              "line_start": 4024,
+              "line_end": 4026,
+              "summary": "Calling zip_broadcast() with no arguments yields one empty tuple, which differs from zip() yielding nothing.",
+              "evidence": "With no objects, `all_scalar` stays True, so the code executes `yield tuple(objects)` and produces `()`. The function is documented as a zip variant, and `zip()` with no arguments produces an empty iterator.",
+              "suggested_fix": "Handle the empty case explicitly, e.g. return early when `objects` is empty, or document the behavior.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "e98805b2c78d",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_more.py",
+              "line_start": 4680,
+              "line_end": 4687,
+              "summary": "test_strict never checks the success path where strict=True and all iterables have equal length.",
+              "evidence": "The only strict=True assertion is the failing case with unequal lengths. No test confirms that equal-length iterables with strict=True return the full zipped output without raising.",
+              "suggested_fix": "Add an assertion such as `list(mi.zip_broadcast('a', [1, 2], [3, 4], strict=True)) == [('a', 1, 3), ('a', 2, 4)]`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-5c8336c5",
+      "score": {
+        "item_id": "more-itertools-dead-code-5c8336c5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "f5a21b40306d"
+        ],
+        "cost_usd": 0.00186287,
+        "latency_s": 12.999,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "f5a21b40306d",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "more_itertools/recipes.py",
+            "line_start": 1368,
+            "line_end": 1392,
+            "summary": "running_median(window=...) accepts 0 or negative window sizes, and the median code then crashes with an unhelpful IndexError.",
+            "evidence": "running_median() calls index(window) but never checks that window >= 1. With window=0, _sorted_window appends x, inserts it, sees len 1 > 0, pops it, and yields an empty list. _running_median_windowed then computes n=0, takes the even branch, and evaluates data[-1] + data[0], raising IndexError. Negative windows behave similarly or produce wrong results.",
+            "suggested_fix": "Validate window in running_median() and raise ValueError when window < 1 before creating the iterator.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4550,
+          "output_tokens": 2835,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00186287
+        },
+        "latency_s": 12.999,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "1cff9821be65",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1381,
+              "line_end": 1393,
+              "summary": "running_median() is no longer a generator function, so input errors are raised at call time instead of on first iteration.",
+              "evidence": "The old running_median was a generator, so running_median(1234) only raised TypeError on list(). The new code calls iter(iterable) and index(window) eagerly in the body. The test was edited from list(running_median(1234)) to running_median(1234) to match, which confirms the contract changed for callers that build the iterator before consuming it.",
+              "suggested_fix": "Keep the public function a generator (delegate with `yield from`) or document the eager-error behavior as an intentional change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "690aeb3b714a",
+              "category": "over_abstraction",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1441,
+              "line_end": 1441,
+              "summary": "_running_median_legacy is added but nothing in the diff uses it.",
+              "evidence": "The function is a pass-through wrapper around running_median with the docstring 'Kept for backwards compatibility', but the old running_median name is not kept as an alias and no caller references the helper. It is dead code.",
+              "suggested_fix": "Remove _running_median_legacy, or make it the real compatibility alias if one is actually needed.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "4314ffabc853",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1372,
+              "line_end": 1373,
+              "summary": "_sorted_window yields the same mutable internal list on every iteration.",
+              "evidence": "_sorted_window yields `window`, which is mutated in place by insort_left and del on each loop. Any consumer that stores the yielded values (for example list(_sorted_window(...))) sees every element aliased to the final state. The current caller consumes each value immediately, so this is latent rather than a present bug.",
+              "suggested_fix": "Yield a copy (list(window)) or document that the yielded object is only valid until the next iteration.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "00336fdb859e",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_recipes.py",
+              "line_start": 1454,
+              "line_end": 1454,
+              "summary": "An unrelated existing test's random input range was changed.",
+              "evidence": "The Fraction denominator in test_vs_statistics_median changed from randrange(1000) to randrange(1, 500). This avoids a zero denominator, but it is a change to the existing test outside the windowed feature and it also changes the input distribution.",
+              "suggested_fix": "Keep this fix in a separate change, or explain it in the commit message.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-debug-print-4332c7e5",
+      "score": {
+        "item_id": "more-itertools-debug-print-4332c7e5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1bb5f8b63d6c",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00048012,
+        "latency_s": 4.315,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1bb5f8b63d6c",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "more_itertools/more.py",
+            "line_start": 4335,
+            "line_end": 4335,
+            "summary": "A leftover debug print writes to stdout on every call to product_index().",
+            "evidence": "more_itertools/more.py:4335 adds `print(f\"DEBUG index: {index!r}\")`, which is unrelated to the stated task and would spam output for every library caller.",
+            "suggested_fix": "Remove the print statement.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1536,
+          "output_tokens": 823,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00048012
+        },
+        "latency_s": 4.315,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "6ded880b24d3",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.55,
+              "file": "more_itertools/more.py",
+              "line_start": 4331,
+              "line_end": 4333,
+              "summary": "len(element) is called on the raw argument, which breaks when element is a generator or other iterable without __len__, even though it was just consumed into a tuple.",
+              "evidence": "more_itertools/more.py:4330 does `elements = tuple(element)` but line 4332 then calls `len(element)`. The original code used zip_longest and accepted any iterable. For a generator, len() raises TypeError instead of computing the index, and for an exhausted iterator the check would compare against the wrong length.",
+              "suggested_fix": "Use `len(elements)` in the length check.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.55 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-unused-parameter-4bfc7050",
+      "score": {
+        "item_id": "more-itertools-unused-parameter-4bfc7050",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "28c3ad17df50",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00134715,
+        "latency_s": 8.982,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "28c3ad17df50",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.9,
+            "file": "more_itertools/recipes.py",
+            "line_start": 795,
+            "line_end": 795,
+            "summary": "The `extra_options` keyword parameter is accepted but never used, and it is absent from the .pyi stub.",
+            "evidence": "`def polynomial_from_roots(roots, *, extra_options=None):` the body never references `extra_options`. The stub declares `polynomial_from_roots(roots: Sequence[int])` without it, so the runtime signature and the type stub disagree.",
+            "suggested_fix": "Remove the `extra_options` parameter from the implementation.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2486,
+          "output_tokens": 2073,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.00134715
+        },
+        "latency_s": 8.982,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "47c0fbb31bd3",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.35,
+              "file": "more_itertools/recipes.py",
+              "line_start": 1,
+              "line_end": 1,
+              "summary": "`from math import prod` requires Python 3.8+, which may break importing the whole package on older supported interpreters.",
+              "evidence": "The diff adds `from math import prod` at module top level in recipes.py. If the project still supports Python 3.5-3.7 (check setup.py python_requires / CI matrix), importing more_itertools fails entirely.",
+              "suggested_fix": "Use functools.reduce(operator.mul, ..., 1) instead of math.prod, or confirm the minimum Python version supports 3.8+.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "d0babb3f0bee",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/recipes.py",
+              "line_start": 801,
+              "line_end": 803,
+              "summary": "The algorithm enumerates all 2^n subsets of roots, so runtime is exponential in the number of roots.",
+              "evidence": "`sum(map(prod, combinations(roots, k))) for k in range(len(roots) + 1)` visits every subset of `roots`. Iterative polynomial multiplication, multiplying (x - r) factors one at a time, runs in O(n^2) with the same results.",
+              "suggested_fix": "Compute coefficients by repeatedly multiplying the running coefficient list by (x - r) for each root.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-cfea57a3",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-cfea57a3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "6fce4e7e859c",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00124537,
+        "latency_s": 7.975,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "6fce4e7e859c",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.8,
+            "file": "more_itertools/more.py",
+            "line_start": 25,
+            "line_end": 25,
+            "summary": "The explicit `from sys import hexversion, maxsize` was replaced with a wildcard `from sys import *`, which is unrelated to adding `strict`.",
+            "evidence": "more_itertools/more.py:25 changed `from sys import hexversion, maxsize` to `from sys import *`. This dumps every public name from sys into the module namespace, can silently shadow other module-level names, and hides which names are actually used.",
+            "suggested_fix": "Revert to `from sys import hexversion, maxsize`. Only add `ge, le` to the operator import.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3502,
+          "output_tokens": 1862,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00124537
+        },
+        "latency_s": 7.975,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "f0332404af06",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "more_itertools/more.pyi",
+              "line_start": 504,
+              "line_end": 504,
+              "summary": "The new `strict: bool = False` stub parameter is missing the trailing comma that the other parameters in the signature have.",
+              "evidence": "more_itertools/more.pyi:504 reads `strict: bool = False` followed by `) -> bool: ...`, while the preceding parameter lines end with commas.",
+              "suggested_fix": "Add a trailing comma after `strict: bool = False`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "18052c4f3e46",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "more_itertools/more.py",
+              "line_start": 3585,
+              "line_end": 3585,
+              "summary": "The unrelated `(key is None)` parenthesization was removed from the `it = ...` line, a drive-by cosmetic edit.",
+              "evidence": "more_itertools/more.py: `it = iterable if (key is None) else map(key, iterable)` was rewritten as `it = iterable if key is None else map(key, iterable)`.",
+              "suggested_fix": "Leave the original line unchanged to keep the diff focused.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-f5e92de4",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-f5e92de4",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "f4d83f81ed06",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00109662,
+        "latency_s": 8.871,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "f4d83f81ed06",
+            "category": "scope_creep",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "more_itertools/more.py",
+            "line_start": 6,
+            "line_end": 6,
+            "summary": "Replacing the explicit `functools` import with a wildcard import is unrelated to switching nth_product to math.prod and hides which names the module depends on.",
+            "evidence": "more_itertools/more.py:6 changes `from functools import cached_property, partial, reduce, wraps` to `from functools import *`. The task only requires swapping reduce/mul for prod.",
+            "suggested_fix": "Keep the explicit functools import. Remove `reduce` only if it is no longer used anywhere in the module.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1884,
+          "output_tokens": 1969,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00109662
+        },
+        "latency_s": 8.871,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "d378c66a2d84",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 25,
+              "line_end": 35,
+              "summary": "The `math` import block is reflowed into a multi-line form, adding diff noise unrelated to the task.",
+              "evidence": "more_itertools/more.py:25-35 rewrites the one-line `from math import ...` into a parenthesized multi-line import, though only `prod` was added.",
+              "suggested_fix": "Add `prod` to the existing single-line import, or keep the reflow out of this change.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "6d1213d0d122",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 4215,
+              "line_end": 4219,
+              "summary": "With no iterables, `prod(())` returns 1 where the old `reduce(mul, ())` raised TypeError, so the empty-input behavior changed silently.",
+              "evidence": "more_itertools/more.py:4215 `c = prod(ns)`. Previously `reduce(mul, ns)` raised on an empty `ns`; now `c` is 1 and index 0 returns `()`. This may be acceptable, but it is an unmentioned behavior change.",
+              "suggested_fix": "Confirm the new empty-input behavior is intended, and add a test or note if it is.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "a793c9afe779",
+              "category": "silent_behavior_change",
+              "severity": "major",
+              "confidence": 0.35,
+              "file": "more_itertools/more.py",
+              "line_start": 44,
+              "line_end": 48,
+              "summary": "Removing `mul` from the operator import will raise NameError anywhere else in the module that still uses it, and the diff does not show that those uses were checked.",
+              "evidence": "more_itertools/more.py removes `mul` from `from operator import (...)`. The outer_product doctest was patched to import mul locally, which suggests mul was used elsewhere or the author noticed a doctest breaking. Other module-level uses of `mul` are not visible in the diff.",
+              "suggested_fix": "Search more.py for remaining `mul` references before removing the import. Keep the import if any remain.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "e270bc75c175",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 4223,
+              "line_end": 4225,
+              "summary": "A blank line before the bounds check is removed, which is an unrelated cosmetic edit.",
+              "evidence": "more_itertools/more.py:4223 drops the blank line between the `index += c` block and `if not 0 <= index < c:`.",
+              "suggested_fix": "Restore the blank line to keep the diff focused.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

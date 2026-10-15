@@ -47,6 +47,14 @@ Latest run per (dataset, split, mode, model, subset). Raw runs: `evals/results/r
 | seeded-v1 | test | agent_no_l1 (anthropic/claude-haiku-5.5) | 19 | 68% (13/19) [46-85] | 47% (9/19) [27-68] | 72% (13/18) [49-88] | - | $0.0040 | 82s | 0 | ada4599 |
 | seeded-v1 | test | baseline (anthropic/claude-haiku-5.5) | 19 | 74% (14/19) [51-88] | 58% (11/19) [36-77] | 50% (14/28) [33-67] | - | $0.0016 | 10s | 0 | ada4599 |
 | seeded-v1 | test | deterministic | 19 | 21% (4/19) [9-43] | 21% (4/19) [9-43] | 15% (4/26) [6-34] | - | $0.0000 | 78s | 0 | 9fa5a9e |
+| seeded-v3 | dev | agent (anthropic/claude-haiku-5.5) | 18 | 83% (15/18) [61-94] | 33% (6/18) [16-56] | 44% (15/34) [29-61] | - | $0.0040 | 98s | 0 | e74c9a8 |
+| seeded-v3 | dev | agent_no_l1 (anthropic/claude-haiku-5.5) | 18 | 67% (12/18) [44-84] | 22% (4/18) [9-45] | 60% (12/20) [39-78] | - | $0.0040 | 84s | 0 | e74c9a8 |
+| seeded-v3 | dev | baseline (anthropic/claude-haiku-5.5) | 18 | 67% (12/18) [44-84] | 28% (5/18) [12-51] | 52% (12/23) [33-71] | - | $0.0014 | 9s | 0 | e74c9a8 |
+| seeded-v3 | dev | deterministic | 18 | 6% (1/18) [1-26] | 0% (0/18) [0-18] | 7% (1/15) [1-30] | - | $0.0000 | 74s | 0 | e74c9a8 |
+| seeded-v3 | test | agent (anthropic/claude-haiku-5.5) | 12 | 75% (9/12) [47-91] | 42% (5/12) [19-68] | 75% (9/12) [47-91] | - | $0.0037 | 108s | 0 | e74c9a8 |
+| seeded-v3 | test | agent_no_l1 (anthropic/claude-haiku-5.5) | 12 | 50% (6/12) [25-75] | 17% (2/12) [5-45] | 75% (6/8) [41-93] | - | $0.0035 | 63s | 0 | e74c9a8 |
+| seeded-v3 | test | baseline (anthropic/claude-haiku-5.5) | 12 | 50% (6/12) [25-75] | 33% (4/12) [14-61] | 60% (6/10) [31-83] | - | $0.0013 | 9s | 0 | e74c9a8 |
+| seeded-v3 | test | deterministic | 12 | 0% (0/12) [0-24] | 0% (0/12) [0-24] | 0% (0/1) [0-79] | - | $0.0000 | 83s | 0 | e74c9a8 |
 | toy | dev | agent (openai/gpt-5) | 5 | 100% (8/8) [68-100] | 100% (8/8) [68-100] | 57% (8/14) [33-79] | 0.00 | $0.0584 | 146s | 0 | c9b5dd4 |
 | toy | dev | deterministic | 5 | 50% (4/8) [22-78] | 50% (4/8) [22-78] | 80% (4/5) [38-96] | 0.00 | $0.0000 | 1s | 0 | c9b5dd4 |
 
@@ -92,6 +100,20 @@ recall: defects matched by file and overlapping lines (±3), as rate (found/tota
 | swallowed_error | 3/3 | 2/3 | 2/3 | 3/3 |
 | weak_test | 2/2 | 2/2 | 2/2 | 0/2 |
 
+## Recall by category: seeded-v3 (dev)
+
+| category | agent (anthropic/claude-haiku-5.5) | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | deterministic |
+|---|---|---|---|---|
+| convention_violation | 7/9 | 5/9 | 6/9 | 1/9 |
+| over_abstraction | 8/9 | 7/9 | 6/9 | 0/9 |
+
+## Recall by category: seeded-v3 (test)
+
+| category | agent (anthropic/claude-haiku-5.5) | agent_no_l1 (anthropic/claude-haiku-5.5) | baseline (anthropic/claude-haiku-5.5) | deterministic |
+|---|---|---|---|---|
+| convention_violation | 5/6 | 4/6 | 2/6 | 0/6 |
+| over_abstraction | 4/6 | 2/6 | 4/6 | 0/6 |
+
 ## Recall by category: toy (dev)
 
 | category | agent (openai/gpt-5) | deterministic |
@@ -133,4 +155,10 @@ Precision per confidence bucket (matched/total). Severity rank: blocker=3, major
 | seeded-v1 (test) | agent (anthropic/claude-haiku-5.5) | 0.6-0.8: 4/13 0.8-0.9: 3/6 0.9-1.0: 9/31 | 1.88 vs 1.97 |
 | seeded-v1 (test) | agent_no_l1 (anthropic/claude-haiku-5.5) | 0.6-0.8: 6/11 0.8-0.9: 1/1 0.9-1.0: 6/6 | 1.92 vs 2.00 |
 | seeded-v1 (test) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 3/15 0.8-0.9: 4/6 0.9-1.0: 7/7 | 2.14 vs 1.14 |
+| seeded-v3 (dev) | agent (anthropic/claude-haiku-5.5) | 0.6-0.8: 5/9 0.8-0.9: 6/11 0.9-1.0: 4/14 | 1.60 vs 1.68 |
+| seeded-v3 (dev) | agent_no_l1 (anthropic/claude-haiku-5.5) | 0.6-0.8: 7/12 0.8-0.9: 3/4 0.9-1.0: 2/4 | 1.42 vs 1.88 |
+| seeded-v3 (dev) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 5/11 0.8-0.9: 4/6 0.9-1.0: 3/6 | 1.67 vs 1.73 |
+| seeded-v3 (test) | agent (anthropic/claude-haiku-5.5) | 0.6-0.8: 3/5 0.8-0.9: 2/2 0.9-1.0: 4/5 | 1.56 vs 2.00 |
+| seeded-v3 (test) | agent_no_l1 (anthropic/claude-haiku-5.5) | 0.6-0.8: 1/3 0.8-0.9: 1/1 0.9-1.0: 4/4 | 2.00 vs 1.50 |
+| seeded-v3 (test) | baseline (anthropic/claude-haiku-5.5) | 0.6-0.8: 5/8 0.9-1.0: 1/2 | 1.33 vs 0.75 |
 | toy (dev) | agent (openai/gpt-5) | 0.6-0.8: 1/1 0.8-0.9: 0/3 0.9-1.0: 7/10 | 2.00 vs 1.50 |

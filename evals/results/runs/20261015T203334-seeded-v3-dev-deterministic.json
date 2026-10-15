@@ -1,0 +1,2699 @@
+{
+  "run_id": "20261015T203334-seeded-v3-dev-deterministic",
+  "started_at": "2026-10-15T20:33:34.551849+00:00",
+  "dataset": "seeded-v3",
+  "dataset_sha256": "163c06158f678fc3dc71333f7bffa295b107b34b83c7e19ec7b5e206b7f7109a",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "e74c9a8",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "quality",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-unused-parameter-a18b3957",
+      "score": {
+        "item_id": "attrs-unused-parameter-a18b3957",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 27.321,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.154,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.021,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "7 file(s), +44/-31 lines, 2 source / 3 test file(s), areas: tests(3), .(2), .github(1), src(1); touches CI/build config: .github/workflows/main.yml",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.328,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.059,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.155,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"setup.py\", \"line\": 47, \"column\": 0, \"end_line\": 47, \"end_column\": 16, \"message\": \"Need type annotation for \\\"INSTALL_REQUIRES\\\" (hint: \\\"INSTALL_REQUIRES: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"setup.py\", \"line\": 116, \"column\": 6, \"end_line\": 120, \"end_column\": 11, \"message\": \"Item \\\"None\\\" of \\\"Match[str] | None\\\" has no attribute \\\"group\\\"\", \"hint\": null, \"code\": \"union-attr\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 25, \"column\": 4, \"end_line\": 25, \"end_column\": 16, \"message\": \"Cannot assign multiple types to name \\\"ordered_dict\\\" without an explicit \\\"type[...]\\\" annotation\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 50, \"column\": 23, \"end_line\": 50, \"end_column\": 27, \"message\": \"Incompatible types in assignment (expression has type \\\"None\\\", variable has type \\\"Signature\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 25.171,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:4: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 27.321,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-unused-parameter-b950cb8d",
+      "score": {
+        "item_id": "attrs-unused-parameter-b950cb8d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 104.16,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.092,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +20/-19 lines, 1 source / 0 test file(s), areas: changelog.d(1), src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.359,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.051,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.13,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/attr/_compat.py\", \"line\": 12, \"column\": 0, \"end_line\": 12, \"end_column\": 32, \"message\": \"Module \\\"typing\\\" has no attribute \\\"_GenericAlias\\\"; maybe \\\"GenericAlias\\\"?\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_compat.py\", \"line\": 42, \"column\": 23, \"end_line\": 42, \"end_column\": 27, \"message\": \"Incompatible types in assignment (expression has type \\\"None\\\", variable has type \\\"Signature\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "2 failed, 1265 passed, 5 skipped, 1 xfailed in 21.64s; 2 also fail at merge-base (not attributed)",
+            "duration_s": 102.08,
+            "findings": [],
+            "output_excerpt": ".................................. [ 56%]\n........................................................................ [ 62%]\n........................................................................ [ 67%]\n........................................................................ [ 73%]\n.........................................s.............................. [ 79%]\n.............................FF.....ss..................x............... [ 84%]\n..............s.s....................................................... [ 90%]\n........................................................................ [ 96%]\n.................................................                        [100%]\n=================================== FAILURES ===================================\n________________ TestLegacyMetadataHack.test_version_info[attr] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x793cbce91e20>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attr' from '/work/src/attr/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprected, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:135: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:121: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n_______________ TestLegacyMetadataHack.test_version_info[attrs] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x793cbcc8ec60>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attrs' from '/work/src/attrs/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprected, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:135: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:121: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attr]\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attrs]\n2 failed, 1265 passed, 5 skipped, 1 xfailed in 21.64s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 104.16,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-camel-case-rename-43a7d70f",
+      "score": {
+        "item_id": "click-camel-case-rename-43a7d70f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "1a5327a10abd",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [
+          "f17c268bf02a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 72.597,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1a5327a10abd",
+            "category": "security",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 449,
+            "line_end": 449,
+            "summary": "S602: `subprocess` call with `shell=True` identified, security issue",
+            "evidence": "ruff reported S602 at src/click/_termui_impl.py:449 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:S602",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f17c268bf02a",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 663,
+            "line_end": 663,
+            "summary": "`open_url` has 69 lines long (limit 60)",
+            "evidence": "src/click/_termui_impl.py:663 `open_url`: length = 69, over the limit of 60; this function grew from 58 in this change.",
+            "suggested_fix": "extract coherent blocks into named helper functions",
+            "source": "deterministic",
+            "rule": "quality:length",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 9 added import(s)",
+            "duration_s": 0.317,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.008,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +134/-59 lines, 1 source / 1 test file(s), areas: src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.321,
+            "findings": [
+              {
+                "id": "f17c268bf02a",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 663,
+                "line_end": 663,
+                "summary": "`open_url` has 69 lines long (limit 60)",
+                "evidence": "src/click/_termui_impl.py:663 `open_url`: length = 69, over the limit of 60; this function grew from 58 in this change.",
+                "suggested_fix": "extract coherent blocks into named helper functions",
+                "source": "deterministic",
+                "rule": "quality:length",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "failed",
+            "summary": "1 violation(s) on changed lines",
+            "duration_s": 0.024,
+            "findings": [
+              {
+                "id": "1a5327a10abd",
+                "category": "security",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 449,
+                "line_end": 449,
+                "summary": "S602: `subprocess` call with `shell=True` identified, security issue",
+                "evidence": "ruff reported S602 at src/click/_termui_impl.py:449 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:S602",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.484,
+            "findings": [],
+            "output_excerpt": "{\"file\": \"src/click/_termui_impl.py\", \"line\": 621, \"column\": 19, \"end_line\": 621, \"end_column\": 23, \"message\": \"Incompatible types in assignment (expression has type \\\"bytes | bytearray\\\", variable has type \\\"bytes\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 2): 1 error in 1.45s",
+            "duration_s": 69.754,
+            "findings": [],
+            "output_excerpt": "==================================== ERRORS ====================================\n____________________ ERROR collecting tests/test_parser.py _____________________\nImportError while importing test module '/work/tests/test_parser.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\ntests/test_parser.py:4: in <module>\n    from click.parser import _OptionParser\nE   ImportError: cannot import name '_OptionParser' from 'click.parser' (/work/.wm-venv/lib/python3.12/site-packages/click/parser.py). Did you mean: 'OptionParser'?\n=========================== short test summary info ============================\nERROR tests/test_parser.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 1.45s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 72.597,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 2): 1 error in 1.45s"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-dead-code-b4df3b9c",
+      "score": {
+        "item_id": "click-dead-code-b4df3b9c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 70.175,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.416,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.007,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +19/-8 lines, 1 source / 0 test file(s), areas: .(1), src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.272,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.018,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.561,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "584 passed, 21 skipped, 1 xfailed in 3.28s",
+            "duration_s": 67.19,
+            "findings": [],
+            "output_excerpt": "........................................................................ [ 11%]\n...................................x.................................... [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 47%]\n........................................................................ [ 59%]\n........................................................ssssssssssssssss [ 71%]\nsssss................................................................... [ 83%]\n........................................................................ [ 95%]\n..............................                                           [100%]\n584 passed, 21 skipped, 1 xfailed in 3.28s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 70.175,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-debug-print-17cedf79",
+      "score": {
+        "item_id": "click-debug-print-17cedf79",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "d289d7aeeba0"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 61.265,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "d289d7aeeba0",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_utils.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "20 tests fail in tests/test_utils.py: test_echo_via_pager[test0-cat], test_echo_via_pager[test0-less], test_echo_via_pager[test1-cat] (+17 more)",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_utils.py::test_echo_via_pager[test0-cat], tests/test_utils.py::test_echo_via_pager[test0-less], tests/test_utils.py::test_echo_via_pager[test1-cat], tests/test_utils.py::test_echo_via_pager[test1-less], tests/test_utils.py::test_echo_via_pager[test2-cat] (+15 more) - AssertionError: .... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 4 added import(s)",
+            "duration_s": 0.223,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.004,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +14/-5 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.369,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.038,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.658,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "failed",
+            "summary": "60 failed, 841 passed, 21 skipped, 1 xfailed in 4.81s",
+            "duration_s": 58.582,
+            "findings": [
+              {
+                "id": "d289d7aeeba0",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_utils.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "20 tests fail in tests/test_utils.py: test_echo_via_pager[test0-cat], test_echo_via_pager[test0-less], test_echo_via_pager[test1-cat] (+17 more)",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_utils.py::test_echo_via_pager[test0-cat], tests/test_utils.py::test_echo_via_pager[test0-less], tests/test_utils.py::test_echo_via_pager[test1-cat], tests/test_utils.py::test_echo_via_pager[test1-less], tests/test_utils.py::test_echo_via_pager[test2-cat] (+15 more) - AssertionError: .... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": "s.py::test_echo_via_pager[test1- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test2-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test2-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test2- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test2-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test2- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test2- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test3-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test3-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test3- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test3-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test3- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test3- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test4-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test4-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test4- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test4-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test4- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test4- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test5-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test5-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test5- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test5-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test5- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test5- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test6-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test6-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test6- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test6-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test6- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test6- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test7-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test7-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test7- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test7-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test7- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test7- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test8-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test8-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test8- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test8-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test8- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test8- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test9-cat] - AssertionError: ...\nFAILED tests/test_utils.py::test_echo_via_pager[test9-cat ] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test9- cat ] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test9-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test9- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test9- less ] - AssertionErro...\n60 failed, 841 passed, 21 skipped, 1 xfailed in 4.81s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 61.265,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-1aa2d53d",
+      "score": {
+        "item_id": "click-needless-wrapper-1aa2d53d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 60.965,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.09,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +121/-112 lines, 1 source / 1 test file(s), areas: src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.132,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.647,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest failed without test failures: ResourceWarning: unclosed file <_io.TextIOWrapper name=\"<_io.FileIO name=14 mode='rb+' closefd=True>\" mode='r+' encoding='utf-8'>",
+            "duration_s": 58.94,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  4%]\n........................................................................ [  8%]\n..................................................x..................... [ 13%]\n........................................................................ [ 17%]\n........................................................................ [ 22%]\n........................................................................ [ 26%]\n........................................................................ [ 30%]\n........................................................................ [ 35%]\n........................................................................ [ 39%]\n........................................................................ [ 44%]\n........................................................................ [ 48%]\n........................................................................ [ 52%]\n........................................................................ [ 57%]\n........................................................................ [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 70%]\n................................................................ssssssss [ 74%]\nsssssssssssss................ss......................................... [ 79%]\n........................................................................ [ 83%]\n...................................................................s.... [ 88%]\n........................................................................ [ 92%]\n.............................\nERROR tests/test_utils.py::test_make_default_short_help[-length includes suffix]\nERROR tests/test_utils.py::test_make_default_short_help[-ignore dot in word]\nERROR tests/test_utils.py::test_make_default_short_help[-ignore dot in word]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-empty]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-empty]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-equal length, no dot]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-equal length, no dot]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-sentence < max]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-sentence < max]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-paragraph < max]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-paragraph < max]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-truncate]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-truncate]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-length includes suffix]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-length includes suffix]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-ignore dot in word]\nERROR tests/test_utils.py::test_make_default_short_help[no-wrap mark-ignore dot in word]\n1 failed, 1516 passed, 24 skipped, 30000 deselected, 1 xfailed, 189 errors in 29.25s\n\nException ignored in: <_io.FileIO name=14 mode='rb+' closefd=True>\nResourceWarning: unclosed file <_io.TextIOWrapper name=\"<_io.FileIO name=14 mode='rb+' closefd=True>\" mode='r+' encoding='utf-8'>"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 60.965,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest failed without test failures: ResourceWarning: unclosed file <_io.TextIOWrapper name=\"<_io.FileIO name=14 mode='rb+' closefd=True>\" mode='r+' encoding='utf-8'>"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-needless-wrapper-405a5481",
+      "score": {
+        "item_id": "click-needless-wrapper-405a5481",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "255db13051e5"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 62.201,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "255db13051e5",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2338,
+            "line_end": 2338,
+            "summary": "`Parameter.__init__` has cyclomatic complexity 12 (limit 10)",
+            "evidence": "src/click/core.py:2338 `Parameter.__init__`: complexity = 12, over the limit of 10; this function grew from 9 in this change.",
+            "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+            "source": "deterministic",
+            "rule": "quality:complexity",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.253,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.026,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +65/-31 lines, 1 source / 1 test file(s), areas: .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.585,
+            "findings": [
+              {
+                "id": "255db13051e5",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2338,
+                "line_end": 2338,
+                "summary": "`Parameter.__init__` has cyclomatic complexity 12 (limit 10)",
+                "evidence": "src/click/core.py:2338 `Parameter.__init__`: complexity = 12, over the limit of 10; this function grew from 9 in this change.",
+                "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+                "source": "deterministic",
+                "rule": "quality:complexity",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.031,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.716,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "24 failed, 2046 passed, 24 skipped, 31000 deselected, 1 xfailed in 10.03s; 8 also fail at merge-base (not attributed)",
+            "duration_s": 58.338,
+            "findings": [],
+            "output_excerpt": "esttest\\n\",\n                expected_stdout=\"hello\\n\",\n                expected_stderr=\"\",\n                expected_error=None,\n            ),\n            EchoViaPagerTest(\n                description=\"Writing to stderr during generator execution\",\n                test_input=lambda: _test_gen_func_echo(file=sys.stderr),\n                expected_pager=\"testtest\\n\",\n                expected_stdout=\"\",\n                expected_stderr=\"hello\\n\",\n                expected_error=None,\n            ),\n        ],\n    )\n    def test_echo_via_pager(monkeypatch, capfd, pager_cmd, test, tmp_path):\n        monkeypatch.setitem(os.environ, \"PAGER\", pager_cmd)\n        monkeypatch.setattr(click._termui_impl, \"isatty\", lambda x: True)\n    \n        test_input = test.test_input()\n        expected_pager = test.expected_pager\n        expected_stdout = test.expected_stdout\n        expected_stderr = test.expected_stderr\n        expected_error = test.expected_error\n    \n        check_raise = pytest.raises(expected_error) if expected_error else nullcontext()\n    \n        pager_out_tmp = tmp_path / \"pager_out.txt\"\n        with pager_out_tmp.open(\"w\") as f:\n            force_subprocess_stdout = patch.object(\n                subprocess,\n                \"Popen\",\n                partial(subprocess.Popen, stdout=f),\n            )\n            with force_subprocess_stdout:\n                with check_raise:\n                    click.echo_via_pager(test_input)\n    \n        out, err = capfd.readouterr()\n    \n        pager = pager_out_tmp.read_text()\n    \n>       assert pager == expected_pager, (\n            f\"Unexpected pager output in test case '{test.description}'\"\n        )\nE       AssertionError: Unexpected pager output in test case 'Writing to stderr during generator execution'\nE       assert '' == 'testtest\\n'\nE         \nE         - testtest\n\ntests/test_utils/test_echo_via_pager.py:182: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9- less ]\n24 failed, 2046 passed, 24 skipped, 31000 deselected, 1 xfailed in 10.03s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 62.201,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-wildcard-import-93ba0075",
+      "score": {
+        "item_id": "click-wildcard-import-93ba0075",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 6,
+        "matches": [],
+        "false_positive_ids": [
+          "ac1d544bdf7b",
+          "e8de81951a7c",
+          "550976502baf",
+          "1799329936ef",
+          "0c05d6de21b4",
+          "d289d7aeeba0"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 76.779,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "block",
+        "findings": [
+          {
+            "id": "ac1d544bdf7b",
+            "category": "correctness",
+            "severity": "blocker",
+            "confidence": 0.95,
+            "file": "tests/test_termui.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "91 tests fail in tests/test_termui.py: test_choices_list_in_prompt, test_file_prompt_default_format[file_kwargs0], test_file_prompt_default_format[file_kwargs1] (+88 more)",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_termui.py::test_choices_list_in_prompt, tests/test_termui.py::test_file_prompt_default_format[file_kwargs0], tests/test_termui.py::test_file_prompt_default_format[file_kwargs1], tests/test_termui.py::test_file_prompt_default_format[file_kwargs2], tests/test_termui.py::test_prompt_required_with_required[True-False-None-prompt] (+86 more) - assert '(none, day.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "e8de81951a7c",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.75,
+            "file": "src/click/termui.py",
+            "line_start": 98,
+            "line_end": 98,
+            "summary": "mypy [name-defined]: Name \"_compat\" is not defined",
+            "evidence": "mypy reported [name-defined] at src/click/termui.py:98 on a changed line (no repo venv found; third-party types unknown).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "mypy:name-defined",
+            "evidence_refs": [
+              "check:mypy"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "550976502baf",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_options.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "2 tests fail in tests/test_options.py: test_callback_validates_prompt, test_string_show_default_shows_custom_string_in_prompt",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_options.py::test_callback_validates_prompt, tests/test_options.py::test_string_show_default_shows_custom_string_in_prompt - AssertionError.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "1799329936ef",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_stream_lifecycle.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "Test fails: tests/test_stream_lifecycle.py::test_invoke_with_logger_and_prompt",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_stream_lifecycle.py::test_invoke_with_logger_and_prompt - a.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "0c05d6de21b4",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_testing.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "2 tests fail in tests/test_testing.py: test_echo_stdin_prompts, test_prompts",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_testing.py::test_echo_stdin_prompts, tests/test_testing.py::test_prompts - assert not NameError(.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "d289d7aeeba0",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_utils.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "9 tests fail in tests/test_utils.py: test_prompts, test_confirm_repeat, test_prompts_abort (+6 more)",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_utils.py::test_prompts, tests/test_utils.py::test_confirm_repeat, tests/test_utils.py::test_prompts_abort, tests/test_utils.py::test_full_prompt_passed_to_readline[prompt], tests/test_utils.py::test_full_prompt_passed_to_readline[prompt-hidden] (+4 more) - assert not NameError(\"name '_compa.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.123,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.01,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +68/-0 lines, 1 source / 1 test file(s), areas: .(1), src(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.148,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.031,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "failed",
+            "summary": "1 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.235,
+            "findings": [
+              {
+                "id": "e8de81951a7c",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.75,
+                "file": "src/click/termui.py",
+                "line_start": 98,
+                "line_end": 98,
+                "summary": "mypy [name-defined]: Name \"_compat\" is not defined",
+                "evidence": "mypy reported [name-defined] at src/click/termui.py:98 on a changed line (no repo venv found; third-party types unknown).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "mypy:name-defined",
+                "evidence_refs": [
+                  "check:mypy"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": "{\"file\": \"src/click/termui.py\", \"line\": 98, \"column\": 7, \"end_line\": 98, \"end_column\": 14, \"message\": \"Name \\\"_compat\\\" is not defined\", \"hint\": null, \"code\": \"name-defined\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "failed",
+            "summary": "133 failed, 1548 passed, 24 skipped, 31000 deselected, 1 xfailed in 13.85s; 8 also fail at merge-base (not attributed)",
+            "duration_s": 74.046,
+            "findings": [
+              {
+                "id": "550976502baf",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_options.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "2 tests fail in tests/test_options.py: test_callback_validates_prompt, test_string_show_default_shows_custom_string_in_prompt",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_options.py::test_callback_validates_prompt, tests/test_options.py::test_string_show_default_shows_custom_string_in_prompt - AssertionError.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1799329936ef",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_stream_lifecycle.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "Test fails: tests/test_stream_lifecycle.py::test_invoke_with_logger_and_prompt",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_stream_lifecycle.py::test_invoke_with_logger_and_prompt - a.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "ac1d544bdf7b",
+                "category": "correctness",
+                "severity": "blocker",
+                "confidence": 0.95,
+                "file": "tests/test_termui.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "91 tests fail in tests/test_termui.py: test_choices_list_in_prompt, test_file_prompt_default_format[file_kwargs0], test_file_prompt_default_format[file_kwargs1] (+88 more)",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_termui.py::test_choices_list_in_prompt, tests/test_termui.py::test_file_prompt_default_format[file_kwargs0], tests/test_termui.py::test_file_prompt_default_format[file_kwargs1], tests/test_termui.py::test_file_prompt_default_format[file_kwargs2], tests/test_termui.py::test_prompt_required_with_required[True-False-None-prompt] (+86 more) - assert '(none, day.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "0c05d6de21b4",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_testing.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "2 tests fail in tests/test_testing.py: test_echo_stdin_prompts, test_prompts",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_testing.py::test_echo_stdin_prompts, tests/test_testing.py::test_prompts - assert not NameError(.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "d289d7aeeba0",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_utils.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "9 tests fail in tests/test_utils.py: test_prompts, test_confirm_repeat, test_prompts_abort (+6 more)",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_utils.py::test_prompts, tests/test_utils.py::test_confirm_repeat, tests/test_utils.py::test_prompts_abort, tests/test_utils.py::test_full_prompt_passed_to_readline[prompt], tests/test_utils.py::test_full_prompt_passed_to_readline[prompt-hidden] (+4 more) - assert not NameError(\"name '_compa.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": "tom-message-should-mask-not-fallback]\nFAILED tests/test_termui.py::test_hide_input_error_message[mixed-quoted-and-raw-both-masked-at-source]\nFAILED tests/test_termui.py::test_hide_input_error_message[intrange-numeric-substring-falls-back-to-generic]\nFAILED tests/test_termui.py::test_hide_input_error_message[partial-word-match-falls-back-to-generic]\nFAILED tests/test_termui.py::test_hide_input_error_message[raw-value-should-be-masked-not-fallback]\nFAILED tests/test_termui.py::test_hide_input_error_message[multi-occurrence-raw-mask-all]\nFAILED tests/test_termui.py::test_hide_input_error_message[multi-occurrence-repr-mask-all]\nFAILED tests/test_termui.py::test_hide_input_error_message[regex-special-chars-must-be-escaped]\nFAILED tests/test_termui.py::test_hide_input_error_message[unicode-value-masked]\nFAILED tests/test_termui.py::test_hide_input_error_message[apostrophe-in-value-uses-double-quote-repr]\nFAILED tests/test_termui.py::test_hide_input_error_message[mixed-quoted-and-raw-mask-both]\nFAILED tests/test_termui.py::test_hide_input_confirmation_prompt_mismatch_unaffected\nFAILED tests/test_testing.py::test_echo_stdin_prompts - assert not NameError(...\nFAILED tests/test_testing.py::test_prompts - assert not NameError(\"name '_com...\nFAILED tests/test_utils.py::test_prompts - assert not NameError(\"name '_compa...\nFAILED tests/test_utils.py::test_confirm_repeat - AssertionError: assert '' =...\nFAILED tests/test_utils.py::test_prompts_abort - NameError: name '_compat' is...\nFAILED tests/test_utils.py::test_full_prompt_passed_to_readline[prompt] - Nam...\nFAILED tests/test_utils.py::test_full_prompt_passed_to_readline[prompt-hidden]\nFAILED tests/test_utils.py::test_full_prompt_passed_to_readline[prompt-custom-suffix]\nFAILED tests/test_utils.py::test_full_prompt_passed_to_readline[confirm] - Na...\nFAILED tests/test_utils.py::test_echo_via_pager[test0-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test0- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test0- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test1-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test1- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test1- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test2-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test2- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test2- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test3-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test3- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test3- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test4-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test4- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test4- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test7-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test7- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test7- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test8-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test8- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test8- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_echo_via_pager[test9-less] - AssertionError:...\nFAILED tests/test_utils.py::test_echo_via_pager[test9- less] - AssertionError...\nFAILED tests/test_utils.py::test_echo_via_pager[test9- less ] - AssertionErro...\nFAILED tests/test_utils.py::test_prompt_cast_default - NameError: name '_comp...\nFAILED tests/test_utils.py::test_echo_writing_to_standard_error - NameError: ...\n133 failed, 1548 passed, 24 skipped, 31000 deselected, 1 xfailed in 13.85s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 76.779,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-0a8b44e6",
+      "score": {
+        "item_id": "httpx-debug-print-0a8b44e6",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 52.316,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.049,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +42/-17 lines, 1 source / 2 test file(s), areas: tests(2), httpx(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.206,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.019,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 3.593,
+            "findings": [],
+            "output_excerpt": "}\n{\"file\": \"httpx/_models.py\", \"line\": 1617, \"column\": 48, \"end_line\": 1617, \"end_column\": 52, \"message\": \"Incompatible default for parameter \\\"chunk_size\\\" (default has type \\\"None\\\", parameter has type \\\"int\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1632, \"column\": 37, \"end_line\": 1632, \"end_column\": 50, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1653, \"column\": 41, \"end_line\": 1653, \"end_column\": 54, \"message\": \"Argument \\\"request\\\" to \\\"request_context\\\" has incompatible type \\\"Request | None\\\"; expected \\\"Request\\\"\", \"hint\": null, \"code\": \"arg-type\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1662, \"column\": 46, \"end_line\": 1662, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 40, \"end_line\": 1722, \"end_column\": 44, \"message\": \"Incompatible default for parameter \\\"default\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 60, \"end_line\": 1722, \"end_column\": 64, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1722, \"column\": 78, \"end_line\": 1722, \"end_column\": 82, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1742, \"column\": 46, \"end_line\": 1742, \"end_column\": 50, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1742, \"column\": 64, \"end_line\": 1742, \"end_column\": 68, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1760, \"column\": 34, \"end_line\": 1760, \"end_column\": 38, \"message\": \"Incompatible default for parameter \\\"domain\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_models.py\", \"line\": 1760, \"column\": 52, \"end_line\": 1760, \"end_column\": 56, \"message\": \"Incompatible default for parameter \\\"path\\\" (default has type \\\"None\\\", parameter has type \\\"str\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 48.272,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 52.316,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-needless-wrapper-920333ea",
+      "score": {
+        "item_id": "httpx-needless-wrapper-920333ea",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 193.293,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.01,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +19/-13 lines, 1 source / 2 test file(s), areas: tests(2), httpx(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.078,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.026,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 5.308,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 826 passed, 1 skipped in 10.34s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 186.957,
+            "findings": [],
+            "output_excerpt": "er object at 0x7fa906ea4aa0>\ntyp = <class 'socket.gaierror'>\nvalue = gaierror(-3, 'Temporary failure in name resolution')\ntraceback = <traceback object at 0x7fa8efb523c0>\n\n    def __exit__(self, typ, value, traceback):\n        if typ is None:\n            try:\n                next(self.gen)\n            except StopIteration:\n                return False\n            else:\n                try:\n                    raise RuntimeError(\"generator didn't stop\")\n                finally:\n                    self.gen.close()\n        else:\n            if value is None:\n                # Need to force instantiation so we can reliably\n                # tell if we get the same exception back\n                value = typ()\n            try:\n>               self.gen.throw(value)\n\n/usr/local/lib/python3.12/contextlib.py:158: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            client = httpx.Client(proxies={\"https://\": PROXY_URL})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:149: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1041: in get\n    return self.request(\nhttpx/_client.py:814: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:901: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:929: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:966: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:1002: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:226: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE-786\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:83: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 826 passed, 1 skipped in 10.34s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 193.293,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-02e75322",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-02e75322",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "ec314b6160d0"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 25.333,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "ec314b6160d0",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/recipes.py",
+            "line_start": 290,
+            "line_end": 290,
+            "summary": "New public `UnequalIterablesError` has no docstring, unlike the rest of this module",
+            "evidence": "more_itertools/recipes.py:290: 97% of the module's other public definitions (31) have docstrings; this one doesn't.",
+            "suggested_fix": "add a short docstring in the same style as its neighbours",
+            "source": "deterministic",
+            "rule": "quality:docstring",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.107,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.026,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +157/-82 lines, 3 source / 1 test file(s), areas: more_itertools(3), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "1 maintainability issue(s) introduced by this change",
+            "duration_s": 0.388,
+            "findings": [
+              {
+                "id": "ec314b6160d0",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/recipes.py",
+                "line_start": 290,
+                "line_end": 290,
+                "summary": "New public `UnequalIterablesError` has no docstring, unlike the rest of this module",
+                "evidence": "more_itertools/recipes.py:290: 97% of the module's other public definitions (31) have docstrings; this one doesn't.",
+                "suggested_fix": "add a short docstring in the same style as its neighbours",
+                "source": "deterministic",
+                "rule": "quality:docstring",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.037,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.36,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "535 passed, 2157 subtests passed in 2.35s",
+            "duration_s": 23.273,
+            "findings": [],
+            "output_excerpt": ".......................................................................................................... [ 19%]\n......................................................... [ 30%]\n........................................................................................................................................................ [ 58%]\n.................................. [ 65%]\n.............................. [ 70%]\n................................................................................................ [ 88%]\n.............................................. [ 97%]\n..............                                             [100%]\n535 passed, 2157 subtests passed in 2.35s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 25.333,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-5bd5c263",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-5bd5c263",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "14cb80f1cf9a",
+          "3e91ae7412a6",
+          "f265e2274e4a"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 102.892,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "14cb80f1cf9a",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_more.py",
+            "line_start": 6365,
+            "line_end": 6365,
+            "summary": "F821: Undefined name `peekable`",
+            "evidence": "ruff reported F821 at tests/test_more.py:6365 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:F821",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3e91ae7412a6",
+            "category": "swallowed_error",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "more_itertools/more.py",
+            "line_start": 5270,
+            "line_end": 5270,
+            "summary": "B904: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling",
+            "evidence": "ruff reported B904 at more_itertools/more.py:5270 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:B904",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f265e2274e4a",
+            "category": "correctness",
+            "severity": "minor",
+            "confidence": 0.95,
+            "file": "tests/test_more.py",
+            "line_start": 39,
+            "line_end": 39,
+            "summary": "F811: Redefinition of unused `gc` from line 4: `gc` redefined here",
+            "evidence": "ruff reported F811 at tests/test_more.py:39 on a line added by this diff.",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "ruff:F811",
+            "evidence_refs": [
+              "check:ruff"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.343,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.073,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +150/-0 lines, 2 source / 1 test file(s), areas: more_itertools(2), .(1), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.355,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "failed",
+            "summary": "3 violation(s) on changed lines",
+            "duration_s": 0.043,
+            "findings": [
+              {
+                "id": "3e91ae7412a6",
+                "category": "swallowed_error",
+                "severity": "minor",
+                "confidence": 0.95,
+                "file": "more_itertools/more.py",
+                "line_start": 5270,
+                "line_end": 5270,
+                "summary": "B904: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling",
+                "evidence": "ruff reported B904 at more_itertools/more.py:5270 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:B904",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "f265e2274e4a",
+                "category": "correctness",
+                "severity": "minor",
+                "confidence": 0.95,
+                "file": "tests/test_more.py",
+                "line_start": 39,
+                "line_end": 39,
+                "summary": "F811: Redefinition of unused `gc` from line 4: `gc` redefined here",
+                "evidence": "ruff reported F811 at tests/test_more.py:39 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:F811",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "14cb80f1cf9a",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_more.py",
+                "line_start": 6365,
+                "line_end": 6365,
+                "summary": "F821: Undefined name `peekable`",
+                "evidence": "ruff reported F821 at tests/test_more.py:6365 on a line added by this diff.",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "ruff:F821",
+                "evidence_refs": [
+                  "check:ruff"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.325,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "687 passed, 1 skipped, 19860 subtests passed in 27.85s",
+            "duration_s": 100.146,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 11%]\n......................................................... [ 20%]\n........................................................................ [ 30%]\n.................................................. [ 37%]\n..................................................................... [ 47%]\n..................................... [ 53%]\n.................................... [ 58%]\n.............................................................................................. [ 72%]\n............................................................ [ 80%]\n............................................ [ 87%]\n...................................................................s........ [ 98%]\n...........                                             [100%]\n687 passed, 1 skipped, 19860 subtests passed in 27.85s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 102.892,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-0926631d",
+      "score": {
+        "item_id": "more-itertools-dead-code-0926631d",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "40bba2de2a0f"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 29.467,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "40bba2de2a0f",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 4000,
+            "line_end": 4000,
+            "summary": "`zip_broadcast` has cyclomatic complexity 11 (limit 10)",
+            "evidence": "more_itertools/more.py:4000 `zip_broadcast`: complexity = 11, over the limit of 10; this function is new in this change. Also reported by: quality:nesting.",
+            "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+            "source": "deterministic",
+            "rule": "quality:complexity",
+            "evidence_refs": [
+              "check:quality"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.277,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.056,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +120/-0 lines, 2 source / 1 test file(s), areas: more_itertools(2), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "failed",
+            "summary": "2 maintainability issue(s) introduced by this change",
+            "duration_s": 0.303,
+            "findings": [
+              {
+                "id": "40bba2de2a0f",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 4000,
+                "line_end": 4000,
+                "summary": "`zip_broadcast` has cyclomatic complexity 11 (limit 10)",
+                "evidence": "more_itertools/more.py:4000 `zip_broadcast`: complexity = 11, over the limit of 10; this function is new in this change.",
+                "suggested_fix": "split it into smaller functions (one per branch of the logic), or replace the if/elif chain with a lookup table",
+                "source": "deterministic",
+                "rule": "quality:complexity",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "666072784043",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 4000,
+                "line_end": 4000,
+                "summary": "`zip_broadcast` has 5 levels of nesting (limit 4)",
+                "evidence": "more_itertools/more.py:4000 `zip_broadcast`: nesting = 5, over the limit of 4; this function is new in this change.",
+                "suggested_fix": "use early returns/continue (guard clauses) or extract the inner block into a helper",
+                "source": "deterministic",
+                "rule": "quality:nesting",
+                "evidence_refs": [
+                  "check:quality"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.042,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.526,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "497 passed, 2051 subtests passed in 1.81s",
+            "duration_s": 27.143,
+            "findings": [],
+            "output_excerpt": "................................................................................................................. [ 22%]\n......................................................... [ 34%]\n................................................................................ [ 50%]\n..................................................................... [ 64%]\n..................................................................................... [ 81%]\n................................................................. [ 94%]\n............................                                             [100%]\n497 passed, 2051 subtests passed in 1.81s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 29.467,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-dead-code-5c8336c5",
+      "score": {
+        "item_id": "more-itertools-dead-code-5c8336c5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 103.395,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 2 added import(s)",
+            "duration_s": 0.098,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +112/-33 lines, 2 source / 1 test file(s), areas: more_itertools(2), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.142,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.028,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.6,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "682 passed, 1 skipped, 12084 subtests passed in 28.69s",
+            "duration_s": 100.816,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 12%]\n......................................................... [ 20%]\n........................................................................ [ 30%]\n.................................................. [ 38%]\n..................................................................... [ 48%]\n..................................... [ 53%]\n.................................... [ 59%]\n.............................................................................................. [ 72%]\n............................................................ [ 81%]\n............................................ [ 87%]\n..............................................................s...................                                                  [100%]\n682 passed, 1 skipped, 12084 subtests passed in 28.69s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 103.395,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-debug-print-4332c7e5",
+      "score": {
+        "item_id": "more-itertools-debug-print-4332c7e5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 99.322,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.083,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.016,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +8/-7 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.36,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.027,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "689 passed, 19866 subtests passed in 26.93s",
+            "duration_s": 98.31,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 11%]\n......................................................... [ 20%]\n........................................................................ [ 30%]\n.................................................. [ 37%]\n..................................................................... [ 47%]\n..................................... [ 53%]\n.................................... [ 58%]\n.............................................................................................. [ 72%]\n............................................................ [ 80%]\n............................................ [ 87%]\n.................................................................................. [ 99%]\n......                                      [100%]\n689 passed, 19866 subtests passed in 26.93s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 99.322,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-unused-parameter-4bfc7050",
+      "score": {
+        "item_id": "more-itertools-unused-parameter-4bfc7050",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 44.697,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 2 added import(s)",
+            "duration_s": 0.045,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.011,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +31/-0 lines, 2 source / 1 test file(s), areas: more_itertools(2), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.062,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.018,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.238,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "558 passed, 2167 subtests passed in 2.19s",
+            "duration_s": 43.207,
+            "findings": [],
+            "output_excerpt": ".......................................................................................................... [ 18%]\n......................................................... [ 29%]\n........................................................................................................................................................ [ 56%]\n.................................. [ 62%]\n.............................. [ 67%]\n.................................................................................................. [ 85%]\n............................................ [ 93%]\n.....................................            [100%]\n558 passed, 2167 subtests passed in 2.19s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 44.697,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-cfea57a3",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-cfea57a3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 37.663,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 2 added import(s)",
+            "duration_s": 0.369,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.094,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +66/-8 lines, 2 source / 1 test file(s), areas: more_itertools(2), tests(1)",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.405,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.032,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.364,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "507 passed, 2076 subtests passed in 2.31s",
+            "duration_s": 35.258,
+            "findings": [],
+            "output_excerpt": "................................................................................................................. [ 22%]\n......................................................... [ 33%]\n................................................................................ [ 49%]\n..................................................................... [ 62%]\n................................................................... [ 76%]\n.........................................................................................................................          [100%]\n507 passed, 2076 subtests passed in 2.31s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 37.663,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-f5e92de4",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-f5e92de4",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 113.158,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 2 added import(s)",
+            "duration_s": 0.109,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.026,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +16/-5 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.626,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.037,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "701 passed, 19866 subtests passed in 56.09s",
+            "duration_s": 112.042,
+            "findings": [],
+            "output_excerpt": ".................................................................................. [ 11%]\n......................................................... [ 19%]\n........................................................................ [ 30%]\n.................................................. [ 37%]\n..................................................................... [ 47%]\n..................................... [ 52%]\n.................................... [ 57%]\n.............................................................................................. [ 70%]\n............................................................ [ 79%]\n................................................................................................................................................                          [100%]\n701 passed, 19866 subtests passed in 56.09s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 113.158,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

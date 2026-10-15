@@ -1,7 +1,7 @@
 """Objective, model-free code-quality metrics for the code a change touched.
 
-These measure maintainability attributes (ISO/IEC 25010: modularity, analysability,
-testability) with plain, reproducible numbers. They don't prove "good engineering"; they are
+These measure maintainability (modularity, analysability, testability) with plain,
+reproducible numbers. They don't prove "good engineering"; they are
 proxies that anyone can recompute:
 
   complexity   McCabe cyclomatic complexity per function (decisions + 1)

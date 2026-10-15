@@ -16,8 +16,8 @@ reproducible:
                documented (a new module has no convention yet; this is the common-sense floor)
   duplicate    six or more added lines that already exist elsewhere in production code
 
-These are proxies for ISO/IEC 25010 maintainability sub-characteristics (modularity,
-analysability, modifiability, testability). They support, and do not certify, any standard.
+These are proxies for maintainability (modularity, analysability, modifiability, testability), not a
+certification of any standard or style guide.
 Limits are fixed here, not repo-configurable: a reviewed repo must not loosen its own review.
 """
 

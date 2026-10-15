@@ -1,0 +1,1228 @@
+{
+  "run_id": "20261015T203918-seeded-v3-test-baseline-anthropic_claude-haiku-5.5",
+  "started_at": "2026-10-15T20:39:18.321527+00:00",
+  "dataset": "seeded-v3",
+  "dataset_sha256": "163c06158f678fc3dc71333f7bffa295b107b34b83c7e19ec7b5e206b7f7109a",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "baseline",
+  "model": "anthropic/claude-haiku-5.5",
+  "watchman_commit": "e74c9a8",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "quality",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-needless-wrapper-1759260a",
+      "score": {
+        "item_id": "attrs-needless-wrapper-1759260a",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "9669e846135b"
+        ],
+        "cost_usd": 0.00181237,
+        "latency_s": 11.821,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [
+          {
+            "id": "9669e846135b",
+            "category": "over_abstraction",
+            "severity": "nit",
+            "confidence": 0.6,
+            "file": "src/attr/validators.py",
+            "line_start": 152,
+            "line_end": 155,
+            "summary": "The `_call_MatchesReValidator` wrapper is a pass-through around the class constructor with no added behavior.",
+            "evidence": "`def _call_MatchesReValidator(*args, **kwargs): return _MatchesReValidator(*args, **kwargs)` is added, and `matches_re` calls it as `_call_MatchesReValidator(pattern, match_func)`. Nothing else uses it.",
+            "suggested_fix": "Call `_MatchesReValidator(pattern, match_func)` directly.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4038,
+          "output_tokens": 2862,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00181237
+        },
+        "latency_s": 11.821,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "70d17d8327d7",
+              "category": "scope_creep",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "tests/test_validators.py",
+              "line_start": 178,
+              "line_end": 185,
+              "summary": "An existing test's pattern and input were changed from \"a\"/\"a\" to \"a|ab\"/\"ab\", which is unrelated to adding precompiled pattern support.",
+              "evidence": "`str_match = attr.ib(validator=matches_re(\"a|ab\"))` and `ReTester(\"ab\")` replace `matches_re(\"a\")` and `ReTester(\"a\")`. This changes what the existing fullmatch test checks without explanation.",
+              "suggested_fix": "Revert the existing test edit and keep the new tests separate.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "94dfc1b61634",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.4,
+              "file": "src/attr/validators.py",
+              "line_start": 157,
+              "line_end": 164,
+              "summary": "The `func` error-message formatting was rewritten from `%` to `.format()` with no functional reason.",
+              "evidence": "`\"'func' must be one of %s.\" % (...)` became `\"'func' must be one of {}.\".format(...)`, an unrelated change in a diff about regex patterns.",
+              "suggested_fix": "Leave the original `%` formatting untouched.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "1573cc5c994d",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "tests/typing_example.py",
+              "line_start": 170,
+              "line_end": 170,
+              "summary": "The typing example now uses `re.compile`, but the diff does not show `re` being imported in this file.",
+              "evidence": "`e: str = attr.ib(validator=attr.validators.matches_re(re.compile(r\"foo\")))` is added. If `import re` is absent from tests/typing_example.py, mypy and runtime import of this file will fail with an undefined name.",
+              "suggested_fix": "Verify `import re` exists in tests/typing_example.py, or add it.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "c059735b9bcb",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "tests/test_validators.py",
+              "line_start": 200,
+              "line_end": 222,
+              "summary": "The new precompiled-pattern tests cover only the happy path and the flags TypeError; they do not check that `func` (search/match/fullmatch) works with a precompiled pattern or that a non-match raises ValueError.",
+              "evidence": "`test_precompiled_pattern` only calls `RePatternTester(\"a\")` with no negative case and no `func` variation, though the Python 2 fullmatch emulation path now reads `pattern.pattern` and `pattern.flags` from a precompiled object.",
+              "suggested_fix": "Add a non-matching input with ValueError, and parametrize over func for a precompiled pattern.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-needless-wrapper-48b8611c",
+      "score": {
+        "item_id": "attrs-needless-wrapper-48b8611c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.001039995,
+        "latency_s": 6.765,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3619,
+          "output_tokens": 1422,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001039995
+        },
+        "latency_s": 6.765,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "c70345584e65",
+              "category": "over_abstraction",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/attr/_make.py",
+              "line_start": 1891,
+              "line_end": 1893,
+              "summary": "The new `_call_fields` wrapper adds an indirection with no purpose; the call site could invoke `fields(type_)` directly.",
+              "evidence": "`def _call_fields(*args, **kwargs): return fields(*args, **kwargs)` is added at _make.py:1891-1893 and used once at line 1921 as `return _call_fields(type_)`. It forwards arguments unchanged and does not change behavior.",
+              "suggested_fix": "Replace `return _call_fields(type_)` with `return fields(type_)` and delete the wrapper.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-unused-parameter-0f758fe5",
+      "score": {
+        "item_id": "attrs-unused-parameter-0f758fe5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "4235782e6b6f",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.001945495,
+        "latency_s": 13.892,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "4235782e6b6f",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/attr/_make.py",
+            "line_start": 2843,
+            "line_end": 2843,
+            "summary": "The new `_CountingAttr.converter` decorator accepts a `strict` keyword that is never used.",
+            "evidence": "`def converter(self, meth, *, strict=None):` in src/attr/_make.py. The body never reads `strict`, and the sibling `default`/`validator` decorators do not take it. This is a dead parameter that suggests a behavior the code does not implement.",
+            "suggested_fix": "Remove the `strict` parameter, or implement it if it is intended.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3387,
+          "output_tokens": 3291,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001945495
+        },
+        "latency_s": 13.892,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "91680dfd2b6c",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.4,
+              "file": "src/attr/_make.py",
+              "line_start": 2844,
+              "line_end": 2846,
+              "summary": "The docstring says the decorator 'appends to the list of converters', but no list exists; the method composes converters with `pipe`.",
+              "evidence": "Docstring: 'Decorator that appends *meth* to the list of converters.' The implementation does `self._converter = pipe(self._converter, decorated_converter)`.",
+              "suggested_fix": "Reword to say the method is composed with any existing converter via `pipe`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "9c5dc76a2fba",
+              "category": "weak_test",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_make.py",
+              "line_start": 152,
+              "line_end": 155,
+              "summary": "The parametrized `test_converter_decorator` includes `lambda v: [v]`, a list form that is not a supported converter type.",
+              "evidence": "`wrap` parameter list `[lambda v: v, lambda v: [v], attr.converters.pipe]`. Passing a list as `converter=` is not a documented input, so this case exercises an invalid configuration.",
+              "suggested_fix": "Drop the list case and keep the identity and `pipe` cases.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-camel-case-rename-d2e4a42f",
+      "score": {
+        "item_id": "click-camel-case-rename-d2e4a42f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00124512,
+        "latency_s": 9.312,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2764,
+          "output_tokens": 2046,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00124512
+        },
+        "latency_s": 9.312,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "15e3a9edb407",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.35,
+              "file": "src/click/types.py",
+              "line_start": 1200,
+              "line_end": 1200,
+              "summary": "The new local variable `isGuessed` uses camelCase, which is not the snake_case used elsewhere in Click.",
+              "evidence": "`isGuessed = guessed is not ty` is introduced in convert_type. The rest of the module uses snake_case locals such as `guessed_type` in the original code.",
+              "suggested_fix": "Rename to `is_guessed`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.35 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "8ede17bbe231",
+              "category": "comment_noise",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/types.py",
+              "line_start": 1181,
+              "line_end": 1183,
+              "summary": "The comment says the code can't call convert_type recursively, but the code now lives in _guess_type, which does not call convert_type.",
+              "evidence": "The comment \"Can't call convert_type recursively because that would incorrectly unwind the tuple to a single type.\" sits inside _guess_type, which is a different function from convert_type.",
+              "suggested_fix": "Reword the comment to explain why the item type is taken directly instead of recursing.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "8a70e815444c",
+              "category": "over_abstraction",
+              "severity": "nit",
+              "confidence": 0.25,
+              "file": "src/click/types.py",
+              "line_start": 1200,
+              "line_end": 1200,
+              "summary": "`isGuessed` relies on an identity comparison against `ty` as a proxy for 'the type was inferred from default', which is indirect and easy to misread.",
+              "evidence": "`isGuessed = guessed is not ty` works because _guess_type returns `ty` unchanged when it is not None, but the intent is only implicit.",
+              "suggested_fix": "Compute `ty is None` explicitly, or have _guess_type return a flag, so the intent is clear.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.25 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-dead-code-26aa7bf3",
+      "score": {
+        "item_id": "click-dead-code-26aa7bf3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "7f5b21339f48",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.001250995,
+        "latency_s": 8.9,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7f5b21339f48",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/click/decorators.py",
+            "line_start": 563,
+            "line_end": 565,
+            "summary": "A new private `_help_option_legacy` wrapper is added with no callers in the repo and no task justification.",
+            "evidence": "decorators.py adds `def _help_option_legacy(*args, **kwargs): return help_option(*args, **kwargs)` with the docstring 'Kept for backwards compatibility.' Nothing in the diff references it, and it is private (underscore), so it cannot be a compatibility shim for external users. It is dead code that the deduplication task did not ask for.",
+            "suggested_fix": "Remove `_help_option_legacy`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 2931,
+          "output_tokens": 2016,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001250995
+        },
+        "latency_s": 8.9,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "2c688f822786",
+              "category": "silent_behavior_change",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "src/click/decorators.py",
+              "line_start": 555,
+              "line_end": 556,
+              "summary": "`help_option` now uses `setdefault` for `callback`, so a caller-supplied callback silently replaces the help-printing behavior instead of being overwritten.",
+              "evidence": "The old code did `kwargs[\"callback\"] = callback`, which forced the help callback. The new `help_option` delegates to `option(..., cls=HelpOption)`, and `HelpOption.__init__` uses `kwargs.setdefault(\"callback\", self.show_help)`. Passing `callback=` to `help_option` now drops the built-in show-help-and-exit behavior with no notice. This is a semantic change to a public decorator that the refactor does not mention.",
+              "suggested_fix": "Either keep forcing the callback as before, or document the new override behavior and cover it with a test.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "ca9d615a1ad6",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/__init__.py",
+              "line_start": 22,
+              "line_end": 22,
+              "summary": "`HelpOption` is newly exported as public top-level API, which expands the public surface beyond a deduplication refactor.",
+              "evidence": "`from .decorators import HelpOption as HelpOption` is added to `click/__init__.py`. Making the class public is a new API commitment that the task did not request.",
+              "suggested_fix": "Keep `HelpOption` importable from `click.decorators` only, unless the public export is intentional and documented.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-unused-parameter-22177f85",
+      "score": {
+        "item_id": "click-unused-parameter-22177f85",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "b3d7f2e91e46",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00149512,
+        "latency_s": 9.717,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "b3d7f2e91e46",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "src/click/types.py",
+            "line_start": 1147,
+            "line_end": 1147,
+            "summary": "`coerce_path_result` gained an unused, untyped keyword-only `verbose` parameter that has no purpose in this change.",
+            "evidence": "`def coerce_path_result(self, value: str | os.PathLike[str], *, verbose=None) -> _PathT_co:` adds `*, verbose=None`, but the body never reads `verbose`. The original method had no such parameter, so this is an unexplained signature change to a public-ish method.",
+            "suggested_fix": "Remove the `verbose` parameter, restoring the original signature apart from the return type.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4044,
+          "output_tokens": 2226,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00149512
+        },
+        "latency_s": 9.717,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "94359f20ccf1",
+              "category": "weak_test",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "tests/test_types/test_Path.py",
+              "line_start": 191,
+              "line_end": 192,
+              "summary": "The new runtime test only checks `typing.get_args` on a parameterized class and never exercises the behavior the task describes (narrowed converted values).",
+              "evidence": "`assert t.get_args(click.Path[pathlib.Path]) == (pathlib.Path,)` verifies generic subscription metadata only. It does not call `convert` or `coerce_path_result` with `path_type` set, so a regression in the narrowing logic would not be caught here. The typing check file covers types only, not runtime results.",
+              "suggested_fix": "Add a runtime assertion such as `assert click.Path(path_type=pathlib.Path).convert('a/b.txt', None, None) == pathlib.Path('a/b.txt')` and one for `bytes`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "line 191 beyond end of tests/test_types/test_Path.py (190)"
+          },
+          {
+            "finding": {
+              "id": "c69da7085b25",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "src/click/types.py",
+              "line_start": 1147,
+              "line_end": 1147,
+              "summary": "The `coerce_path_result` signature line exceeds the project's line-length limit and the new parameter is untyped.",
+              "evidence": "The added `def coerce_path_result(self, value: str | os.PathLike[str], *, verbose=None) -> _PathT_co:` line is roughly 96 characters, longer than the 88 used by the surrounding black-formatted code.",
+              "suggested_fix": "Drop the parameter (see above) and let the formatter wrap the signature if it is still too long.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-wildcard-import-9c079247",
+      "score": {
+        "item_id": "click-wildcard-import-9c079247",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.00086937,
+        "latency_s": 5.345,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3326,
+          "output_tokens": 1154,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00086937
+        },
+        "latency_s": 5.345,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "43e638fac961",
+              "category": "convention_violation",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "src/click/parser.py",
+              "line_start": 33,
+              "line_end": 33,
+              "summary": "A wildcard import from `._utils` was added to parser.py, which pulls every public name into the module namespace when only one name is needed.",
+              "evidence": "parser.py adds `from ._utils import *` above the existing explicit `from ._utils import UNSET`. The module already imports explicitly everywhere else, and FLAG_NEEDS_VALUE is used in the parser but is not named in an import. The wildcard also brings in `enum`, `t`, and `Sentinel` as side effects.",
+              "suggested_fix": "Replace the wildcard with `from ._utils import FLAG_NEEDS_VALUE` alongside the existing `from ._utils import UNSET`, keeping the explicit style used in the rest of the codebase.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-dead-code-4401d55e",
+      "score": {
+        "item_id": "httpx-dead-code-4401d55e",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "56983b04956d",
+            "category_match": true
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00089287,
+        "latency_s": 5.758,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "56983b04956d",
+            "category": "over_abstraction",
+            "severity": "minor",
+            "confidence": 0.75,
+            "file": "httpx/_utils.py",
+            "line_start": 296,
+            "line_end": 299,
+            "summary": "_is_https_redirect_legacy is dead code, and its 'backwards compatibility' docstring is false for a function added in this same change.",
+            "evidence": "httpx/_utils.py adds `is_https_redirect` and then `_is_https_redirect_legacy(*args, **kwargs)` which only forwards to it. Nothing in the diff calls the legacy wrapper (httpx/_client.py imports and uses `is_https_redirect` directly, and the tests import `is_https_redirect`). The docstring 'Kept for backwards compatibility' is misleading because no prior public API existed under that name.",
+            "suggested_fix": "Delete `_is_https_redirect_legacy`. Keep only `is_https_redirect`.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3038,
+          "output_tokens": 1273,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00089287
+        },
+        "latency_s": 5.758,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-073a3284",
+      "score": {
+        "item_id": "httpx-debug-print-073a3284",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "a5384d1a956b"
+        ],
+        "cost_usd": 0.001354745,
+        "latency_s": 7.469,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a5384d1a956b",
+            "category": "other",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "httpx/_client.py",
+            "line_start": 103,
+            "line_end": 103,
+            "summary": "A leftover debug `print` in `BoundSyncStream.close()` writes to stdout on every sync response close.",
+            "evidence": "httpx/_client.py: `print(f\"DEBUG seconds: {seconds!r}\")` inside BoundSyncStream.close(). This is unrelated to dropping on_close and would spam stdout for every library user.",
+            "suggested_fix": "Remove the print statement.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 4617,
+          "output_tokens": 1802,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001354745
+        },
+        "latency_s": 7.469,
+        "dropped_findings": 3,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "29cc19607a60",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "httpx/_models.py",
+              "line_start": 1246,
+              "line_end": 1247,
+              "summary": "The new isinstance guards in Response.close()/aclose() assume the transport stream is a SyncByteStream/AsyncByteStream subclass, which the old callable-based path did not require.",
+              "evidence": "httpx/_models.py: `if not isinstance(self.stream, SyncByteStream): raise RuntimeError(...)`. Previously close() called the stored on_close callback, which invoked `stream.close()` on whatever object the transport returned. A transport returning a duck-typed stream object would now fail on close with RuntimeError.",
+              "suggested_fix": "Verify that all transports return SyncByteStream/AsyncByteStream instances, or relax the check to duck typing.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "95fb641d8dd5",
+              "category": "scope_creep",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/client/test_async_client.py",
+              "line_start": 97,
+              "line_end": 97,
+              "summary": "An existing test was changed from `client.request(\"POST\", ...)` to `client.post(...)` without a stated reason.",
+              "evidence": "tests/client/test_async_client.py: `response = await client.post(server.url, content=hello_world())` replaces the explicit `client.request` call.",
+              "suggested_fix": "Revert the unrelated change to the existing test.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "34670b1f48d0",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.5,
+              "file": "httpx/_client.py",
+              "line_start": 1564,
+              "line_end": 1564,
+              "summary": "The new RuntimeError message contains a grammar error: \"an sync request\".",
+              "evidence": "httpx/_client.py: `\"Attempted to send an sync request with an AsyncClient instance.\"`",
+              "suggested_fix": "Change \"an sync\" to \"a sync\" (and similarly in the Response.close/aclose messages).",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-6212e8fa",
+      "score": {
+        "item_id": "httpx-debug-print-6212e8fa",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "10950ed65d2e",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.000728245,
+        "latency_s": 4.361,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "10950ed65d2e",
+            "category": "scope_creep",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "httpx/_multipart.py",
+            "line_start": 194,
+            "line_end": 194,
+            "summary": "A leftover debug `print` was added to library code, writing every multipart filename to stdout.",
+            "evidence": "httpx/_multipart.py:194 adds `print(f\"DEBUG filename: {filename!r}\")` inside FileField.render_headers. The task was only to move helper functions, and this print is unrelated. It runs on every file upload and leaks filenames to stdout in production.",
+            "suggested_fix": "Remove the print statement.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3333,
+          "output_tokens": 870,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.000728245
+        },
+        "latency_s": 4.361,
+        "dropped_findings": 1,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "e61241032291",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "httpx/_utils.py",
+              "line_start": 1,
+              "line_end": 1,
+              "summary": "Renaming `format_form_param` and `guess_content_type` may break any other module or test that still imports them from `_utils`.",
+              "evidence": "The diff removes `format_form_param` and `guess_content_type` from httpx/_utils.py and changes their names to underscore-prefixed versions in _multipart.py. The diff does not show whether other callers, such as tests importing from httpx._utils, were updated. Any remaining reference would raise ImportError.",
+              "suggested_fix": "Grep the repo for `format_form_param` and `guess_content_type` and update every remaining reference, including tests.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-2175ce39",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-2175ce39",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "d0ff7498ff82",
+            "category_match": false
+          }
+        ],
+        "false_positive_ids": [],
+        "cost_usd": 0.00176937,
+        "latency_s": 15.095,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "d0ff7498ff82",
+            "category": "silent_behavior_change",
+            "severity": "major",
+            "confidence": 0.7,
+            "file": "more_itertools/more.py",
+            "line_start": 854,
+            "line_end": 872,
+            "summary": "The new default (by_index=True) changes which permutations count as derangements for existing callers, not just adds an option.",
+            "evidence": "The old check was `x == i` (element value equal to its position). With the new default, `indices = pool_ind` (label of each element's value) and the check is `pool_ind[i] != q[i]`. For non-integer input such as ['a','b','c'], the old code returned all 6 permutations because no value equals its index, while the new default returns only the 2 true derangements. Output for existing callers changes silently, with no note in the docstring.",
+            "suggested_fix": "Keep the old semantics as the default, or make the new behavior opt-in and document the change. If the default is changed deliberately, call it out in the changelog and docstring and add tests.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 1738,
+          "output_tokens": 3351,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.00176937
+        },
+        "latency_s": 15.095,
+        "dropped_findings": 4,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "525bb343967d",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.5,
+              "file": "more_itertools/more.py",
+              "line_start": 856,
+              "line_end": 857,
+              "summary": "The label lookup uses `list.index` inside a comprehension, which is O(n*u) and contradicts the stated goal of improving runspeed.",
+              "evidence": "`pool_ind = tuple([poolUnique.index(x) for x in pool])` performs a linear search for every element. For n elements with u unique values this is O(n*u), so for large inputs it can be slower than the original loop.",
+              "suggested_fix": "Build a dict mapping value to label in one pass (when hashable), or otherwise assign labels with a single pass.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.50 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "e0ef5542caf2",
+              "category": "comment_noise",
+              "severity": "minor",
+              "confidence": 0.4,
+              "file": "more_itertools/more.py",
+              "line_start": 854,
+              "line_end": 872,
+              "summary": "The new `by_index` parameter is undocumented, and its name does not match what the code does.",
+              "evidence": "The docstring is unchanged and does not mention `by_index`. The `by_index=True` path compares element identity labels, not positional indices, so the name is misleading. The variable `poolUnique` also breaks the snake_case convention used elsewhere in the module.",
+              "suggested_fix": "Document the parameter, rename it to reflect its meaning (e.g. identity-based vs. value-vs-index), and rename `poolUnique` to `pool_unique`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.40 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "85f38b852c32",
+              "category": "correctness",
+              "severity": "minor",
+              "confidence": 0.3,
+              "file": "more_itertools/more.py",
+              "line_start": 854,
+              "line_end": 872,
+              "summary": "The function is no longer a generator, so input is consumed and labels are computed at call time rather than on iteration.",
+              "evidence": "The old body used `yield`, so nothing ran until iteration. The new body eagerly calls `tuple(iterable)`, `set(...)`, and `.index` before returning. Argument errors and the cost of the setup now surface at call time.",
+              "suggested_fix": "Keep the function lazy by moving setup into a generator, or accept and document the eager behavior.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "287fd3b14f82",
+              "category": "correctness",
+              "severity": "major",
+              "confidence": 0.6,
+              "file": "more_itertools/more.py",
+              "line_start": 855,
+              "line_end": 856,
+              "summary": "`list(set(pool))` requires hashable elements, so the default path now raises TypeError for unhashable items that the old code accepted.",
+              "evidence": "Old code: `for p in permutations(iterable, r=r)` works for any element type. New code at line 855 calls `set(pool)` when by_index=True (the default), so derangements([[1], [2]]) raises TypeError: unhashable type: 'list'.",
+              "suggested_fix": "Compute the label mapping without hashing, e.g. with a list-based equality scan, or fall back to by_index=False when elements are unhashable.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "restates d0ff7498ff82 (silent_behavior_change)"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-ccf96ac6",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-ccf96ac6",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "59bac8dbab83",
+          "abfa7dbd6d5a"
+        ],
+        "cost_usd": 0.001469495,
+        "latency_s": 10.124,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "baseline",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "59bac8dbab83",
+            "category": "comment_noise",
+            "severity": "minor",
+            "confidence": 0.6,
+            "file": "tests/test_recipes.py",
+            "line_start": 672,
+            "line_end": 673,
+            "summary": "The comment says counts are within eight standard deviations, but the bounds 940..1280 are roughly ±5.4 sigma for 10,000 draws over 9 derangements.",
+            "evidence": "Expected count is 10000/9 ≈ 1111 and sigma ≈ sqrt(10000·(1/9)·(8/9)) ≈ 31.4. Eight sigma would be about ±251, but the assertion allows only about −171/+169.",
+            "suggested_fix": "Correct the comment to say about five standard deviations, or widen the bounds to match the comment.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          },
+          {
+            "id": "abfa7dbd6d5a",
+            "category": "other",
+            "severity": "nit",
+            "confidence": 0.7,
+            "file": "more_itertools/recipes.py",
+            "line_start": 1413,
+            "line_end": 1413,
+            "summary": "Typo in the user-facing error message: 'derangments'.",
+            "evidence": "`raise IndexError('No derangments to choose from')`",
+            "suggested_fix": "Change to 'No derangements to choose from'.",
+            "source": "baseline",
+            "rule": null,
+            "evidence_refs": [],
+            "verified_by": null
+          }
+        ],
+        "checks": [],
+        "usage": {
+          "model": "anthropic/claude-haiku-5.5",
+          "llm_calls": 1,
+          "tool_calls": 0,
+          "input_tokens": 3395,
+          "output_tokens": 2337,
+          "cached_input_tokens": 1072,
+          "cost_usd": 0.001469495
+        },
+        "latency_s": 10.124,
+        "dropped_findings": 2,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [
+          {
+            "finding": {
+              "id": "ff274ce15cf8",
+              "category": "convention_violation",
+              "severity": "minor",
+              "confidence": 0.45,
+              "file": "more_itertools/recipes.py",
+              "line_start": 37,
+              "line_end": 37,
+              "summary": "Replaces the explicit `random` imports with a wildcard import, which hides where names come from and is usually flagged by linters (F403/F405).",
+              "evidence": "recipes.py:37 `from random import *`. The previous explicit line `from random import randrange, sample, choice` was replaced, and `shuffle` is now only available through the wildcard.",
+              "suggested_fix": "Use `from random import choice, randrange, sample, shuffle`.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.45 < 0.60"
+          },
+          {
+            "finding": {
+              "id": "a8a8ba18d60f",
+              "category": "convention_violation",
+              "severity": "nit",
+              "confidence": 0.3,
+              "file": "tests/test_recipes.py",
+              "line_start": 657,
+              "line_end": 657,
+              "summary": "New test class is named `TestRandomDerangement`, while the neighboring random-combination tests use the `...Tests` suffix.",
+              "evidence": "`class TestRandomDerangement(TestCase):` versus `class RandomCombinationWithReplacementTests(TestCase):` and `class NthCombinationTests(TestCase):`.",
+              "suggested_fix": "Rename to `RandomDerangementTests` to match the file.",
+              "source": "baseline",
+              "rule": null,
+              "evidence_refs": [],
+              "verified_by": null
+            },
+            "reason": "confidence 0.30 < 0.60"
+          }
+        ],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

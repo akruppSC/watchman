@@ -9,7 +9,8 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 *verifies* its suspicions with tools before reporting them. Every finding must cite
 evidence, and findings that can't be grounded are dropped.
 
-> **Status:** the CLI, the tool-using agent, the evaluation, and the integrations (a GitHub
+> **Status:** the CLI, the tool-using agent, the evaluation, live mode, a maintainability check and an
+> opt-in Google-style mode, and the integrations (a GitHub
 > Action that comments on pull requests, and a git pre-push hook) are complete. The overseer
 > (a larger model for a deeper second look) is an opt-in `--deep` tool; automatic use didn't
 > pay for itself in evaluation. See [Roadmap](#roadmap) and the
@@ -341,14 +342,31 @@ human review. What it covers today, by section of the guide:
 
 | Google Python Style Guide | What Watchman does today | Where |
 |---|---|---|
-| §3.18 Function length: "prefer small and focused functions" (about 40 lines) | Flags a function that *this change* pushes past 60 lines, 10 cyclomatic complexity, 5 parameters, or 4 levels of nesting, and suggests how to split it. The guide gives only the 40-line hint; the other limits come from general practice (McCabe's 10, ruff's defaults) | `quality` check |
-| §3.8 Comments and docstrings (public API documented) | Flags a new public function/class without a docstring where the module documents its API, and a new module whose public API is mostly undocumented. It does not check the `Args:`/`Returns:`/`Raises:` format yet | `quality` check |
-| §2.4 Exceptions (no catch-all `except:`, small `try` bodies, no `assert` for validation) | Flags bare and blind `except`, `except: pass`, `raise` without `from`; the agent judges `try` body size | `ruff`, agent |
-| §2.12 Default argument values (no mutable defaults) | Flags mutable and call-expression defaults | `ruff` |
+| §3.18 Function length: "prefer small and focused functions" (about 40 lines) | Flags a function that *this change* pushes past 60 lines (**40 in Google mode**), 10 cyclomatic complexity, 5 parameters, or 4 levels of nesting, and suggests how to split it. The guide gives only the 40-line hint; the other limits come from general practice (McCabe's 10, ruff's defaults) | `quality` check |
+| §3.8 Comments and docstrings | Flags a new public function/class without a docstring where the module documents its API, and a new module whose public API is mostly undocumented. **Google mode** adds: a module docstring on new modules, a one-line summary ending in punctuation, and `Args:`/`Returns:`/`Yields:` sections on multi-line docstrings of new public functions | `quality`, `google_style` |
+| §3.16 Naming | **Google mode:** CapWords classes; lower_with_under functions, arguments, variables and module files (camelCase and PascalCase functions are flagged; PascalCase variables are not, since they are usually class aliases) | `google_style` |
+| §2.21 Type annotations | **Google mode:** new public functions without full annotations (not if a `.pyi` stub sits next to the module) | `google_style` |
+| §3.2 Line length | **Google mode:** one finding per file listing lines over 80 columns (not for imports, URLs or one-token lines). Other formatting (indentation, whitespace, blank lines) is left to a formatter (Black, Pyink or `ruff format`) | `google_style` |
+| §2.2 Imports, §2.7 comprehensions, §2.17 decorators, §2.5 globals, §2.14 truthiness, §3.10.1 logging, §3.12 TODOs, §3.17 main | **Google mode:** relative imports; comprehensions with several `for` clauses or filters; `@staticmethod`; `global`; `len(x) == 0`, `== None`, `== True`; f-strings in logging calls; TODOs without a context link; an unguarded `main()` call | `google_style` |
+| §2.4 Exceptions | Bare and blind `except`, `except: pass`, `raise` without `from` (ruff and the agent); **Google mode** adds `try` bodies over 30 lines, and the agent is told to judge `assert` for validation | `ruff`, `google_style`, agent |
+| §2.12 Default argument values | Mutable and call-expression defaults | `ruff` |
 | §2.1 Lint | Runs ruff and mypy on the changed lines (not pylint) | `ruff`, `mypy` |
-| Reuse over copy-paste (readability, not a numbered rule) | Flags added blocks that already exist elsewhere | `quality` check, agent |
-| §3.2-3.6 Formatting (line length, indentation, whitespace) | Not re-implemented: use a formatter (Black, Pyink or `ruff format`) | n/a |
-| §3.16 Naming, §2.2 Imports, §2.7 Comprehensions, §2.21 Type annotations, §3.12 TODOs, §3.17 Main | **Not enforced yet.** Planned as an opt-in `style = "google"` mode | planned |
+| Reuse over copy-paste, project fit, readability | Flags added blocks that already exist elsewhere; **Google mode** hands the agent a style summary (`prompts/style_google_python.md`) so it judges the rest (naming quality, power features, small `try` bodies, whether the change fits the existing structure). The repo's own `CONVENTIONS.md` still wins | `quality`, agent |
+| §2.2 "import modules, not names" | Not enforced: it contradicts how most Python projects are written, so it is left to the repo's conventions | n/a |
+
+**Google mode is opt-in.** It is off by default, because other projects follow other styles. Turn it on in
+your user config (a reviewed repository cannot turn it on or off for itself):
+
+```toml
+# ~/.config/watchman/config.toml
+[review]
+style = "google"
+```
+
+Every finding it raises cites its guide section, for example
+`Argument 'camelCase' is not lower_with_under (Google Python Style Guide §3.16)`. In live mode the
+worker sees these at test runs, commits and "done". It is a best-effort detector of departures from the
+guide, not a certification of compliance.
 
 The quality limits are fixed in code (`checks/quality.py`), not configurable by the reviewed repo, and
 are conservative on purpose: a finding is raised only when *this change* creates the problem, never for
@@ -407,6 +425,32 @@ and can fix it in the same session.
     pre-registered tasks unchanged and don't claim anything about correctness there. On
     `command_interpreter` and the vague tasks the results are clean: 3/3 and 9/9, equal in both arms.
   - *Small n:* nine pairs per suite, one worker model, one reviewer model, three tasks per suite.
+
+- *Experiment 3* (Google mode, pre-registered in
+  [`evals/live/STYLE_EXPERIMENT.md`](evals/live/STYLE_EXPERIMENT.md); tables in
+  [`evals/results/STYLE.md`](evals/results/STYLE.md)): the three vague tasks again, 18 runs, alone vs.
+  supervised with `style = "google"`, graded with Google's own published `pylintrc` run through pylint, a
+  tool independent of Watchman's check. About $0.68 in total.
+
+  | per run | alone | supervised | pairs, supervised lower / higher |
+  |---|---|---|---|
+  | pylint messages (**primary**) | 3.33 | 1.89 | 5 / 1 (sign test p = 0.22) |
+  | pylint messages per 100 added lines (secondary) | 2.02 | 0.76 | 8 / 1 (p = 0.04) |
+  | public API with a docstring | 42% | 73% | 1 / 7 (p = 0.07) |
+  | public functions fully annotated | 100% | 100% | 0 / 0 |
+
+  **The pre-registered primary metric did not reach significance** (nine pairs). The improvement came
+  from two message types Watchman explicitly checks: `line-too-long` fell from 19 to 10 and
+  `missing-class-docstring` from 5 to 0, while `invalid-name` (3 vs 3) and `missing-module-docstring`
+  (3 vs 3) did not move. So the worker acts on the style feedback it is given, which is partly circular
+  (and was made more so by adding the line-length rule after a smoke run; the pre-registration records
+  that). Annotations were already complete without help (a ceiling). Own tests passed in all 18 runs, and
+  supervised runs wrote about 19% more code (199 vs 168 lines) and 18% more tests. Cost: about $0.054 of
+  reviewer spend per supervised run.
+
+**Across experiments 2 and 3, nearly every metric moved in the supervised direction and none was significant
+on its registered primary comparison.** Nothing here measures elegance or design quality; only a human
+reading the code can judge those.
 
 ## How it works
 
@@ -546,7 +590,7 @@ and overseer arms can be compared from a single run.
 
 ### Datasets
 
-Three frozen datasets are built from four permissively licensed, well-tested projects:
+Frozen datasets are built from four permissively licensed, well-tested projects:
 more-itertools (MIT), attrs (MIT), click (BSD-3), and httpx (BSD-3). Each item pins an
 upstream commit SHA plus patches.
 
@@ -555,6 +599,8 @@ upstream commit SHA plus patches.
 | `seeded-v1` (A) | 60 | 41 / 19 | Real commits with **one injected AI-style defect**, from 13 hand-written templates |
 | `reverted-v1` (B) | 30 | 22 / 8 | Real **bug fixes with the source change undone**; ground truth is the fix |
 | `clean-v1` (C) | 60 | 44 / 16 | Unmodified real commits; measures false positives |
+| `seeded-v3` | 30 | 18 / 12 | Real commits with one injected **readability or design defect**, from 6 templates for `over_abstraction` and `convention_violation` (see below) |
+| `seeded-v2`, `reverted-v2`, `clean-v2` | 30, 16, 32 | all test | Held-out sets built from upstream commits v1 never used. **Never run.** Kept in reserve |
 
 How the datasets are built:
 
@@ -588,7 +634,8 @@ Known biases:
   pessimistic.
 - Every B item is labeled `correctness`, and B diffs are small, so lenient recall on B is
   inflated. Use strict recall there.
-- There are no `over_abstraction` or `convention_violation` items.
+- v1 has no `over_abstraction` or `convention_violation` items; `seeded-v3` adds them, with its own
+  limits (below).
 
 ### Running
 
@@ -638,6 +685,39 @@ What the ablations show:
    arm, but every B item is labeled `correctness` and models usually pick a different category,
    so strict recall is 11-27%. These diffs are small, so lenient recall is inflated. Treat B as
    a smoke test.
+
+**Readability and design defects: `seeded-v3`** (30 items, Haiku 5.5, default config, nothing tuned on it;
+the owner approved freezing it and running every mode on both splits). Its six templates are mechanical, like
+v1's: a pass-through wrapper that adds nothing, an unused keyword parameter, an unused "compatibility"
+alias, a snake_case local renamed to camelCase, `from x import *`, and a debug `print` left in library code.
+Upstream commits are disjoint from v1 and v2.
+
+| arm | held-out test (12) | dev (18) | all 30 | cost per review |
+|---|---|---|---|---|
+| deterministic (Layer 1 only) | 0% (0/12) | 6% (1/18) | 3% (1/30) | $0 |
+| baseline (one prompt) | 50% (6/12) | 67% (12/18) | 60% (18/30) | $0.001 |
+| agent without Layer 1 | 50% (6/12) | 67% (12/18) | 60% (18/30) | $0.004 |
+| **agent (full Watchman)** | **75% (9/12) [47-91]** | **83% (15/18) [61-94]** | **80% (24/30) [63-90]** | $0.004 |
+
+Layer 1 evidence again helps the agent: on the 30 items the full agent found 6 that the same agent without
+Layer 1 missed and lost none (sign test p = 0.03). Against the single-prompt baseline it found 8 that the
+baseline missed and lost 2 (p = 0.11, same direction, not proven). By category the agent found 12 of 15
+`over_abstraction` and 12 of 15 `convention_violation` items; it found every dead-code, debug-print and
+wildcard-import item and was weakest on unused parameters (3/5) and camelCase renames (2/5). The checks alone
+find almost none of these (1/30): ruff and the quality check were not built for them, which is the point.
+
+**Exploratory: the same agent with Google mode on** (`style = "google"`, same 30 items, `evals/v3_google.sh`,
+run files in `evals/results/v3_google/`): 87% (26/30), 83% (10/12) held out, against 80% (24/30) with the
+default config. Paired, it found 6 items the default run missed (three camelCase renames, two unused
+parameters, a wrapper) and missed 4 it had found (three dead-code items, a wrapper): p = 0.75, which is
+noise. What changes reliably is volume: 76 findings against 46, so lower pessimistic precision (34% vs 52%),
+because the style rules add real but unlabeled findings. I treat this as "Google mode doesn't hurt recall and
+adds style feedback", not as an improvement.
+
+Limits: one injected defect per item, plainer than real AI code (the same caveat as v1); 12 held-out items
+make wide intervals; the dataset has no clean items, so false positives come from `clean-v1` (the "findings
+per clean diff" column above); and I designed the templates knowing which Layer-1 rules existed, though
+none of them was tuned on v3.
 
 **Model tiers, dev split, identical items** (agent mode; 20 items shared by all three, 40 for GPT-5):
 
@@ -742,6 +822,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 3b. ✅ Overseer: a larger model for a deeper second look, opt-in via `--deep` (automatic use evaluated and rejected)
 4. ✅ Integration: GitHub Action with an updatable PR comment, pre-push hook, demo recording, [writeup](docs/WRITEUP.md)
 5. ✅ Live mode: supervising an OpenCode worker at checkpoints (snapshot reviews, round cap, advisory/blocking, plugin + MCP)
+6. ✅ Code quality and style: maintainability check, opt-in Google Python Style Guide mode, two pre-registered worker experiments, and `seeded-v3` (over-abstraction and convention defects)
 
 ## Design decisions
 
@@ -840,6 +921,15 @@ uv run pytest -m docker          # tests that need a docker daemon
 ## Known limitations
 
 - Python-only target repos for now.
+- **Code quality is measured only by proxies.** The maintainability and Google-mode checks detect specific,
+  mechanical departures (function size, complexity, docstrings, naming, 80 columns, ...). They do not judge
+  design, elegance or whether a change fits the project, except through the LLM agent, which is not
+  separately evaluated on those qualities. The two quality experiments (36 and 18 runs) moved every metric in
+  the intended direction, none significantly on its registered primary comparison, and their metrics
+  overlap the checks (see [Code quality and style](#code-quality-and-style)).
+- **Google mode is noisy on repos that follow another style.** On the evaluation's real commits it fires about
+  1.4 times per clean commit (mostly 80-column lines, relative imports and non-Google docstring sections),
+  so it is opt-in and user-level only. Formatting other than line length is left to a formatter.
 - Without a repo virtualenv (`.venv/`), mypy can't resolve third-party types, so
   hallucinated *third-party* APIs are left to the agent. Hallucinated stdlib APIs are
   still caught.
@@ -862,8 +952,8 @@ uv run pytest -m docker          # tests that need a docker daemon
   setuptools-scm and hatch-vcs projects can't derive a version inside the container, and PEP 735
   dependency groups were never read. All three are fixed (Docker sandbox), and a flood of
   failures is now compared against the whole base suite instead of being blamed on the change.
-  **The evaluation numbers above predate those fixes**, so they understate Layer 1 on real
-  repositories; they were not re-run. The subprocess fallback sandbox still installs nothing, and
+  **The v1 evaluation numbers above predate those fixes**, so they understate Layer 1 on real
+  repositories; they were not re-run. (`seeded-v3` was run afterwards, with the fixes and Docker.) The subprocess fallback sandbox still installs nothing, and
   a project whose tests need system libraries or a service will still report `error`.
 - The agent's `escalations` channel (hand a question to the overseer) went unused by Gemini
   Flash in evaluation, so in practice the overseer works from the primary's findings and the diff.

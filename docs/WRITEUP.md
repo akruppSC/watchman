@@ -95,6 +95,43 @@ changed every second so "unchanged" was never detected, findings re-announced as
 worker's `git add -A` committing the plugin file), and headless `opencode run` exits at `session.idle`,
 so the "done" prompt only works in server mode.
 
+## Code quality, a style guide, and three experiments that mostly said "same direction, not proven"
+
+The third goal (keep AI-written code readable and maintainable) needed something code can be checked
+against. I first framed it as "IEEE standards", which was wrong: those describe processes and documents,
+so no tool can certify them. The real intent was a **code style guide**, and the Google Python Style Guide
+is concrete enough to check. Watchman now has a deterministic `quality` check (complexity, function
+length, parameters, nesting, docstrings, copy-paste: flagged only when *this change* creates the problem,
+because the first version blamed changes for existing debt and fired 0.30 times per clean commit against
+0.07 after the fix) and an opt-in **Google mode** whose findings cite the guide section: naming,
+annotations, docstring sections, 80 columns, relative imports, and others, plus a style summary for the
+LLM reviewer. In live mode the worker sees these while it writes.
+
+I measured whether this changes what a worker leaves behind in two pre-registered experiments (the
+hypotheses, metrics and analysis were committed before any run). Experiment 2 (36 runs): functions over a
+complexity/length limit fell from 0.67 to 0.33 per run on tasks that invite long functions and from 0.33 to
+0.00 on vague one-line tasks; undocumented public APIs fell from 7.9 to 5.3. Experiment 3 (18 runs, graded
+with Google's own `pylintrc`, an independent tool): pylint messages fell from 3.33 to 1.89 per run. Every
+metric moved the same way; **none was significant on its registered primary comparison** (nine pairs
+each), and the gains come from rules Watchman itself enforces, so they show the worker acts on the feedback,
+not that the code is independently better. Nothing here measures elegance or design quality.
+
+What the experiments caught in my own work: a hidden test that asserted behavior the prompt never defined
+(all six runs of one task "failed" in both arms, so I stopped using correctness for it), a report that
+silently absorbed new tasks into experiment 1's table, a false positive on `__main__.py` and a missing
+line-length rule found by a one-task smoke run (fixed, with an amendment written into the plan before the
+full run). It also showed the value of a pre-registered primary metric: the per-100-lines version reached
+p = 0.04, but it was a secondary, so I report it as suggestive.
+
+The first datasets had no items for over-abstraction or convention violations, so I added `seeded-v3`: 30
+real commits with one injected readability or design defect each (a pass-through wrapper, an unused
+parameter, dead code, camelCase in a snake_case project, a wildcard import, a leftover debug print),
+reviewed and frozen before every mode was run on all of it. With Haiku 5.5 the full agent found 24 of 30
+(9 of 12 on the held-out split), the single prompt 18, the same agent without Layer 1 evidence 18, and the
+deterministic checks 1. Against the agent without Layer 1 it won 6 items and lost none (p = 0.03); against
+the single prompt it won 8 and lost 2 (p = 0.11, direction only). Turning on the Google style mode left
+recall about the same (26 of 30, p = 0.75 paired) and nearly doubled the findings (76 vs 46).
+
 ## Next
 
 Re-run the evaluation now that the sandbox installs real projects' test dependencies; grow the

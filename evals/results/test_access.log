@@ -18,3 +18,8 @@
 2026-10-14T20:43:10.479456+00:00 rescore pre-registered min_confidence=0.6 (policy committed in a0524a6)
 2026-10-14T23:47:49.732330+00:00 dataset=seeded-v2 mode=deterministic watchman=28e9636
 # 2026-10-14: the seeded-v2 deterministic access above belongs to a v2 test run that the owner cancelled before any result was saved. v2 datasets stay frozen and have never been run.
+2026-10-15T20:33:34.895578+00:00 dataset=seeded-v3 mode=deterministic watchman=e74c9a8
+2026-10-15T20:38:51.175672+00:00 dataset=seeded-v3 mode=baseline watchman=e74c9a8
+2026-10-15T20:45:59.868524+00:00 dataset=seeded-v3 mode=agent_no_l1 watchman=e74c9a8
+2026-10-15T20:55:20.495295+00:00 dataset=seeded-v3 mode=agent watchman=e74c9a8
+2026-10-15T21:13:08.138757+00:00 dataset=seeded-v3 mode=agent watchman=e74c9a8

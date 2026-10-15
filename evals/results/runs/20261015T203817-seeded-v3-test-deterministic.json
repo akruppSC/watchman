@@ -1,0 +1,1454 @@
+{
+  "run_id": "20261015T203817-seeded-v3-test-deterministic",
+  "started_at": "2026-10-15T20:38:17.403782+00:00",
+  "dataset": "seeded-v3",
+  "dataset_sha256": "163c06158f678fc3dc71333f7bffa295b107b34b83c7e19ec7b5e206b7f7109a",
+  "dataset_frozen": true,
+  "split": "test",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "e74c9a8",
+  "review_config": {
+    "checks": [
+      "secrets",
+      "imports",
+      "hygiene",
+      "scope",
+      "quality",
+      "ruff",
+      "mypy",
+      "pytest"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-needless-wrapper-1759260a",
+      "score": {
+        "item_id": "attrs-needless-wrapper-1759260a",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 33.65,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.214,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.009,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +67/-23 lines, 2 source / 2 test file(s), areas: src(2), tests(2), changelog.d(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.535,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.237,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.159,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'",
+            "duration_s": 31.186,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/conftest.py'.\nconftest.py:5: in <module>\n    from hypothesis import HealthCheck, settings\nE   ModuleNotFoundError: No module named 'hypothesis'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 33.65,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'hypothesis'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-needless-wrapper-48b8611c",
+      "score": {
+        "item_id": "attrs-needless-wrapper-48b8611c",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 121.735,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.453,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.088,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "6 file(s), +41/-11 lines, 2 source / 2 test file(s), areas: src(2), tests(2), changelog.d(1), docs(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.879,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.062,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.079,
+            "findings": [],
+            "output_excerpt": "column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2393, \"column\": 20, \"end_line\": 2393, \"end_column\": 44, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[Any]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2622, \"column\": 16, \"end_line\": 2622, \"end_column\": 37, \"message\": \"\\\"Attribute\\\" has no attribute \\\"alias_is_default\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2626, \"column\": 49, \"end_line\": 2626, \"end_column\": 57, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2637, \"column\": 64, \"end_line\": 2637, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2691, \"column\": 0, \"end_line\": 2691, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2694, \"column\": 32, \"end_line\": 2694, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2696, \"column\": 28, \"end_line\": 2696, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2696, \"column\": 39, \"end_line\": 2696, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2848, \"column\": 0, \"end_line\": 2848, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3030, \"column\": 0, \"end_line\": 3030, \"end_column\": 10, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3088, \"column\": 0, \"end_line\": 3088, \"end_column\": 7, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3136, \"column\": 28, \"end_line\": 3138, \"end_column\": 13, \"message\": \"Incompatible types in assignment (expression has type \\\"def (value: Any, __: Any, field: Any) -> Any\\\", variable has type \\\"def (value: Any, _: Any, __: Any) -> Any\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3186, \"column\": 8, \"end_line\": 3186, \"end_column\": 21, \"message\": \"Accessing \\\"__init__\\\" on an instance is unsound, since instance.__init__ could be from an incompatible subclass\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3205, \"column\": 0, \"end_line\": 3205, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3342, \"column\": 4, \"end_line\": 3342, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3350, \"column\": 11, \"end_line\": 3350, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3383, \"column\": 8, \"end_line\": 3387, \"end_column\": 22, \"message\": \"All conditional function variants must have identical signatures\", \"hint\": \"Original:\\n    def pipe_converter(val: Any, inst: Any, field: Any) -> Any\\nRedefinition:\\n    def pipe_converter(val: Any) -> Any\", \"code\": \"misc\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "2 failed, 1375 passed, 8 skipped, 1 xfailed in 32.21s; 2 also fail at merge-base (not attributed)",
+            "duration_s": 117.866,
+            "findings": [],
+            "output_excerpt": ".................................... [ 62%]\n........................................................................ [ 67%]\n........................................................................ [ 72%]\n.......................................................s................ [ 77%]\n...............................FF.....sss....................x.......... [ 83%]\n......................s................................................. [ 88%]\n........................................................................ [ 93%]\n........................................................................ [ 98%]\n..................                                                       [100%]\n=================================== FAILURES ===================================\n________________ TestLegacyMetadataHack.test_version_info[attr] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x751287334470>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attr' from '/work/src/attr/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprecated, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:41: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:97: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n_______________ TestLegacyMetadataHack.test_version_info[attrs] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x751287334410>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attrs' from '/work/src/attrs/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprecated, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:41: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:97: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attr]\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attrs]\n2 failed, 1375 passed, 8 skipped, 1 xfailed in 32.21s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 121.735,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-unused-parameter-0f758fe5",
+      "score": {
+        "item_id": "attrs-unused-parameter-0f758fe5",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 120.562,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.373,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.067,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +105/-3 lines, 1 source / 2 test file(s), areas: tests(2), changelog.d(1), docs(1), src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.868,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.074,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.017,
+            "findings": [],
+            "output_excerpt": "column\": 26, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[str]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2389, \"column\": 20, \"end_line\": 2389, \"end_column\": 44, \"message\": \"Incompatible types in assignment (expression has type \\\"str\\\", variable has type \\\"list[Any]\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2618, \"column\": 16, \"end_line\": 2618, \"end_column\": 37, \"message\": \"\\\"Attribute\\\" has no attribute \\\"alias_is_default\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2622, \"column\": 49, \"end_line\": 2622, \"end_column\": 57, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2633, \"column\": 64, \"end_line\": 2633, \"end_column\": 77, \"message\": \"\\\"Attribute\\\" has no attribute \\\"metadata\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2687, \"column\": 0, \"end_line\": 2687, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2690, \"column\": 32, \"end_line\": 2690, \"end_column\": 38, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2692, \"column\": 28, \"end_line\": 2692, \"end_column\": 34, \"message\": \"\\\"Attribute\\\" has no attribute \\\"hash\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2692, \"column\": 39, \"end_line\": 2692, \"end_column\": 45, \"message\": \"\\\"Attribute\\\" has no attribute \\\"name\\\"\", \"hint\": null, \"code\": \"attr-defined\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 2864, \"column\": 0, \"end_line\": 2864, \"end_column\": 13, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3046, \"column\": 0, \"end_line\": 3046, \"end_column\": 10, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3104, \"column\": 0, \"end_line\": 3104, \"end_column\": 7, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3152, \"column\": 28, \"end_line\": 3154, \"end_column\": 13, \"message\": \"Incompatible types in assignment (expression has type \\\"def (value: Any, __: Any, field: Any) -> Any\\\", variable has type \\\"def (value: Any, _: Any, __: Any) -> Any\\\")\", \"hint\": null, \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3202, \"column\": 8, \"end_line\": 3202, \"end_column\": 21, \"message\": \"Accessing \\\"__init__\\\" on an instance is unsound, since instance.__init__ could be from an incompatible subclass\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3221, \"column\": 0, \"end_line\": 3221, \"end_column\": 9, \"message\": \"Cannot assign to a type\", \"hint\": null, \"code\": \"misc\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3358, \"column\": 4, \"end_line\": 3358, \"end_column\": 8, \"message\": \"Need type annotation for \\\"vals\\\" (hint: \\\"vals: list[<type>] = ...\\\")\", \"hint\": null, \"code\": \"var-annotated\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3366, \"column\": 11, \"end_line\": 3366, \"end_column\": 37, \"message\": \"Too many arguments for \\\"_AndValidator\\\"\", \"hint\": null, \"code\": \"call-arg\", \"severity\": \"error\"}\n{\"file\": \"src/attr/_make.py\", \"line\": 3399, \"column\": 8, \"end_line\": 3403, \"end_column\": 22, \"message\": \"All conditional function variants must have identical signatures\", \"hint\": \"Original:\\n    def pipe_converter(val: Any, inst: Any, field: Any) -> Any\\nRedefinition:\\n    def pipe_converter(val: Any) -> Any\", \"code\": \"misc\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "2 failed, 1380 passed, 8 skipped, 1 xfailed in 31.37s; 2 also fail at merge-base (not attributed)",
+            "duration_s": 116.836,
+            "findings": [],
+            "output_excerpt": ".................................... [ 62%]\n........................................................................ [ 67%]\n........................................................................ [ 72%]\n............................................................s........... [ 77%]\n....................................FF.....sss....................x..... [ 82%]\n...........................s............................................ [ 87%]\n........................................................................ [ 93%]\n........................................................................ [ 98%]\n.......................                                                  [100%]\n=================================== FAILURES ===================================\n________________ TestLegacyMetadataHack.test_version_info[attr] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x783ac05018b0>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attr' from '/work/src/attr/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprecated, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:41: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:97: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n_______________ TestLegacyMetadataHack.test_version_info[attrs] ________________\n\nself = <tests.test_packaging.TestLegacyMetadataHack object at 0x783ac0501460>\nrecwarn = WarningsRecorder(record=True)\nmod = <module 'attrs' from '/work/src/attrs/__init__.py'>\n\n    def test_version_info(self, recwarn, mod):\n        \"\"\"\n        ___version_info__ is not deprecated, therefore doesn't raise a warning\n        and parses correctly.\n        \"\"\"\n>       assert isinstance(mod.__version_info__, attr.VersionInfo)\n                          ^^^^^^^^^^^^^^^^^^^^\n\ntests/test_packaging.py:41: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/attr/__init__.py:97: in __getattr__\n    return VersionInfo._from_version_string(meta[\"version\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncls = <class 'attr._version_info.VersionInfo'>, s = '0.0.0+watchman'\n\n    @classmethod\n    def _from_version_string(cls, s):\n        \"\"\"\n        Parse *s* and return a _VersionInfo.\n        \"\"\"\n        v = s.split(\".\")\n        if len(v) == 3:\n            v.append(\"final\")\n    \n        return cls(\n>           year=int(v[0]), minor=int(v[1]), micro=int(v[2]), releaselevel=v[3]\n                                                   ^^^^^^^^^\n        )\nE       ValueError: invalid literal for int() with base 10: '0+watchman'\n\nsrc/attr/_version_info.py:48: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attr]\nFAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version_info[attrs]\n2 failed, 1380 passed, 8 skipped, 1 xfailed in 31.37s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 120.562,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-camel-case-rename-d2e4a42f",
+      "score": {
+        "item_id": "click-camel-case-rename-d2e4a42f",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 46.196,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.702,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.017,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +69/-34 lines, 1 source / 0 test file(s), areas: src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.757,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.024,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.185,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "1484 passed, 23 skipped, 30000 deselected, 1 xfailed in 11.35s",
+            "duration_s": 42.219,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  4%]\n........................................................................ [  9%]\n..................................................x..................... [ 14%]\n........................................................................ [ 19%]\n........................................................................ [ 23%]\n........................................................................ [ 28%]\n........................................................................ [ 33%]\n........................................................................ [ 38%]\n........................................................................ [ 42%]\n........................................................................ [ 47%]\n........................................................................ [ 52%]\n........................................................................ [ 57%]\n........................................................................ [ 62%]\n........................................................................ [ 66%]\n........................................................................ [ 71%]\n...................................................sssssssssssssssssssss [ 76%]\n................ss...................................................... [ 81%]\n........................................................................ [ 85%]\n........................................................................ [ 90%]\n........................................................................ [ 95%]\n....................................................................     [100%]\n1484 passed, 23 skipped, 30000 deselected, 1 xfailed in 11.35s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 46.196,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-dead-code-26aa7bf3",
+      "score": {
+        "item_id": "click-dead-code-26aa7bf3",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 77.332,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.972,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +43/-34 lines, 3 source / 0 test file(s), areas: src(3)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.562,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.03,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.194,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "593 passed, 21 skipped, 1 xfailed in 5.11s",
+            "duration_s": 72.877,
+            "findings": [],
+            "output_excerpt": "........................................................................ [ 11%]\n...................................x.................................... [ 23%]\n........................................................................ [ 35%]\n........................................................................ [ 46%]\n........................................................................ [ 58%]\n..........................................................ssssssssssssss [ 70%]\nsssssss................................................................. [ 81%]\n........................................................................ [ 93%]\n.......................................                                  [100%]\n593 passed, 21 skipped, 1 xfailed in 5.11s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 77.332,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-unused-parameter-22177f85",
+      "score": {
+        "item_id": "click-unused-parameter-22177f85",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 79.079,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 5 added import(s)",
+            "duration_s": 0.115,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.015,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +70/-14 lines, 1 source / 2 test file(s), areas: tests(2), .(1), src(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.328,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.041,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.255,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "24 failed, 2036 passed, 24 skipped, 31000 deselected, 1 xfailed in 13.86s; 8 also fail at merge-base (not attributed)",
+            "duration_s": 76.106,
+            "findings": [],
+            "output_excerpt": "esttest\\n\",\n                expected_stdout=\"hello\\n\",\n                expected_stderr=\"\",\n                expected_error=None,\n            ),\n            EchoViaPagerTest(\n                description=\"Writing to stderr during generator execution\",\n                test_input=lambda: _test_gen_func_echo(file=sys.stderr),\n                expected_pager=\"testtest\\n\",\n                expected_stdout=\"\",\n                expected_stderr=\"hello\\n\",\n                expected_error=None,\n            ),\n        ],\n    )\n    def test_echo_via_pager(monkeypatch, capfd, pager_cmd, test, tmp_path):\n        monkeypatch.setitem(os.environ, \"PAGER\", pager_cmd)\n        monkeypatch.setattr(click._termui_impl, \"isatty\", lambda x: True)\n    \n        test_input = test.test_input()\n        expected_pager = test.expected_pager\n        expected_stdout = test.expected_stdout\n        expected_stderr = test.expected_stderr\n        expected_error = test.expected_error\n    \n        check_raise = pytest.raises(expected_error) if expected_error else nullcontext()\n    \n        pager_out_tmp = tmp_path / \"pager_out.txt\"\n        with pager_out_tmp.open(\"w\") as f:\n            force_subprocess_stdout = patch.object(\n                subprocess,\n                \"Popen\",\n                partial(subprocess.Popen, stdout=f),\n            )\n            with force_subprocess_stdout:\n                with check_raise:\n                    click.echo_via_pager(test_input)\n    \n        out, err = capfd.readouterr()\n    \n        pager = pager_out_tmp.read_text()\n    \n>       assert pager == expected_pager, (\n            f\"Unexpected pager output in test case '{test.description}'\"\n        )\nE       AssertionError: Unexpected pager output in test case 'Writing to stderr during generator execution'\nE       assert '' == 'testtest\\n'\nE         \nE         - testtest\n\ntests/test_utils/test_echo_via_pager.py:182: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test0- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test1- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test2- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test3- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test4- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test7- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test8- less ]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9-less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9- less]\nFAILED tests/test_utils/test_echo_via_pager.py::test_echo_via_pager[test9- less ]\n24 failed, 2036 passed, 24 skipped, 31000 deselected, 1 xfailed in 13.86s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 79.079,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-wildcard-import-9c079247",
+      "score": {
+        "item_id": "click-wildcard-import-9c079247",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 37.223,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.115,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.025,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "3 file(s), +24/-14 lines, 3 source / 0 test file(s), areas: src(3)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.501,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 2.42,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "1274 passed, 21 skipped, 1 xfailed in 7.32s",
+            "duration_s": 33.939,
+            "findings": [],
+            "output_excerpt": "........................................................................ [  5%]\n........................................................................ [ 11%]\n............................................x........................... [ 16%]\n........................................................................ [ 22%]\n........................................................................ [ 27%]\n........................................................................ [ 33%]\n........................................................................ [ 38%]\n........................................................................ [ 44%]\n........................................................................ [ 50%]\n........................................................................ [ 55%]\n........................................................................ [ 61%]\n........................................................................ [ 66%]\n........................................................................ [ 72%]\n...........................sssssssssssssssssssss........................ [ 77%]\n........................................................................ [ 83%]\n........................................................................ [ 88%]\n........................................................................ [ 94%]\n........................................................................ [100%]\n1274 passed, 21 skipped, 1 xfailed in 7.32s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 37.223,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-dead-code-4401d55e",
+      "score": {
+        "item_id": "httpx-dead-code-4401d55e",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 77.148,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.142,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.031,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "4 file(s), +62/-3 lines, 2 source / 2 test file(s), areas: httpx(2), tests(2)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.451,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.037,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 7.179,
+            "findings": [],
+            "output_excerpt": " 1885, \"column\": 31, \"end_line\": 1885, \"end_column\": 35, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1889, \"column\": 27, \"end_line\": 1889, \"end_column\": 31, \"message\": \"Incompatible default for parameter \\\"extensions\\\" (default has type \\\"None\\\", parameter has type \\\"dict[Any, Any]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1917, \"column\": 31, \"end_line\": 1917, \"end_column\": 35, \"message\": \"Incompatible default for parameter \\\"headers\\\" (default has type \\\"None\\\", parameter has type \\\"Headers | dict[str, str] | dict[bytes, bytes] | Sequence[tuple[str, str]] | Sequence[tuple[bytes, bytes]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1918, \"column\": 31, \"end_line\": 1918, \"end_column\": 35, \"message\": \"Incompatible default for parameter \\\"cookies\\\" (default has type \\\"None\\\", parameter has type \\\"Cookies | CookieJar | dict[str, str] | list[tuple[str, str]]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1922, \"column\": 27, \"end_line\": 1922, \"end_column\": 31, \"message\": \"Incompatible default for parameter \\\"extensions\\\" (default has type \\\"None\\\", parameter has type \\\"dict[Any, Any]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1971, \"column\": 47, \"end_line\": 1971, \"end_column\": 51, \"message\": \"Incompatible default for parameter \\\"exc_type\\\" (default has type \\\"None\\\", parameter has type \\\"type[BaseException]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1972, \"column\": 35, \"end_line\": 1972, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"exc_value\\\" (default has type \\\"None\\\", parameter has type \\\"BaseException\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1973, \"column\": 35, \"end_line\": 1973, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"traceback\\\" (default has type \\\"None\\\", parameter has type \\\"TracebackType\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 69.104,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 77.148,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-073a3284",
+      "score": {
+        "item_id": "httpx-debug-print-073a3284",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 63.717,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.002,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 0 added import(s)",
+            "duration_s": 0.188,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.04,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +114/-21 lines, 2 source / 3 test file(s), areas: tests(3), httpx(2)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.591,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.035,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 7.586,
+            "findings": [],
+            "output_excerpt": "\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1836, \"column\": 35, \"end_line\": 1836, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"exc_value\\\" (default has type \\\"None\\\", parameter has type \\\"BaseException\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1837, \"column\": 35, \"end_line\": 1837, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"traceback\\\" (default has type \\\"None\\\", parameter has type \\\"TracebackType\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1906, \"column\": 47, \"end_line\": 1906, \"end_column\": 51, \"message\": \"Incompatible default for parameter \\\"exc_type\\\" (default has type \\\"None\\\", parameter has type \\\"type[BaseException]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1907, \"column\": 35, \"end_line\": 1907, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"exc_value\\\" (default has type \\\"None\\\", parameter has type \\\"BaseException\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1908, \"column\": 35, \"end_line\": 1908, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"traceback\\\" (default has type \\\"None\\\", parameter has type \\\"TracebackType\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1928, \"column\": 47, \"end_line\": 1928, \"end_column\": 51, \"message\": \"Incompatible default for parameter \\\"exc_type\\\" (default has type \\\"None\\\", parameter has type \\\"type[BaseException]\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1929, \"column\": 35, \"end_line\": 1929, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"exc_value\\\" (default has type \\\"None\\\", parameter has type \\\"BaseException\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}\n{\"file\": \"httpx/_client.py\", \"line\": 1930, \"column\": 35, \"end_line\": 1930, \"end_column\": 39, \"message\": \"Incompatible default for parameter \\\"traceback\\\" (default has type \\\"None\\\", parameter has type \\\"TracebackType\\\")\", \"hint\": \"PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True\\nUse https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase\", \"code\": \"assignment\", \"severity\": \"error\"}"
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'",
+            "duration_s": 55.049,
+            "findings": [],
+            "output_excerpt": "ImportError while loading conftest '/work/tests/conftest.py'.\ntests/conftest.py:9: in <module>\n    import trustme\nE   ModuleNotFoundError: No module named 'trustme'"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 63.717,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 4): E   ModuleNotFoundError: No module named 'trustme'"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-debug-print-6212e8fa",
+      "score": {
+        "item_id": "httpx-debug-print-6212e8fa",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 158.138,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 2 added import(s)",
+            "duration_s": 0.021,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.006,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "2 file(s), +38/-34 lines, 2 source / 0 test file(s), areas: httpx(2)",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.169,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.028,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 7.286,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "passed",
+            "summary": "3 failed, 1413 passed, 1 skipped in 8.28s; 3 also fail at merge-base (not attributed)",
+            "duration_s": 149.973,
+            "findings": [],
+            "output_excerpt": "236: in handle_request\n    response = connection.handle_request(\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:101: in handle_request\n    raise exc\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:78: in handle_request\n    stream = self._connect(request)\n.wm-venv/lib/python3.12/site-packages/httpcore/_sync/connection.py:124: in _connect\n    stream = self._network_backend.connect_tcp(**kwargs)\n.wm-venv/lib/python3.12/site-packages/httpcore/_backends/sync.py:207: in connect_tcp\n    with map_exceptions(exc_map):\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmap = {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}\n\n    @contextlib.contextmanager\n    def map_exceptions(map: ExceptionMapping) -> typing.Iterator[None]:\n        try:\n            yield\n        except Exception as exc:  # noqa: PIE786\n            for from_exc, to_exc in map.items():\n                if isinstance(exc, from_exc):\n>                   raise to_exc(exc) from exc\nE                   httpcore.ConnectError: [Errno -3] Temporary failure in name resolution\n\n.wm-venv/lib/python3.12/site-packages/httpcore/_exceptions.py:14: ConnectError\n\nThe above exception was the direct cause of the following exception:\n\n    @pytest.mark.network\n    def test_sync_proxy_close():\n        try:\n            transport = httpx.HTTPTransport(proxy=PROXY_URL)\n            client = httpx.Client(mounts={\"https://\": transport})\n>           client.get(\"http://example.com\")\n\ntests/client/test_proxies.py:118: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nhttpx/_client.py:1033: in get\n    return self.request(\nhttpx/_client.py:805: in request\n    return self.send(request, auth=auth, follow_redirects=follow_redirects)\nhttpx/_client.py:894: in send\n    response = self._send_handling_auth(\nhttpx/_client.py:922: in _send_handling_auth\n    response = self._send_handling_redirects(\nhttpx/_client.py:959: in _send_handling_redirects\n    response = self._send_single_request(request)\nhttpx/_client.py:994: in _send_single_request\n    response = transport.handle_request(request)\nhttpx/_transports/default.py:254: in handle_request\n    with map_httpcore_exceptions():\n/usr/local/lib/python3.12/contextlib.py:158: in __exit__\n    self.gen.throw(value)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    @contextlib.contextmanager\n    def map_httpcore_exceptions() -> typing.Iterator[None]:\n        global HTTPCORE_EXC_MAP\n        if len(HTTPCORE_EXC_MAP) == 0:\n            HTTPCORE_EXC_MAP = _load_httpcore_exceptions()\n        try:\n            yield\n        except Exception as exc:\n            mapped_exc = None\n    \n            for from_exc, to_exc in HTTPCORE_EXC_MAP.items():\n                if not isinstance(exc, from_exc):\n                    continue\n                # We want to map to the most specific exception we can find.\n                # Eg if `exc` is an `httpcore.ReadTimeout`, we want to map to\n                # `httpx.ReadTimeout`, not just `httpx.TimeoutException`.\n                if mapped_exc is None or issubclass(to_exc, mapped_exc):\n                    mapped_exc = to_exc\n    \n            if mapped_exc is None:  # pragma: no cover\n                raise\n    \n            message = str(exc)\n>           raise mapped_exc(message) from exc\nE           httpx.ConnectError: [Errno -3] Temporary failure in name resolution\n\nhttpx/_transports/default.py:118: ConnectError\n=========================== short test summary info ============================\nFAILED tests/client/test_proxies.py::test_async_proxy_close[asyncio] - httpx....\nFAILED tests/client/test_proxies.py::test_async_proxy_close[trio] - httpx.Con...\nFAILED tests/client/test_proxies.py::test_sync_proxy_close - httpx.ConnectErr...\n3 failed, 1413 passed, 1 skipped in 8.28s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 158.138,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-camel-case-rename-2175ce39",
+      "score": {
+        "item_id": "more-itertools-camel-case-rename-2175ce39",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "edb68ab16419"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 119.918,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "edb68ab16419",
+            "category": "correctness",
+            "severity": "major",
+            "confidence": 0.95,
+            "file": "tests/test_more.py",
+            "line_start": 0,
+            "line_end": 0,
+            "summary": "5 tests fail in tests/test_more.py: DerangementsTests::test_boolean_equivalence, DerangementsTests::test_list_ints_duplicated, DerangementsTests::test_list_ints_non_duplicated (+2 more)",
+            "evidence": "pytest in docker sandbox: FAILED tests/test_more.py::DerangementsTests::test_boolean_equivalence, tests/test_more.py::DerangementsTests::test_list_ints_duplicated, tests/test_more.py::DerangementsTests::test_list_ints_non_duplicated, tests/test_more.py::DerangementsTests::test_list_unhashable, tests/test_more.py::DerangementsTests::test_list_unsortable - Asse.... Not failing at merge-base (or new test).",
+            "suggested_fix": null,
+            "source": "deterministic",
+            "rule": "pytest:failed",
+            "evidence_refs": [
+              "check:pytest"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 1 added import(s)",
+            "duration_s": 0.099,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.023,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "1 file(s), +19/-5 lines, 1 source / 0 test file(s), areas: more_itertools(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.492,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.042,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "skipped",
+            "summary": "no changed Python files mypy can check",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "failed",
+            "summary": "10 failed, 687 passed, 1 skipped, 12060 subtests passed in 20.41s",
+            "duration_s": 118.86,
+            "findings": [
+              {
+                "id": "edb68ab16419",
+                "category": "correctness",
+                "severity": "major",
+                "confidence": 0.95,
+                "file": "tests/test_more.py",
+                "line_start": 0,
+                "line_end": 0,
+                "summary": "5 tests fail in tests/test_more.py: DerangementsTests::test_boolean_equivalence, DerangementsTests::test_list_ints_duplicated, DerangementsTests::test_list_ints_non_duplicated (+2 more)",
+                "evidence": "pytest in docker sandbox: FAILED tests/test_more.py::DerangementsTests::test_boolean_equivalence, tests/test_more.py::DerangementsTests::test_list_ints_duplicated, tests/test_more.py::DerangementsTests::test_list_ints_non_duplicated, tests/test_more.py::DerangementsTests::test_list_unhashable, tests/test_more.py::DerangementsTests::test_list_unsortable - Asse.... Not failing at merge-base (or new test).",
+                "suggested_fix": null,
+                "source": "deterministic",
+                "rule": "pytest:failed",
+                "evidence_refs": [
+                  "check:pytest"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": "  ):\n            with self.subTest(iterable=iterable, r=r):\n                expected = list(\n                    [\n                        x\n                        for x in permutations(iterable, r)\n                        if not any(x[i] == i for i in range(r))\n                    ]\n                )\n                actual = list(mi.derangements(iterable, r))\n>               self.assertCountEqual(actual, expected)\nE               AssertionError: Element counts were not equal:\nE               First has 0, Second has 4:  (1, 0, 1)\n\ntests/test_more.py:693: AssertionError\n____________ DerangementsTests.test_r (iterable=[0, 1, 1, 0], r=4) _____________\n\nself = <tests.test_more.DerangementsTests testMethod=test_r>\n\n    def test_r(self):\n        for iterable, r in (\n            ('mississippi', 0),\n            ('mississippi', 1),\n            ('mississippi', 6),\n            # ('mississippi', 7),\n            ('mississippi', 12),\n            ([0, 1, 1, 0], 0),\n            ([0, 1, 1, 0], 1),\n            ([0, 1, 1, 0], 2),\n            ([0, 1, 1, 0], 3),\n            ([0, 1, 1, 0], 4),\n            (['a'], 0),\n            (['a'], 1),\n            (['a'], 5),\n            ([], 0),\n            ([], 1),\n            ([], 4),\n        ):\n            with self.subTest(iterable=iterable, r=r):\n                expected = list(\n                    [\n                        x\n                        for x in permutations(iterable, r)\n                        if not any(x[i] == i for i in range(r))\n                    ]\n                )\n                actual = list(mi.derangements(iterable, r))\n>               self.assertCountEqual(actual, expected)\nE               AssertionError: Element counts were not equal:\nE               First has 0, Second has 4:  (1, 0, 1, 0)\n\ntests/test_more.py:693: AssertionError\n________________ DerangementsTests.test_r (iterable=['a'], r=1) ________________\n\nself = <tests.test_more.DerangementsTests testMethod=test_r>\n\n    def test_r(self):\n        for iterable, r in (\n            ('mississippi', 0),\n            ('mississippi', 1),\n            ('mississippi', 6),\n            # ('mississippi', 7),\n            ('mississippi', 12),\n            ([0, 1, 1, 0], 0),\n            ([0, 1, 1, 0], 1),\n            ([0, 1, 1, 0], 2),\n            ([0, 1, 1, 0], 3),\n            ([0, 1, 1, 0], 4),\n            (['a'], 0),\n            (['a'], 1),\n            (['a'], 5),\n            ([], 0),\n            ([], 1),\n            ([], 4),\n        ):\n            with self.subTest(iterable=iterable, r=r):\n                expected = list(\n                    [\n                        x\n                        for x in permutations(iterable, r)\n                        if not any(x[i] == i for i in range(r))\n                    ]\n                )\n                actual = list(mi.derangements(iterable, r))\n>               self.assertCountEqual(actual, expected)\nE               AssertionError: Element counts were not equal:\nE               First has 0, Second has 1:  ('a',)\n\ntests/test_more.py:693: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_more.py::DerangementsTests::test_boolean_equivalence - Asse...\nFAILED tests/test_more.py::DerangementsTests::test_list_ints_duplicated - Ass...\nFAILED tests/test_more.py::DerangementsTests::test_list_ints_non_duplicated\nFAILED tests/test_more.py::DerangementsTests::test_list_unhashable - TypeErro...\nFAILED tests/test_more.py::DerangementsTests::test_list_unsortable - Assertio...\nSUBFAILED(iterable='mississippi', r=1) tests/test_more.py::DerangementsTests::test_r\nSUBFAILED(iterable='mississippi', r=6) tests/test_more.py::DerangementsTests::test_r\nSUBFAILED(iterable=[0, 1, 1, 0], r=3) tests/test_more.py::DerangementsTests::test_r\nSUBFAILED(iterable=[0, 1, 1, 0], r=4) tests/test_more.py::DerangementsTests::test_r\nSUBFAILED(iterable=['a'], r=1) tests/test_more.py::DerangementsTests::test_r\n10 failed, 687 passed, 1 skipped, 12060 subtests passed in 20.41s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 119.918,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-wildcard-import-ccf96ac6",
+      "score": {
+        "item_id": "more-itertools-wildcard-import-ccf96ac6",
+        "kind": "seeded",
+        "n_defects": 1,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 63.279,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:secrets",
+            "name": "secrets",
+            "status": "passed",
+            "summary": "0 possible secret(s) in added lines",
+            "duration_s": 0.001,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:imports",
+            "name": "imports",
+            "status": "passed",
+            "summary": "checked 3 added import(s)",
+            "duration_s": 0.111,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:hygiene",
+            "name": "hygiene",
+            "status": "passed",
+            "summary": "0 hygiene issue(s)",
+            "duration_s": 0.021,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:scope",
+            "name": "scope",
+            "status": "passed",
+            "summary": "5 file(s), +53/-3 lines, 2 source / 1 test file(s), areas: more_itertools(2), .(1), docs(1), tests(1)",
+            "duration_s": 0.0,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:quality",
+            "name": "quality",
+            "status": "passed",
+            "summary": "no function the change touched crossed a maintainability limit",
+            "duration_s": 0.104,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:ruff",
+            "name": "ruff",
+            "status": "passed",
+            "summary": "0 violation(s) on changed lines",
+            "duration_s": 0.022,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:mypy",
+            "name": "mypy",
+            "status": "passed",
+            "summary": "0 type error(s) on changed lines (third-party imports unresolved: no repo venv)",
+            "duration_s": 1.846,
+            "findings": [],
+            "output_excerpt": ""
+          },
+          {
+            "id": "check:pytest",
+            "name": "pytest",
+            "status": "error",
+            "summary": "pytest could not run (exit 2): 2 errors in 1.01s",
+            "duration_s": 60.643,
+            "findings": [],
+            "output_excerpt": "==================================== ERRORS ====================================\n_____________________ ERROR collecting tests/test_more.py ______________________\ntests/test_more.py:38: in <module>\n    import more_itertools as mi\nmore_itertools/__init__.py:3: in <module>\n    from .more import *  # noqa\n    ^^^^^^^^^^^^^^^^^^^\nmore_itertools/more.py:42: in <module>\n    from .recipes import (\nmore_itertools/recipes.py:1207: in <module>\n    _private_randrange = random.Random().randrange\n                         ^^^^^^^^^^^^^\nE   AttributeError: 'builtin_function_or_method' object has no attribute 'Random'\n____________________ ERROR collecting tests/test_recipes.py ____________________\ntests/test_recipes.py:20: in <module>\n    import more_itertools as mi\nmore_itertools/__init__.py:3: in <module>\n    from .more import *  # noqa\n    ^^^^^^^^^^^^^^^^^^^\nmore_itertools/more.py:42: in <module>\n    from .recipes import (\nmore_itertools/recipes.py:1207: in <module>\n    _private_randrange = random.Random().randrange\n                         ^^^^^^^^^^^^^\nE   AttributeError: 'builtin_function_or_method' object has no attribute 'Random'\n=========================== short test summary info ============================\nERROR tests/test_more.py - AttributeError: 'builtin_function_or_method' objec...\nERROR tests/test_recipes.py - AttributeError: 'builtin_function_or_method' ob...\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 1.01s"
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 63.279,
+        "dropped_findings": 0,
+        "warnings": [
+          "check pytest errored: pytest could not run (exit 2): 2 errors in 1.01s"
+        ],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}
