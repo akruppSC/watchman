@@ -641,7 +641,10 @@ Known biases:
 
 ```bash
 uv run python -m evals.harness run --dataset seeded-v1 --mode agent --model anthropic/claude-haiku-5.5 --jobs 6
-bash evals/ablation.sh       # the full dev-split ablation used for the results below
+# every mode on one dataset (the results below used Haiku 5.5, default config; add --split test --final for held-out)
+uv run python -m evals.harness run --dataset seeded-v1 --mode deterministic
+uv run python -m evals.harness run --dataset seeded-v1 --mode baseline --model anthropic/claude-haiku-5.5
+uv run python -m evals.harness run --dataset seeded-v1 --mode agent_no_l1 --model anthropic/claude-haiku-5.5
 uv run python -m evals.tune policies   # replay post-processing policies on dev runs (free)
 make results                 # regenerates evals/results/RESULTS.md
 ```
@@ -706,8 +709,8 @@ baseline missed and lost 2 (p = 0.11, same direction, not proven). By category t
 wildcard-import item and was weakest on unused parameters (3/5) and camelCase renames (2/5). The checks alone
 find almost none of these (1/30): ruff and the quality check were not built for them, which is the point.
 
-**Exploratory: the same agent with Google mode on** (`style = "google"`, same 30 items, `evals/v3_google.sh`,
-run files in `evals/results/v3_google/`): 87% (26/30), 83% (10/12) held out, against 80% (24/30) with the
+**Exploratory: the same agent with Google mode on** (`style = "google"` in user config, same 30 items and command as above;
+run files in `evals/results/v3_google/`, kept out of `runs/` so they don't replace the primary results): 87% (26/30), 83% (10/12) held out, against 80% (24/30) with the
 default config. Paired, it found 6 items the default run missed (three camelCase renames, two unused
 parameters, a wrapper) and missed 4 it had found (three dead-code items, a wrapper): p = 0.75, which is
 noise. What changes reliably is volume: 76 findings against 46, so lower pessimistic precision (34% vs 52%),
