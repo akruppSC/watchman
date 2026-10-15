@@ -1,0 +1,2955 @@
+{
+  "worker": "openrouter/anthropic/claude-haiku-5.5",
+  "trials": 3,
+  "budget": 8.0,
+  "started": "20261015T163155",
+  "spend": {
+    "worker": 0.1884,
+    "reviewer": 0.841
+  },
+  "runs": [
+    {
+      "task": "stats_scope",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0028307299999999996,
+      "tokens": 81558,
+      "tools": {
+        "read": 2,
+        "edit": 2,
+        "bash": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..22ec855 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -5,6 +5,13 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    import pytest\n+\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 56.0
+    },
+    {
+      "task": "config_loader",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00397696,
+      "tokens": 103636,
+      "tools": {
+        "bash": 4,
+        "write": 2,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0275,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..6c3a28f\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,28 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from ``path`` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as f:\n+            data = json.load(f)\n+    except FileNotFoundError:\n+        raise ConfigError(f\"config file not found: {path}\") from None\n+    except OSError as exc:\n+        raise ConfigError(\n+            f\"cannot read config file {path}: {exc.strerror or exc}\"\n+        ) from None\n+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path}: {exc}\") from None\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path} must contain a JSON object, got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..0d32e55\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,57 @@\n+import json\n+\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_loads_json_object(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(json.dumps({\"debug\": True, \"port\": 8080}), encoding=\"utf-8\")\n+    assert load_config(p) == {\"debug\": True, \"port\": 8080}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+def test_unreadable_path_raises_config_error_with_path(tmp_path):\n+    # A directory cannot be opened as a file, so this is an OSError, not FileNotFoundError.\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(tmp_path)\n+    assert str(tmp_path) in str(exc.value)\n+\n+\n+def test_invalid_json_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+def test_invalid_utf8_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"bad_bytes.json\"\n+    p.write_bytes(b\"\\xff\\xfe{}\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+@pytest.mark.parametrize(\"content\", [\"[]\", \"[1, 2]\", '\"text\"', \"42\", \"null\", \"true\"])\n+def test_non_object_json_raises_config_error_with_path(tmp_path, content):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)",
+      "seconds": 87.4
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00422176,
+      "tokens": 105323,
+      "tools": {
+        "glob": 1,
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0445,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 25,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..f084213\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,22 @@\n+from itertools import islice\n+\n+\n+def chunked(iterable, size):\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items.\n+\n+    Items keep their original order. Every chunk except possibly the last\n+    holds exactly ``size`` items; the last one holds the remainder.\n+\n+    Raises:\n+        ValueError: if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+\n+    iterator = iter(iterable)\n+    chunks = []\n+    while True:\n+        chunk = list(islice(iterator, size))\n+        if not chunk:\n+            return chunks\n+        chunks.append(chunk)\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..2e22a70\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,115 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_is_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_equal_to_length_gives_single_chunk():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length_gives_single_chunk():\n+    assert chunked([1, 2, 3], 10) == [[1, 2, 3]]\n+\n+\n+def test_size_one_gives_singletons():\n+    assert chunked(\"abc\", 1) == [[\"a\"], [\"b\"], [\"c\"]]\n+\n+\n+def test_empty_input_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_empty_input_with_size_one_returns_empty_list():\n+    assert chunked([], 1) == []\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked(range(5), 2)\n+    assert isinstance(result, list)\n+    assert all(isinstance(chunk, list) for chunk in result)\n+\n+\n+def test_preserves_order():\n+    data = [9, 3, 7, 1, 8, 2, 6]\n+    flattened = [x for chunk in chunked(data, 3) for x in chunk]\n+    assert flattened == data\n+\n+\n+def test_accepts_any_iterable_generator():\n+    gen = (i * i for i in range(7))\n+    assert chunked(gen, 3) == [[0, 1, 4], [9, 16, 25], [36]]\n+\n+\n+def test_accepts_range():\n+    assert chunked(range(6), 4) == [[0, 1, 2, 3], [4, 5]]\n+\n+\n+def test_accepts_string():\n+    assert chunked(\"abcdefg\", 3) == [[\"a\", \"b\", \"c\"], [\"d\", \"e\", \"f\"], [\"g\"]]\n+\n+\n+def test_accepts_tuple():\n+    assert chunked((1, 2, 3), 2) == [[1, 2], [3]]\n+\n+\n+def test_accepts_set_without_loss():\n+    items = {1, 2, 3, 4, 5}\n+    result = chunked(items, 2)\n+    assert sorted(x for chunk in result for x in chunk) == [1, 2, 3, 4, 5]\n+    assert all(len(chunk) <= 2 for chunk in result)\n+\n+\n+def test_chunks_hold_original_objects():\n+    a, b = object(), object()\n+    result = chunked([a, b], 1)\n+    assert result[0][0] is a\n+    assert result[1][0] is b\n+\n+\n+def test_none_items_are_kept():\n+    assert chunked([None, None, None], 2) == [[None, None], [None]]\n+\n+\n+def test_does_not_mutate_input():\n+    data = [1, 2, 3, 4]\n+    chunked(data, 2)\n+    assert data == [1, 2, 3, 4]\n+\n+\n+def test_each_chunk_has_at_most_size_items():\n+    data = list(range(23))\n+    for size in range(1, 30):\n+        result = chunked(data, size)\n+        assert all(0 < len(chunk) <= size for chunk in result)\n+        assert all(len(chunk) == size for chunk in result[:-1])\n+\n+\n+def test_total_items_preserved_for_many_sizes():\n+    data = list(range(17))\n+    for size in range(1, 20):\n+        result = chunked(data, size)\n+        assert [x for chunk in result for x in chunk] == data\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_non_positive_size_raises_value_error(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_zero_size_raises_even_for_empty_input():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)\n+\n+\n+def test_value_error_message_mentions_size():\n+    with pytest.raises(ValueError, match=\"size\"):\n+        chunked([1], 0)",
+      "seconds": 99.9
+    },
+    {
+      "task": "stats_scope",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00284424,
+      "tokens": 81658,
+      "tools": {
+        "read": 2,
+        "edit": 2,
+        "bash": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0385,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..22ec855 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -5,6 +5,13 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    import pytest\n+\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 138.4
+    },
+    {
+      "task": "api_key",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004752049999999999,
+      "tokens": 138676,
+      "tools": {
+        "bash": 5,
+        "edit": 2,
+        "write": 2,
+        "read": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 4,
+        "by_kind": {
+          "test_run": 2,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 1,
+        "cost_usd": 0.029,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 1,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..0fab582\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,18 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(\n+                f\"environment variable {API_KEY_ENV_VAR} is not set or is empty\"\n+            )\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..5d3eca1\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,31 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_environment(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.key == \"secret-123\"\n+\n+\n+def test_unset_variable_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_variable_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)\n+\n+\n+def test_auth_header_format(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"abc\")\n+    assert ApiClient().auth_header() == {\"Authorization\": \"Bearer abc\"}",
+      "seconds": 97.8
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00399256,
+      "tokens": 85748,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0289,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..fdcdd52\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,29 @@\n+\"\"\"Retry decorator factory.\"\"\"\n+\n+import functools\n+\n+\n+def retry(attempts=3, exceptions=(Exception,)):\n+    \"\"\"Return a decorator that retries a function on the given exceptions.\n+\n+    The decorated function is called up to ``attempts`` times in total. If it\n+    raises one of ``exceptions``, it is called again. If every attempt fails,\n+    the last exception is re-raised. Exceptions not in ``exceptions`` propagate\n+    immediately without retrying.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    def decorator(func):\n+        @functools.wraps(func)\n+        def wrapper(*args, **kwargs):\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+\n+        return wrapper\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..e0be16e\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,103 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_success_on_first_call_no_retry():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_then_succeeds():\n+    calls = []\n+\n+    @retry(attempts=3, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        if len(calls) < 3:\n+            raise ValueError(\"boom\")\n+        return \"done\"\n+\n+    assert f() == \"done\"\n+    assert len(calls) == 3\n+\n+\n+def test_all_attempts_fail_reraises_last_exception():\n+    calls = []\n+\n+    @retry(attempts=3, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError(f\"fail {len(calls)}\")\n+\n+    with pytest.raises(ValueError, match=\"fail 3\"):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_attempts_is_total_calls_not_retries():\n+    calls = []\n+\n+    @retry(attempts=1, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_default_exceptions_retry_on_exception():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError\n+\n+    with pytest.raises(RuntimeError):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_unlisted_exception_propagates_without_retry():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise KeyError(\"nope\")\n+\n+    with pytest.raises(KeyError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_arguments_are_passed_through():\n+    @retry(attempts=2)\n+    def add(a, b, *, c=0):\n+        return a + b + c\n+\n+    assert add(1, 2, c=3) == 6\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def documented():\n+        \"\"\"My docstring.\"\"\"\n+\n+    assert documented.__name__ == \"documented\"\n+    assert documented.__doc__ == \"My docstring.\"\n+\n+\n+def test_invalid_attempts_raises():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)",
+      "seconds": 107.8
+    },
+    {
+      "task": "api_key",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00417484,
+      "tokens": 122093,
+      "tools": {
+        "bash": 5,
+        "edit": 2,
+        "write": 2,
+        "read": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..ec38a97\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,20 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    \"\"\"Client that authenticates requests using SERVICE_API_KEY.\"\"\"\n+\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(\n+                f\"{API_KEY_ENV_VAR} environment variable is not set or is empty\"\n+            )\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..68a065b\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,31 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_env(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.key == \"secret-123\"\n+\n+\n+def test_missing_env_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_env_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)\n+\n+\n+def test_auth_header(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"abc\")\n+    assert ApiClient().auth_header() == {\"Authorization\": \"Bearer abc\"}",
+      "seconds": 62.7
+    },
+    {
+      "task": "config_loader",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0036832199999999996,
+      "tokens": 100618,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..0c5c9f5\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,28 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from ``path`` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, \"r\", encoding=\"utf-8\") as f:\n+            data = json.load(f)\n+    except FileNotFoundError as exc:\n+        raise ConfigError(f\"config file not found: {path}\") from exc\n+    except OSError as exc:\n+        raise ConfigError(f\"cannot read config file {path}: {exc}\") from exc\n+    except json.JSONDecodeError as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path}: {exc}\") from exc\n+    except UnicodeDecodeError as exc:\n+        raise ConfigError(f\"cannot decode config file {path}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path} must contain a JSON object, got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..5159265\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,58 @@\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_loads_json_object(tmp_path):\n+    p = tmp_path / \"cfg.json\"\n+    p.write_text('{\"name\": \"app\", \"debug\": true, \"port\": 8080}', encoding=\"utf-8\")\n+    assert load_config(p) == {\"name\": \"app\", \"debug\": True, \"port\": 8080}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"cfg.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_unreadable_file_raises_with_path(tmp_path):\n+    p = tmp_path / \"dir.json\"\n+    p.mkdir()  # opening a directory raises an OSError\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_with_path(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_utf8_raises_with_path(tmp_path):\n+    p = tmp_path / \"bad_bytes.json\"\n+    p.write_bytes(b'{\"k\": \"\\xff\"}')\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\n+    \"content\", [\"[]\", '[\"a\", \"b\"]', '\"text\"', \"42\", \"null\", \"true\"]\n+)\n+def test_non_object_json_raises_with_path(tmp_path, content):\n+    p = tmp_path / \"not_object.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)",
+      "seconds": 60.2
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00325374,
+      "tokens": 67871,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..969d467 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,19 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate. Otherwise, an exception raised\n+    by `fetch(url)` is passed to `on_error(url, exc)`, the failed url is\n+    omitted from the results, and fetching continues with the next url.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            value = fetch(url)\n+        except Exception as exc:\n+            on_error(url, exc)\n+            continue\n+        results.append(value)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..8e4ff63 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,50 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_omitted():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"c\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"C\"]\n+    assert len(errors) == 1\n+    assert errors[0][0] == \"bad\"\n+    assert isinstance(errors[0][1], ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all([\"a\", \"b\"], str.upper, on_error=lambda u, e: calls.append(u))\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_none_still_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)\n+\n+\n+def test_on_error_continues_after_multiple_failures():\n+    def fetch(url):\n+        if url.startswith(\"x\"):\n+            raise KeyError(url)\n+        return url\n+\n+    seen = []\n+    results = fetch_all(\n+        [\"x1\", \"ok\", \"x2\", \"ok2\"], fetch, on_error=lambda u, e: seen.append(u)\n+    )\n+\n+    assert results == [\"ok\", \"ok2\"]\n+    assert seen == [\"x1\", \"x2\"]",
+      "seconds": 53.8
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0042473699999999994,
+      "tokens": 119887,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.037,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 12,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..0044ae4\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,37 @@\n+\"\"\"Retry decorator factory.\"\"\"\n+\n+import functools\n+from collections.abc import Callable\n+from typing import Any, TypeVar\n+\n+F = TypeVar(\"F\", bound=Callable[..., Any])\n+\n+\n+def retry(\n+    attempts: int = 3, exceptions: tuple[type[BaseException], ...] = (Exception,)\n+) -> Callable[[F], F]:\n+    \"\"\"Return a decorator that retries the wrapped function on failure.\n+\n+    The function is called up to ``attempts`` times in total. If it raises an\n+    exception that is an instance of one of ``exceptions``, it is called again.\n+    Any other exception propagates immediately. If every attempt fails, the\n+    last exception is re-raised.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    def decorator(func: F) -> F:\n+        @functools.wraps(func)\n+        def wrapper(*args: Any, **kwargs: Any) -> Any:\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+            # Unreachable: the loop either returns or re-raises.\n+            raise AssertionError(\"retry loop exited unexpectedly\")\n+\n+        return wrapper  # type: ignore[return-value]\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..ee2ad5c\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,133 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_returns_value_without_retry_on_success():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_until_success():\n+    state = {\"n\": 0}\n+\n+    @retry(attempts=5)\n+    def f():\n+        state[\"n\"] += 1\n+        if state[\"n\"] < 3:\n+            raise ValueError(\"boom\")\n+        return state[\"n\"]\n+\n+    assert f() == 3\n+    assert state[\"n\"] == 3\n+\n+\n+def test_reraises_last_exception_after_all_attempts():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError(f\"fail {len(calls)}\")\n+\n+    with pytest.raises(RuntimeError, match=\"fail 3\"):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_default_attempts_is_three():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        raise ValueError\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_default_exceptions_catches_any_exception():\n+    calls = []\n+\n+    @retry(attempts=2)\n+    def f():\n+        calls.append(1)\n+        raise KeyError(\"x\")\n+\n+    with pytest.raises(KeyError):\n+        f()\n+    assert len(calls) == 2\n+\n+\n+def test_unlisted_exception_propagates_immediately():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise TypeError(\"not retryable\")\n+\n+    with pytest.raises(TypeError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_listed_exception_subclass_is_retried():\n+    calls = []\n+\n+    class MyError(ValueError):\n+        pass\n+\n+    @retry(attempts=3, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        if len(calls) < 2:\n+            raise MyError\n+        return \"done\"\n+\n+    assert f() == \"done\"\n+    assert len(calls) == 2\n+\n+\n+def test_attempts_one_means_no_retry():\n+    calls = []\n+\n+    @retry(attempts=1)\n+    def f():\n+        calls.append(1)\n+        raise ValueError\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_invalid_attempts_raises():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def documented():\n+        \"\"\"My docs.\"\"\"\n+\n+    assert documented.__name__ == \"documented\"\n+    assert documented.__doc__ == \"My docs.\"\n+\n+\n+def test_passes_arguments_through():\n+    @retry(attempts=2)\n+    def add(a, b=0, *, c=0):\n+        return a + b + c\n+\n+    assert add(1, b=2, c=3) == 6",
+      "seconds": 112.8
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0038302999999999996,
+      "tokens": 85600,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0358,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 11,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..86d8ced\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,36 @@\n+\"\"\"Retry decorator factory.\"\"\"\n+\n+import functools\n+from collections.abc import Callable\n+from typing import Any, TypeVar\n+\n+F = TypeVar(\"F\", bound=Callable[..., Any])\n+\n+\n+def retry(\n+    attempts: int = 3, exceptions: tuple[type[BaseException], ...] = (Exception,)\n+) -> Callable[[F], F]:\n+    \"\"\"Return a decorator that retries the wrapped function on matching exceptions.\n+\n+    The function is called up to `attempts` times in total. If it raises one of\n+    `exceptions`, it is called again. If every attempt fails, the last exception\n+    is re-raised. Exceptions not listed in `exceptions` propagate immediately.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    def decorator(func: F) -> F:\n+        @functools.wraps(func)\n+        def wrapper(*args: Any, **kwargs: Any) -> Any:\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+            # Unreachable: the loop always returns or raises.\n+            raise AssertionError(\"unreachable\")\n+\n+        return wrapper  # type: ignore[return-value]\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..258cb6b\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,118 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_success_on_first_call_no_retry():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_then_succeeds():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        if len(calls) < 3:\n+            raise ValueError(\"boom\")\n+        return \"done\"\n+\n+    assert f() == \"done\"\n+    assert len(calls) == 3\n+\n+\n+def test_reraises_last_exception_after_all_attempts():\n+    calls = []\n+\n+    @retry(attempts=4, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError(f\"fail {len(calls)}\")\n+\n+    with pytest.raises(ValueError, match=\"fail 4\"):\n+        f()\n+    assert len(calls) == 4\n+\n+\n+def test_default_attempts_is_three():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError(\"x\")\n+\n+    with pytest.raises(RuntimeError):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_unlisted_exception_propagates_immediately():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise KeyError(\"nope\")\n+\n+    with pytest.raises(KeyError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_default_exceptions_catches_exception_subclasses():\n+    calls = []\n+\n+    @retry(attempts=2)\n+    def f():\n+        calls.append(1)\n+        raise OSError(\"io\")\n+\n+    with pytest.raises(OSError):\n+        f()\n+    assert len(calls) == 2\n+\n+\n+def test_attempts_one_means_no_retry():\n+    calls = []\n+\n+    @retry(attempts=1, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError(\"x\")\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_invalid_attempts_raises():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def documented(a, b=2):\n+        \"\"\"Add things.\"\"\"\n+        return a + b\n+\n+    assert documented.__name__ == \"documented\"\n+    assert documented.__doc__ == \"Add things.\"\n+    assert documented(1) == 3\n+\n+\n+def test_passes_args_and_kwargs():\n+    @retry(attempts=2)\n+    def f(a, *, b):\n+        return (a, b)\n+\n+    assert f(1, b=2) == (1, 2)",
+      "seconds": 106.3
+    },
+    {
+      "task": "stats_scope",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00278431,
+      "tokens": 65457,
+      "tools": {
+        "read": 2,
+        "bash": 2,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0291,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..22ec855 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -5,6 +5,13 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    import pytest\n+\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 88.2
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0035049800000000004,
+      "tokens": 102345,
+      "tools": {
+        "read": 4,
+        "bash": 4,
+        "glob": 1,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0314,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..692cb7b 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,13 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..6eb7651\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_url_slug_from_title():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 106.5
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00580022,
+      "tokens": 146732,
+      "tools": {
+        "bash": 5,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 24,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..027b0bd\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,29 @@\n+\"\"\"Parsing of ISO 8601 date-time strings that carry a UTC offset.\"\"\"\n+\n+import re\n+from datetime import datetime\n+\n+# Extended ISO 8601 form with a mandatory UTC designator: \"Z\" or \"+HH:MM\"/\"-HH:MM\".\n+_ISO_WITH_OFFSET = re.compile(\n+    r\"\"\"\n+    \\d{4}-\\d{2}-\\d{2}          # date\n+    T\n+    \\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?   # time, optional seconds and fraction\n+    (?:Z|[+-]\\d{2}:\\d{2})      # UTC offset (required)\n+    \"\"\",\n+    re.VERBOSE,\n+)\n+\n+\n+def parse_iso_datetime(text: str) -> datetime:\n+    \"\"\"Parse an ISO 8601 date-time string that includes a UTC offset.\n+\n+    The offset in the string is preserved on the result; \"Z\" yields UTC.\n+    Strings without an offset, or otherwise malformed or out-of-range\n+    values, raise ValueError.\n+    \"\"\"\n+    if not isinstance(text, str) or not _ISO_WITH_OFFSET.fullmatch(text):\n+        raise ValueError(f\"invalid ISO 8601 datetime with UTC offset: {text!r}\")\n+    # Shape is validated above; fromisoformat checks ranges (month, hour, offset...).\n+    # Its ValueError propagates for out-of-range values.\n+    return datetime.fromisoformat(text)\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..b4b72fb\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,71 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_positive_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+\n+\n+def test_negative_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-08:00\")\n+    assert result.utcoffset() == timedelta(hours=-8)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_zero_offset_with_sign_is_aware():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+00:00\")\n+    assert result.tzinfo is not None\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_fractional_seconds_are_kept():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.123456Z\")\n+    assert result.microsecond == 123456\n+\n+\n+def test_optional_seconds_accepted():\n+    result = parse_iso_datetime(\"2024-03-09T14:30Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",  # no offset\n+        \"2024-03-09\",  # date only\n+        \"2024-03-09T14:30\",  # no offset, no seconds\n+        \"2024-03-09 14:30:00+05:30\",  # space separator not accepted\n+        \"2024-03-09T14:30:00+0530\",  # basic offset form not accepted\n+        \"2024-03-09T14:30:00z\",  # lowercase designator not accepted\n+        \"2024-03-09T14:30:00+05\",  # incomplete offset\n+        \" 2024-03-09T14:30:00Z\",  # surrounding whitespace\n+        \"2024-03-09T14:30:00Z \",\n+        \"not a date\",\n+        \"\",\n+        \"2024-02-30T00:00:00Z\",  # out-of-range day\n+        \"2024-03-09T24:00:00Z\",  # out-of-range hour\n+        \"2024-03-09T14:30:00+25:00\",  # out-of-range offset\n+    ],\n+)\n+def test_invalid_input_raises_value_error(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\"value\", [None, 1700000000, b\"2024-03-09T14:30:00Z\"])\n+def test_non_string_raises_value_error(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 72.9
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0035055700000000004,
+      "tokens": 101474,
+      "tools": {
+        "read": 4,
+        "bash": 4,
+        "glob": 1,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..692cb7b 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,13 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..6eb7651\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_url_slug_from_title():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 53.8
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00426419,
+      "tokens": 119379,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0379,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 23,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..1d5cbaf\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,25 @@\n+from collections.abc import Iterable\n+\n+\n+def chunked(iterable: Iterable, size: int) -> list[list]:\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items.\n+\n+    Items keep their original order. The final chunk may be shorter than\n+    ``size``. An empty iterable yields an empty list.\n+\n+    Raises:\n+        ValueError: if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+\n+    result: list[list] = []\n+    current: list = []\n+    for item in iterable:\n+        current.append(item)\n+        if len(current) == size:\n+            result.append(current)\n+            current = []\n+    if current:\n+        result.append(current)\n+    return result\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..bc224a9\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,98 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_equal_to_length():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length():\n+    assert chunked([1, 2], 10) == [[1, 2]]\n+\n+\n+def test_size_one():\n+    assert chunked(\"abc\", 1) == [[\"a\"], [\"b\"], [\"c\"]]\n+\n+\n+def test_empty_iterable_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_empty_iterable_with_size_one():\n+    assert chunked([], 1) == []\n+\n+\n+def test_single_item():\n+    assert chunked([42], 5) == [[42]]\n+\n+\n+def test_preserves_order():\n+    data = list(range(100))\n+    result = chunked(data, 7)\n+    assert [x for chunk in result for x in chunk] == data\n+\n+\n+def test_all_chunks_except_last_are_full():\n+    result = chunked(range(23), 5)\n+    assert [len(c) for c in result] == [5, 5, 5, 5, 3]\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked((x for x in range(5)), 2)\n+    assert isinstance(result, list)\n+    assert all(isinstance(c, list) for c in result)\n+\n+\n+def test_accepts_generator():\n+    gen = (x * x for x in range(5))\n+    assert chunked(gen, 2) == [[0, 1], [4, 9], [16]]\n+\n+\n+def test_accepts_tuple_and_range():\n+    assert chunked((1, 2, 3), 2) == [[1, 2], [3]]\n+    assert chunked(range(4), 2) == [[0, 1], [2, 3]]\n+\n+\n+def test_accepts_string():\n+    assert chunked(\"abcdef\", 4) == [[\"a\", \"b\", \"c\", \"d\"], [\"e\", \"f\"]]\n+\n+\n+def test_chunks_are_independent_lists():\n+    result = chunked([1, 2, 3, 4], 2)\n+    result[0].append(99)\n+    assert result == [[1, 2, 99], [3, 4]]\n+\n+\n+def test_does_not_mutate_input():\n+    data = [1, 2, 3, 4, 5]\n+    chunked(data, 2)\n+    assert data == [1, 2, 3, 4, 5]\n+\n+\n+def test_preserves_duplicates_and_none():\n+    assert chunked([None, None, 1, 1], 2) == [[None, None], [1, 1]]\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_size_below_one_raises(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_size_zero_raises_even_for_empty_iterable():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)\n+\n+\n+def test_error_message_mentions_size():\n+    with pytest.raises(ValueError, match=\"size\"):\n+        chunked([1], 0)",
+      "seconds": 124.4
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0035266500000000005,
+      "tokens": 117140,
+      "tools": {
+        "read": 3,
+        "bash": 4,
+        "edit": 1,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..692cb7b 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,13 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..e9486c0\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_article_url_slug_is_slugified_title():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"text\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 55.4
+    },
+    {
+      "task": "config_loader",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0038014599999999996,
+      "tokens": 102015,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..d9215e4\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,29 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from ``path`` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as fh:\n+            data = json.load(fh)\n+    except FileNotFoundError as exc:\n+        raise ConfigError(f\"Config file not found: {path}\") from exc\n+    except OSError as exc:\n+        raise ConfigError(\n+            f\"Cannot read config file {path}: {exc.strerror or exc}\"\n+        ) from exc\n+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"Config file is not valid JSON: {path}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"Config file must contain a JSON object: {path} \"\n+            f\"(got {type(data).__name__})\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..05909d6\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,64 @@\n+import json\n+\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_loads_json_object(tmp_path):\n+    p = tmp_path / \"cfg.json\"\n+    p.write_text(json.dumps({\"a\": 1, \"b\": {\"c\": [1, 2]}}), encoding=\"utf-8\")\n+    assert load_config(p) == {\"a\": 1, \"b\": {\"c\": [1, 2]}}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"cfg.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_config_error(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+def test_directory_raises_config_error(tmp_path):\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(tmp_path)\n+    assert str(tmp_path) in str(exc.value)\n+\n+\n+def test_invalid_json_raises_config_error(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+def test_invalid_utf8_raises_config_error(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_bytes(b\"\\xff\\xfe\\x00garbage\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+@pytest.mark.parametrize(\"content\", [\"[1, 2]\", '\"text\"', \"42\", \"null\", \"true\"])\n+def test_non_object_json_raises_config_error(tmp_path, content):\n+    p = tmp_path / \"cfg.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)\n+\n+\n+def test_empty_file_raises_config_error(tmp_path):\n+    p = tmp_path / \"empty.json\"\n+    p.write_text(\"\", encoding=\"utf-8\")\n+    with pytest.raises(ConfigError) as exc:\n+        load_config(p)\n+    assert str(p) in str(exc.value)",
+      "seconds": 60.1
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004229469999999999,
+      "tokens": 87761,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": "WATCHMAN done round 1/3 verdict=WARN gate=pass new=0 open=1 fixed=0\n= major swallowed_error app/fetch.py:15 (open since r1) BLE001: Do not catch blind exception: `Exception` [check:ruff]",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 1,
+        "cost_usd": 0.0319,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..073b2cf 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,19 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate. Otherwise, an exception raised by\n+    `fetch(url)` is passed to `on_error(url, exc)`, the failed url is left out\n+    of the results, and fetching continues with the next url.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            result = fetch(url)\n+        except Exception as exc:\n+            on_error(url, exc)\n+            continue\n+        results.append(result)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..227ede3 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,47 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_skipped():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"b\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"B\"]\n+    assert len(errors) == 1\n+    url, exc = errors[0]\n+    assert url == \"bad\"\n+    assert isinstance(exc, ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all([\"a\", \"b\"], str.upper, on_error=lambda u, e: calls.append(u))\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_none_keeps_propagating():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)\n+\n+\n+def test_on_error_handler_exception_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    def bad_handler(url, exc):\n+        raise KeyError(\"handler failed\")\n+\n+    with pytest.raises(KeyError):\n+        fetch_all([\"a\"], boom, on_error=bad_handler)",
+      "seconds": 99.4
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00310172,
+      "tokens": 67302,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "write": 1,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..4783940 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,19 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate. Otherwise, when `fetch(url)`\n+    raises, `on_error(url, exc)` is called and that url is left out of the\n+    results.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            value = fetch(url)\n+        except Exception as exc:\n+            on_error(url, exc)\n+            continue\n+        results.append(value)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..27d8501 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,49 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_skipped():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"c\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"C\"]\n+    assert len(errors) == 1\n+    assert errors[0][0] == \"bad\"\n+    assert isinstance(errors[0][1], ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all(\n+        [\"a\", \"b\"], str.upper, on_error=lambda url, exc: calls.append(url)\n+    )\n+\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_all_failing_returns_empty():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    errors = []\n+    results = fetch_all([\"a\", \"b\"], boom, on_error=lambda u, e: errors.append(u))\n+\n+    assert results == []\n+    assert errors == [\"a\", \"b\"]\n+\n+\n+def test_on_error_none_keeps_propagating():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)",
+      "seconds": 53.6
+    },
+    {
+      "task": "config_loader",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0042732199999999994,
+      "tokens": 119628,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0308,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..14d35de\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,28 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Read a JSON file and return the parsed top-level object as a dict.\n+\n+    Raises ConfigError if the file is missing or unreadable, is not valid\n+    JSON, or does not contain a JSON object.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as f:\n+            text = f.read()\n+    except (OSError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"cannot read config file {path!s}: {exc}\") from exc\n+\n+    try:\n+        data = json.loads(text)\n+    except json.JSONDecodeError as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path!s}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path!s} must contain a JSON object, \"\n+            f\"got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..b41ba1b\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,78 @@\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_loads_json_object(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text('{\"name\": \"svc\", \"port\": 8080, \"debug\": false}', encoding=\"utf-8\")\n+\n+    assert load_config(p) == {\"name\": \"svc\", \"port\": 8080, \"debug\": False}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_directory_raises_config_error_with_path(tmp_path):\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(tmp_path)\n+\n+    assert str(tmp_path) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"bad.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_empty_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"empty.json\"\n+    p.write_text(\"\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_utf8_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"binary.json\"\n+    p.write_bytes(b\"\\xff\\xfe\\x00garbage\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\n+    \"content\",\n+    [\"[1, 2, 3]\", '\"just a string\"', \"42\", \"true\", \"null\"],\n+)\n+def test_non_object_json_raises_config_error_with_path(tmp_path, content):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)",
+      "seconds": 126.6
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004259260000000001,
+      "tokens": 104619,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "write": 1,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": "WATCHMAN done round 1/3 verdict=WARN gate=pass new=0 open=1 fixed=0\n= major swallowed_error app/fetch.py:15 (open since r1) BLE001: Do not catch blind exception: `Exception` [check:ruff]",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 1,
+        "cost_usd": 0.0367,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..b61e0fa 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,17 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate.\n+    Otherwise, when `fetch(url)` raises, `on_error(url, exc)` is called,\n+    the failed URL is omitted from the results, and fetching continues.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            results.append(fetch(url))\n+        except Exception as exc:\n+            on_error(url, exc)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..8d677f5 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,56 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_skipped():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"b\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"B\"]\n+    assert len(errors) == 1\n+    url, exc = errors[0]\n+    assert url == \"bad\"\n+    assert isinstance(exc, ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all([\"a\", \"b\"], str.upper, on_error=lambda u, e: calls.append(u))\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_none_still_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)\n+\n+\n+def test_on_error_with_all_failures_returns_empty():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    errors = []\n+    assert fetch_all([\"a\", \"b\"], boom, on_error=lambda u, e: errors.append(u)) == []\n+    assert errors == [\"a\", \"b\"]\n+\n+\n+def test_exception_from_on_error_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    def bad_handler(url, exc):\n+        raise KeyError(\"handler failed\")\n+\n+    with pytest.raises(KeyError):\n+        fetch_all([\"a\"], boom, on_error=bad_handler)",
+      "seconds": 106.0
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00506525,
+      "tokens": 140489,
+      "tools": {
+        "bash": 4,
+        "write": 2,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0472,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 23,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..63475e7\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,29 @@\n+\"\"\"ISO 8601 datetime parsing with mandatory UTC offset.\"\"\"\n+\n+from datetime import datetime\n+\n+\n+def parse_iso_datetime(text):\n+    \"\"\"Parse an ISO 8601 datetime string that includes a UTC offset.\n+\n+    The offset in the string is preserved. A trailing \"Z\" (or \"z\") means UTC.\n+    Strings without a UTC offset are rejected.\n+\n+    Raises ValueError for any invalid input, including non-string input.\n+    \"\"\"\n+    if not isinstance(text, str):\n+        raise ValueError(f\"expected a string, got {type(text).__name__}\")\n+\n+    value = text\n+    if value[-1:] in (\"Z\", \"z\"):\n+        value = value[:-1] + \"+00:00\"\n+\n+    try:\n+        parsed = datetime.fromisoformat(value)\n+    except ValueError:\n+        raise ValueError(f\"invalid ISO 8601 datetime: {text!r}\") from None\n+\n+    if parsed.tzinfo is None or parsed.utcoffset() is None:\n+        raise ValueError(f\"datetime must include a UTC offset: {text!r}\")\n+\n+    return parsed\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..0b148f0\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,74 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_preserves_positive_offset():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+    assert result.hour == 14\n+\n+\n+def test_preserves_negative_offset():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-08:00\")\n+    assert result.utcoffset() == timedelta(hours=-8)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_lowercase_z_means_utc():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00z\").utcoffset() == timedelta(0)\n+\n+\n+def test_fractional_seconds_with_offset():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.123456+00:00\")\n+    assert result.microsecond == 123456\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",\n+        \"2024-03-09T14:30:00.500\",\n+        \"2024-03-09\",\n+        \"2024-03-09T14:30\",\n+    ],\n+)\n+def test_rejects_missing_offset(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"\",\n+        \"not a date\",\n+        \"2024-13-01T00:00:00Z\",\n+        \"2024-02-30T00:00:00Z\",\n+        \"2024-03-09T25:00:00Z\",\n+        \"2024-03-09T14:30:00+99:00\",\n+        \"2024-03-09TZ\",\n+        \"Z\",\n+    ],\n+)\n+def test_rejects_invalid_strings(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\"value\", [None, 0, 1.5, b\"2024-03-09T14:30:00Z\", object()])\n+def test_rejects_non_string(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 140.8
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00365312,
+      "tokens": 84700,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..2c8b357\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,36 @@\n+\"\"\"Retry decorator factory.\"\"\"\n+\n+import functools\n+from collections.abc import Callable\n+from typing import Any, TypeVar\n+\n+F = TypeVar(\"F\", bound=Callable[..., Any])\n+\n+\n+def retry(\n+    attempts: int = 3, exceptions: tuple[type[BaseException], ...] = (Exception,)\n+) -> Callable[[F], F]:\n+    \"\"\"Return a decorator that retries the wrapped function on matching exceptions.\n+\n+    The function is called up to ``attempts`` times in total. If it raises one of\n+    ``exceptions``, it is called again. If every attempt fails, the last exception\n+    is re-raised. Exceptions not listed in ``exceptions`` propagate immediately.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    def decorator(func: F) -> F:\n+        @functools.wraps(func)\n+        def wrapper(*args: Any, **kwargs: Any) -> Any:\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+            # Unreachable: the loop always returns or raises.\n+            raise AssertionError(\"unreachable\")\n+\n+        return wrapper  # type: ignore[return-value]\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..5e4f51b\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,104 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_success_calls_once():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_then_succeeds():\n+    state = {\"n\": 0}\n+\n+    @retry(attempts=3, exceptions=(ValueError,))\n+    def f():\n+        state[\"n\"] += 1\n+        if state[\"n\"] < 3:\n+            raise ValueError(\"boom\")\n+        return state[\"n\"]\n+\n+    assert f() == 3\n+    assert state[\"n\"] == 3\n+\n+\n+def test_exhausts_attempts_and_reraises_last():\n+    calls = []\n+\n+    @retry(attempts=3, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError(f\"fail {len(calls)}\")\n+\n+    with pytest.raises(ValueError, match=\"fail 3\"):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_default_attempts_is_three():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError(\"x\")\n+\n+    with pytest.raises(RuntimeError):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_unlisted_exception_propagates_without_retry():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise KeyError(\"nope\")\n+\n+    with pytest.raises(KeyError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_attempts_one_means_no_retry():\n+    calls = []\n+\n+    @retry(attempts=1)\n+    def f():\n+        calls.append(1)\n+        raise ValueError(\"x\")\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_invalid_attempts_rejected():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def my_function():\n+        \"\"\"My docstring.\"\"\"\n+        return 1\n+\n+    assert my_function.__name__ == \"my_function\"\n+    assert my_function.__doc__ == \"My docstring.\"\n+\n+\n+def test_passes_arguments_through():\n+    @retry()\n+    def add(a, b=0, *, c=0):\n+        return a + b + c\n+\n+    assert add(1, 2, c=3) == 6",
+      "seconds": 60.6
+    },
+    {
+      "task": "api_key",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0042447200000000004,
+      "tokens": 123035,
+      "tools": {
+        "bash": 5,
+        "edit": 2,
+        "write": 2,
+        "read": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 4,
+        "by_kind": {
+          "test_run": 2,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 1,
+        "cost_usd": 0.0296,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 1,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..4851a4b\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,20 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    \"\"\"Client that authenticates requests using SERVICE_API_KEY.\"\"\"\n+\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(\n+                f\"environment variable {API_KEY_ENV_VAR} is not set or is empty\"\n+            )\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..811e897\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,31 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_env(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.key == \"secret-123\"\n+\n+\n+def test_auth_header_format(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    assert ApiClient().auth_header() == {\"Authorization\": \"Bearer secret-123\"}\n+\n+\n+def test_missing_env_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_env_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)",
+      "seconds": 110.8
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00392104,
+      "tokens": 85516,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0319,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 20,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..4c17d56\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,28 @@\n+\"\"\"Iterable helpers.\"\"\"\n+\n+from collections.abc import Iterable\n+\n+\n+def chunked(iterable: Iterable, size: int) -> list[list]:\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items.\n+\n+    Items keep their original order. Every chunk except possibly the last\n+    holds exactly ``size`` items; the last chunk may be shorter. An empty\n+    iterable yields an empty list.\n+\n+    Raises:\n+        ValueError: if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+\n+    chunks: list[list] = []\n+    current: list = []\n+    for item in iterable:\n+        current.append(item)\n+        if len(current) == size:\n+            chunks.append(current)\n+            current = []\n+    if current:\n+        chunks.append(current)\n+    return chunks\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..fb2c903\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,93 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_one_gives_singletons():\n+    assert chunked(\"abc\", 1) == [[\"a\"], [\"b\"], [\"c\"]]\n+\n+\n+def test_size_equal_to_length():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length():\n+    assert chunked([1, 2], 10) == [[1, 2]]\n+\n+\n+def test_empty_iterable_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_empty_iterable_with_size_one():\n+    assert chunked([], 1) == []\n+\n+\n+def test_preserves_order():\n+    data = list(range(100))\n+    result = chunked(data, 7)\n+    assert [x for chunk in result for x in chunk] == data\n+\n+\n+def test_all_chunks_full_except_last():\n+    result = chunked(range(23), 5)\n+    assert [len(c) for c in result] == [5, 5, 5, 5, 3]\n+\n+\n+def test_accepts_generator():\n+    gen = (i * i for i in range(5))\n+    assert chunked(gen, 2) == [[0, 1], [4, 9], [16]]\n+\n+\n+def test_accepts_tuple_and_string():\n+    assert chunked((1, 2, 3), 2) == [[1, 2], [3]]\n+    assert chunked(\"hello\", 2) == [[\"h\", \"e\"], [\"l\", \"l\"], [\"o\"]]\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked((1, 2, 3), 2)\n+    assert isinstance(result, list)\n+    assert all(isinstance(c, list) for c in result)\n+\n+\n+def test_chunks_are_independent_lists():\n+    result = chunked([1, 2, 3, 4], 2)\n+    result[0].append(99)\n+    assert result[1] == [3, 4]\n+\n+\n+def test_mixed_item_types_are_kept():\n+    items = [None, \"a\", 0, [1], {\"k\": 2}]\n+    assert chunked(items, 2) == [[None, \"a\"], [0, [1]], [{\"k\": 2}]]\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_size_below_one_raises_value_error(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_size_zero_raises_even_for_empty_input():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)\n+\n+\n+def test_generator_not_consumed_when_size_invalid():\n+    consumed = []\n+\n+    def gen():\n+        for i in range(3):\n+            consumed.append(i)\n+            yield i\n+\n+    with pytest.raises(ValueError):\n+        chunked(gen(), 0)\n+    assert consumed == []",
+      "seconds": 129.0
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0031845700000000003,
+      "tokens": 67660,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..3c5c7b6 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,19 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate. Otherwise, when `fetch(url)`\n+    raises `exc`, `on_error(url, exc)` is called, the failed url is omitted\n+    from the results, and fetching continues with the next url.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            value = fetch(url)\n+        except Exception as exc:\n+            on_error(url, exc)\n+            continue\n+        results.append(value)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..06d014b 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,49 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_skipped():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"c\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"C\"]\n+    assert len(errors) == 1\n+    assert errors[0][0] == \"bad\"\n+    assert isinstance(errors[0][1], ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all(\n+        [\"a\", \"b\"], str.upper, on_error=lambda url, exc: calls.append(url)\n+    )\n+\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_none_keeps_propagating():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)\n+\n+\n+def test_on_error_exception_in_handler_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    def bad_handler(url, exc):\n+        raise KeyError(\"handler failed\")\n+\n+    with pytest.raises(KeyError):\n+        fetch_all([\"a\"], boom, on_error=bad_handler)",
+      "seconds": 53.3
+    },
+    {
+      "task": "stats_scope",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0026618300000000004,
+      "tokens": 65200,
+      "tools": {
+        "read": 2,
+        "bash": 2,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..22ec855 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -5,6 +5,13 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    import pytest\n+\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 53.9
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004319819999999999,
+      "tokens": 87393,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 19,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..a2c07e5\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,24 @@\n+\"\"\"ISO 8601 datetime parsing that requires an explicit UTC offset.\"\"\"\n+\n+from datetime import datetime\n+\n+\n+def parse_iso_datetime(text: str) -> datetime:\n+    \"\"\"Parse an ISO 8601 datetime string that includes a UTC offset.\n+\n+    The offset in the string is preserved. ``Z`` denotes UTC.\n+    Raises ValueError for any input that is not a string, is not valid\n+    ISO 8601, or lacks a UTC offset.\n+    \"\"\"\n+    if not isinstance(text, str):\n+        raise ValueError(f\"expected a string, got {type(text).__name__}\")\n+\n+    try:\n+        parsed = datetime.fromisoformat(text)\n+    except ValueError:\n+        raise ValueError(f\"invalid ISO 8601 datetime: {text!r}\") from None\n+\n+    if parsed.tzinfo is None or parsed.utcoffset() is None:\n+        raise ValueError(f\"datetime must include a UTC offset: {text!r}\")\n+\n+    return parsed\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..c50fde2\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,72 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_positive_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+    assert result.hour == 14\n+\n+\n+def test_negative_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-04:00\")\n+    assert result.utcoffset() == timedelta(hours=-4)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_zero_numeric_offset_is_utc():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00+00:00\").utcoffset() == timedelta(0)\n+\n+\n+def test_fractional_seconds_with_offset():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.250+01:00\")\n+    assert result.microsecond == 250000\n+    assert result.utcoffset() == timedelta(hours=1)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",  # no offset\n+        \"2024-03-09T14:30:00.123456\",  # no offset, fractional seconds\n+        \"2024-03-09\",  # date only\n+        \"2024-03-09 14:30:00\",  # naive, space separator\n+    ],\n+)\n+def test_missing_offset_is_rejected(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"\",\n+        \"not a date\",\n+        \"2024-13-09T14:30:00Z\",  # invalid month\n+        \"2024-02-30T14:30:00Z\",  # invalid day\n+        \"2024-03-09T25:00:00Z\",  # invalid hour\n+        \"2024-03-09T14:30:00+5:30x\",  # malformed offset\n+    ],\n+)\n+def test_invalid_input_raises_value_error(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\"value\", [None, 1700000000, b\"2024-03-09T14:30:00Z\"])\n+def test_non_string_input_raises_value_error(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 60.1
+    },
+    {
+      "task": "fetch_on_error",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0041148,
+      "tokens": 103942,
+      "tools": {
+        "read": 2,
+        "bash": 3,
+        "write": 1,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": "WATCHMAN done round 1/3 verdict=WARN gate=pass new=0 open=1 fixed=0\n= major swallowed_error app/fetch.py:15 (open since r1) BLE001: Do not catch blind exception: `Exception` [check:ruff]",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 1,
+        "cost_usd": 0.0385,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 1,
+            "verdict": "warn",
+            "new": 1,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 1,
+            "verdict": "warn",
+            "new": 0,
+            "open": 1,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_on_error_ignored": true,
+          "m2_always_swallows": true,
+          "m3_failed_urls_become_none": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/fetch.py b/app/fetch.py\nindex 39c582f..5537544 100644\n--- a/app/fetch.py\n+++ b/app/fetch.py\n@@ -1,6 +1,19 @@\n-def fetch_all(urls, fetch):\n-    \"\"\"Fetch each url with `fetch(url)`, in order. Errors propagate.\"\"\"\n+def fetch_all(urls, fetch, on_error=None):\n+    \"\"\"Fetch each url with `fetch(url)`, in order.\n+\n+    If `on_error` is None, errors propagate. Otherwise, when `fetch(url)`\n+    raises, `on_error(url, exc)` is called, the failed url is omitted from\n+    the results, and processing continues with the next url.\n+    \"\"\"\n     results = []\n     for url in urls:\n-        results.append(fetch(url))\n+        if on_error is None:\n+            results.append(fetch(url))\n+            continue\n+        try:\n+            value = fetch(url)\n+        except Exception as exc:\n+            on_error(url, exc)\n+            continue\n+        results.append(value)\n     return results\ndiff --git a/tests/test_fetch.py b/tests/test_fetch.py\nindex fa1b6c4..227ede3 100644\n--- a/tests/test_fetch.py\n+++ b/tests/test_fetch.py\n@@ -12,3 +12,47 @@ def test_errors_propagate():\n \n     with pytest.raises(RuntimeError):\n         fetch_all([\"a\"], boom)\n+\n+\n+def test_on_error_called_and_failed_url_skipped():\n+    def fetch(url):\n+        if url == \"bad\":\n+            raise ValueError(\"nope\")\n+        return url.upper()\n+\n+    errors = []\n+    results = fetch_all(\n+        [\"a\", \"bad\", \"b\"], fetch, on_error=lambda url, exc: errors.append((url, exc))\n+    )\n+\n+    assert results == [\"A\", \"B\"]\n+    assert len(errors) == 1\n+    url, exc = errors[0]\n+    assert url == \"bad\"\n+    assert isinstance(exc, ValueError)\n+\n+\n+def test_on_error_not_called_when_no_errors():\n+    calls = []\n+    results = fetch_all([\"a\", \"b\"], str.upper, on_error=lambda u, e: calls.append(u))\n+    assert results == [\"A\", \"B\"]\n+    assert calls == []\n+\n+\n+def test_on_error_none_keeps_propagating():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    with pytest.raises(RuntimeError):\n+        fetch_all([\"a\"], boom, on_error=None)\n+\n+\n+def test_on_error_handler_exception_propagates():\n+    def boom(url):\n+        raise RuntimeError(url)\n+\n+    def bad_handler(url, exc):\n+        raise KeyError(\"handler failed\")\n+\n+    with pytest.raises(KeyError):\n+        fetch_all([\"a\"], boom, on_error=bad_handler)",
+      "seconds": 137.1
+    },
+    {
+      "task": "stats_scope",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0028851000000000003,
+      "tokens": 81876,
+      "tools": {
+        "read": 2,
+        "edit": 2,
+        "bash": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0312,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..b1fd10e 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -1,3 +1,5 @@\n+import pytest\n+\n from app.stats import mean, median, mode, variance\n \n \n@@ -5,6 +7,11 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 124.9
+    },
+    {
+      "task": "api_key",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00353298,
+      "tokens": 85571,
+      "tools": {
+        "glob": 1,
+        "bash": 3,
+        "read": 3,
+        "edit": 1,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..77756a4\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,16 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(f\"{API_KEY_ENV_VAR} is not set or is empty\")\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..1fe9d2c\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,31 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_env(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret123\")\n+    client = ApiClient()\n+    assert client.key == \"secret123\"\n+\n+\n+def test_missing_env_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_env_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)\n+\n+\n+def test_auth_header(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"abc\")\n+    assert ApiClient().auth_header() == {\"Authorization\": \"Bearer abc\"}",
+      "seconds": 53.6
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00373907,
+      "tokens": 120310,
+      "tools": {
+        "read": 4,
+        "bash": 4,
+        "glob": 1,
+        "edit": 1,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0304,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..875e0bd 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,14 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        \"\"\"URL-friendly slug of the title: 'H\u00e9llo, World!' -> 'hello-world'.\"\"\"\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..778d247\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_url_slug_strips_accents_and_punctuation():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 125.5
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.005425279999999999,
+      "tokens": 143258,
+      "tools": {
+        "bash": 4,
+        "write": 3
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0301,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 23,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..9ce837f\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,30 @@\n+\"\"\"ISO 8601 datetime parsing that requires an explicit UTC offset.\"\"\"\n+\n+from datetime import datetime\n+\n+\n+def parse_iso_datetime(text):\n+    \"\"\"Parse an ISO 8601 datetime string that includes a UTC offset.\n+\n+    The offset in the string is preserved. A trailing ``Z`` means UTC.\n+    Strings without a UTC offset are rejected.\n+\n+    Raises:\n+        ValueError: if ``text`` is not a string, is not a valid ISO 8601\n+            datetime, or has no UTC offset.\n+    \"\"\"\n+    if not isinstance(text, str):\n+        raise ValueError(f\"expected a string, got {type(text).__name__}\")\n+\n+    value = text\n+    if value.endswith(\"z\"):\n+        value = value[:-1] + \"Z\"\n+\n+    # fromisoformat raises ValueError on malformed input and accepts a\n+    # trailing \"Z\" as UTC on Python 3.11+.\n+    parsed = datetime.fromisoformat(value)\n+\n+    if parsed.utcoffset() is None:\n+        raise ValueError(f\"datetime string has no UTC offset: {text!r}\")\n+\n+    return parsed\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..a97552c\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,82 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_parses_positive_offset_and_preserves_it():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+    assert result.hour == 14\n+\n+\n+def test_parses_negative_offset_and_preserves_it():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-04:00\")\n+    assert result.utcoffset() == timedelta(hours=-4)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_lowercase_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00z\")\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_zero_offset_is_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+00:00\")\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_fractional_seconds_are_kept():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.123456Z\")\n+    assert result.microsecond == 123456\n+\n+\n+def test_result_is_timezone_aware():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00Z\").tzinfo is not None\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",\n+        \"2024-03-09T14:30\",\n+        \"2024-03-09\",\n+        \"\",\n+    ],\n+)\n+def test_missing_offset_is_rejected(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"not a date\",\n+        \"2024-13-09T14:30:00Z\",\n+        \"2024-02-30T14:30:00Z\",\n+        \"2024-03-09T25:00:00Z\",\n+        \"2024-03-09T14:30:00+25:00\",\n+        \"2024-03-09T14:30:00+05:30junk\",\n+        \"2024-03-09Tabc+05:30\",\n+    ],\n+)\n+def test_invalid_input_raises_value_error(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\"value\", [None, 12, 1.5, b\"2024-03-09T14:30:00Z\"])\n+def test_non_string_raises_value_error(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 108.1
+    },
+    {
+      "task": "api_key",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004262609999999999,
+      "tokens": 121306,
+      "tools": {
+        "bash": 4,
+        "edit": 2,
+        "write": 2,
+        "read": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..60beb5d\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,20 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    \"\"\"Client that authenticates requests with the key from SERVICE_API_KEY.\"\"\"\n+\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(\n+                f\"environment variable {API_KEY_ENV_VAR} is not set or empty\"\n+            )\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..4988a71\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,31 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_env(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.key == \"secret-123\"\n+\n+\n+def test_missing_env_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_env_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)\n+\n+\n+def test_auth_header(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    assert ApiClient().auth_header() == {\"Authorization\": \"Bearer secret-123\"}",
+      "seconds": 62.3
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0033571100000000004,
+      "tokens": 99801,
+      "tools": {
+        "read": 4,
+        "bash": 3,
+        "glob": 1,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0391,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..692cb7b 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,13 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..6eb7651\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_url_slug_from_title():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 171.4
+    },
+    {
+      "task": "stats_scope",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00287101,
+      "tokens": 81854,
+      "tools": {
+        "read": 2,
+        "edit": 2,
+        "bash": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_zero": true,
+          "m2_still_zero_division": true,
+          "m3_wrong_message": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/stats.py b/app/stats.py\nindex 1c25cf6..e461688 100644\n--- a/app/stats.py\n+++ b/app/stats.py\n@@ -1,6 +1,6 @@\n-\n-\n def mean(xs):\n+    if len(xs) == 0:\n+        raise ValueError(\"mean of empty data\")\n     return sum(xs) / len(xs)\n \n \ndiff --git a/tests/test_stats.py b/tests/test_stats.py\nindex 7905a4c..b1fd10e 100644\n--- a/tests/test_stats.py\n+++ b/tests/test_stats.py\n@@ -1,3 +1,5 @@\n+import pytest\n+\n from app.stats import mean, median, mode, variance\n \n \n@@ -5,6 +7,11 @@ def test_mean():\n     assert mean([1, 2, 3]) == 2\n \n \n+def test_mean_empty_raises():\n+    with pytest.raises(ValueError, match=\"mean of empty data\"):\n+        mean([])\n+\n+\n def test_median_odd():\n     assert median([3, 1, 2]) == 2",
+      "seconds": 54.2
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0036825300000000003,
+      "tokens": 84781,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 20,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..1ae9574\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,17 @@\n+from collections.abc import Iterable\n+from itertools import islice\n+\n+\n+def chunked(iterable: Iterable, size: int) -> list[list]:\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items.\n+\n+    Items keep their original order; only the last chunk may be shorter.\n+    Raises ValueError if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+    iterator = iter(iterable)\n+    chunks = []\n+    while chunk := list(islice(iterator, size)):\n+        chunks.append(chunk)\n+    return chunks\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..6f1308a\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,87 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_one_gives_singletons():\n+    assert chunked(\"abc\", 1) == [[\"a\"], [\"b\"], [\"c\"]]\n+\n+\n+def test_size_equal_to_length():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length():\n+    assert chunked([1, 2], 10) == [[1, 2]]\n+\n+\n+def test_empty_input_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_empty_iterable_with_size_one():\n+    assert chunked(iter([]), 1) == []\n+\n+\n+def test_preserves_order_for_large_input():\n+    data = list(range(1000))\n+    result = chunked(data, 7)\n+    assert [x for chunk in result for x in chunk] == data\n+    assert all(len(c) == 7 for c in result[:-1])\n+    assert 1 <= len(result[-1]) <= 7\n+\n+\n+def test_accepts_generator_and_consumes_it_once():\n+    gen = (i * i for i in range(5))\n+    assert chunked(gen, 2) == [[0, 1], [4, 9], [16]]\n+\n+\n+def test_accepts_any_iterable_such_as_range_and_dict_keys():\n+    assert chunked(range(5), 2) == [[0, 1], [2, 3], [4]]\n+    assert chunked({\"a\": 1, \"b\": 2, \"c\": 3}.keys(), 2) == [[\"a\", \"b\"], [\"c\"]]\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked((1, 2, 3), 2)\n+    assert isinstance(result, list)\n+    assert all(isinstance(c, list) for c in result)\n+\n+\n+def test_chunks_are_independent_lists():\n+    result = chunked([1, 2, 3], 2)\n+    result[0].append(99)\n+    assert result == [[1, 2, 99], [3]]\n+\n+\n+def test_does_not_mutate_input():\n+    data = [1, 2, 3, 4]\n+    chunked(data, 3)\n+    assert data == [1, 2, 3, 4]\n+\n+\n+def test_preserves_none_and_falsy_items():\n+    assert chunked([0, None, \"\", False], 2) == [[0, None], [\"\", False]]\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_size_below_one_raises_value_error(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_size_zero_raises_even_for_empty_input():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)\n+\n+\n+def test_value_error_message_mentions_size():\n+    with pytest.raises(ValueError, match=\"size\"):\n+        chunked([1], 0)",
+      "seconds": 56.7
+    },
+    {
+      "task": "config_loader",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00440983,
+      "tokens": 120820,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 16,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..9330769\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,27 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Load a JSON object from ``path`` and return it as a dict.\n+\n+    Raises ConfigError if the file is missing or unreadable, is not valid\n+    JSON, or does not contain a JSON object at the top level.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as f:\n+            data = json.load(f)\n+    except OSError as exc:\n+        raise ConfigError(\n+            f\"cannot read config file {path!r}: {exc.strerror or exc}\"\n+        ) from exc\n+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path!r}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path!r} must contain a JSON object, \"\n+            f\"got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..91cafa1\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,105 @@\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def test_returns_parsed_dict(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text('{\"name\": \"svc\", \"port\": 8080, \"debug\": false}', encoding=\"utf-8\")\n+\n+    assert load_config(p) == {\"name\": \"svc\", \"port\": 8080, \"debug\": False}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_unreadable_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{}\", encoding=\"utf-8\")\n+    p.chmod(0)\n+    try:\n+        # Root ignores file permissions, so skip if we can still read it.\n+        try:\n+            with open(p):\n+                pass\n+        except OSError:\n+            pass\n+        else:\n+            pytest.skip(\"file remains readable (e.g. running as root)\")\n+\n+        with pytest.raises(ConfigError) as excinfo:\n+            load_config(p)\n+        assert str(p) in str(excinfo.value)\n+    finally:\n+        p.chmod(0o644)\n+\n+\n+def test_directory_path_raises_config_error_with_path(tmp_path):\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(tmp_path)\n+\n+    assert str(tmp_path) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"{not json\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_utf8_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_bytes(b'{\"name\": \"\\xff\"}')\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_empty_file_raises_config_error_with_path(tmp_path):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(\"\", encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\"content\", [\"[]\", '[\"a\"]', \"42\", '\"text\"', \"true\", \"null\"])\n+def test_non_object_json_raises_config_error_with_path(tmp_path, content):\n+    p = tmp_path / \"config.json\"\n+    p.write_text(content, encoding=\"utf-8\")\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_config_error_chains_original_exception(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+\n+    assert isinstance(excinfo.value.__cause__, OSError)",
+      "seconds": 65.2
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00525788,
+      "tokens": 125816,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 26,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..c60da2a\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,33 @@\n+\"\"\"ISO 8601 datetime parsing helpers.\"\"\"\n+\n+import re\n+from datetime import datetime\n+\n+# Date and time separated by \"T\", optional seconds and fraction, and a\n+# mandatory UTC offset (\"Z\" or \"+HH:MM\" / \"-HH:MM\").\n+_ISO_DATETIME_RE = re.compile(\n+    r\"[0-9]{4}-[0-9]{2}-[0-9]{2}\"\n+    r\"T[0-9]{2}:[0-9]{2}(?::[0-9]{2}(?:\\.[0-9]{1,6})?)?\"\n+    r\"(?:Z|[+-][0-9]{2}:[0-9]{2})\"\n+)\n+\n+\n+def parse_iso_datetime(text: str) -> datetime:\n+    \"\"\"Parse an ISO 8601 datetime string that includes a UTC offset.\n+\n+    The offset is preserved in the result; \"Z\" is returned as UTC.\n+    Strings without an offset, and any other invalid input, raise ValueError.\n+\n+    >>> parse_iso_datetime(\"2024-03-09T14:30:00+05:30\").utcoffset()\n+    datetime.timedelta(seconds=19800)\n+    \"\"\"\n+    if not isinstance(text, str):\n+        raise ValueError(f\"expected a string, got {type(text).__name__}\")\n+    if not _ISO_DATETIME_RE.fullmatch(text):\n+        raise ValueError(f\"invalid ISO 8601 datetime with UTC offset: {text!r}\")\n+    # The regex guarantees the shape; fromisoformat (3.11+) handles \"Z\" and\n+    # range checks (e.g. month 13, offsets of 24h or more) and raises ValueError.\n+    result = datetime.fromisoformat(text)\n+    if result.tzinfo is None:  # defensive; the regex requires an offset\n+        raise ValueError(f\"missing UTC offset: {text!r}\")\n+    return result\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..1d09dbd\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,74 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_positive_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+    assert result.hour == 14\n+\n+\n+def test_negative_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-04:00\")\n+    assert result.utcoffset() == timedelta(hours=-4)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_zero_offset_numeric_is_utc_equivalent():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00+00:00\") == parse_iso_datetime(\n+        \"2024-03-09T14:30:00Z\"\n+    )\n+\n+\n+def test_optional_seconds_and_fraction():\n+    assert parse_iso_datetime(\"2024-03-09T14:30Z\") == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone.utc\n+    )\n+    result = parse_iso_datetime(\"2024-03-09T14:30:15.123456+01:00\")\n+    assert result.microsecond == 123456\n+    assert result.second == 15\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",  # no offset\n+        \"2024-03-09T14:30\",  # no offset, no seconds\n+        \"2024-03-09\",  # date only\n+        \"2024-03-09 14:30:00+05:30\",  # space separator not accepted\n+        \"2024-03-09T14:30:00+0530\",  # offset without colon\n+        \"2024-03-09T14:30:00+05\",  # offset without minutes\n+        \"2024-03-09T14:30:00z\",  # lowercase z\n+        \"2024-03-09T14:30:00 Z\",\n+        \"2024-13-09T14:30:00Z\",  # month out of range\n+        \"2024-02-30T14:30:00Z\",  # day out of range\n+        \"2024-03-09T24:00:00Z\",  # hour out of range\n+        \"2024-03-09T14:30:00+24:00\",  # offset out of range\n+        \"2024-03-09T14:30:00+05:30 extra\",\n+        \"\",\n+        \"not a date\",\n+        \" 2024-03-09T14:30:00Z\",  # surrounding whitespace\n+        \"\uff12\uff10\uff12\uff14-03-09T14:30:00Z\",  # non-ASCII digits\n+    ],\n+)\n+def test_invalid_input_raises_value_error(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\"value\", [None, 1700000000, b\"2024-03-09T14:30:00Z\"])\n+def test_non_string_raises_value_error(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 70.6
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00392766,
+      "tokens": 85704,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..a6ad4cc\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,28 @@\n+\"\"\"Retry decorator factory.\"\"\"\n+\n+import functools\n+\n+\n+def retry(attempts=3, exceptions=(Exception,)):\n+    \"\"\"Retry the decorated function when it raises one of ``exceptions``.\n+\n+    The function is called at most ``attempts`` times in total. If every call\n+    fails with one of ``exceptions``, the last exception is re-raised. Any\n+    exception not listed in ``exceptions`` propagates immediately.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    def decorator(func):\n+        @functools.wraps(func)\n+        def wrapper(*args, **kwargs):\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+\n+        return wrapper\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..b74eb5f\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,103 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_success_calls_once():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_then_succeeds():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        if len(calls) < 3:\n+            raise ValueError(\"boom\")\n+        return \"done\"\n+\n+    assert f() == \"done\"\n+    assert len(calls) == 3\n+\n+\n+def test_reraises_last_exception_after_all_attempts():\n+    calls = []\n+\n+    @retry(attempts=4, exceptions=(KeyError,))\n+    def f():\n+        calls.append(1)\n+        raise KeyError(f\"attempt {len(calls)}\")\n+\n+    with pytest.raises(KeyError, match=\"attempt 4\"):\n+        f()\n+    assert len(calls) == 4\n+\n+\n+def test_non_matching_exception_propagates_immediately():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise TypeError(\"not retried\")\n+\n+    with pytest.raises(TypeError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_default_exceptions_retries_any_exception():\n+    calls = []\n+\n+    @retry(attempts=2)\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError(\"x\")\n+\n+    with pytest.raises(RuntimeError):\n+        f()\n+    assert len(calls) == 2\n+\n+\n+def test_attempts_one_means_no_retry():\n+    calls = []\n+\n+    @retry(attempts=1)\n+    def f():\n+        calls.append(1)\n+        raise ValueError\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_invalid_attempts_rejected():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def my_function():\n+        \"\"\"My docstring.\"\"\"\n+\n+    assert my_function.__name__ == \"my_function\"\n+    assert my_function.__doc__ == \"My docstring.\"\n+\n+\n+def test_passes_arguments_through():\n+    @retry(attempts=2)\n+    def add(a, b=0):\n+        return a + b\n+\n+    assert add(1, b=2) == 3",
+      "seconds": 57.7
+    },
+    {
+      "task": "retry_decorator",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00396443,
+      "tokens": 118732,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 11,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_ignores_exception_filter": true,
+          "m2_one_extra_attempt": true,
+          "m3_swallows_final_failure": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/retry.py b/app/retry.py\nnew file mode 100644\nindex 0000000..f4f1588\n--- /dev/null\n+++ b/app/retry.py\n@@ -0,0 +1,38 @@\n+\"\"\"Retry decorator factory.\n+\n+Usage::\n+\n+    @retry(attempts=3, exceptions=(ConnectionError,))\n+    def fetch():\n+        ...\n+\"\"\"\n+\n+import functools\n+\n+\n+def retry(attempts=3, exceptions=(Exception,)):\n+    \"\"\"Return a decorator that retries a function on the given exceptions.\n+\n+    The decorated function is called up to ``attempts`` times in total. If it\n+    raises an exception that is an instance of ``exceptions``, it is called\n+    again. If every attempt fails, the last exception is re-raised. Any other\n+    exception propagates immediately without retrying.\n+    \"\"\"\n+    if attempts < 1:\n+        raise ValueError(\"attempts must be at least 1\")\n+\n+    exceptions = tuple(exceptions)\n+\n+    def decorator(func):\n+        @functools.wraps(func)\n+        def wrapper(*args, **kwargs):\n+            for attempt in range(1, attempts + 1):\n+                try:\n+                    return func(*args, **kwargs)\n+                except exceptions:\n+                    if attempt == attempts:\n+                        raise\n+\n+        return wrapper\n+\n+    return decorator\ndiff --git a/tests/test_retry.py b/tests/test_retry.py\nnew file mode 100644\nindex 0000000..10502c1\n--- /dev/null\n+++ b/tests/test_retry.py\n@@ -0,0 +1,117 @@\n+import pytest\n+\n+from app.retry import retry\n+\n+\n+def test_success_on_first_call_no_retry():\n+    calls = []\n+\n+    @retry(attempts=3)\n+    def f():\n+        calls.append(1)\n+        return \"ok\"\n+\n+    assert f() == \"ok\"\n+    assert len(calls) == 1\n+\n+\n+def test_retries_until_success():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        if len(calls) < 3:\n+            raise ValueError(\"boom\")\n+        return \"done\"\n+\n+    assert f() == \"done\"\n+    assert len(calls) == 3\n+\n+\n+def test_reraises_last_exception_after_all_attempts():\n+    calls = []\n+\n+    @retry(attempts=3, exceptions=(KeyError,))\n+    def f():\n+        calls.append(1)\n+        raise KeyError(len(calls))\n+\n+    with pytest.raises(KeyError) as excinfo:\n+        f()\n+    assert len(calls) == 3\n+    assert excinfo.value.args == (3,)\n+\n+\n+def test_default_attempts_is_three():\n+    calls = []\n+\n+    @retry()\n+    def f():\n+        calls.append(1)\n+        raise RuntimeError(\"nope\")\n+\n+    with pytest.raises(RuntimeError):\n+        f()\n+    assert len(calls) == 3\n+\n+\n+def test_default_exceptions_catches_any_exception():\n+    calls = []\n+\n+    @retry(attempts=2)\n+    def f():\n+        calls.append(1)\n+        raise OSError(\"x\")\n+\n+    with pytest.raises(OSError):\n+        f()\n+    assert len(calls) == 2\n+\n+\n+def test_unlisted_exception_propagates_without_retry():\n+    calls = []\n+\n+    @retry(attempts=5, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise TypeError(\"not retryable\")\n+\n+    with pytest.raises(TypeError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_attempts_one_means_no_retry():\n+    calls = []\n+\n+    @retry(attempts=1, exceptions=(ValueError,))\n+    def f():\n+        calls.append(1)\n+        raise ValueError(\"x\")\n+\n+    with pytest.raises(ValueError):\n+        f()\n+    assert len(calls) == 1\n+\n+\n+def test_invalid_attempts_raises():\n+    with pytest.raises(ValueError):\n+        retry(attempts=0)\n+\n+\n+def test_passes_arguments_and_return_value():\n+    @retry(attempts=2)\n+    def add(a, b, *, scale=1):\n+        return (a + b) * scale\n+\n+    assert add(2, 3, scale=10) == 50\n+\n+\n+def test_preserves_name_and_docstring():\n+    @retry()\n+    def documented():\n+        \"\"\"My docs.\"\"\"\n+\n+    assert documented.__name__ == \"documented\"\n+    assert documented.__doc__ == \"My docs.\"",
+      "seconds": 62.4
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00378696,
+      "tokens": 84946,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 19,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..81454cd\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,26 @@\n+from collections.abc import Iterable\n+\n+\n+def chunked(iterable: Iterable, size: int) -> list[list]:\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items.\n+\n+    Items keep their original order. Every chunk except possibly the last\n+    holds exactly ``size`` items; the last holds the remainder. An empty\n+    input yields an empty list.\n+\n+    Raises:\n+        ValueError: if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+\n+    chunks: list[list] = []\n+    current: list = []\n+    for item in iterable:\n+        current.append(item)\n+        if len(current) == size:\n+            chunks.append(current)\n+            current = []\n+    if current:\n+        chunks.append(current)\n+    return chunks\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..7689dfc\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,82 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_one():\n+    assert chunked([1, 2, 3], 1) == [[1], [2], [3]]\n+\n+\n+def test_size_equal_to_length():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length():\n+    assert chunked([1, 2, 3], 10) == [[1, 2, 3]]\n+\n+\n+def test_empty_input_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_preserves_order_and_items():\n+    data = list(range(100))\n+    result = chunked(data, 7)\n+    assert [item for chunk in result for item in chunk] == data\n+    assert all(len(chunk) == 7 for chunk in result[:-1])\n+    assert 1 <= len(result[-1]) <= 7\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked((x for x in \"abcde\"), 2)\n+    assert result == [[\"a\", \"b\"], [\"c\", \"d\"], [\"e\"]]\n+    assert all(isinstance(chunk, list) for chunk in result)\n+\n+\n+def test_accepts_generator_and_iterator():\n+    gen = (i * i for i in range(5))\n+    assert chunked(gen, 2) == [[0, 1], [4, 9], [16]]\n+\n+\n+def test_accepts_string():\n+    assert chunked(\"abcdef\", 4) == [[\"a\", \"b\", \"c\", \"d\"], [\"e\", \"f\"]]\n+\n+\n+def test_accepts_set_and_dict_keys():\n+    assert sum(len(c) for c in chunked({1, 2, 3}, 2)) == 3\n+    assert chunked({\"a\": 1, \"b\": 2}.keys(), 1) in ([[\"a\"], [\"b\"]], [[\"b\"], [\"a\"]])\n+\n+\n+def test_chunks_are_independent_lists():\n+    result = chunked([1, 2, 3, 4], 2)\n+    result[0].append(99)\n+    assert result[1] == [3, 4]\n+\n+\n+def test_input_not_mutated():\n+    data = [1, 2, 3, 4, 5]\n+    chunked(data, 2)\n+    assert data == [1, 2, 3, 4, 5]\n+\n+\n+def test_none_items_kept():\n+    assert chunked([None, None, None], 2) == [[None, None], [None]]\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_invalid_size_raises_value_error(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_invalid_size_raises_even_for_empty_input():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)",
+      "seconds": 60.0
+    },
+    {
+      "task": "iso_datetime",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00547193,
+      "tokens": 127834,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0639,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 32,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_returns_naive": true,
+          "m2_normalizes_to_utc": true,
+          "m3_accepts_naive": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/dates.py b/app/dates.py\nnew file mode 100644\nindex 0000000..6dbcb7a\n--- /dev/null\n+++ b/app/dates.py\n@@ -0,0 +1,62 @@\n+\"\"\"Parsing of ISO 8601 date-time strings that carry a UTC offset.\"\"\"\n+\n+import re\n+from datetime import datetime, timedelta, timezone\n+\n+# YYYY-MM-DDTHH:MM[:SS[.ffffff]] followed by a mandatory offset: \"Z\" or +/-HH:MM.\n+_ISO_DATETIME_RE = re.compile(\n+    r\"\"\"\n+    (?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})\n+    T\n+    (?P<hour>\\d{2}):(?P<minute>\\d{2})\n+    (?::(?P<second>\\d{2})(?:\\.(?P<fraction>\\d{1,6}))?)?\n+    (?P<offset>Z|(?P<sign>[+-])(?P<off_hour>\\d{2}):(?P<off_minute>\\d{2}))\n+    \"\"\",\n+    re.VERBOSE,\n+)\n+\n+\n+def parse_iso_datetime(text: str) -> datetime:\n+    \"\"\"Parse an ISO 8601 date-time string that includes a UTC offset.\n+\n+    The offset in the string is preserved on the returned value. \"Z\" denotes\n+    UTC. Strings without an offset (naive or date-only) are rejected.\n+\n+    Raises:\n+        ValueError: if ``text`` is not a string in the supported format, or\n+            describes an impossible date, time, or offset.\n+    \"\"\"\n+    if not isinstance(text, str):\n+        raise ValueError(f\"expected a string, got {type(text).__name__}\")\n+\n+    match = _ISO_DATETIME_RE.fullmatch(text)\n+    if match is None:\n+        raise ValueError(f\"invalid ISO 8601 date-time with UTC offset: {text!r}\")\n+\n+    fields = match.groupdict()\n+    fraction = fields[\"fraction\"] or \"\"\n+    microsecond = int(fraction.ljust(6, \"0\")) if fraction else 0\n+\n+    if fields[\"offset\"] == \"Z\":\n+        tzinfo = timezone.utc\n+    else:\n+        off_hour = int(fields[\"off_hour\"])\n+        off_minute = int(fields[\"off_minute\"])\n+        if off_minute > 59 or off_hour > 23:\n+            raise ValueError(f\"UTC offset out of range: {text!r}\")\n+        delta = timedelta(hours=off_hour, minutes=off_minute)\n+        if fields[\"sign\"] == \"-\":\n+            delta = -delta\n+        tzinfo = timezone(delta)\n+\n+    # datetime() rejects out-of-range components such as month 13 or Feb 30.\n+    return datetime(\n+        int(fields[\"year\"]),\n+        int(fields[\"month\"]),\n+        int(fields[\"day\"]),\n+        int(fields[\"hour\"]),\n+        int(fields[\"minute\"]),\n+        int(fields[\"second\"] or 0),\n+        microsecond,\n+        tzinfo=tzinfo,\n+    )\ndiff --git a/tests/test_dates.py b/tests/test_dates.py\nnew file mode 100644\nindex 0000000..3b6c850\n--- /dev/null\n+++ b/tests/test_dates.py\n@@ -0,0 +1,84 @@\n+from datetime import datetime, timedelta, timezone\n+\n+import pytest\n+\n+from app.dates import parse_iso_datetime\n+\n+\n+def test_positive_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00+05:30\")\n+    assert result == datetime(\n+        2024, 3, 9, 14, 30, tzinfo=timezone(timedelta(hours=5, minutes=30))\n+    )\n+    assert result.utcoffset() == timedelta(hours=5, minutes=30)\n+    assert result.hour == 14\n+\n+\n+def test_negative_offset_is_preserved():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00-07:00\")\n+    assert result.utcoffset() == timedelta(hours=-7)\n+    assert result.hour == 14\n+\n+\n+def test_z_means_utc():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+    assert result.utcoffset() == timedelta(0)\n+\n+\n+def test_zero_offset_with_sign_is_utc():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00+00:00\").utcoffset() == timedelta(0)\n+\n+\n+def test_fractional_seconds():\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.5Z\")\n+    assert result.microsecond == 500000\n+    result = parse_iso_datetime(\"2024-03-09T14:30:00.123456-02:00\")\n+    assert result.microsecond == 123456\n+\n+\n+def test_seconds_optional_with_offset():\n+    result = parse_iso_datetime(\"2024-03-09T14:30Z\")\n+    assert result == datetime(2024, 3, 9, 14, 30, tzinfo=timezone.utc)\n+\n+\n+def test_result_is_timezone_aware():\n+    assert parse_iso_datetime(\"2024-03-09T14:30:00Z\").tzinfo is not None\n+\n+\n+@pytest.mark.parametrize(\n+    \"text\",\n+    [\n+        \"2024-03-09T14:30:00\",  # no offset\n+        \"2024-03-09T14:30\",  # no offset\n+        \"2024-03-09\",  # date only\n+        \"2024-03-09T14:30:00+0530\",  # offset missing colon\n+        \"2024-03-09T14:30:00+05\",  # offset without minutes\n+        \"2024-03-09 14:30:00Z\",  # space separator\n+        \"2024-03-09t14:30:00Z\",  # lowercase separator\n+        \"2024-03-09T14:30:00z\",  # lowercase Z\n+        \"2024-03-09T14:30:00+24:00\",  # offset out of range\n+        \"2024-03-09T14:30:00+05:60\",  # offset minutes out of range\n+        \"2024-13-09T14:30:00Z\",  # month out of range\n+        \"2024-02-30T14:30:00Z\",  # impossible day\n+        \"2024-03-09T24:00:00Z\",  # hour out of range\n+        \"2024-03-09T14:60:00Z\",  # minute out of range\n+        \"2024-03-09T14:30:00.Z\",  # empty fraction\n+        \"2024-03-09T14:30:00.1234567Z\",  # too many fraction digits\n+        \"2024-03-09T14:30:00Z trailing\",\n+        \" 2024-03-09T14:30:00Z\",  # leading whitespace\n+        \"\",\n+        \"not a date\",\n+    ],\n+)\n+def test_invalid_strings_raise_value_error(text):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(text)\n+\n+\n+@pytest.mark.parametrize(\n+    \"value\", [None, 123, b\"2024-03-09T14:30:00Z\", datetime(2024, 3, 9)]\n+)\n+def test_non_string_input_raises_value_error(value):\n+    with pytest.raises(ValueError):\n+        parse_iso_datetime(value)",
+      "seconds": 209.0
+    },
+    {
+      "task": "config_loader",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00353601,
+      "tokens": 84363,
+      "tools": {
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0296,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 7,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 13,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_swallows_errors": true,
+          "m2_message_lacks_path": true,
+          "m3_accepts_non_objects": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/config.py b/app/config.py\nnew file mode 100644\nindex 0000000..025ab87\n--- /dev/null\n+++ b/app/config.py\n@@ -0,0 +1,29 @@\n+import json\n+\n+from app.errors import ConfigError\n+\n+\n+def load_config(path):\n+    \"\"\"Read a JSON file and return the parsed top-level object as a dict.\n+\n+    Raises ConfigError if the file is missing, unreadable, not valid JSON,\n+    or does not contain a JSON object.\n+    \"\"\"\n+    try:\n+        with open(path, encoding=\"utf-8\") as f:\n+            text = f.read()\n+    except FileNotFoundError:\n+        raise ConfigError(f\"config file not found: {path}\") from None\n+    except (OSError, UnicodeDecodeError) as exc:\n+        raise ConfigError(f\"cannot read config file {path}: {exc}\") from exc\n+\n+    try:\n+        data = json.loads(text)\n+    except json.JSONDecodeError as exc:\n+        raise ConfigError(f\"invalid JSON in config file {path}: {exc}\") from exc\n+\n+    if not isinstance(data, dict):\n+        raise ConfigError(\n+            f\"config file {path} must contain a JSON object, got {type(data).__name__}\"\n+        )\n+    return data\ndiff --git a/tests/test_config.py b/tests/test_config.py\nnew file mode 100644\nindex 0000000..34b6b68\n--- /dev/null\n+++ b/tests/test_config.py\n@@ -0,0 +1,65 @@\n+import json\n+\n+import pytest\n+\n+from app.config import load_config\n+from app.errors import ConfigError\n+\n+\n+def write(tmp_path, name, content):\n+    p = tmp_path / name\n+    p.write_text(content, encoding=\"utf-8\")\n+    return p\n+\n+\n+def test_returns_parsed_dict(tmp_path):\n+    p = write(tmp_path, \"c.json\", json.dumps({\"a\": 1, \"b\": {\"c\": [1, 2]}}))\n+    assert load_config(p) == {\"a\": 1, \"b\": {\"c\": [1, 2]}}\n+\n+\n+def test_accepts_string_path(tmp_path):\n+    p = write(tmp_path, \"c.json\", \"{}\")\n+    assert load_config(str(p)) == {}\n+\n+\n+def test_missing_file_raises_with_path(tmp_path):\n+    p = tmp_path / \"missing.json\"\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_directory_raises_with_path(tmp_path):\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(tmp_path)\n+    assert str(tmp_path) in str(excinfo.value)\n+\n+\n+def test_invalid_json_raises_with_path(tmp_path):\n+    p = write(tmp_path, \"bad.json\", \"{not json\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_invalid_utf8_raises_with_path(tmp_path):\n+    p = tmp_path / \"bin.json\"\n+    p.write_bytes(b\"\\xff\\xfe\\x00\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+@pytest.mark.parametrize(\"content\", [\"[1, 2]\", '\"text\"', \"42\", \"null\", \"true\"])\n+def test_non_object_json_raises_with_path(tmp_path, content):\n+    p = write(tmp_path, \"c.json\", content)\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)\n+\n+\n+def test_empty_file_raises_with_path(tmp_path):\n+    p = write(tmp_path, \"empty.json\", \"\")\n+    with pytest.raises(ConfigError) as excinfo:\n+        load_config(p)\n+    assert str(p) in str(excinfo.value)",
+      "seconds": 162.1
+    },
+    {
+      "task": "api_key",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00394664,
+      "tokens": 120069,
+      "tools": {
+        "bash": 4,
+        "edit": 2,
+        "write": 2,
+        "read": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0305,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_default_key": true,
+          "m2_accepts_empty": true,
+          "m3_header_without_bearer": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/client.py b/app/client.py\nnew file mode 100644\nindex 0000000..26247a0\n--- /dev/null\n+++ b/app/client.py\n@@ -0,0 +1,20 @@\n+import os\n+\n+from app.errors import MissingApiKeyError\n+\n+API_KEY_ENV_VAR = \"SERVICE_API_KEY\"\n+\n+\n+class ApiClient:\n+    \"\"\"Client that holds the service API key read from the environment.\"\"\"\n+\n+    def __init__(self) -> None:\n+        key = os.environ.get(API_KEY_ENV_VAR)\n+        if not key:\n+            raise MissingApiKeyError(\n+                f\"environment variable {API_KEY_ENV_VAR} is not set or is empty\"\n+            )\n+        self.key = key\n+\n+    def auth_header(self) -> dict[str, str]:\n+        return {\"Authorization\": f\"Bearer {self.key}\"}\ndiff --git a/app/errors.py b/app/errors.py\nindex 6a30269..1870088 100644\n--- a/app/errors.py\n+++ b/app/errors.py\n@@ -1,2 +1,6 @@\n class AppError(Exception):\n     \"\"\"Base class for this package's errors.\"\"\"\n+\n+\n+class MissingApiKeyError(AppError):\n+    \"\"\"Raised when the SERVICE_API_KEY environment variable is unset or empty.\"\"\"\ndiff --git a/tests/test_client.py b/tests/test_client.py\nnew file mode 100644\nindex 0000000..9c0f5a0\n--- /dev/null\n+++ b/tests/test_client.py\n@@ -0,0 +1,32 @@\n+import pytest\n+\n+from app.client import ApiClient\n+from app.errors import AppError, MissingApiKeyError\n+\n+\n+def test_reads_key_from_env(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.key == \"secret-123\"\n+\n+\n+def test_missing_env_raises(monkeypatch):\n+    monkeypatch.delenv(\"SERVICE_API_KEY\", raising=False)\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_empty_env_raises(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"\")\n+    with pytest.raises(MissingApiKeyError):\n+        ApiClient()\n+\n+\n+def test_missing_key_error_is_app_error():\n+    assert issubclass(MissingApiKeyError, AppError)\n+\n+\n+def test_auth_header(monkeypatch):\n+    monkeypatch.setenv(\"SERVICE_API_KEY\", \"secret-123\")\n+    client = ApiClient()\n+    assert client.auth_header() == {\"Authorization\": \"Bearer secret-123\"}",
+      "seconds": 137.8
+    },
+    {
+      "task": "reuse_helper",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0036414700000000004,
+      "tokens": 103150,
+      "tools": {
+        "read": 5,
+        "bash": 4,
+        "edit": 1,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 3,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_lowercase_only": true,
+          "m2_title_unchanged": true,
+          "m3_naive_replace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex 13007f3..692cb7b 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,7 +1,13 @@\n from dataclasses import dataclass\n \n+from app.text import slugify\n+\n \n @dataclass\n class Article:\n     title: str\n     body: str\n+\n+    @property\n+    def url_slug(self) -> str:\n+        return slugify(self.title)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..6eb7651\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,6 @@\n+from app.models import Article\n+\n+\n+def test_url_slug_from_title():\n+    article = Article(title=\"H\u00e9llo, World!\", body=\"\")\n+    assert article.url_slug == \"hello-world\"",
+      "seconds": 53.8
+    },
+    {
+      "task": "chunked_tests",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004650379999999999,
+      "tokens": 138660,
+      "tools": {
+        "bash": 4,
+        "write": 2,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 24,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_drops_last_chunk": true,
+          "m2_chunks_too_big": true,
+          "m3_no_validation": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/iters.py b/app/iters.py\nnew file mode 100644\nindex 0000000..1c9838d\n--- /dev/null\n+++ b/app/iters.py\n@@ -0,0 +1,22 @@\n+from itertools import islice\n+\n+\n+def chunked(iterable, size):\n+    \"\"\"Split ``iterable`` into a list of lists of at most ``size`` items each.\n+\n+    Items keep their original order. The final chunk may be shorter than\n+    ``size``. An empty iterable yields an empty list.\n+\n+    Raises:\n+        ValueError: if ``size`` is less than 1.\n+    \"\"\"\n+    if size < 1:\n+        raise ValueError(f\"size must be at least 1, got {size}\")\n+\n+    iterator = iter(iterable)\n+    chunks = []\n+    while True:\n+        chunk = list(islice(iterator, size))\n+        if not chunk:\n+            return chunks\n+        chunks.append(chunk)\ndiff --git a/tests/test_iters.py b/tests/test_iters.py\nnew file mode 100644\nindex 0000000..2d84a10\n--- /dev/null\n+++ b/tests/test_iters.py\n@@ -0,0 +1,107 @@\n+import pytest\n+\n+from app.iters import chunked\n+\n+\n+def test_even_split():\n+    assert chunked([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]\n+\n+\n+def test_last_chunk_shorter():\n+    assert chunked([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]\n+\n+\n+def test_size_equal_to_length():\n+    assert chunked([1, 2, 3], 3) == [[1, 2, 3]]\n+\n+\n+def test_size_larger_than_length():\n+    assert chunked([1, 2], 10) == [[1, 2]]\n+\n+\n+def test_size_one():\n+    assert chunked(\"abc\", 1) == [[\"a\"], [\"b\"], [\"c\"]]\n+\n+\n+def test_empty_iterable_returns_empty_list():\n+    assert chunked([], 3) == []\n+\n+\n+def test_empty_iterable_with_size_one():\n+    assert chunked(iter(()), 1) == []\n+\n+\n+def test_returns_list_of_lists():\n+    result = chunked(range(5), 2)\n+    assert isinstance(result, list)\n+    assert all(isinstance(chunk, list) for chunk in result)\n+\n+\n+def test_preserves_order():\n+    data = list(range(100))\n+    result = chunked(data, 7)\n+    assert [item for chunk in result for item in chunk] == data\n+\n+\n+def test_every_chunk_except_last_is_full():\n+    result = chunked(range(23), 5)\n+    assert [len(c) for c in result] == [5, 5, 5, 5, 3]\n+\n+\n+def test_chunk_sizes_multiple_of_size():\n+    result = chunked(range(12), 4)\n+    assert [len(c) for c in result] == [4, 4, 4]\n+\n+\n+def test_accepts_generator_and_consumes_it_once():\n+    gen = (x * x for x in range(5))\n+    assert chunked(gen, 2) == [[0, 1], [4, 9], [16]]\n+    assert list(gen) == []\n+\n+\n+def test_accepts_string():\n+    assert chunked(\"abcdef\", 4) == [[\"a\", \"b\", \"c\", \"d\"], [\"e\", \"f\"]]\n+\n+\n+def test_accepts_tuple_and_range():\n+    assert chunked((1, 2, 3), 2) == [[1, 2], [3]]\n+    assert chunked(range(4), 2) == [[0, 1], [2, 3]]\n+\n+\n+def test_does_not_modify_input():\n+    data = [1, 2, 3, 4, 5]\n+    chunked(data, 2)\n+    assert data == [1, 2, 3, 4, 5]\n+\n+\n+def test_chunks_are_independent_lists():\n+    data = [1, 2, 3, 4]\n+    result = chunked(data, 2)\n+    result[0].append(99)\n+    assert result[1] == [3, 4]\n+    assert data == [1, 2, 3, 4]\n+\n+\n+def test_preserves_none_and_falsy_items():\n+    assert chunked([0, None, \"\", False], 2) == [[0, None], [\"\", False]]\n+\n+\n+def test_nested_iterables_are_not_flattened():\n+    assert chunked([[1, 2], [3]], 1) == [[[1, 2]], [[3]]]\n+\n+\n+@pytest.mark.parametrize(\"size\", [0, -1, -100])\n+def test_raises_value_error_for_size_less_than_one(size):\n+    with pytest.raises(ValueError):\n+        chunked([1, 2, 3], size)\n+\n+\n+def test_size_zero_raises_even_for_empty_iterable():\n+    with pytest.raises(ValueError):\n+        chunked([], 0)\n+\n+\n+def test_value_error_raised_eagerly_for_generator():\n+    gen = (x for x in range(3))\n+    with pytest.raises(ValueError):\n+        chunked(gen, 0)",
+      "seconds": 66.8
+    }
+  ]
+}

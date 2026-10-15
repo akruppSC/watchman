@@ -32,6 +32,7 @@ class Task:
     pitfalls: list[str]
     probes: list[str]
     mutant_target: str | None
+    post_hoc: bool = False  # added after seeing results; flagged in the report
     dir: Path = field(default=Path("."))
 
     @property
@@ -53,8 +54,10 @@ def load_tasks(only: set[str] | None = None) -> list[Task]:
         data = json.loads(p.read_text())
         if only and data["id"] not in only:
             continue
-        out.append(Task(dir=p.parent, **{k: data[k] for k in (
-            "id", "title", "prompt", "pitfalls", "probes", "mutant_target")}))  # fmt: skip
+        keys = ("id", "title", "prompt", "pitfalls", "probes", "mutant_target")
+        out.append(
+            Task(dir=p.parent, post_hoc=bool(data.get("post_hoc")), **{k: data[k] for k in keys})
+        )
     return out
 
 

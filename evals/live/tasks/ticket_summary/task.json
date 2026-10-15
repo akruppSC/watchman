@@ -1,0 +1,12 @@
+{
+  "title": "Ticket summary line",
+  "prompt": "Give the `Ticket` dataclass in `app/models.py` a `summary` property: the ticket title with runs of whitespace collapsed to single spaces and trimmed, cut to at most 40 characters, ending in \"\u2026\" if it had to be cut. Add tests in `tests/test_models.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "duplication",
+    "weak_test"
+  ],
+  "probes": [],
+  "mutant_target": "app/models.py",
+  "id": "ticket_summary",
+  "post_hoc": true
+}

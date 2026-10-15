@@ -1,0 +1,760 @@
+{
+  "worker": "openrouter/anthropic/claude-haiku-5.5",
+  "trials": 3,
+  "budget": 2.0,
+  "started": "20261015T173343",
+  "spend": {
+    "worker": 0.0521,
+    "reviewer": 0.2503
+  },
+  "runs": [
+    {
+      "task": "ticket_summary",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00426951,
+      "tokens": 122548,
+      "tools": {
+        "read": 4,
+        "bash": 4,
+        "glob": 1,
+        "write": 2,
+        "edit": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 9,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..99599c4 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_LIMIT = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Normalized title, at most SUMMARY_LIMIT chars, ending in '\u2026' if cut.\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_LIMIT)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..5a1d75d\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,30 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_collapses_and_trims_whitespace():\n+    assert Ticket(1, \"  fix   the\\n\\tlogin  \").summary == \"fix the login\"\n+\n+\n+def test_summary_keeps_short_title_unchanged():\n+    assert Ticket(1, \"Short title\").summary == \"Short title\"\n+\n+\n+def test_summary_at_limit_is_not_cut():\n+    title = \"a\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_over_limit_is_cut_with_ellipsis():\n+    result = Ticket(1, \"x\" * 41).summary\n+    assert result == \"x\" * 39 + \"\u2026\"\n+    assert len(result) == 40\n+\n+\n+def test_summary_cut_after_whitespace_collapse():\n+    # Raw length is 46, but collapsed length is exactly 40, so no cut.\n+    title = \"a\" * 20 + \"   \\n  \" + \"b\" * 19\n+    assert Ticket(1, title).summary == \"a\" * 20 + \" \" + \"b\" * 19\n+\n+\n+def test_summary_empty_title():\n+    assert Ticket(1, \"   \").summary == \"\"",
+      "seconds": 58.9
+    },
+    {
+      "task": "ticket_summary",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00539818,
+      "tokens": 163737,
+      "tools": {
+        "read": 3,
+        "bash": 6,
+        "edit": 3,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 4,
+        "by_kind": {
+          "test_run": 2,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0299,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..9e742a0 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_MAX_LENGTH = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Title with whitespace collapsed and trimmed, cut to at most 40 chars with '\u2026'.\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_MAX_LENGTH)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..6956125\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,36 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_short_title_unchanged():\n+    assert Ticket(1, \"Fix login bug\").summary == \"Fix login bug\"\n+\n+\n+def test_summary_collapses_and_trims_whitespace():\n+    assert Ticket(1, \"  Fix \\n\\n  the\\tlogin   bug  \").summary == \"Fix the login bug\"\n+\n+\n+def test_summary_exactly_40_chars_not_cut():\n+    title = \"a\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_41_chars_is_cut_with_ellipsis():\n+    summary = Ticket(1, \"a\" * 41).summary\n+    assert summary == \"a\" * 39 + \"\u2026\"\n+    assert len(summary) == 40\n+\n+\n+def test_summary_long_title_at_most_40_chars():\n+    summary = Ticket(1, \"word \" * 30).summary\n+    assert len(summary) <= 40\n+    assert summary.endswith(\"\u2026\")\n+\n+\n+def test_summary_whitespace_collapsed_before_length_check():\n+    # Collapses to \"a \" + 38 b's = exactly 40 chars, so it must not be cut.\n+    title = \"a\" + \" \" * 50 + \"b\" * 38\n+    assert Ticket(1, title).summary == \"a \" + \"b\" * 38\n+\n+\n+def test_summary_empty_title():\n+    assert Ticket(1, \"   \").summary == \"\"",
+      "seconds": 111.0
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0038527300000000004,
+      "tokens": 119147,
+      "tools": {
+        "read": 3,
+        "bash": 3,
+        "edit": 1,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..9084c44 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,12 @@\n-from app.money import format_price\n+def format_html_price(amount: float) -> str:\n+    \"\"\"Format an amount with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n \n \n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_html_price(amount)}</td></tr>\"\n+        for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..316ac3d 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -1,5 +1,33 @@\n+from app.export import to_csv\n from app.invoice import render_html\n \n \n def test_render_html_small_amounts():\n-    assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    assert (\n+        render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_thousands_separator():\n+    assert (\n+        render_html([(\"desk\", 1234.5)])\n+        == \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_millions_separator():\n+    assert (\n+        render_html([(\"car\", 1234567.891)])\n+        == \"<table><tr><td>car</td><td>1,234,567.89</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_exactly_thousand():\n+    assert (\n+        render_html([(\"pen\", 1000)])\n+        == \"<table><tr><td>pen</td><td>1,000.00</td></tr></table>\"\n+    )\n+\n+\n+def test_csv_export_has_no_thousands_separator():\n+    assert to_csv([(\"desk\", 1234.5)]) == \"desk,1234.50\"",
+      "seconds": 58.4
+    },
+    {
+      "task": "ticket_summary",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0043535,
+      "tokens": 121520,
+      "tools": {
+        "read": 2,
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..b4fee46 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_LIMIT = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Whitespace-normalized title, cut to at most SUMMARY_LIMIT chars with '\u2026' if cut.\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_LIMIT)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..744fb7c\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,36 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_keeps_short_title():\n+    assert Ticket(1, \"Fix login bug\").summary == \"Fix login bug\"\n+\n+\n+def test_summary_collapses_and_trims_whitespace():\n+    assert Ticket(1, \"  Fix \\n\\t  the   login\\r\\nbug  \").summary == \"Fix the login bug\"\n+\n+\n+def test_summary_title_of_exactly_40_chars_is_not_cut():\n+    title = \"a\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_long_title_is_cut_to_40_with_ellipsis():\n+    summary = Ticket(1, \"x\" * 100).summary\n+    assert len(summary) == 40\n+    assert summary == \"x\" * 39 + \"\u2026\"\n+\n+\n+def test_summary_cut_counts_suffix_within_limit():\n+    summary = Ticket(1, \"word \" * 20).summary\n+    assert len(summary) <= 40\n+    assert summary.endswith(\"\u2026\")\n+    assert not summary.endswith(\" \u2026\")\n+\n+\n+def test_summary_normalizes_before_measuring_length():\n+    # 60 raw chars but only 3 after collapsing: must not be cut\n+    assert Ticket(1, \"a\" + \" \" * 50 + \"b\" + \" \" * 8 + \"c\").summary == \"a b c\"\n+\n+\n+def test_summary_empty_title():\n+    assert Ticket(1, \"   \").summary == \"\"",
+      "seconds": 56.6
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "watchman",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.004759,
+      "tokens": 131409,
+      "tools": {
+        "bash": 5,
+        "edit": 2,
+        "write": 2,
+        "read": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0333,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..8bbbc99 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,12 @@\n-from app.money import format_price\n+def format_html_price(amount: float) -> str:\n+    \"\"\"HTML-only price display with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n \n \n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_html_price(amount)}</td></tr>\"\n+        for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..92fc9ca 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -1,5 +1,32 @@\n+from app.export import to_csv\n from app.invoice import render_html\n \n \n def test_render_html_small_amounts():\n-    assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    assert (\n+        render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_thousands_separator():\n+    assert (\n+        render_html([(\"desk\", 1234.5)])\n+        == \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_millions_separator():\n+    assert render_html([(\"house\", 1234567.891)]) == (\n+        \"<table><tr><td>house</td><td>1,234,567.89</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_exactly_one_thousand():\n+    assert (\n+        render_html([(\"pen\", 1000)])\n+        == \"<table><tr><td>pen</td><td>1,000.00</td></tr></table>\"\n+    )\n+\n+\n+def test_csv_export_has_no_thousands_separator():\n+    assert to_csv([(\"desk\", 1234.5)]) == \"desk,1234.50\"",
+      "seconds": 93.6
+    },
+    {
+      "task": "ticket_summary",
+      "arm": "alone",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00522874,
+      "tokens": 162158,
+      "tools": {
+        "read": 4,
+        "bash": 4,
+        "glob": 1,
+        "write": 2,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..b4fee46 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_LIMIT = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Whitespace-normalized title, cut to at most SUMMARY_LIMIT chars with '\u2026' if cut.\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_LIMIT)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..32172b7\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,38 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_returns_short_title_unchanged():\n+    assert Ticket(1, \"Fix login bug\").summary == \"Fix login bug\"\n+\n+\n+def test_summary_collapses_and_trims_whitespace():\n+    assert Ticket(1, \"  Fix \\n\\t login   bug  \").summary == \"Fix login bug\"\n+\n+\n+def test_summary_title_of_exactly_40_chars_is_not_cut():\n+    title = \"a\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_long_title_is_cut_to_40_chars_with_ellipsis():\n+    summary = Ticket(1, \"x\" * 41).summary\n+    assert len(summary) == 40\n+    assert summary == \"x\" * 39 + \"\u2026\"\n+\n+\n+def test_summary_length_is_checked_after_whitespace_collapse():\n+    # Raw title is well over 40 chars, but collapsed it fits exactly.\n+    title = \"word\" + \" \" * 50 + \"x\" * 35\n+    assert Ticket(1, title).summary == \"word \" + \"x\" * 35\n+\n+\n+def test_summary_does_not_leave_trailing_space_before_ellipsis():\n+    # The first 39 chars end in a space, which must be stripped before the ellipsis.\n+    title = \"a\" * 38 + \" \" + \"b\" * 10\n+    summary = Ticket(1, title).summary\n+    assert summary == \"a\" * 38 + \"\u2026\"\n+    assert len(summary) <= 40\n+\n+\n+def test_summary_ignores_body():\n+    assert Ticket(1, \"Title\", body=\"long body\").summary == \"Title\"",
+      "seconds": 62.1
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00472215,
+      "tokens": 132458,
+      "tools": {
+        "read": 3,
+        "bash": 3,
+        "edit": 4
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0285,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 4,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..9084c44 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,12 @@\n-from app.money import format_price\n+def format_html_price(amount: float) -> str:\n+    \"\"\"Format an amount with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n \n \n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_html_price(amount)}</td></tr>\"\n+        for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..69d5492 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -1,5 +1,30 @@\n+from app.export import to_csv\n from app.invoice import render_html\n \n \n def test_render_html_small_amounts():\n-    assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    assert (\n+        render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_thousands_separator():\n+    assert (\n+        render_html([(\"desk\", 1234.5)])\n+        == \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_millions_and_negative():\n+    assert (\n+        render_html([(\"a\", 1234567.891)])\n+        == \"<table><tr><td>a</td><td>1,234,567.89</td></tr></table>\"\n+    )\n+    assert (\n+        render_html([(\"refund\", -9876.5)])\n+        == \"<table><tr><td>refund</td><td>-9,876.50</td></tr></table>\"\n+    )\n+\n+\n+def test_csv_export_has_no_thousands_separator():\n+    assert to_csv([(\"desk\", 1234.5)]) == \"desk,1234.50\"",
+      "seconds": 83.9
+    },
+    {
+      "task": "ticket_summary",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0041134,
+      "tokens": 120017,
+      "tools": {
+        "read": 4,
+        "bash": 3,
+        "glob": 1,
+        "edit": 1,
+        "write": 1
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0368,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 8,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..ba992c4 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_LIMIT = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Title with whitespace normalised, cut to at most SUMMARY_LIMIT chars with '\u2026' if cut.\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_LIMIT)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..881cdb9\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,28 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_collapses_and_trims_whitespace():\n+    assert Ticket(1, \"  fix   the\\n\\tlogin  bug \").summary == \"fix the login bug\"\n+\n+\n+def test_summary_keeps_short_title():\n+    title = \"x\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_truncates_long_title_with_ellipsis():\n+    summary = Ticket(1, \"a\" * 100).summary\n+    assert len(summary) == 40\n+    assert summary == \"a\" * 39 + \"\u2026\"\n+\n+\n+def test_summary_counts_length_after_collapsing():\n+    title = \"word \" * 20  # 100 chars raw, 99 after trim/collapse\n+    summary = Ticket(1, title).summary\n+    assert len(summary) <= 40\n+    assert summary.endswith(\"\u2026\")\n+    assert \"  \" not in summary\n+\n+\n+def test_summary_empty_title():\n+    assert Ticket(1, \"   \\n \").summary == \"\"",
+      "seconds": 94.2
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "alone",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00437086,
+      "tokens": 138793,
+      "tools": {
+        "read": 2,
+        "bash": 4,
+        "edit": 3
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..9084c44 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,12 @@\n-from app.money import format_price\n+def format_html_price(amount: float) -> str:\n+    \"\"\"Format an amount with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n \n \n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_html_price(amount)}</td></tr>\"\n+        for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..2c301ce 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -2,4 +2,40 @@ from app.invoice import render_html\n \n \n def test_render_html_small_amounts():\n-    assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    assert (\n+        render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_thousands_separator():\n+    assert (\n+        render_html([(\"desk\", 1234.5)])\n+        == \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_millions_separator():\n+    assert (\n+        render_html([(\"car\", 1234567.891)])\n+        == \"<table><tr><td>car</td><td>1,234,567.89</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_negative_amount_with_separator():\n+    assert (\n+        render_html([(\"refund\", -9876.5)])\n+        == \"<table><tr><td>refund</td><td>-9,876.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_exactly_one_thousand():\n+    assert (\n+        render_html([(\"pen\", 1000)])\n+        == \"<table><tr><td>pen</td><td>1,000.00</td></tr></table>\"\n+    )\n+\n+\n+def test_csv_export_has_no_thousands_separator():\n+    from app.export import to_csv\n+\n+    assert to_csv([(\"desk\", 1234.5)]) == \"desk,1234.50\"",
+      "seconds": 59.5
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "watchman",
+      "trial": 2,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00291463,
+      "tokens": 64720,
+      "tools": {
+        "bash": 4
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0852,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 4,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..bfb8e34 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,14 @@\n from app.money import format_price\n \n \n+def format_html_price(amount: float) -> str:\n+    \"\"\"Like format_price, but with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n+\n+\n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_html_price(amount)}</td></tr>\" for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..bbfe250 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -3,3 +3,15 @@ from app.invoice import render_html\n \n def test_render_html_small_amounts():\n     assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+\n+\n+def test_render_html_thousands_separator():\n+    assert render_html([(\"desk\", 1234.5)]) == \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+\n+\n+def test_render_html_millions_separator():\n+    assert render_html([(\"car\", 1234567.891)]) == \"<table><tr><td>car</td><td>1,234,567.89</td></tr></table>\"\n+\n+\n+def test_render_html_exact_thousand():\n+    assert render_html([(\"ticket\", 1000)]) == \"<table><tr><td>ticket</td><td>1,000.00</td></tr></table>\"",
+      "seconds": 141.8
+    },
+    {
+      "task": "ticket_summary",
+      "arm": "watchman",
+      "trial": 1,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.00412591,
+      "tokens": 120623,
+      "tools": {
+        "read": 2,
+        "bash": 4,
+        "write": 2
+      },
+      "timed_out": false,
+      "done_feedback": "(clean)",
+      "watchman": {
+        "reviews": 3,
+        "by_kind": {
+          "test_run": 1,
+          "commit": 1,
+          "done": 1
+        },
+        "findings_shown": 0,
+        "cost_usd": 0.0366,
+        "history": [
+          {
+            "kind": "test_run",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "commit",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          },
+          {
+            "kind": "done",
+            "round": 0,
+            "verdict": "pass",
+            "new": 0,
+            "open": 0,
+            "fixed": 0,
+            "gate": "pass"
+          }
+        ]
+      },
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 10,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_never_truncates": true,
+          "m2_cuts_to_41": true,
+          "m3_keeps_inner_whitespace": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/models.py b/app/models.py\nindex a1a7d79..3944193 100644\n--- a/app/models.py\n+++ b/app/models.py\n@@ -1,8 +1,17 @@\n from dataclasses import dataclass\n \n+from app.util.strings import collapse_whitespace, truncate\n+\n+SUMMARY_MAX_LENGTH = 40\n+\n \n @dataclass\n class Ticket:\n     id: int\n     title: str\n     body: str = \"\"\n+\n+    @property\n+    def summary(self) -> str:\n+        \"\"\"Title with whitespace normalized, cut to at most 40 characters (ending in '\u2026' if cut).\"\"\"\n+        return truncate(collapse_whitespace(self.title), SUMMARY_MAX_LENGTH)\ndiff --git a/tests/test_models.py b/tests/test_models.py\nnew file mode 100644\nindex 0000000..e28b122\n--- /dev/null\n+++ b/tests/test_models.py\n@@ -0,0 +1,38 @@\n+from app.models import Ticket\n+\n+\n+def test_summary_returns_short_title_unchanged():\n+    assert Ticket(1, \"Fix login bug\").summary == \"Fix login bug\"\n+\n+\n+def test_summary_collapses_whitespace_and_trims():\n+    assert Ticket(1, \"  Fix\\n\\n  the \\t login   bug  \").summary == \"Fix the login bug\"\n+\n+\n+def test_summary_title_of_exactly_40_chars_is_not_cut():\n+    title = \"a\" * 40\n+    assert Ticket(1, title).summary == title\n+\n+\n+def test_summary_cuts_long_title_to_40_chars_with_ellipsis():\n+    summary = Ticket(1, \"x\" * 41).summary\n+    assert len(summary) == 40\n+    assert summary == \"x\" * 39 + \"\u2026\"\n+\n+\n+def test_summary_cut_is_applied_after_whitespace_collapse():\n+    # Raw title is long, but collapses to exactly 40 chars -> no cut.\n+    title = \"word \" * 8 + \"  \\n  \"  # collapses to \"word word ... word\" (39 chars)\n+    summary = Ticket(1, title).summary\n+    assert \"\u2026\" not in summary\n+    assert len(summary) <= 40\n+\n+\n+def test_summary_result_never_exceeds_40_chars():\n+    summary = Ticket(1, \"lorem ipsum dolor sit amet \" * 10).summary\n+    assert len(summary) <= 40\n+    assert summary.endswith(\"\u2026\")\n+\n+\n+def test_summary_does_not_use_body():\n+    assert Ticket(1, \"Title\", body=\"Some body text\").summary == \"Title\"",
+      "seconds": 96.6
+    },
+    {
+      "task": "invoice_prices",
+      "arm": "alone",
+      "trial": 3,
+      "worker": "openrouter/anthropic/claude-haiku-5.5",
+      "worker_cost": 0.0040225700000000005,
+      "tokens": 119257,
+      "tools": {
+        "read": 2,
+        "bash": 4,
+        "edit": 2
+      },
+      "timed_out": false,
+      "done_feedback": null,
+      "watchman": {},
+      "evaluation": {
+        "spec": {
+          "passed": 5,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "spec_pass_fraction": 1.0,
+        "visible": {
+          "passed": 6,
+          "failed": 0,
+          "error": 0,
+          "rc": 0
+        },
+        "probe_hits": {},
+        "mutants_killed": {
+          "m1_no_separators": true,
+          "m2_drops_decimals": true,
+          "m3_european_style": true
+        },
+        "correct": true,
+        "clean": true,
+        "strong_tests": true
+      },
+      "final_diff": "diff --git a/app/invoice.py b/app/invoice.py\nindex 69a82c2..c5e5a9c 100644\n--- a/app/invoice.py\n+++ b/app/invoice.py\n@@ -1,9 +1,12 @@\n-from app.money import format_price\n+def format_price_grouped(amount: float) -> str:\n+    \"\"\"Format an amount with thousands separators: 1234.5 -> '1,234.50'.\"\"\"\n+    return f\"{amount:,.2f}\"\n \n \n def render_html(items):\n     \"\"\"items: a list of (name, amount) pairs.\"\"\"\n     rows = \"\".join(\n-        f\"<tr><td>{name}</td><td>{format_price(amount)}</td></tr>\" for name, amount in items\n+        f\"<tr><td>{name}</td><td>{format_price_grouped(amount)}</td></tr>\"\n+        for name, amount in items\n     )\n     return f\"<table>{rows}</table>\"\ndiff --git a/tests/test_invoice.py b/tests/test_invoice.py\nindex cdd4c14..84e1443 100644\n--- a/tests/test_invoice.py\n+++ b/tests/test_invoice.py\n@@ -1,5 +1,41 @@\n from app.invoice import render_html\n \n \n+from app.export import to_csv\n+from app.invoice import render_html\n+\n+\n def test_render_html_small_amounts():\n-    assert render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    assert (\n+        render_html([(\"tea\", 5)]) == \"<table><tr><td>tea</td><td>5.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_groups_thousands():\n+    assert render_html([(\"desk\", 1234.5)]) == (\n+        \"<table><tr><td>desk</td><td>1,234.50</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_groups_millions():\n+    assert render_html([(\"house\", 1234567.891)]) == (\n+        \"<table><tr><td>house</td><td>1,234,567.89</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_exactly_one_thousand():\n+    assert (\n+        render_html([(\"pen\", 1000)])\n+        == \"<table><tr><td>pen</td><td>1,000.00</td></tr></table>\"\n+    )\n+\n+\n+def test_render_html_below_one_thousand_has_no_separator():\n+    assert (\n+        render_html([(\"pen\", 999.99)])\n+        == \"<table><tr><td>pen</td><td>999.99</td></tr></table>\"\n+    )\n+\n+\n+def test_csv_export_unchanged_by_html_grouping():\n+    assert to_csv([(\"desk\", 1234.5)]) == \"desk,1234.50\"",
+      "seconds": 55.0
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Thousands separators on the HTML invoice",
+  "prompt": "On the HTML invoice (`render_html` in `app/invoice.py`), show prices with thousands separators, so 1234.5 is shown as 1,234.50. Other outputs, such as the CSV export, must stay exactly as they are. Add tests in `tests/test_invoice.py`. Run the tests with `python -m pytest -q`, and when they pass commit your work with git.",
+  "pitfalls": [
+    "silent_behavior_change",
+    "weak_test"
+  ],
+  "probes": [],
+  "mutant_target": "app/invoice.py",
+  "id": "invoice_prices",
+  "post_hoc": true
+}

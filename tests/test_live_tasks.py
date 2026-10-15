@@ -35,8 +35,9 @@ def build(task: Task, tmp_path: Path, overlay: bool = True) -> tuple[Path, str]:
     return work, base
 
 
-def test_there_are_eight_tasks_with_unique_ids() -> None:
-    assert len(TASKS) == 8 and len({t.id for t in TASKS}) == 8
+def test_tasks_have_unique_ids_and_the_added_ones_are_flagged() -> None:
+    assert len(TASKS) == 10 and len({t.id for t in TASKS}) == 10
+    assert {t.id for t in TASKS if t.post_hoc} == {"ticket_summary", "invoice_prices"}
 
 
 @pytest.mark.parametrize("task", TASKS, ids=lambda t: t.id)

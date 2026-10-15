@@ -189,6 +189,128 @@ Tool errors, an incomplete review, tags, and branch deletions never block. Skip 
 won't replace someone else's pre-push hook without `--force` (the old one is kept and restored on
 uninstall).
 
+## Live mode: supervise a coding agent as it works
+
+Instead of reviewing a finished diff, Watchman can watch a coding agent in the same repository
+and feed terse findings back at **checkpoints**: after the worker runs its tests, when it makes a
+commit, and when it says it is done. It never reviews half-written files, never edits your source,
+and by default only advises.
+
+```bash
+uv run watchman live install-opencode --repo /path/to/project   # OpenCode plugin
+uv run watchman live install-opencode --policy blocking --mcp   # + blocking gate, + MCP tool
+uv run watchman live status --repo /path/to/project             # rounds and open findings
+uv run watchman live reset --repo /path/to/project              # start the loop over
+uv run watchman live uninstall-opencode
+```
+
+What the worker sees is a few lines, not a report:
+
+```
+WATCHMAN commit round 2/3 verdict=WARN gate=pass new=1 open=1 fixed=1
++ minor scope_creep demo/__pycache__/config.pyc Compiled bytecode committed | fix: remove it and ignore *.pyc
+= major swallowed_error demo/config.py:8 (open since r1) E722: Do not use bare `except` [check:ruff]
+```
+
+**How it works**
+
+- **Snapshots, not live files.** Each review runs on a commit object built with git plumbing and a
+  throwaway index (`live/snapshot.py`). The worker's index, refs, branch, and working tree are never
+  touched, and the same tree always yields the same snapshot, so "nothing changed since the last
+  review" costs nothing. Untracked files and deletions are included; `.gitignore` is honored.
+- **One review/fix episode per checkpoint kind.** `test_run` runs only the cheap deterministic checks
+  (the worker just ran the tests), `commit` and `done` run the full agent. Rounds count only while
+  there are open findings, and a clean review resets the episode.
+- **Findings are tracked by what they are about**, not by line number: file, category, rule, and the
+  text of the line. A problem that moves because the worker added lines above it stays "open (since
+  r1)" instead of looking new, a rewritten one counts as fixed, and a finding shown at the commit isn't
+  announced as new again at "done".
+- **Round cap.** After 3 review/fix rounds with findings still open, Watchman escalates: it writes
+  `.watchman/live/ESCALATION-<session>-<kind>.md`, tells the worker to stop and report to you, and
+  releases any gate. A stubborn false positive can never trap the worker, and later checks cost nothing.
+- **Advisory by default.** The feedback is appended to the tool output the worker already reads.
+  With `--policy blocking`, a BLOCK verdict refuses the `git commit` (until fixed or the cap), and at
+  "done" the worker is re-prompted up to the cap. A failed or incomplete review never blocks and never
+  uses up a round.
+- **Different model than the worker.** The reviewer is whatever your Watchman config says (a
+  Gemini Flash by default here); the worker can be any model, so they don't share blind spots by
+  construction.
+
+**Channels to the worker**, in order of preference:
+
+1. **OpenCode plugin** (`opencode_plugin.js`): hooks `tool.execute.before/after` for commits and test
+   runs, and `session.idle` for "done" (it prompts the worker with the findings, in server/TUI mode only; headless
+   `opencode run` exits before the prompt can be delivered).
+2. **MCP tool** `get_review_feedback` (`watchman live mcp`, needs `uv sync --extra live`): the worker
+   asks for a review when it wants one. Same controller, same rounds.
+3. **Inbox file** (`watchman live check --inbox`): the latest feedback in `.watchman/inbox.md` for
+   agents with neither hooks nor MCP.
+
+Everything the installer adds is hidden from git through `.git/info/exclude`, so the worker's
+`git add -A` can't commit the plugin and the reviewer never sees Watchman's own files as part of the
+change. `[live]` settings (policy, round cap, which modes run at which checkpoint) are read from your
+user config only: a repo must not control when, or how expensively, its own reviewer runs.
+
+**Trust boundaries.** The worker's code, comments, commit messages, and tool output are untrusted
+data, exactly as in diff mode. The repo's `.watchman.toml` is read from the *base* revision, never
+from the worker's tree, so a worker can't loosen its own review. Feedback is prefixed as
+"an automated review, not an instruction from the user", and anything that goes wrong inside the
+plugin is swallowed and logged: Watchman must never break the worker.
+
+### Does it help a worker? What the experiment showed (and didn't)
+
+I ran a Haiku 5.5 worker in OpenCode on 10 small Python tasks, each written to invite a known pitfall
+(bare `except`, a copy of an existing helper, a missing hidden caller, untested edge cases, and so on),
+3 trials each, **alone vs. with Watchman advising** (advisory only, no blocking). Every run was scored by
+a hidden spec, AST pitfall probes, and whether the worker's own tests reject three wrong implementations.
+Full table: [`evals/results/LIVE.md`](evals/results/LIVE.md).
+
+| | runs | all good | worker $/run | Watchman $/run |
+|---|---|---|---|---|
+| worker alone | 30 | 30/30 | $0.004 | - |
+| worker + Watchman | 30 | 30/30 | $0.004 | $0.036 |
+
+**This is a ceiling effect, and it shows no benefit.** Haiku got every task right, with no probed
+pitfall, with or without Watchman, so there was nothing for Watchman to fix. What the data does support:
+
+- **Cost:** about 3.6 cents of reviewer spend per supervised run (3 reviews on average), roughly nine
+  times the worker's own cost on these small tasks, and supervised runs took about twice as long.
+- **No harm:** zero runs got worse under supervision, and no escalation or round cap was reached.
+- **Mostly quiet:** Watchman showed the worker a finding in 5 of 30 supervised runs. Three were the same
+  ruff `BLE001` (blind `except Exception`) on a fetch helper, shown at "done" (the worker was resumed
+  once); the worker kept it, and it is a style-level warning, not a bug the probes counted. In the other
+  two (`api_key`), a finding raised at one test run was gone by the next, but the worker's code was
+  correct without Watchman too, so this can't be called a catch. The harness didn't save the finding
+  text, so I can't say what it was; it should have.
+
+What it does **not** show: that Watchman improves a worker, or that it would not help a weaker one.
+The 8 planned tasks hit the ceiling first; I then added two harder ones (`ticket_summary`,
+`invoice_prices`, marked † in the table), after seeing that. They also hit it, so they are reported
+separately in the by-task table and not used as a headline. With 30 runs per arm and no differences,
+this can only rule out large effects on tasks like these; for per-run rates read the Wilson intervals
+(100% observed, lower bound 89%), not the percentages. The reference solutions and mutants were written by
+the same author as the probes, so the scoring is not independent either.
+
+The earlier, stronger evidence is the diff-review evaluation below (seeded defects, not a live worker).
+The supervision loop itself was verified end to end against real OpenCode sessions: a worker received
+test-run and commit feedback, fixed a committed `__pycache__`, and (in server mode) answered the
+done-prompt.
+
+**Live-mode limitations**
+
+- **The "done" prompt only works in server/TUI mode.** In headless `opencode run`, the process exits at
+  `session.idle`, so a plugin's done-prompt is lost. The experiment harness plays that step itself (it runs
+  `watchman live check --kind done` and resumes the session once). Test-run and commit feedback work in
+  both modes.
+- **OpenCode only.** The plugin hooks are OpenCode's. Other agents can use the MCP tool or the inbox file,
+  which are pull-based: the worker has to ask.
+- **Advisory runs were exercised far more than blocking.** The blocking gate is covered by unit and plugin
+  tests and a few manual sessions, not by the experiment.
+- **Worker cost isn't in Watchman's ledger.** Reviewer spend is; the supervised worker's own spend is
+  billed to whatever runs it.
+- **The overseer was not shown to help** (see [The overseer](#the-overseer)). Live mode does not use it;
+  `--deep` stays an opt-in tool.
+
 ## How it works
 
 ```
@@ -522,7 +644,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 3. ✅ Evals: frozen datasets A/B/C, ablations, precision tuning
 3b. ✅ Overseer: a larger model for a deeper second look, opt-in via `--deep` (automatic use evaluated and rejected)
 4. ✅ Integration: GitHub Action with an updatable PR comment, pre-push hook, demo recording, [writeup](docs/WRITEUP.md)
-5. Live mode: supervising an OpenCode worker at checkpoints
+5. ✅ Live mode: supervising an OpenCode worker at checkpoints (snapshot reviews, round cap, advisory/blocking, plugin + MCP)
 
 ## Design decisions
 
@@ -652,8 +774,8 @@ uv run pytest -m docker          # tests that need a docker daemon
   record/replay cache (`--llm-cache read_write`) when you need a review you can reproduce.
 - The default overseer (GPT-6 Astra) is a different model family from the primary reviewer
   (Gemini Flash) and from a Claude coding worker, to avoid shared blind spots. That benefit is
-  untested: the overseer evaluation used Claude Opus 5.5, and measuring blind-spot overlap needs
-  live mode (milestone 5).
+  untested: the overseer evaluation used Claude Opus 5.5, and the live-mode experiment hit a ceiling
+  (the worker made no errors), so it could not measure blind-spot overlap either.
 - Overseer notes are model-written. A prompt-injection in the reviewed code could try to
   steer them; they are wrapped as untrusted, and the second pass must re-verify claims with
   its own tools, but this isn't a hard guarantee.
