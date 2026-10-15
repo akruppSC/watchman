@@ -9,10 +9,16 @@ tests, secret scan, dependency-existence check). After that, an LLM reviewer age
 *verifies* its suspicions with tools before reporting them. Every finding must cite
 evidence, and findings that can't be grounded are dropped.
 
-> **Status:** milestones 1 (foundation), 2 (the tool-using agent) and 3 (evaluation) are
-> complete. The overseer (a larger model for a deeper second look) is built and available as
-> an opt-in `--deep` tool; automatic use didn't pay for itself in evaluation. See
-> [Roadmap](#roadmap).
+> **Status:** the CLI, the tool-using agent, the evaluation, and the integrations (a GitHub
+> Action that comments on pull requests, and a git pre-push hook) are complete. The overseer
+> (a larger model for a deeper second look) is an opt-in `--deep` tool; automatic use didn't
+> pay for itself in evaluation. See [Roadmap](#roadmap) and the
+> [design writeup](docs/WRITEUP.md).
+
+**See it in 60 seconds:** `asciinema play demo/watchman.cast` (a 50 second recording), or run
+`demo/demo.sh` yourself. It builds a throwaway project, has an "AI agent" add a hallucinated
+import, a leaked token, a bare `except`, and a skipped test, and shows Watchman catching them
+and a pre-push hook rejecting the push. The deterministic part needs no API key.
 
 ## Install
 
@@ -27,6 +33,14 @@ uv run watchman --help
 Optional but recommended: Docker, used as the sandbox for running the reviewed repo's
 tests. Without Docker, Watchman falls back to a local subprocess and cuts off its network
 access with `unshare` where the kernel allows it.
+
+Check the install by reviewing any branch of any git repository. The deterministic layer is
+free and needs no API key:
+
+```bash
+cd /path/to/some/repo      # a repository with a branch to review
+uv run --project /path/to/watchman watchman review --base main --head HEAD
+```
 
 ## Quick start
 
@@ -93,6 +107,87 @@ test_command = ["{python}", "-m", "pytest", "-q", "-m", "not network"]
 [budget]
 max_tool_calls = 15        # repo config may only *lower* budgets
 ```
+
+## Use it in CI (GitHub Action)
+
+Watchman reviews every pull request and posts **one comment that it updates in place** on each
+push. Add `.github/workflows/watchman.yml` (also in [`examples/workflows`](examples/workflows)):
+
+```yaml
+name: Watchman
+on: pull_request            # not pull_request_target (see below)
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0    # Watchman needs history to find the merge base
+      - uses: akruppSC/watchman@main   # pin a tag or commit
+        with:
+          mode: agent
+          model: google/gemini-3.7-flash
+          api-key: ${{ secrets.OPENROUTER_API_KEY }}
+```
+
+With no `api-key` and the default `mode: deterministic`, it runs the free Layer 1 checks only.
+
+| Input | Default | |
+|---|---|---|
+| `mode` | `deterministic` | `deterministic`, `agent`, `baseline`, `agent_no_l1` |
+| `model`, `provider` | config / `openrouter` | LLM modes only |
+| `api-key` | | From a secret. Not needed for `deterministic` |
+| `checks` | all | Comma-separated Layer 1 checks, e.g. skip `pytest` if CI already runs it |
+| `deep` | `false` | Also run the overseer (a larger model). Costs more |
+| `fail-on` | `block` | Fail the job at `block`, `warn`, or `never` |
+| `strict` | `false` | Also fail the job if the review is incomplete (a model call failed) |
+| `comment` | `true` | Post or update the PR comment |
+
+Outputs: `verdict`, `findings`, `incomplete`, `cost-usd`, `json-path`, `markdown-path`,
+`comment-url`. The result is also written to the job summary.
+
+How it handles the awkward cases:
+
+- **Fork PRs** have no secrets and a read-only token. Watchman falls back to the free Layer 1
+  checks, notes why in the comment, and if it can't comment it writes the job summary instead of
+  failing the run.
+- **The PR is untrusted input.** Use the `pull_request` event only. `pull_request_target` would
+  hand a secret-bearing token to code from the PR. The PR's title and body become the review's
+  task text and are wrapped as untrusted data. Everything a model wrote is sanitized before it
+  goes into a public comment: HTML is escaped, `@mentions` and `#123` references can't ping or
+  link, markdown links and bare URLs are made inert, and the comment marker can't be forged.
+- **The comment is found by marker and by bot authorship**, so a person who pastes the marker
+  into their own comment can't get Watchman to edit it.
+- **Action inputs reach the shell only as environment variables**, never interpolated into
+  script text.
+- **A model failure doesn't look like a pass.** An incomplete review says so in the comment,
+  and fails the job only with `strict: true`.
+
+The repository's own [`watchman.yml`](.github/workflows/watchman.yml) is the action reviewing
+Watchman's pull requests. The workflow files are linted with
+[actionlint](https://github.com/rhysd/actionlint), and `tests/test_ci.py` exercises the comment
+logic against a mocked GitHub API. The action itself has not yet run on GitHub: check the first
+run's logs before relying on it.
+
+## Use it as a git pre-push hook
+
+```bash
+uv run watchman hook install                 # fast checks, no LLM, no API key
+uv run watchman hook install --mode agent    # also run the LLM reviewer (costs a little)
+uv run watchman hook install --with-tests    # also run the project's tests (slow)
+uv run watchman hook status
+uv run watchman hook uninstall
+```
+
+On `git push`, the hook reviews the commits being pushed (against the remote branch if it
+exists, otherwise against `origin/main`) and **blocks the push only when the verdict is BLOCK**.
+Tool errors, an incomplete review, tags, and branch deletions never block. Skip it once with
+`git push --no-verify` or `WATCHMAN_SKIP=1 git push`. It respects `core.hooksPath` and
+won't replace someone else's pre-push hook without `--force` (the old one is kept and restored on
+uninstall).
 
 ## How it works
 
@@ -426,7 +521,7 @@ uv run pytest -m docker          # tests that need a docker daemon
 2. ✅ Agent: tool-using loop with budgets, pitfall rules, and evidence-ref grounding
 3. ✅ Evals: frozen datasets A/B/C, ablations, precision tuning
 3b. ✅ Overseer: a larger model for a deeper second look, opt-in via `--deep` (automatic use evaluated and rejected)
-4. Integration: GitHub Action and PR comment, pre-push hook, writeup, demo
+4. ✅ Integration: GitHub Action with an updatable PR comment, pre-push hook, demo recording, [writeup](docs/WRITEUP.md)
 5. Live mode: supervising an OpenCode worker at checkpoints
 
 ## Design decisions
@@ -542,9 +637,15 @@ uv run pytest -m docker          # tests that need a docker daemon
 - The agent sometimes restates one defect under two categories. Findings that overlap on the
   same lines are collapsed, but a restatement a few lines away under a different category is
   kept, because collapsing those lost a real SQL injection once.
-- The `pytest` check can't run on roughly half of real repositories: their test dependencies
-  are declared as dependency groups, which the sandbox install doesn't read. That is reported as
-  an `error` status (never as a finding), and the agent's `run_tests` tool has the same gap.
+- The `pytest` check's dependency install is best-effort. Before milestone 4 it failed on about
+  half of the real reviews in the evaluation, for three separate reasons: `pip install -e
+  '.[test]'` exits 0 when a project has no `test` extra (so the `tests` extra was never tried),
+  setuptools-scm and hatch-vcs projects can't derive a version inside the container, and PEP 735
+  dependency groups were never read. All three are fixed (Docker sandbox), and a flood of
+  failures is now compared against the whole base suite instead of being blamed on the change.
+  **The evaluation numbers above predate those fixes**, so they understate Layer 1 on real
+  repositories; they were not re-run. The subprocess fallback sandbox still installs nothing, and
+  a project whose tests need system libraries or a service will still report `error`.
 - The agent's `escalations` channel (hand a question to the overseer) went unused by Gemini
   Flash in evaluation, so in practice the overseer works from the primary's findings and the diff.
 - Model behavior varies run to run, even at temperature 0 with a fixed seed. Use the

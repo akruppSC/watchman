@@ -86,3 +86,64 @@ def test_docker_has_no_network(tmp_path: Path) -> None:
     )
     res = sb.run(["python", "-c", code], tmp_path, timeout=120)
     assert res.stdout.strip() == "blocked", res.combined
+
+
+@pytest.mark.docker
+def test_docker_installs_test_dependency_groups(tmp_path: Path) -> None:
+    """PEP 735 dependency groups (attrs, click, ...) hold test-only dependencies that an
+    extras-based install can't see; without them pytest dies collecting `import hypothesis`."""
+    if not docker_available():
+        pytest.skip("docker unavailable")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo"\nversion = "0"\ndependencies = []\n'
+        '[dependency-groups]\ntests = ["iniconfig"]\ndocs = ["not-a-real-pkg-xyz"]\n'
+    )
+    (tmp_path / "test_demo.py").write_text(
+        "import iniconfig\n\n\ndef test_group_dependency_is_importable():\n"
+        "    assert iniconfig.__name__ == 'iniconfig'\n"
+    )
+    sb = DockerSandbox("python:3.12-slim")
+    py = sb.python(tmp_path, tmp_path)
+    res = sb.run([*py, "-m", "pytest", "-q", "-p", "no:cacheprovider"], tmp_path, timeout=120)
+    assert res.ok, res.combined[-800:]
+
+
+@pytest.mark.docker
+def test_docker_installs_a_tests_extra_even_when_there_is_no_test_extra(tmp_path: Path) -> None:
+    """`pip install -e '.[test]'` warns and succeeds when the extra doesn't exist, so a
+    project whose extra is called `tests` used to get no test dependencies at all."""
+    if not docker_available():
+        pytest.skip("docker unavailable")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo"\nversion = "0"\ndependencies = []\n'
+        '[project.optional-dependencies]\ntests = ["iniconfig"]\ndocs = ["not-a-real-pkg-xyz"]\n'
+    )
+    (tmp_path / "test_demo.py").write_text(
+        "import iniconfig\n\n\ndef test_ok():\n    assert iniconfig\n"
+    )
+    sb = DockerSandbox("python:3.12-slim")
+    res = sb.run([*sb.python(tmp_path, tmp_path), "-m", "pytest", "-q"], tmp_path, timeout=120)
+    assert res.ok, res.combined[-800:]
+
+
+@pytest.mark.docker
+def test_docker_installs_vcs_versioned_projects(tmp_path: Path) -> None:
+    """attrs/click/httpx-style projects derive their version from git, which doesn't exist
+    inside the container. Without a pretend version their editable install fails outright."""
+    if not docker_available():
+        pytest.skip("docker unavailable")
+    pkg = tmp_path / "vcsdemo"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("X = 1\n")
+    (tmp_path / "pyproject.toml").write_text(
+        '[build-system]\nrequires = ["setuptools>=64", "setuptools-scm>=8"]\n'
+        'build-backend = "setuptools.build_meta"\n'
+        '[project]\nname = "vcsdemo"\ndynamic = ["version"]\n'
+        '[tool.setuptools_scm]\n[tool.setuptools]\npackages = ["vcsdemo"]\n'
+    )
+    (tmp_path / "test_demo.py").write_text(
+        "import vcsdemo\n\n\ndef test_ok():\n    assert vcsdemo.X == 1\n"
+    )
+    sb = DockerSandbox("python:3.12-slim")
+    res = sb.run([*sb.python(tmp_path, tmp_path), "-m", "pytest", "-q"], tmp_path, timeout=120)
+    assert res.ok, res.combined[-800:]

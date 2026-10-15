@@ -285,6 +285,21 @@ def test_many_failing_tests_in_a_file_become_one_finding(git_repo: Path) -> None
     assert by_file["test_one.py"].summary == "Test fails: test_one.py::test_x"
 
 
+def test_a_flood_of_preexisting_failures_is_compared_with_the_whole_base_suite(
+    git_repo: Path,
+) -> None:
+    # More failures than MAX_BASE_RECHECK: they used to be blamed on the change wholesale.
+    broken = "".join(f"def test_old_{i}():\n    assert False\n\n\n" for i in range(40))
+    branch_change(
+        git_repo,
+        {"test_old.py": broken, "a.py": ""},
+        {"a.py": "x = 1\n", "test_new.py": "def test_new():\n    assert 1 == 2\n"},
+    )
+    res = run_check(TestsCheck(), make_ctx(git_repo, sandbox=SubprocessSandbox()))
+    assert [f.file for f in res.findings] == ["test_new.py"]
+    assert "40 also fail at merge-base" in res.summary
+
+
 def test_pytest_custom_command_python_placeholder(git_repo: Path) -> None:
     cfg = Config()
     cfg.review.test_command = ["{python}", "-m", "pytest", "-q", "-k", "not slow"]

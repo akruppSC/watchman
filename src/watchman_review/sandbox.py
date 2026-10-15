@@ -172,6 +172,21 @@ def docker_available() -> bool:
     return r.returncode == 0
 
 
+# What to install so the project's tests can import their dependencies. Test-ish extras and
+# PEP 735 dependency groups are preferred in this order; `dev` is the fallback because it is
+# often much heavier (docs, build tools). pip exits 0 for an extra that doesn't exist, so
+# asking for `.[test]` blindly can't be used to probe: read pyproject.toml instead.
+_PROBE_PY = (
+    "import tomllib; d = tomllib.load(open('pyproject.toml', 'rb'))\n"
+    "pick = lambda names: next(([n] for t in (('test', 'tests', 'testing'), ('dev',)) "
+    "for n in t if n in names), [])\n"
+    "extras = pick(d.get('project', {}).get('optional-dependencies', {}))\n"
+    "groups = pick(d.get('dependency-groups', {}))\n"
+    "print(','.join(extras)); print(' '.join('--group ' + g for g in groups))"
+)
+GROUP_PROBE = f'python -c "{_PROBE_PY}"'
+
+
 class DockerSandbox(Sandbox):
     """Runs each command in a fresh container with the workdir mounted at /work.
 
@@ -200,6 +215,10 @@ class DockerSandbox(Sandbox):
             "--cap-drop", "ALL",
             "--user", f"{os.getuid()}:{os.getgid()}",
             "-e", "HOME=/tmp", "-e", "PYTHONDONTWRITEBYTECODE=1", "-e", "NO_COLOR=1",
+            # The snapshot's .git points at a host path that doesn't exist in the container, so
+            # setuptools-scm/hatch-vcs projects (attrs, click, ...) can't derive a version and
+            # their editable install fails before installing any dependency.
+            "-e", "SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+watchman",
             "-v", f"{workdir.resolve()}:/work", "-w", "/work",
             self.image, *argv,
         ]  # fmt: skip
@@ -219,14 +238,28 @@ class DockerSandbox(Sandbox):
     def python(self, workdir: Path, repo_root: Path) -> list[str]:
         if workdir in self._prepared:
             return [f"{self.VENV}/bin/python"]
-        script = (
-            f"python -m venv {self.VENV} && . {self.VENV}/bin/activate && "
-            "pip install -q pytest && "
-            "if [ -f pyproject.toml ] || [ -f setup.py ]; then "
-            "  pip install -q -e '.[test]' 2>/dev/null || pip install -q -e '.[tests]' "
-            "  2>/dev/null || pip install -q -e . ; fi && "
-            "for r in requirements*.txt requirements/*.txt; do "
-            '  [ -f "$r" ] && pip install -q -r "$r"; done; true'
+        script = "\n".join(
+            [
+                f"python -m venv {self.VENV} && . {self.VENV}/bin/activate || exit 1",
+                "pip install -q -U pip pytest",
+                "if [ -f pyproject.toml ]; then",
+                f"  probe=$({GROUP_PROBE} 2>/dev/null)",
+                '  extras=$(printf "%s" "$probe" | sed -n 1p)',
+                '  groups=$(printf "%s" "$probe" | sed -n 2p)',
+                "else extras=; groups=; fi",
+                "if [ -f pyproject.toml ] || [ -f setup.py ]; then",
+                '  if [ -n "$extras" ]; then',
+                '    pip install -q -e ".[$extras]" || pip install -q -e .',
+                "  else",
+                "    pip install -q -e .",
+                "  fi",
+                "fi",
+                '[ -n "$groups" ] && pip install -q $groups',
+                "for r in requirements*.txt requirements/*.txt; do",
+                '  [ -f "$r" ] && pip install -q -r "$r"',
+                "done",
+                "true",
+            ]
         )
         name = f"watchman-setup-{uuid.uuid4().hex[:12]}"
         res = _run_process(

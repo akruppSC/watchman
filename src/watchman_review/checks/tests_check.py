@@ -119,15 +119,22 @@ class TestsCheck(Check):
         return self.result(status, summary, findings, out)
 
     def _fails_at_base(self, ctx: CheckContext, failures: list[Failure]) -> set[str]:
-        """Node IDs that exist and also fail at the merge-base."""
-        if not failures or not ctx.diff.merge_base or len(failures) > MAX_BASE_RECHECK:
+        """Node IDs that also fail at the merge-base, so they aren't blamed on the change.
+
+        Few failures: re-run just those tests at the base. Many (a flood usually means an
+        environment problem, not a code one): re-run the whole suite at the base once, since
+        skipping the comparison would blame every one of them on the change.
+        """
+        if not failures or not ctx.diff.merge_base:
             return set()
+        whole_suite = len(failures) > MAX_BASE_RECHECK
         try:
             with snapshot(ctx.repo_root, ctx.diff.merge_base) as base_tree:
-                present = [f for f in failures if (base_tree / f.path).is_file()]
+                present = [f for f in failures if (base_tree / f.path).exists()]
                 if not present:
                     return set()
-                res = run_pytest(ctx, base_tree, [f.node_id for f in present])
+                selector = None if whole_suite else [f.node_id for f in present]
+                res = run_pytest(ctx, base_tree, selector)
                 if res.timed_out:
                     return set()
                 base_failed = {f.node_id for f in parse_failures(res.combined)}
