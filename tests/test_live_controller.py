@@ -257,3 +257,30 @@ def test_unknown_kind_and_state_survive_corruption(repo: Path) -> None:
     run(repo, rev)
     st.state_path(repo, "default").write_text("{not json")
     assert run(repo, rev).round == 1  # corrupt state restarts rather than crashing
+
+
+def test_a_finding_shown_at_the_commit_is_not_new_again_at_done(repo: Path) -> None:
+    rev = FakeReviewer()
+    write(repo, "a.py", "x = BAD_MAJOR\n")
+    first = run(repo, rev, kind="commit")
+    assert [f.state for f in first.new] == ["new"]
+    done = run(repo, rev, kind="done")
+    assert done.new == [] and [f.state for f in done.open] == ["open"]
+    assert done.open[0].since_round == 1  # remembers when the worker first saw it
+    assert done.round == 1  # but the done episode still counts its own rounds
+
+
+def test_a_cheap_checkpoint_does_not_mark_the_other_scopes_findings_fixed(repo: Path) -> None:
+    class ScopedReviewer(FakeReviewer):
+        def __call__(self, repo: Path, opts: ReviewOptions, cfg: Config | None) -> ReviewResult:
+            res = super().__call__(repo, opts, cfg)
+            if opts.mode is ReviewMode.DETERMINISTIC:  # the cheap review can't see LLM findings
+                res = res.model_copy(update={"findings": []})
+            return res
+
+    rev = ScopedReviewer()
+    write(repo, "a.py", "x = BAD_MAJOR\n")
+    run(repo, rev, kind="commit")
+    cheap = run(repo, rev, kind="test_run")
+    assert cheap.fixed == 0  # it found nothing, but that doesn't mean the commit finding is fixed
+    assert run(repo, rev, kind="commit").status == "unchanged"

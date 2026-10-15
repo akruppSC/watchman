@@ -76,3 +76,33 @@ def test_snapshot_is_stable_while_the_worker_keeps_editing(repo: Path) -> None:
     sha = snapshot_commit(repo)
     (repo / "a.py").write_text("x = 3  # edited after the snapshot\n")
     assert git(repo, "show", f"{sha}:a.py") == "x = 2\n"
+
+
+def test_snapshot_works_when_watchmans_directory_is_git_ignored(repo: Path) -> None:
+    """The installer hides .watchman/ via .git/info/exclude; git add must not choke on it."""
+    exclude = repo / ".git" / "info" / "exclude"
+    exclude.parent.mkdir(exist_ok=True)
+    exclude.write_text(".watchman/\n.opencode/plugins/watchman.js\n")
+    (repo / ".watchman").mkdir()
+    (repo / ".watchman" / "state.json").write_text("{}")
+    (repo / "a.py").write_text("x = 5\n")
+    sha = snapshot_commit(repo)
+    assert changed_since(repo, "HEAD", sha) == ["a.py"]
+
+
+def test_snapshot_drops_watchman_files_even_when_they_are_not_ignored(repo: Path) -> None:
+    (repo / ".watchman").mkdir()
+    (repo / ".watchman" / "state.json").write_text("{}")
+    (repo / "a.py").write_text("x = 5\n")
+    assert changed_since(repo, "HEAD", snapshot_commit(repo)) == ["a.py"]
+
+
+def test_the_same_tree_always_yields_the_same_snapshot(repo: Path) -> None:
+    import time
+
+    (repo / "a.py").write_text("x = 2\n")
+    first = snapshot_commit(repo)
+    time.sleep(1.1)  # a timestamped commit would differ across a second boundary
+    assert snapshot_commit(repo) == first
+    (repo / "a.py").write_text("x = 3\n")
+    assert snapshot_commit(repo) != first

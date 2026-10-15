@@ -19,6 +19,9 @@ dependencies = [
 
 [project.optional-dependencies]
 keyring = ["keyring>=25"]
+live = [
+    "mcp>=2.3.0",
+]
 
 [project.scripts]
 watchman = "watchman_review.cli:app"

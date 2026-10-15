@@ -17,13 +17,13 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from watchman_review.config import Config, LivePolicy, load_config
+from watchman_review.config import Config, LivePolicy
 from watchman_review.gitutil import GitError
 from watchman_review.live import state as st
 from watchman_review.live.dedupe import finding_key
 from watchman_review.live.feedback import Feedback, LiveFinding
 from watchman_review.live.snapshot import _git, head_sha, snapshot_commit
-from watchman_review.review import ReviewError, ReviewOptions, run_review
+from watchman_review.review import ReviewError, ReviewOptions, load_review_config, run_review
 from watchman_review.schema import Finding, ReviewMode, ReviewResult, Severity, Verdict
 
 KINDS = ("test_run", "commit", "done")
@@ -144,10 +144,6 @@ def check(
     """Review a snapshot of the worker's tree at a checkpoint and return terse feedback."""
     if kind not in KINDS:
         raise LiveError(f"unknown checkpoint kind {kind!r}; use one of {', '.join(KINDS)}")
-    cfg = cfg or load_config(repo)[0]
-    pol = policy or cfg.live.policy
-    cap = cfg.live.round_cap
-
     with st.locked(repo, session) as state:
         if task:
             state.task = task
@@ -155,6 +151,11 @@ def check(
             state.base = _git(repo, "rev-parse", "--verify", f"{base}^{{commit}}")
         if state.base is None:
             state.base = _default_base(repo) or head_sha(repo)
+        # The repo's own .watchman.toml comes from the base revision, never from the worker's
+        # working tree: a worker must not be able to loosen its own review.
+        cfg = cfg or load_review_config(repo, state.base or "HEAD")[0]
+        pol = policy or cfg.live.policy
+        cap = cfg.live.round_cap
         ep = state.episode(kind)
 
         def done(fb: Feedback) -> Feedback:
@@ -193,9 +194,15 @@ def check(
         order = sorted(shown, key=lambda f: (-f.severity.rank, f.file or "", f.line_start))
         keyed = [(finding_key(f, read), f) for f in order]
         current = {k for k, _ in keyed}
+        # "Fixed" is judged within this checkpoint's own review scope (a cheap test-run review
+        # can't see what an agent review found). "Already shown" is judged across all of the
+        # session's checkpoints, so a problem flagged at the commit isn't announced as new again
+        # when the worker says it is done.
         fixed = [k for k in ep.seen if k not in current]
-        new_items = [(k, f) for k, f in keyed if k not in ep.seen]
-        open_items = [(k, f) for k, f in keyed if k in ep.seen]
+        known = {k: v for other in state.episodes.values() for k, v in other.seen.items()}
+        known.update(ep.seen)
+        new_items = [(k, f) for k, f in keyed if k not in known]
+        open_items = [(k, f) for k, f in keyed if k in known]
 
         round_no = ep.round + 1 if ep.status == "open" else 1
         has_open = bool(keyed)
@@ -207,7 +214,7 @@ def check(
         budget = cfg.live.max_findings_shown
         fb.new = [_live(f, k, "new", round_no) for k, f in new_items][:budget]
         room = max(0, budget - len(fb.new))
-        fb.open = [_live(f, k, "open", ep.seen[k].round) for k, f in open_items][:room]
+        fb.open = [_live(f, k, "open", known[k].round) for k, f in open_items][:room]
         fb.hidden = len(keyed) - len(fb.new) - len(fb.open)
 
         if not has_open:
@@ -217,6 +224,8 @@ def check(
             ep.status, ep.round = "open", round_no
             for k in fixed:
                 ep.seen.pop(k, None)
+            for k, _ in open_items:
+                ep.seen.setdefault(k, known[k])
             for k, f in new_items:
                 loc = f"{f.file}:{f.line_start}" if f.file else "(change)"
                 ep.seen[k] = st.Seen(

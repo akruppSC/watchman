@@ -318,7 +318,12 @@ def live_check(
         raise typer.Exit(EXIT_ERROR) from e
     if inbox:
         live.write_inbox(root, session, fb)
-    typer.echo(fb.model_dump_json(indent=2) if as_json else fb.render())
+    if as_json:
+        import json
+
+        typer.echo(json.dumps({**fb.model_dump(mode="json"), "text": fb.render()}, indent=2))
+    else:
+        typer.echo(fb.render())
 
 
 @live_app.command("status")
@@ -346,6 +351,76 @@ def live_status(session: SessionOpt = "default", repo: RepoOpt = Path(".")) -> N
             )
     cost = sum(h.cost_usd for h in state.history)
     typer.echo(f"  {len(state.history)} review(s), ${cost:.4f} spent")
+
+
+@live_app.command("mcp")
+def live_mcp(
+    session: SessionOpt = "mcp",
+    repo: RepoOpt = Path("."),
+) -> None:
+    """Serve the get_review_feedback tool over MCP (stdio). Needs the `live` extra."""
+    try:
+        from watchman_review.live.mcp_server import serve
+    except ImportError as e:  # pragma: no cover - depends on the environment
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    try:
+        root = repo_root(repo.resolve())
+    except GitError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    try:
+        serve(root, session)
+    except ModuleNotFoundError as e:
+        err.print(
+            f"[red]error:[/red] the MCP SDK is missing ({e.name}). Run `uv sync --extra live`."
+        )
+        raise typer.Exit(EXIT_ERROR) from e
+
+
+@live_app.command("install-opencode")
+def live_install_opencode(
+    policy: Annotated[
+        LivePolicy, typer.Option(help="advisory: feedback only. blocking: stop a BLOCK commit.")
+    ] = LivePolicy.ADVISORY,
+    done: Annotated[
+        bool, typer.Option(help="Also review when the session goes idle ('done').")
+    ] = True,
+    mcp: Annotated[
+        bool, typer.Option(help="Also register the get_review_feedback MCP tool.")
+    ] = False,
+    repo: RepoOpt = Path("."),
+) -> None:
+    """Install the Watchman plugin (and optionally the MCP tool) for OpenCode in this repo."""
+    from watchman_review.live import opencode
+
+    try:
+        root = repo_root(repo.resolve())
+        cfg, _ = load_config(root)
+        written = opencode.install(
+            root, policy=policy, round_cap=cfg.live.round_cap, done=done, mcp=mcp
+        )
+    except (GitError, ConfigError) as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    for p in written:
+        typer.echo(f"wrote {p}")
+    typer.echo(
+        "hidden from git via .git/info/exclude; undo with `watchman live uninstall-opencode`"
+    )
+
+
+@live_app.command("uninstall-opencode")
+def live_uninstall_opencode(repo: RepoOpt = Path(".")) -> None:
+    """Remove the Watchman plugin and MCP entry for OpenCode from this repo."""
+    from watchman_review.live import opencode
+
+    try:
+        removed = opencode.uninstall(repo_root(repo.resolve()))
+    except GitError as e:
+        err.print(f"[red]error:[/red] {e}")
+        raise typer.Exit(EXIT_ERROR) from e
+    typer.echo("\n".join(f"removed {p}" for p in removed) or "nothing to remove")
 
 
 @live_app.command("reset")

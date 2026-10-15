@@ -28,6 +28,10 @@ _IDENTITY = {
     "GIT_AUTHOR_EMAIL": "watchman@localhost",
     "GIT_COMMITTER_NAME": "watchman",
     "GIT_COMMITTER_EMAIL": "watchman@localhost",
+    # A fixed date makes the snapshot a pure function of (tree, parent): the same working tree
+    # always yields the same sha, which is how "nothing changed since the last review" is known.
+    "GIT_AUTHOR_DATE": "2000-01-01T00:00:00+0000",
+    "GIT_COMMITTER_DATE": "2000-01-01T00:00:00+0000",
 }
 
 
@@ -65,8 +69,12 @@ def snapshot_commit(repo: Path, *, message: str = "watchman snapshot") -> str:
     with tempfile.TemporaryDirectory(prefix="watchman-index-") as tmp:
         env = {**_IDENTITY, "GIT_INDEX_FILE": str(Path(tmp) / "index")}
         _git(repo, "read-tree", "HEAD", env=env)  # start from HEAD so deletions show up
-        excludes = [f":(exclude){p}" for p in ARTIFACT_EXCLUDES]
-        _git(repo, "add", "-A", "--", ".", *excludes, env=env)
+        _git(repo, "add", "-A", "--", ".", env=env)
+        # Drop our own files from the throwaway index afterwards. An exclude pathspec on
+        # `git add` would make git fail outright when those paths are ignored (they are,
+        # via .git/info/exclude, once the integration is installed).
+        for artifact in ARTIFACT_EXCLUDES:
+            _git(repo, "rm", "-r", "--cached", "-q", "--ignore-unmatch", artifact, env=env)
         tree = _git(repo, "write-tree", env=env)
         if tree == _git(repo, "rev-parse", "HEAD^{tree}"):
             return head
