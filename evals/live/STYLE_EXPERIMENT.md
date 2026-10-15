@@ -60,3 +60,16 @@ excluded. 9 pairs can only show a large effect, so read the counts.
 - One worker model, one reviewer model, three tasks, three trials. Small n: counts, not significance.
 - The style mode and its dev-split false-positive measurement are developed before this run, on the
   dev split of the diff-review datasets only; the vague tasks are not used for tuning.
+
+## Amendment before the full run (after a one-task smoke run, results not used)
+
+A smoke run (`vague_notes`, one trial per arm; its records are replaced by the full run's) exposed
+two things in the style mode, both fixed before the full run:
+
+- A false positive: `__main__.py` was flagged as a badly named module. Fixed.
+- pylint's most frequent message on worker code was `line-too-long` (Google's 80 columns, §3.2), which the
+  mode did not check. A line-length rule (80 columns, not for imports, URLs or one-token lines; one aggregated finding per file) was added.
+  This makes the check overlap with part of the primary pylint metric, so the independent-tool argument
+  is weaker for that one message. The report lists pylint messages by symbol so this is visible.
+
+Hypotheses, tasks, trial counts and the analysis plan are unchanged.

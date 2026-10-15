@@ -1,13 +1,13 @@
 {
-  "run_id": "20261015T194717-reverted-v1-dev-deterministic",
-  "started_at": "2026-10-15T19:47:17.321054+00:00",
+  "run_id": "20261015T195909-reverted-v1-dev-deterministic",
+  "started_at": "2026-10-15T19:59:09.910268+00:00",
   "dataset": "reverted-v1",
   "dataset_sha256": "35adc8e1c8624d4e111d66bcad93fff84723a4af0fb1d3b7d1430e8a8a067006",
   "dataset_frozen": true,
   "split": "dev",
   "mode": "deterministic",
   "model": null,
-  "watchman_commit": "aa29297-dirty",
+  "watchman_commit": "aa67f5c-dirty",
   "review_config": {
     "checks": [
       "google_style"
@@ -37,7 +37,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.435,
+        "latency_s": 0.319,
         "tool_calls": 0,
         "error": null
       },
@@ -54,7 +54,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.262,
+            "duration_s": 0.228,
             "findings": [],
             "output_excerpt": ""
           }
@@ -68,7 +68,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.435,
+        "latency_s": 0.319,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -88,7 +88,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.428,
+        "latency_s": 0.392,
         "tool_calls": 0,
         "error": null
       },
@@ -105,7 +105,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.345,
+            "duration_s": 0.28,
             "findings": [],
             "output_excerpt": ""
           }
@@ -119,7 +119,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.428,
+        "latency_s": 0.392,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -139,7 +139,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.376,
+        "latency_s": 0.318,
         "tool_calls": 0,
         "error": null
       },
@@ -156,7 +156,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.098,
+            "duration_s": 0.094,
             "findings": [],
             "output_excerpt": ""
           }
@@ -170,7 +170,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.376,
+        "latency_s": 0.318,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -190,7 +190,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.43,
+        "latency_s": 0.391,
         "tool_calls": 0,
         "error": null
       },
@@ -207,7 +207,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.361,
+            "duration_s": 0.338,
             "findings": [],
             "output_excerpt": ""
           }
@@ -221,7 +221,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.43,
+        "latency_s": 0.391,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -241,7 +241,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.066,
+        "latency_s": 0.088,
         "tool_calls": 0,
         "error": null
       },
@@ -258,7 +258,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.01,
+            "duration_s": 0.009,
             "findings": [],
             "output_excerpt": ""
           }
@@ -272,7 +272,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.066,
+        "latency_s": 0.088,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -292,7 +292,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.086,
+        "latency_s": 0.082,
         "tool_calls": 0,
         "error": null
       },
@@ -309,7 +309,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.032,
+            "duration_s": 0.038,
             "findings": [],
             "output_excerpt": ""
           }
@@ -323,7 +323,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.086,
+        "latency_s": 0.082,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -343,7 +343,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.376,
+        "latency_s": 0.346,
         "tool_calls": 0,
         "error": null
       },
@@ -360,7 +360,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.312,
+            "duration_s": 0.284,
             "findings": [],
             "output_excerpt": ""
           }
@@ -374,7 +374,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.376,
+        "latency_s": 0.346,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -394,7 +394,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.251,
+        "latency_s": 0.305,
         "tool_calls": 0,
         "error": null
       },
@@ -411,7 +411,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.187,
+            "duration_s": 0.17,
             "findings": [],
             "output_excerpt": ""
           }
@@ -425,7 +425,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.251,
+        "latency_s": 0.305,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -445,7 +445,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.467,
+        "latency_s": 0.583,
         "tool_calls": 0,
         "error": null
       },
@@ -462,7 +462,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.396,
+            "duration_s": 0.408,
             "findings": [],
             "output_excerpt": ""
           }
@@ -476,7 +476,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.467,
+        "latency_s": 0.583,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -492,11 +492,17 @@
         "item_id": "click-revert-955ca492",
         "kind": "reverted",
         "n_defects": 1,
-        "n_findings": 0,
-        "matches": [],
+        "n_findings": 1,
+        "matches": [
+          {
+            "defect_index": 0,
+            "finding_id": "f61876f3c581",
+            "category_match": false
+          }
+        ],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.566,
+        "latency_s": 0.574,
         "tool_calls": 0,
         "error": null
       },
@@ -505,16 +511,54 @@
         "mode": "deterministic",
         "base": "base",
         "head": "head",
-        "verdict": "pass",
-        "findings": [],
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "f61876f3c581",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2786,
+            "line_end": 2786,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2786: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
         "checks": [
           {
             "id": "check:google_style",
             "name": "google_style",
-            "status": "passed",
-            "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.352,
-            "findings": [],
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.412,
+            "findings": [
+              {
+                "id": "f61876f3c581",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2786,
+                "line_end": 2786,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2786: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
             "output_excerpt": ""
           }
         ],
@@ -527,7 +571,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.566,
+        "latency_s": 0.574,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -547,7 +591,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.341,
+        "latency_s": 0.351,
         "tool_calls": 0,
         "error": null
       },
@@ -564,7 +608,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.269,
+            "duration_s": 0.291,
             "findings": [],
             "output_excerpt": ""
           }
@@ -578,7 +622,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.341,
+        "latency_s": 0.351,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -598,7 +642,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.27,
+        "latency_s": 0.33,
         "tool_calls": 0,
         "error": null
       },
@@ -615,7 +659,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.115,
+            "duration_s": 0.136,
             "findings": [],
             "output_excerpt": ""
           }
@@ -629,7 +673,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.27,
+        "latency_s": 0.33,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -649,7 +693,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.203,
+        "latency_s": 0.23,
         "tool_calls": 0,
         "error": null
       },
@@ -666,7 +710,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.084,
+            "duration_s": 0.108,
             "findings": [],
             "output_excerpt": ""
           }
@@ -680,7 +724,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.203,
+        "latency_s": 0.23,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -700,7 +744,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.258,
+        "latency_s": 0.268,
         "tool_calls": 0,
         "error": null
       },
@@ -717,7 +761,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.183,
+            "duration_s": 0.198,
             "findings": [],
             "output_excerpt": ""
           }
@@ -731,7 +775,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.258,
+        "latency_s": 0.268,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -751,7 +795,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.119,
+        "latency_s": 0.21,
         "tool_calls": 0,
         "error": null
       },
@@ -768,7 +812,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.029,
+            "duration_s": 0.026,
             "findings": [],
             "output_excerpt": ""
           }
@@ -782,7 +826,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.119,
+        "latency_s": 0.21,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -802,7 +846,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.126,
+        "latency_s": 0.131,
         "tool_calls": 0,
         "error": null
       },
@@ -819,7 +863,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.063,
+            "duration_s": 0.069,
             "findings": [],
             "output_excerpt": ""
           }
@@ -833,7 +877,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.126,
+        "latency_s": 0.131,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -853,7 +897,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.589,
+        "latency_s": 0.757,
         "tool_calls": 0,
         "error": null
       },
@@ -870,7 +914,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.484,
+            "duration_s": 0.559,
             "findings": [],
             "output_excerpt": ""
           }
@@ -884,7 +928,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.589,
+        "latency_s": 0.757,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -904,7 +948,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.595,
+        "latency_s": 0.684,
         "tool_calls": 0,
         "error": null
       },
@@ -921,7 +965,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.509,
+            "duration_s": 0.432,
             "findings": [],
             "output_excerpt": ""
           }
@@ -935,7 +979,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.595,
+        "latency_s": 0.684,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -955,7 +999,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.884,
+        "latency_s": 0.67,
         "tool_calls": 0,
         "error": null
       },
@@ -972,7 +1016,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.575,
+            "duration_s": 0.366,
             "findings": [],
             "output_excerpt": ""
           }
@@ -986,7 +1030,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.884,
+        "latency_s": 0.67,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1006,7 +1050,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.724,
+        "latency_s": 0.615,
         "tool_calls": 0,
         "error": null
       },
@@ -1023,7 +1067,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.63,
+            "duration_s": 0.356,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1037,7 +1081,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.724,
+        "latency_s": 0.615,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1057,7 +1101,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.5,
+        "latency_s": 0.499,
         "tool_calls": 0,
         "error": null
       },
@@ -1074,7 +1118,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.393,
+            "duration_s": 0.407,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1088,7 +1132,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.5,
+        "latency_s": 0.499,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],
@@ -1108,7 +1152,7 @@
         "matches": [],
         "false_positive_ids": [],
         "cost_usd": 0.0,
-        "latency_s": 0.544,
+        "latency_s": 0.507,
         "tool_calls": 0,
         "error": null
       },
@@ -1125,7 +1169,7 @@
             "name": "google_style",
             "status": "passed",
             "summary": "no departure from the Google Python Style Guide that the check can detect",
-            "duration_s": 0.496,
+            "duration_s": 0.444,
             "findings": [],
             "output_excerpt": ""
           }
@@ -1139,7 +1183,7 @@
           "cached_input_tokens": 0,
           "cost_usd": 0.0
         },
-        "latency_s": 0.544,
+        "latency_s": 0.507,
         "dropped_findings": 0,
         "warnings": [],
         "tool_trace": [],

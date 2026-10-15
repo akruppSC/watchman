@@ -165,3 +165,27 @@ def test_pascal_case_aliases_and_stub_annotated_modules_are_left_alone(git_repo:
         git_repo, BASE, {"app/m.py": body, "app/m.pyi": "def load(path: str) -> str: ...\n"}
     )
     assert run(git_repo).findings == []
+
+
+def test_dunder_module_names_are_not_misnamed(git_repo: Path) -> None:
+    assert head(git_repo, "from app import cli\n\ncli.main()\n", "app/__main__.py").findings == []
+
+
+def test_long_lines_are_flagged_except_imports_urls_and_single_tokens(git_repo: Path) -> None:
+    long = "x = " + " + ".join(["value"] * 20)
+    body = (
+        '"""Mod."""\n\n'
+        f"{long}\n"
+        f"# see https://example.com/{'a' * 90}\n"
+        f"from some.very.long.package.path.{'m' * 70} import thing  # {'c' * 10}\n"
+        f"PATH = '/{'p' * 90}'\n"
+    )
+    res = head(git_repo, body)
+    assert rules(res) == ["google:3.2-line-length"]
+    assert res.findings[0].line_start == 3 and "1 added line(s)" in res.findings[0].summary
+
+
+def test_many_long_lines_make_one_finding_per_file(git_repo: Path) -> None:
+    body = '"""Mod."""\n' + "".join(f"x{i} = " + " + ".join(["v"] * 40) + "\n" for i in range(7))
+    res = head(git_repo, body)
+    assert rules(res) == ["google:3.2-line-length"] and "7 added line(s)" in res.findings[0].summary

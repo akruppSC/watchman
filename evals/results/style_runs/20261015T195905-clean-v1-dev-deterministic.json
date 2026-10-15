@@ -1,0 +1,4710 @@
+{
+  "run_id": "20261015T195905-clean-v1-dev-deterministic",
+  "started_at": "2026-10-15T19:59:05.009324+00:00",
+  "dataset": "clean-v1",
+  "dataset_sha256": "d04af8ae800d91bf980378208e6037c9da4f6cb67808546e2b644e09b3723a86",
+  "dataset_frozen": true,
+  "split": "dev",
+  "mode": "deterministic",
+  "model": null,
+  "watchman_commit": "aa67f5c-dirty",
+  "review_config": {
+    "checks": [
+      "google_style"
+    ],
+    "min_confidence": 0.6,
+    "block_min_confidence": 0.7,
+    "test_command": null,
+    "test_timeout_s": 300.0,
+    "sandbox": "auto",
+    "docker_image": "python:3.12-slim",
+    "conventions_file": "CONVENTIONS.md",
+    "max_diff_files_warn": 15,
+    "max_diff_lines_warn": 600,
+    "default_mode": "deterministic",
+    "style": "none"
+  },
+  "subset": null,
+  "overseer": null,
+  "items": [
+    {
+      "item_id": "attrs-clean-112e50fc",
+      "score": {
+        "item_id": "attrs-clean-112e50fc",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.492,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.223,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.492,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-1921da6e",
+      "score": {
+        "item_id": "attrs-clean-1921da6e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.916,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.619,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.916,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-597c3a8a",
+      "score": {
+        "item_id": "attrs-clean-597c3a8a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 6,
+        "matches": [],
+        "false_positive_ids": [
+          "682f1500711d",
+          "e14340c306ae",
+          "d7bd99c87363",
+          "60fa079b5174",
+          "c69de060cc25",
+          "62b216da32aa"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.939,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "682f1500711d",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 610,
+            "line_end": 610,
+            "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/attr/_make.py:610: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "e14340c306ae",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 613,
+            "line_end": 613,
+            "summary": "Line is 156 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/attr/_make.py:613: Line is 156 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "d7bd99c87363",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_make.py",
+            "line_start": 630,
+            "line_end": 630,
+            "summary": "Line is 110 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/attr/_make.py:630: Line is 110 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "60fa079b5174",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_slots.py",
+            "line_start": 789,
+            "line_end": 789,
+            "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_slots.py:789: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "c69de060cc25",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_slots.py",
+            "line_start": 810,
+            "line_end": 810,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_slots.py:810: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "62b216da32aa",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_slots.py",
+            "line_start": 832,
+            "line_end": 832,
+            "summary": "Line is 102 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_slots.py:832: Line is 102 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "6 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.597,
+            "findings": [
+              {
+                "id": "682f1500711d",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 610,
+                "line_end": 610,
+                "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/attr/_make.py:610: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "e14340c306ae",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 613,
+                "line_end": 613,
+                "summary": "Line is 156 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/attr/_make.py:613: Line is 156 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "d7bd99c87363",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_make.py",
+                "line_start": 630,
+                "line_end": 630,
+                "summary": "Line is 110 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/attr/_make.py:630: Line is 110 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "60fa079b5174",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_slots.py",
+                "line_start": 789,
+                "line_end": 789,
+                "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_slots.py:789: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "c69de060cc25",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_slots.py",
+                "line_start": 810,
+                "line_end": 810,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_slots.py:810: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "62b216da32aa",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_slots.py",
+                "line_start": 832,
+                "line_end": 832,
+                "summary": "Line is 102 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_slots.py:832: Line is 102 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.939,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-7373d88f",
+      "score": {
+        "item_id": "attrs-clean-7373d88f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.901,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.767,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.901,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-7c9b31ea",
+      "score": {
+        "item_id": "attrs-clean-7c9b31ea",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "66dcc39886f6"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.64,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "66dcc39886f6",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/validators.py",
+            "line_start": 640,
+            "line_end": 640,
+            "summary": "Docstring of `or_` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "src/attr/validators.py:640: Docstring of `or_` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+            "suggested_fix": "describe the value under `Returns:`",
+            "source": "deterministic",
+            "rule": "google:3.8.3-returns",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.306,
+            "findings": [
+              {
+                "id": "66dcc39886f6",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/validators.py",
+                "line_start": 640,
+                "line_end": 640,
+                "summary": "Docstring of `or_` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "src/attr/validators.py:640: Docstring of `or_` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.64,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-8c9a7968",
+      "score": {
+        "item_id": "attrs-clean-8c9a7968",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.678,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.602,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.678,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c58ffd4e",
+      "score": {
+        "item_id": "attrs-clean-c58ffd4e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.664,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.499,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.664,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c7308a66",
+      "score": {
+        "item_id": "attrs-clean-c7308a66",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "c2e438ed0a43"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.642,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c2e438ed0a43",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/_funcs.py",
+            "line_start": 6,
+            "line_end": 6,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/attr/_funcs.py:6: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.315,
+            "findings": [
+              {
+                "id": "c2e438ed0a43",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/_funcs.py",
+                "line_start": 6,
+                "line_end": 6,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/attr/_funcs.py:6: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.642,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-c824bbe1",
+      "score": {
+        "item_id": "attrs-clean-c824bbe1",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "c9667e8651fe"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.27,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "c9667e8651fe",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/attr/__init__.py",
+            "line_start": 12,
+            "line_end": 12,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/attr/__init__.py:12: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.036,
+            "findings": [
+              {
+                "id": "c9667e8651fe",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/attr/__init__.py",
+                "line_start": 12,
+                "line_end": 12,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/attr/__init__.py:12: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.27,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-edcaf04a",
+      "score": {
+        "item_id": "attrs-clean-edcaf04a",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.766,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.585,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.766,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "attrs-clean-f53fc544",
+      "score": {
+        "item_id": "attrs-clean-f53fc544",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.763,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.565,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.763,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-051bb0f3",
+      "score": {
+        "item_id": "click-clean-051bb0f3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "2933548b22a2",
+          "42f8a4e8ce68",
+          "3f86128fc8c5"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.764,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2933548b22a2",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 32,
+            "line_end": 32,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/click/_termui_impl.py:32: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "42f8a4e8ce68",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/_termui_impl.py",
+            "line_start": 449,
+            "line_end": 449,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/_termui_impl.py:449: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3f86128fc8c5",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_termui.py",
+            "line_start": 826,
+            "line_end": 826,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_termui.py:826: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "3 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.558,
+            "findings": [
+              {
+                "id": "2933548b22a2",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 32,
+                "line_end": 32,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/click/_termui_impl.py:32: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "42f8a4e8ce68",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/_termui_impl.py",
+                "line_start": 449,
+                "line_end": 449,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/_termui_impl.py:449: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "3f86128fc8c5",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_termui.py",
+                "line_start": 826,
+                "line_end": 826,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_termui.py:826: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.764,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-05f6fd0d",
+      "score": {
+        "item_id": "click-clean-05f6fd0d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.863,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.755,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.863,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-555fa9bb",
+      "score": {
+        "item_id": "click-clean-555fa9bb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "a4321b091836",
+          "3620d45d6771",
+          "2bb446d809c1"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.87,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a4321b091836",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 490,
+            "line_end": 490,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:490: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3620d45d6771",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 629,
+            "line_end": 629,
+            "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:629: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "2bb446d809c1",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 630,
+            "line_end": 630,
+            "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:630: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "3 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.679,
+            "findings": [
+              {
+                "id": "a4321b091836",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 490,
+                "line_end": 490,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:490: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "3620d45d6771",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 629,
+                "line_end": 629,
+                "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:629: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "2bb446d809c1",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 630,
+                "line_end": 630,
+                "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:630: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.87,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-985ca165",
+      "score": {
+        "item_id": "click-clean-985ca165",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.855,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.771,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.855,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-a0bbbf20",
+      "score": {
+        "item_id": "click-clean-a0bbbf20",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.644,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.322,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.644,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-a9711c50",
+      "score": {
+        "item_id": "click-clean-a9711c50",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.418,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.08,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.418,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-ac5cec5f",
+      "score": {
+        "item_id": "click-clean-ac5cec5f",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "1ef9885d3643"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.623,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "1ef9885d3643",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/__init__.py",
+            "line_start": 17,
+            "line_end": 17,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "src/click/__init__.py:17: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.513,
+            "findings": [
+              {
+                "id": "1ef9885d3643",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/__init__.py",
+                "line_start": 17,
+                "line_end": 17,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "src/click/__init__.py:17: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.623,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-b5529479",
+      "score": {
+        "item_id": "click-clean-b5529479",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "a22ee3c05eaf"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.48,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a22ee3c05eaf",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_termui.py",
+            "line_start": 597,
+            "line_end": 597,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_termui.py:597: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.268,
+            "findings": [
+              {
+                "id": "a22ee3c05eaf",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_termui.py",
+                "line_start": 597,
+                "line_end": 597,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_termui.py:597: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.48,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-b9abeaa3",
+      "score": {
+        "item_id": "click-clean-b9abeaa3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.617,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.495,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.617,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-cf0e5242",
+      "score": {
+        "item_id": "click-clean-cf0e5242",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "5c8c47a0e4ec",
+          "a726f8d71ee4",
+          "42f6121da38c"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.806,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5c8c47a0e4ec",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2160,
+            "line_end": 2160,
+            "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2160: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "a726f8d71ee4",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2161,
+            "line_end": 2161,
+            "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2161: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "42f6121da38c",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2755,
+            "line_end": 2755,
+            "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2755: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "3 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.581,
+            "findings": [
+              {
+                "id": "5c8c47a0e4ec",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2160,
+                "line_end": 2160,
+                "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2160: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "a726f8d71ee4",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2161,
+                "line_end": 2161,
+                "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2161: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "42f6121da38c",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2755,
+                "line_end": 2755,
+                "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2755: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.806,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "click-clean-f561f188",
+      "score": {
+        "item_id": "click-clean-f561f188",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "4bf3c7cbe181",
+          "8db644a2a50e",
+          "c47d84be2627"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.807,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "4bf3c7cbe181",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2362,
+            "line_end": 2362,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2362: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "8db644a2a50e",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2363,
+            "line_end": 2363,
+            "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2363: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "c47d84be2627",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "src/click/core.py",
+            "line_start": 2367,
+            "line_end": 2367,
+            "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "src/click/core.py:2367: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "3 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.698,
+            "findings": [
+              {
+                "id": "4bf3c7cbe181",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2362,
+                "line_end": 2362,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2362: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "8db644a2a50e",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2363,
+                "line_end": 2363,
+                "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2363: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "c47d84be2627",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "src/click/core.py",
+                "line_start": 2367,
+                "line_end": 2367,
+                "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "src/click/core.py:2367: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.807,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-2129a978",
+      "score": {
+        "item_id": "httpx-clean-2129a978",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "5a2d9491cbe6"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.793,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "5a2d9491cbe6",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_content.py",
+            "line_start": 20,
+            "line_end": 20,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "httpx/_content.py:20: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.684,
+            "findings": [
+              {
+                "id": "5a2d9491cbe6",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_content.py",
+                "line_start": 20,
+                "line_end": 20,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "httpx/_content.py:20: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.793,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-4b5a92e8",
+      "score": {
+        "item_id": "httpx-clean-4b5a92e8",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.774,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.399,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.774,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-4f6edf36",
+      "score": {
+        "item_id": "httpx-clean-4f6edf36",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.448,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.314,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.448,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-541a0afe",
+      "score": {
+        "item_id": "httpx-clean-541a0afe",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 3,
+        "matches": [],
+        "false_positive_ids": [
+          "518964f44869",
+          "1f55547bcfd2",
+          "c06353be167c"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.438,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "518964f44869",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_client.py",
+            "line_start": 749,
+            "line_end": 749,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_client.py:749: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "1f55547bcfd2",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_client.py",
+            "line_start": 805,
+            "line_end": 805,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_client.py:805: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "c06353be167c",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_client.py",
+            "line_start": 847,
+            "line_end": 847,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_client.py:847: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "3 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.352,
+            "findings": [
+              {
+                "id": "518964f44869",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_client.py",
+                "line_start": 749,
+                "line_end": 749,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_client.py:749: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1f55547bcfd2",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_client.py",
+                "line_start": 805,
+                "line_end": 805,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_client.py:805: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "c06353be167c",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_client.py",
+                "line_start": 847,
+                "line_end": 847,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_client.py:847: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.438,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-8327e134",
+      "score": {
+        "item_id": "httpx-clean-8327e134",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 6,
+        "matches": [],
+        "false_positive_ids": [
+          "ef6586c6cd29",
+          "437db8f6e4da",
+          "bca00ca143c3",
+          "5e05888fd04d",
+          "44910fdc0512",
+          "7f71c91a8bfd"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.43,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "ef6586c6cd29",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_auth.py",
+            "line_start": 185,
+            "line_end": 185,
+            "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_auth.py:185: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "437db8f6e4da",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/client/test_auth.py",
+            "line_start": 569,
+            "line_end": 569,
+            "summary": "Line is 94 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/client/test_auth.py:569: Line is 94 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "bca00ca143c3",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/client/test_auth.py",
+            "line_start": 581,
+            "line_end": 581,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/client/test_auth.py:581: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "5e05888fd04d",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_auth.py",
+            "line_start": 79,
+            "line_end": 79,
+            "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_auth.py:79: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "44910fdc0512",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_auth.py",
+            "line_start": 94,
+            "line_end": 94,
+            "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_auth.py:94: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "7f71c91a8bfd",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_auth.py",
+            "line_start": 95,
+            "line_end": 95,
+            "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_auth.py:95: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "6 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.197,
+            "findings": [
+              {
+                "id": "ef6586c6cd29",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_auth.py",
+                "line_start": 185,
+                "line_end": 185,
+                "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_auth.py:185: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "437db8f6e4da",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/client/test_auth.py",
+                "line_start": 569,
+                "line_end": 569,
+                "summary": "Line is 94 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/client/test_auth.py:569: Line is 94 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "bca00ca143c3",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/client/test_auth.py",
+                "line_start": 581,
+                "line_end": 581,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/client/test_auth.py:581: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "5e05888fd04d",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_auth.py",
+                "line_start": 79,
+                "line_end": 79,
+                "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_auth.py:79: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "44910fdc0512",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_auth.py",
+                "line_start": 94,
+                "line_end": 94,
+                "summary": "Line is 88 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_auth.py:94: Line is 88 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "7f71c91a8bfd",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_auth.py",
+                "line_start": 95,
+                "line_end": 95,
+                "summary": "Line is 85 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_auth.py:95: Line is 85 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.43,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-a7092af2",
+      "score": {
+        "item_id": "httpx-clean-a7092af2",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "af9e9ae2cb52",
+          "6c09518056eb"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.42,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "af9e9ae2cb52",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_urlparse.py",
+            "line_start": 409,
+            "line_end": 409,
+            "summary": "Function `PERCENT` is not lower_with_under (Google Python Style Guide §3.16)",
+            "evidence": "httpx/_urlparse.py:409: Function `PERCENT` is not lower_with_under. Google Python Style Guide §3.16.",
+            "suggested_fix": "name functions and methods in lower_with_under",
+            "source": "deterministic",
+            "rule": "google:3.16-function-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "6c09518056eb",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_urlparse.py",
+            "line_start": 424,
+            "line_end": 424,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_urlparse.py:424: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "2 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.187,
+            "findings": [
+              {
+                "id": "af9e9ae2cb52",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_urlparse.py",
+                "line_start": 409,
+                "line_end": 409,
+                "summary": "Function `PERCENT` is not lower_with_under (Google Python Style Guide §3.16)",
+                "evidence": "httpx/_urlparse.py:409: Function `PERCENT` is not lower_with_under. Google Python Style Guide §3.16.",
+                "suggested_fix": "name functions and methods in lower_with_under",
+                "source": "deterministic",
+                "rule": "google:3.16-function-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "6c09518056eb",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_urlparse.py",
+                "line_start": 424,
+                "line_end": 424,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_urlparse.py:424: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.42,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-b43af721",
+      "score": {
+        "item_id": "httpx-clean-b43af721",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 4,
+        "matches": [],
+        "false_positive_ids": [
+          "2ae2f0c19b14",
+          "0b266cedf948",
+          "f6fd6fe495e5",
+          "1758fd259a3f"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.643,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2ae2f0c19b14",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_config.py",
+            "line_start": 9,
+            "line_end": 9,
+            "summary": "Relative import (Google Python Style Guide §2.2)",
+            "evidence": "httpx/_config.py:9: Relative import. Google Python Style Guide §2.2.",
+            "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+            "source": "deterministic",
+            "rule": "google:2.2-relative-import",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "0b266cedf948",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_multipart.py",
+            "line_start": 122,
+            "line_end": 122,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_multipart.py:122: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f6fd6fe495e5",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_multipart.py",
+            "line_start": 123,
+            "line_end": 123,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_multipart.py:123: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "1758fd259a3f",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_multipart.py",
+            "line_start": 124,
+            "line_end": 124,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_multipart.py:124: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "4 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.538,
+            "findings": [
+              {
+                "id": "2ae2f0c19b14",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_config.py",
+                "line_start": 9,
+                "line_end": 9,
+                "summary": "Relative import (Google Python Style Guide §2.2)",
+                "evidence": "httpx/_config.py:9: Relative import. Google Python Style Guide §2.2.",
+                "suggested_fix": "import with the full package path, e.g. `from app import notes`",
+                "source": "deterministic",
+                "rule": "google:2.2-relative-import",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "0b266cedf948",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_multipart.py",
+                "line_start": 122,
+                "line_end": 122,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_multipart.py:122: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "f6fd6fe495e5",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_multipart.py",
+                "line_start": 123,
+                "line_end": 123,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_multipart.py:123: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1758fd259a3f",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_multipart.py",
+                "line_start": 124,
+                "line_end": 124,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_multipart.py:124: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.643,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-b8394786",
+      "score": {
+        "item_id": "httpx-clean-b8394786",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.635,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.513,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.635,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-db9072f9",
+      "score": {
+        "item_id": "httpx-clean-db9072f9",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 7,
+        "matches": [],
+        "false_positive_ids": [
+          "ed7e2de5be0b",
+          "b8debd0bbf84",
+          "30a018a1a9be",
+          "2bf89504a052",
+          "322734f4e6ae",
+          "3fa9d96a3752",
+          "1bec431385e7"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.605,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "ed7e2de5be0b",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_urlparse.py",
+            "line_start": 383,
+            "line_end": 383,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_urlparse.py:383: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "b8debd0bbf84",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_urlparse.py",
+            "line_start": 388,
+            "line_end": 388,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_urlparse.py:388: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "30a018a1a9be",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/models/test_url.py",
+            "line_start": 418,
+            "line_end": 418,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/models/test_url.py:418: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "2bf89504a052",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/models/test_url.py",
+            "line_start": 422,
+            "line_end": 422,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/models/test_url.py:422: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "322734f4e6ae",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/models/test_whatwg.py",
+            "line_start": 26,
+            "line_end": 26,
+            "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/models/test_whatwg.py:26: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "3fa9d96a3752",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/models/test_whatwg.py",
+            "line_start": 40,
+            "line_end": 40,
+            "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/models/test_whatwg.py:40: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "1bec431385e7",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/models/test_whatwg.py",
+            "line_start": 41,
+            "line_end": 41,
+            "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/models/test_whatwg.py:41: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "7 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.241,
+            "findings": [
+              {
+                "id": "ed7e2de5be0b",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_urlparse.py",
+                "line_start": 383,
+                "line_end": 383,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_urlparse.py:383: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "b8debd0bbf84",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_urlparse.py",
+                "line_start": 388,
+                "line_end": 388,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_urlparse.py:388: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "30a018a1a9be",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/models/test_url.py",
+                "line_start": 418,
+                "line_end": 418,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/models/test_url.py:418: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "2bf89504a052",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/models/test_url.py",
+                "line_start": 422,
+                "line_end": 422,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/models/test_url.py:422: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "322734f4e6ae",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/models/test_whatwg.py",
+                "line_start": 26,
+                "line_end": 26,
+                "summary": "Line is 84 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/models/test_whatwg.py:26: Line is 84 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "3fa9d96a3752",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/models/test_whatwg.py",
+                "line_start": 40,
+                "line_end": 40,
+                "summary": "Line is 87 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/models/test_whatwg.py:40: Line is 87 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1bec431385e7",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/models/test_whatwg.py",
+                "line_start": 41,
+                "line_end": 41,
+                "summary": "Line is 83 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/models/test_whatwg.py:41: Line is 83 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.605,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e65a33d3",
+      "score": {
+        "item_id": "httpx-clean-e65a33d3",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "2f68d8ba4370",
+          "b44a915198e7"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.613,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "2f68d8ba4370",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_client.py",
+            "line_start": 73,
+            "line_end": 73,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_client.py:73: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "b44a915198e7",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "httpx/_client.py",
+            "line_start": 1797,
+            "line_end": 1797,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "httpx/_client.py:1797: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "2 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.348,
+            "findings": [
+              {
+                "id": "2f68d8ba4370",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_client.py",
+                "line_start": 73,
+                "line_end": 73,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_client.py:73: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "b44a915198e7",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "httpx/_client.py",
+                "line_start": 1797,
+                "line_end": 1797,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "httpx/_client.py:1797: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.613,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "httpx-clean-e9b0c85d",
+      "score": {
+        "item_id": "httpx-clean-e9b0c85d",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.668,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.419,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.668,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-069b3000",
+      "score": {
+        "item_id": "more-itertools-clean-069b3000",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "a0df6cf5fd53"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.053,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "a0df6cf5fd53",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 2382,
+            "line_end": 2382,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:2382: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.945,
+            "findings": [
+              {
+                "id": "a0df6cf5fd53",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 2382,
+                "line_end": 2382,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:2382: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.053,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-2d7d14d7",
+      "score": {
+        "item_id": "more-itertools-clean-2d7d14d7",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.046,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.91,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.046,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-3b80ba6c",
+      "score": {
+        "item_id": "more-itertools-clean-3b80ba6c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "4c23dd35c9f4",
+          "41f33418eb10"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.006,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "4c23dd35c9f4",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3312,
+            "line_end": 3312,
+            "summary": "Line is 118 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:3312: Line is 118 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "41f33418eb10",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3314,
+            "line_end": 3314,
+            "summary": "Line is 114 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:3314: Line is 114 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "2 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.761,
+            "findings": [
+              {
+                "id": "4c23dd35c9f4",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3312,
+                "line_end": 3312,
+                "summary": "Line is 118 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:3312: Line is 118 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "41f33418eb10",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3314,
+                "line_end": 3314,
+                "summary": "Line is 114 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:3314: Line is 114 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.006,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4b868467",
+      "score": {
+        "item_id": "more-itertools-clean-4b868467",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.593,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.317,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.593,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4e105c4c",
+      "score": {
+        "item_id": "more-itertools-clean-4e105c4c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.795,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.552,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.795,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-4f399222",
+      "score": {
+        "item_id": "more-itertools-clean-4f399222",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "69ecfdba5547"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.891,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "69ecfdba5547",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5296,
+            "line_end": 5296,
+            "summary": "Class `serialize` is not CapWords (Google Python Style Guide §3.16)",
+            "evidence": "more_itertools/more.py:5296: Class `serialize` is not CapWords. Google Python Style Guide §3.16.",
+            "suggested_fix": "name classes in CapWords, e.g. `InventoryItem`",
+            "source": "deterministic",
+            "rule": "google:3.16-class-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.753,
+            "findings": [
+              {
+                "id": "69ecfdba5547",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5296,
+                "line_end": 5296,
+                "summary": "Class `serialize` is not CapWords (Google Python Style Guide §3.16)",
+                "evidence": "more_itertools/more.py:5296: Class `serialize` is not CapWords. Google Python Style Guide §3.16.",
+                "suggested_fix": "name classes in CapWords, e.g. `InventoryItem`",
+                "source": "deterministic",
+                "rule": "google:3.16-class-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.891,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-5b79a636",
+      "score": {
+        "item_id": "more-itertools-clean-5b79a636",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 0.629,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.338,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.629,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-c0780fbb",
+      "score": {
+        "item_id": "more-itertools-clean-c0780fbb",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 7,
+        "matches": [],
+        "false_positive_ids": [
+          "85d6bddf9715",
+          "688e43e5a081",
+          "c8c6ffcdadf4",
+          "daf0afed09e9",
+          "7ce08b6d6b10",
+          "85778e7005db",
+          "f60d0ae91e41"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.889,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "85d6bddf9715",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3906,
+            "line_end": 3906,
+            "summary": "Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation (Google Python Style Guide §3.8.1)",
+            "evidence": "more_itertools/more.py:3906: Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation. Google Python Style Guide §3.8.1. Also reported by: google:3.8.3-args; google:3.8.3-returns.",
+            "suggested_fix": "make the first line a one-sentence summary ending in a period",
+            "source": "deterministic",
+            "rule": "google:3.8.1-summary",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "688e43e5a081",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3907,
+            "line_end": 3907,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:3907: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "c8c6ffcdadf4",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3914,
+            "line_end": 3914,
+            "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:3914: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "daf0afed09e9",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3928,
+            "line_end": 3928,
+            "summary": "TODO comment without a context link (Google Python Style Guide §3.12)",
+            "evidence": "more_itertools/more.py:3928: TODO comment without a context link. Google Python Style Guide §3.12.",
+            "suggested_fix": "write `# TODO(link-or-bug): what and when`, e.g. `# TODO(b/12345): ...`",
+            "source": "deterministic",
+            "rule": "google:3.12-todo",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "7ce08b6d6b10",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3938,
+            "line_end": 3938,
+            "summary": "Argument `N` is not lower_with_under (Google Python Style Guide §3.16)",
+            "evidence": "more_itertools/more.py:3938: Argument `N` is not lower_with_under. Google Python Style Guide §3.16.",
+            "suggested_fix": "name arguments in lower_with_under",
+            "source": "deterministic",
+            "rule": "google:3.16-argument-name",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "85778e7005db",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 3942,
+            "line_end": 3942,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "more_itertools/more.py:3942: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "f60d0ae91e41",
+            "category": "convention_violation",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "tests/test_more.py",
+            "line_start": 4561,
+            "line_end": 4561,
+            "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+            "evidence": "tests/test_more.py:4561: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+            "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+            "source": "deterministic",
+            "rule": "google:3.2-line-length",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "9 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.698,
+            "findings": [
+              {
+                "id": "7ce08b6d6b10",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3938,
+                "line_end": 3938,
+                "summary": "Argument `N` is not lower_with_under (Google Python Style Guide §3.16)",
+                "evidence": "more_itertools/more.py:3938: Argument `N` is not lower_with_under. Google Python Style Guide §3.16.",
+                "suggested_fix": "name arguments in lower_with_under",
+                "source": "deterministic",
+                "rule": "google:3.16-argument-name",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "daf0afed09e9",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3928,
+                "line_end": 3928,
+                "summary": "TODO comment without a context link (Google Python Style Guide §3.12)",
+                "evidence": "more_itertools/more.py:3928: TODO comment without a context link. Google Python Style Guide §3.12.",
+                "suggested_fix": "write `# TODO(link-or-bug): what and when`, e.g. `# TODO(b/12345): ...`",
+                "source": "deterministic",
+                "rule": "google:3.12-todo",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "688e43e5a081",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3907,
+                "line_end": 3907,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:3907: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "c8c6ffcdadf4",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3914,
+                "line_end": 3914,
+                "summary": "Line is 81 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:3914: Line is 81 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "85778e7005db",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3942,
+                "line_end": 3942,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "more_itertools/more.py:3942: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "85d6bddf9715",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation (Google Python Style Guide §3.8.1)",
+                "evidence": "more_itertools/more.py:3906: Docstring summary of `chunked_even` is not one line of at most 80 characters ending in punctuation. Google Python Style Guide §3.8.1.",
+                "suggested_fix": "make the first line a one-sentence summary ending in a period",
+                "source": "deterministic",
+                "rule": "google:3.8.1-summary",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "6c0daad5e98d",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring of `chunked_even` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:3906: Docstring of `chunked_even` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "64083064a92c",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 3906,
+                "line_end": 3906,
+                "summary": "Docstring of `chunked_even` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:3906: Docstring of `chunked_even` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "f60d0ae91e41",
+                "category": "convention_violation",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "tests/test_more.py",
+                "line_start": 4561,
+                "line_end": 4561,
+                "summary": "Line is 82 characters (limit 80) (Google Python Style Guide §3.2)",
+                "evidence": "tests/test_more.py:4561: Line is 82 characters (limit 80). Google Python Style Guide §3.2.",
+                "suggested_fix": "wrap it inside parentheses, or run the formatter with a line length of 80",
+                "source": "deterministic",
+                "rule": "google:3.2-line-length",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.889,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fa60e38e",
+      "score": {
+        "item_id": "more-itertools-clean-fa60e38e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 1,
+        "matches": [],
+        "false_positive_ids": [
+          "7067cba6ae2c"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 0.702,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "7067cba6ae2c",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/recipes.py",
+            "line_start": 958,
+            "line_end": 958,
+            "summary": "Docstring of `sum_of_squares` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/recipes.py:958: Docstring of `sum_of_squares` has no `Args:` section. Google Python Style Guide §3.8.3.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "1 departure(s) from the Google Python Style Guide",
+            "duration_s": 0.266,
+            "findings": [
+              {
+                "id": "7067cba6ae2c",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/recipes.py",
+                "line_start": 958,
+                "line_end": 958,
+                "summary": "Docstring of `sum_of_squares` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/recipes.py:958: Docstring of `sum_of_squares` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 0.702,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb33cf2c",
+      "score": {
+        "item_id": "more-itertools-clean-fb33cf2c",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 2,
+        "matches": [],
+        "false_positive_ids": [
+          "20eb71fcf625",
+          "9b0b39b7fd03"
+        ],
+        "cost_usd": 0.0,
+        "latency_s": 1.233,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "warn",
+        "findings": [
+          {
+            "id": "20eb71fcf625",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5074,
+            "line_end": 5074,
+            "summary": "Docstring of `argmin` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Args:` section. Google Python Style Guide §3.8.3. Also reported by: google:3.8.3-returns.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          },
+          {
+            "id": "9b0b39b7fd03",
+            "category": "maintainability",
+            "severity": "minor",
+            "confidence": 0.85,
+            "file": "more_itertools/more.py",
+            "line_start": 5088,
+            "line_end": 5088,
+            "summary": "Docstring of `argmax` has no `Args:` section (Google Python Style Guide §3.8.3)",
+            "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Args:` section. Google Python Style Guide §3.8.3. Also reported by: google:3.8.3-returns.",
+            "suggested_fix": "list each parameter under `Args:` with a description",
+            "source": "deterministic",
+            "rule": "google:3.8.3-args",
+            "evidence_refs": [
+              "check:google_style"
+            ],
+            "verified_by": null
+          }
+        ],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "failed",
+            "summary": "4 departure(s) from the Google Python Style Guide",
+            "duration_s": 1.019,
+            "findings": [
+              {
+                "id": "20eb71fcf625",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5074,
+                "line_end": 5074,
+                "summary": "Docstring of `argmin` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "1db1a7e7db13",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5074,
+                "line_end": 5074,
+                "summary": "Docstring of `argmin` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5074: Docstring of `argmin` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "9b0b39b7fd03",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5088,
+                "line_end": 5088,
+                "summary": "Docstring of `argmax` has no `Args:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Args:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "list each parameter under `Args:` with a description",
+                "source": "deterministic",
+                "rule": "google:3.8.3-args",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              },
+              {
+                "id": "8b3d3ff5d752",
+                "category": "maintainability",
+                "severity": "minor",
+                "confidence": 0.85,
+                "file": "more_itertools/more.py",
+                "line_start": 5088,
+                "line_end": 5088,
+                "summary": "Docstring of `argmax` has no `Returns:` section (Google Python Style Guide §3.8.3)",
+                "evidence": "more_itertools/more.py:5088: Docstring of `argmax` has no `Returns:` section. Google Python Style Guide §3.8.3.",
+                "suggested_fix": "describe the value under `Returns:`",
+                "source": "deterministic",
+                "rule": "google:3.8.3-returns",
+                "evidence_refs": [
+                  "check:google_style"
+                ],
+                "verified_by": null
+              }
+            ],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.233,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    },
+    {
+      "item_id": "more-itertools-clean-fb95291e",
+      "score": {
+        "item_id": "more-itertools-clean-fb95291e",
+        "kind": "clean",
+        "n_defects": 0,
+        "n_findings": 0,
+        "matches": [],
+        "false_positive_ids": [],
+        "cost_usd": 0.0,
+        "latency_s": 1.243,
+        "tool_calls": 0,
+        "error": null
+      },
+      "result": {
+        "schema_version": 1,
+        "mode": "deterministic",
+        "base": "base",
+        "head": "head",
+        "verdict": "pass",
+        "findings": [],
+        "checks": [
+          {
+            "id": "check:google_style",
+            "name": "google_style",
+            "status": "passed",
+            "summary": "no departure from the Google Python Style Guide that the check can detect",
+            "duration_s": 0.946,
+            "findings": [],
+            "output_excerpt": ""
+          }
+        ],
+        "usage": {
+          "model": null,
+          "llm_calls": 0,
+          "tool_calls": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cost_usd": 0.0
+        },
+        "latency_s": 1.243,
+        "dropped_findings": 0,
+        "warnings": [],
+        "tool_trace": [],
+        "dropped": [],
+        "stages": [],
+        "incomplete": false,
+        "incomplete_reasons": []
+      }
+    }
+  ]
+}

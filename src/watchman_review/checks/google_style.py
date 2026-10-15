@@ -4,6 +4,7 @@ Deterministic and conservative, like the rest of Layer 1: it reports only on lin
 added (or on functions the change introduced), caps repeats per file, and cites the guide's section
 number in every finding. It covers the rules a program can decide reliably:
 
+  §3.2      lines of at most 80 characters (not for imports, URLs or one-token lines)
   §3.16     naming (CapWords classes, lower_with_under functions/variables/arguments/modules)
   §2.21     type annotations on new public functions
   §3.8      module docstrings, one-line summaries ending in punctuation, Args:/Returns: sections
@@ -17,7 +18,8 @@ number in every finding. It covers the rules a program can decide reliably:
   §3.17     no unguarded `main()` call at import time
   §2.4      try bodies kept small
 
-Not covered, on purpose: formatting (§3.2 to §3.6) belongs to a formatter; "import modules, not
+Not covered, on purpose: other formatting (indentation, whitespace, blank lines, §3.3 to §3.6)
+belongs to a formatter; "import modules, not
 names" (§2.2) and `assert` use (§2.4) are judgment calls the agent gets through the style preset.
 This is a best-effort detector of departures. It does not certify compliance with the guide.
 """
@@ -42,6 +44,7 @@ GUIDE = "Google Python Style Guide"
 MAX_PER_RULE_PER_FILE = 3
 MAX_TRY_BODY_LINES = 30  # a heuristic: the guide says "minimize" and gives no number
 SUMMARY_MAX = 80
+LINE_MAX = 80  # §3.2
 
 _SNAKE = re.compile(r"_{0,2}[a-z][a-z0-9_]*")
 _CAPS = re.compile(r"_?[A-Z][A-Z0-9_]*")
@@ -59,6 +62,7 @@ _UNITTEST_NAMES = {
 }
 _LOG_RECEIVERS = {"logging", "logger", "log", "_logger", "_log", "LOGGER", "_LOGGER"}
 _LOG_METHODS = {"debug", "info", "warning", "warn", "error", "exception", "critical", "fatal"}
+_LONG_CONSTANT = re.compile(r"[\w.]+\s*(?::[^=]+)?=\s*[rRbBuUfF]?(['\"])\S*\1,?")
 _TODO = re.compile(r"\bTODO\b(?!\([^)\s][^)]*\):)")
 _STATIC_ALLOWED_RECEIVERS = {"self", "cls"}
 
@@ -152,6 +156,7 @@ class GoogleStyleCheck(Check):
             self._file_level(em, f, tree, test)
             self._nodes(em, tree, added, test)
             self._comments(em, source, added)
+            self._line_length(em, f)
             self._new_functions(em, ctx, f, source, test)
             findings += em.findings
         status = CheckStatus.FAILED if findings else CheckStatus.PASSED
@@ -168,7 +173,7 @@ class GoogleStyleCheck(Check):
         if f.status is not FileStatus.ADDED:
             return
         stem = PurePosixPath(f.path).stem
-        if stem != "__init__" and not re.fullmatch(r"_?[a-z][a-z0-9_]*", stem):
+        if not _dunder(stem) and not re.fullmatch(r"_?[a-z][a-z0-9_]*", stem):
             em.add(
                 "3.16.3-filename",
                 "3.16.3",
@@ -179,7 +184,7 @@ class GoogleStyleCheck(Check):
         has_defs = any(
             isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in tree.body
         )
-        if not test and stem != "__init__" and has_defs and ast.get_docstring(tree) is None:
+        if not test and not _dunder(stem) and has_defs and ast.get_docstring(tree) is None:
             em.add(
                 "3.8.2-module-docstring",
                 "3.8.2",
@@ -370,6 +375,34 @@ class GoogleStyleCheck(Check):
                 f"`try` body is {size} lines long",
                 "keep only the statements that can raise the handled exception inside `try`",
             )
+
+    # ------------------------------------------------------------------ line length
+    @staticmethod
+    def _line_length(em: _Emitter, f: FileDiff) -> None:
+        """One finding per file (not per line) so a wide module can't crowd out other feedback."""
+        long_lines: list[int] = []
+        for line_no, text in sorted(f.added.items()):
+            stripped = text.strip()
+            if len(text.rstrip()) <= LINE_MAX:
+                continue
+            exempt = (
+                stripped.startswith(("import ", "from "))
+                or "http://" in stripped
+                or "https://" in stripped
+                or "pylint:" in stripped
+                or " " not in stripped  # a single long token (path, URL, identifier)
+                or _LONG_CONSTANT.fullmatch(stripped)  # `NAME = "no-whitespace-string"`
+            )
+            if not exempt:
+                long_lines.append(line_no)
+        if long_lines:
+            where = ", ".join(str(n) for n in long_lines[:5])
+            more = f" (+{len(long_lines) - 5} more)" if len(long_lines) > 5 else ""
+            em.add(
+                "3.2-line-length", "3.2", long_lines[0],
+                f"{len(long_lines)} added line(s) exceed {LINE_MAX} characters: {where}{more}",
+                "wrap them inside parentheses, or run the formatter with a line length of 80",
+            )  # fmt: skip
 
     # ------------------------------------------------------------------ comments
     @staticmethod
